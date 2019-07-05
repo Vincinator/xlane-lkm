@@ -25,5 +25,5 @@ static void __exit sassy_mlx5_con_exit(void)
 }
 
 
-subsys_initcall(sassy_mlx5_con_init);
+module_init(sassy_mlx5_con_init);
 module_exit(sassy_mlx5_con_exit);
