@@ -11,6 +11,7 @@ clean:
 
 else
 
-obj-m := mlx5_con.o
+obj-y := sassymlx5.o
+sassymlx5-objs := mlx5_con.o
 
 endif

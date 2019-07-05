@@ -1,0 +1,9 @@
+#
+# Sassy subsystem configuration
+#
+
+menuconfig SASSY
+	bool "Enable SASSY"
+	default y
+	help
+	  This enables the network submodule SASSY
