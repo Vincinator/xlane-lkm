@@ -7,6 +7,11 @@ sassy
 │ Installation Document
 │ Development Guide
 │
+│─── Control Layer
+│   │
+│   │ Interfaces Document
+│   │ Control Layer Source
+│   
 │─── Connection Layer
 │   │   
 │   │─── Netronome Agilio CX smartNIC
@@ -15,12 +20,15 @@ sassy
 │   │   │ SASSY Driver Source
 │   │
 │   └─── Mellanox ConnectX 4 LX
+│       │
 │       │ Specification Document
 │       │ SASSY Driver Source
 │   
 └─── Logic Layer
+    │
     │   Specification Document
     │ 
+    │
     └─── Test Applications
         │  
         │─── Failure Detector
