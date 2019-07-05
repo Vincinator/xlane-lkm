@@ -11,6 +11,6 @@ clean:
 
 else
 
-obj-m := sassy_connection_core.o
+obj-y := sassy_connection_core.o
 
 endif

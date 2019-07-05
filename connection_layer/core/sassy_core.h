@@ -24,7 +24,6 @@ struct sassy_packet {
 
 /*
  * Reference to last packet for each registered remote host
- * 
  */
 struct sassy_rx_table {
 	int table_id;					/* Same as the corresponding NIC ifindex */

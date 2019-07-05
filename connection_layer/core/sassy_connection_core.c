@@ -2,10 +2,16 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 
+#include "sassy_core.h"
+
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
 MODULE_DESCRIPTION("SASSY Connection Core");
 MODULE_VERSION("0.01");
+
+
+/* RX Data */
+struct sassy_core *score;
 
 static int __init sassy_connection_core_init(void)
 {
