@@ -1,6 +1,8 @@
 #ifndef _SASSY_DEV_H_
 #define _SASSY_DEV_H_
 
+#include <linux/types.h>
+
 #define MAX_REMOTE_SOURCES 16
 #define SASSY_PACKET_PAYLOAD_SIZE 32
 
@@ -19,7 +21,7 @@ typedef enum {
  */
 struct sassy_packet {
 	sassy_packet_type ptype;					/* Tells Logic Layer how to interpret the payload */
-	void payload[SASSY_PACKET_PAYLOAD_SIZE]; 	/* The tasty payload of the sassy packet */
+	u8 payload[SASSY_PACKET_PAYLOAD_SIZE]; 		/* Byte addressable array of tasty sassy packet payload*/
 };
 
 /*
