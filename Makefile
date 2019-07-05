@@ -1,2 +1,2 @@
 obj-$(CONFIG_SASSY) := connection_layer/core/
-obj-$(CONFIG_SASSY) := connection_layer/mlx5/
+obj-$(CONFIG_SASSY) += connection_layer/mlx5/
