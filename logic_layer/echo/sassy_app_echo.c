@@ -5,14 +5,14 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
-MODULE_DESCRIPTION("SASSY app failure detector");
+MODULE_DESCRIPTION("SASSY app echo");
 MODULE_VERSION("0.01");
 
-#define LOG_PREFIX "[SASSY][APP][FD]"
+#define LOG_PREFIX "[SASSY][APP][ECHO]"
 
 
 
-static int __init sassy_app_fd_init(void)
+static int __init sassy_app_echo_init(void)
 {
 
 	sassy_dbg("init\n");
@@ -21,7 +21,7 @@ static int __init sassy_app_fd_init(void)
 }
 
 
-static void __exit sassy_app_fd_exit(void) 
+static void __exit sassy_app_echo_exit(void) 
 {
 
 	sassy_dbg("exit\n");
@@ -29,5 +29,5 @@ static void __exit sassy_app_fd_exit(void)
 }
 
 
-module_init(sassy_app_fd_init);
-module_exit(sassy_app_fd_exit);
+module_init(sassy_app_echo_init);
+module_exit(sassy_app_echo_exit);

@@ -1,17 +1,20 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
+#include <sassy/logger.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
 MODULE_DESCRIPTION("SASSY MLX5 Connection");
 MODULE_VERSION("0.01");
 
+#define LOG_PREFIX "[SASSY][CON][MLX5]"
+
 
 static int __init sassy_mlx5_con_init(void)
 {
 
-	printk(KERN_INFO "[SASSY][CON][MLX5] init\n");
+	sassy_dbg("init\n");
 
 	return 0;
 }
@@ -20,7 +23,7 @@ static int __init sassy_mlx5_con_init(void)
 static void __exit sassy_mlx5_con_exit(void) 
 {
 
-	printk(KERN_INFO "[SASSY][CON][MLX5]  cleanup \n");
+	sassy_dbg("exit\n");
 
 }
 

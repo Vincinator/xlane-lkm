@@ -2,6 +2,7 @@ ifeq ($(KERNELRELEASE),)
 $(info Building SASSY modules out of kernel tree)
 
 KERNEL_SRC ?= /opt/workspace/sassy/SASSY-Kernel/
+EXTRA_CFLAGS += -I../../common/
 
 all:
 	make -C $(KERNEL_SRC) M=$(PWD) modules
@@ -11,6 +12,8 @@ clean:
 
 else
 
-obj-m := sassy_app_echo.o
+obj-y := sassy_app_echo.o
+sassy_app_echo-objs := sassy_app_echo.o
+
 
 endif

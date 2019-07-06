@@ -1,6 +1,12 @@
-obj-y := sassy_connection_core.o
+
+obj-y := fd/
+obj-y += echo/
+obj-y += consensus/
+
+
 
 KERNEL_SRC ?= /opt/workspace/sassy/SASSY-Kernel/
+EXTRA_CFLAGS += -I../common/
 
 all:
 	make -C $(KERNEL_SRC) M=$(PWD) modules

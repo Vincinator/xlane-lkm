@@ -2,6 +2,7 @@ ifeq ($(KERNELRELEASE),)
 $(info Building SASSY modules out of kernel tree)
 
 KERNEL_SRC ?= /opt/workspace/sassy/SASSY-Kernel/
+EXTRA_CFLAGS += -I../../common/
 
 all:
 	make -C $(KERNEL_SRC) M=$(PWD) modules
