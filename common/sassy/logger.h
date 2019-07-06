@@ -9,9 +9,9 @@
 /* 
  * Prefixes NIC device ID and SASSY Context (e.g. [SASSY][NIC4][CONSENSUS])
  */
-#define sassy_dbg(format, arg...)					\
+#define sassy_dbg(format, arg...)						\
 ({														\
-	if (0)												\
+	if (1)												\
 		printk(KERN_DEBUG LOG_PREFIX, format, ##arg);	\
 })
 #endif

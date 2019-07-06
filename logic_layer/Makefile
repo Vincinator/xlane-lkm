@@ -1,9 +1,4 @@
-
-obj-y := fd/
-obj-y += echo/
-obj-y += consensus/
-
-
+ifeq ($(KERNELRELEASE),)
 
 KERNEL_SRC ?= /opt/workspace/sassy/SASSY-Kernel/
 EXTRA_CFLAGS += -I../common/
@@ -13,3 +8,13 @@ all:
 
 clean:
 	make -C $(KERNEL_SRC) M=$(PWD) clean
+
+else
+
+
+obj-y := fd/
+obj-y += echo/
+obj-y += consensus/
+
+
+endif

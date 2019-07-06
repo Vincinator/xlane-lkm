@@ -12,6 +12,6 @@ clean:
 
 else
 
-obj-m := sassy_app_consensus.o
+obj-y := sassy_app_consensus.o
 
 endif
