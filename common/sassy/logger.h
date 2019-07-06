@@ -12,6 +12,6 @@
 #define sassy_dbg(format, arg...)						\
 ({														\
 	if (1)												\
-		printk(KERN_DEBUG LOG_PREFIX, format, ##arg);	\
+		printk(KERN_DEBUG LOG_PREFIX format, ##arg);	\
 })
 #endif _SASSY_LOGGER_H_
