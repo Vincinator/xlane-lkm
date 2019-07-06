@@ -29,5 +29,5 @@ static void __exit sassy_control_exit(void)
 }
 
 
-module_init(sassy_mlx5_con_init);
-module_exit(sassy_mlx5_con_exit);
+module_init(sassy_control_init);
+module_exit(sassy_control_exit);

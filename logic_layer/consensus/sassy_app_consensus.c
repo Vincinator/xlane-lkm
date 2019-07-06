@@ -30,5 +30,5 @@ static void __exit sassy_app_consensus_exit(void)
 }
 
 
-module_init(sassy_app_echo_init);
-module_exit(sassy_app_echo_exit);
+module_init(sassy_app_consensus_init);
+module_exit(sassy_app_consensus_exit);
