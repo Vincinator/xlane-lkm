@@ -11,7 +11,7 @@ clean:
 	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions *.symvers *.order
 
 else
-EXTRA_CFLAGS += -I../../common/
+EXTRA_CFLAGS+=-I$(src)/../../common/
 
 obj-y := sassymlx5.o
 sassymlx5-objs := mlx5_con.o

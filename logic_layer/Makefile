@@ -11,7 +11,7 @@ clean:
 
 else
 
-EXTRA_CFLAGS += -I../common/
+EXTRA_CFLAGS+=-I$(src)/../common/
 
 obj-y := fd/
 obj-y += echo/

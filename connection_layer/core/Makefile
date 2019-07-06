@@ -2,6 +2,7 @@ ifeq ($(KERNELRELEASE),)
 $(info Building SASSY modules out of kernel tree)
 
 KERNEL_SRC ?= ../../../SASSY-Kernel/
+EXTRA_CFLAGS += -I../../common/
 
 all:
 	make -C $(KERNEL_SRC) M=$(PWD) modules
@@ -11,7 +12,7 @@ clean:
 
 else
 
-EXTRA_CFLAGS += -I../../common/
+EXTRA_CFLAGS+=-I$(src)/../../common/
 
 
 obj-y := sassycore.o
