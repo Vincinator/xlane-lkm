@@ -11,6 +11,7 @@ clean:
 
 else
 
+EXTRA_CFLAGS += -I../common/
 
 obj-y := fd/
 obj-y += echo/
