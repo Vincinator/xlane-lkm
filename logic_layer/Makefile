@@ -11,8 +11,6 @@ clean:
 
 else
 
-EXTRA_CFLAGS+=-I$(src)/../common/
-
 obj-y := fd/
 obj-y += echo/
 obj-y += consensus/
