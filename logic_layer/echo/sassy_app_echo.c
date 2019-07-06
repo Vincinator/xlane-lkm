@@ -8,6 +8,7 @@ MODULE_AUTHOR("Vincent Riesop");
 MODULE_DESCRIPTION("SASSY app echo");
 MODULE_VERSION("0.01");
 
+#undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][APP][ECHO]"
 
 

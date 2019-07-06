@@ -10,6 +10,7 @@ MODULE_AUTHOR("Vincent Riesop");
 MODULE_DESCRIPTION("SASSY Connection Core");
 MODULE_VERSION("0.01");
 
+#undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
 /* RX Data */
