@@ -12,7 +12,6 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][APP][CONSENSUS]"
 
 
-
 static int __init sassy_app_consensus_init(void)
 {
 
