@@ -29,7 +29,6 @@ int sassy_core_write_packet(int sassy_id, int remote_id) {
 }
 
 
-
 /* Called by Connection Layer Glue (e.g. mlx5_con.c) */
 int sassy_core_register_nic(int sassy_id) {
 
