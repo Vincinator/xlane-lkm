@@ -9,7 +9,7 @@ struct sassy_mlx5_con_info {
 	int cqn;
 };
 
-int sassy_mlx5_con_register_device(int sassy_id, int ifindex);
+int sassy_mlx5_con_register_device(int ifindex);
 
 int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn);
 int sassy_mlx5_con_check_cqn(int sassy_id, int cqn);
