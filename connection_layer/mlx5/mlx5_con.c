@@ -30,16 +30,29 @@ int sassy_mlx5_post_payload(void){
 EXPORT_SYMBOL(sassy_mlx5_post_payload);
 
 int sassy_mlx5_con_check_ix(int ix){
+	if(!info){
+		sassy_dbg("info is null! %s\n", __FUNCTION__);
+		return 0; // ignore this error, only debugging.
+	}
 	return info->ix == ix;
 } 
 EXPORT_SYMBOL(sassy_mlx5_con_check_ix);
 
 int sassy_mlx5_con_check_cqn(int cqn){
+	if(!info){
+		sassy_dbg("info is null! %s\n", __FUNCTION__);
+		return 0; // ignore this error, only debugging.
+	}
 	return info->cqn == cqn;
 }
 EXPORT_SYMBOL(sassy_mlx5_con_check_cqn);
 
 int sassy_mlx5_con_register_channel(int ix, int cqn){
+
+	if(!info){
+		sassy_dbg("info is null!\n");
+		return 0; // ignore this error, only debugging.
+	}
 
     info->ix = ix;
     info->cqn = cqn;
