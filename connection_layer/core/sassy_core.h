@@ -32,7 +32,7 @@ struct sassy_packet {
 struct sassy_rx_buffer {
 	struct sassy_packet[RX_CYCLE_SIZE] packets;
 	int next_index;
-}
+};
 
 /*
  * Table that maps (implicitly) rhostid (by array index) to struct sassy_rx_buffer
