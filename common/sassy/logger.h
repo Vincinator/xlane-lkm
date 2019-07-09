@@ -21,6 +21,6 @@
 #define sassy_error(format, arg...)						\
 ({														\
 	if (1)												\
-		printk(KERN_ERR LOG_PREFIX format, ##arg);	\
+		printk(KERN_ERR LOG_PREFIX format, ##arg);		\
 })
 #endif /* _SASSY_LOGGER_H_ */
