@@ -21,7 +21,6 @@ struct sassy_mlx5_con_info **infos;
 int device_counter = 0;
 
 int sassy_mlx5_con_register_device(int ifindex) {
-
 	if(device_counter >= SASSY_MLX5_DEVICES_LIMIT) {
 		sassy_error("Reached Limit of maximum connected mlx5 devices.\n");
 		sassy_error("Limit=%d, device_counter=%d\n", SASSY_MLX5_DEVICES_LIMIT, device_counter);
@@ -38,8 +37,9 @@ int sassy_mlx5_con_register_device(int ifindex) {
 	sassy_dbg("Register MLX5 Device with ifindex=%d", ifindex);
 	sassy_dbg("Assigned sassy_id (%d) to ifindex (%d)", device_counter, ifindex);
 
-	device_counter++;
-	return ret;
+	sassy_core_register_nic(device_counter);
+	
+	return device_counter++;
 }
 EXPORT_SYMBOL(sassy_mlx5_con_register_device);
 

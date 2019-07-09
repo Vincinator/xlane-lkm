@@ -3,8 +3,12 @@
 
 #include <linux/types.h>
 
+
+#define MAX_NIC_PORTS 8
 #define MAX_REMOTE_SOURCES 16
 #define SASSY_PACKET_PAYLOAD_SIZE 32
+
+#define RX_CYCLE_SIZE 1 			/* How many packets per remote host to hold in sassy memory */
 
 /* 
  * The size of payload does not exceed the SASSY_PACKET_PAYLOAD_SIZE value.
@@ -24,13 +28,17 @@ struct sassy_packet {
 	u8 payload[SASSY_PACKET_PAYLOAD_SIZE]; 		/* Byte addressable array of tasty sassy packet payload*/
 };
 
+/*  Packet Buffer for one remote host */
+struct sassy_rx_buffer {
+	struct sassy_packet[RX_CYCLE_SIZE] packets;
+	int next_index;
+}
+
 /*
- * Reference to last packet for each registered remote host
+ * Table that maps (implicitly) rhostid (by array index) to struct sassy_rx_buffer
  */
 struct sassy_rx_table {
-	int table_id;					/* Same as the corresponding NIC ifindex */
-	struct sassy_packet *packets; 	/* Index of array corresponds to sassy's remote host id */
-	int num_registered_hosts;		/* Num of sassy_packets in packets array. Corresponds to amount of remote hosts */
+	struct sassy_rx_buffer **rhost_buffers;
 };
 
 /*
@@ -39,7 +47,7 @@ struct sassy_rx_table {
  * ifindex of NIC PORT corresponds to array position of struct sassy_rx_table *tables. 
  */
 struct sassy_core {
-	struct sassy_rx_table *tables;	/* Each NIC port (identified by ifindex) has a own table */
+	struct sassy_rx_table **rx_tables;	/* Each NIC port (identified by ifindex) has a own table */
 };
 
 #endif /* _SASSY_DEV_H_ */
