@@ -31,5 +31,5 @@ static void __exit sassy_connection_core_exit(void)
 
 }
 
-module_init(sassy_connection_core_init);
+subsys_initcall(sassy_connection_core_init);
 module_exit(sassy_connection_core_exit);
