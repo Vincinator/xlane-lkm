@@ -38,7 +38,7 @@ int sassy_mlx5_con_register_device(int ifindex) {
 	sassy_dbg("Assigned sassy_id (%d) to ifindex (%d)", device_counter, ifindex);
 
 	sassy_core_register_nic(device_counter);
-	
+
 	return device_counter++;
 }
 EXPORT_SYMBOL(sassy_mlx5_con_register_device);
@@ -108,7 +108,7 @@ static int __init sassy_mlx5_con_init(void)
 static void __exit sassy_mlx5_con_exit(void) 
 {
     sassy_dbg("exiting.. \n");
-    kfree(info);
+    kfree(infos);
     sassy_dbg("exited\n");
 }
 
