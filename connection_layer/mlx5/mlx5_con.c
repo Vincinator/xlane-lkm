@@ -58,7 +58,7 @@ EXPORT_SYMBOL(sassy_mlx5_post_payload);
 int sassy_mlx5_con_check_ix(int sassy_id, int ix){
 	
 	if(sassy_id < 0 || sassy_id >= SASSY_MLX5_DEVICES_LIMIT ){
-		sassy_error("sassy_id was %d in %s\n", sassy_id __FUNCTION__);
+		sassy_error("sassy_id was %d in %s\n", sassy_id, __FUNCTION__);
 		return 0;
 	}
 
@@ -69,7 +69,7 @@ EXPORT_SYMBOL(sassy_mlx5_con_check_ix);
 int sassy_mlx5_con_check_cqn(int sassy_id, int cqn){
 
 	if(sassy_id < 0 || sassy_id >= SASSY_MLX5_DEVICES_LIMIT ){
-		sassy_error("sassy_id was %d in %s\n", sassy_id __FUNCTION__);
+		sassy_error("sassy_id was %d in %s\n", sassy_id, __FUNCTION__);
 		return 0;
 	}
 
@@ -79,7 +79,7 @@ EXPORT_SYMBOL(sassy_mlx5_con_check_cqn);
 
 int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn){
 	if(sassy_id < 0 || sassy_id >= SASSY_MLX5_DEVICES_LIMIT ){
-		sassy_error("sassy_id was %d in %s\n", sassy_id __FUNCTION__);
+		sassy_error("sassy_id was %d in %s\n", sassy_id, __FUNCTION__);
 		return 0;
 	}
 
@@ -105,9 +105,15 @@ static int __init sassy_mlx5_con_init(void)
 }
 
 
+
 static void __exit sassy_mlx5_con_exit(void) 
 {
     sassy_dbg("exiting.. \n");
+
+    for(i = 0; i < device_counter; i ++) {
+    	kfree(infos[i]);
+    }
+
     kfree(infos);
     sassy_dbg("exited\n");
 }
