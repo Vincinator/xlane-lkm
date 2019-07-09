@@ -26,7 +26,7 @@ struct sassy_rx_buffer * sassy_get_rx_buffer(int sassy_id, int remote_id) {
 
 int sassy_core_write_packet(int sassy_id, int remote_id) {
 	struct sassy_rx_buffer *buf = sassy_get_rx_buffer(sassy_id, remote_id);
-	sassy_dbg("Not implemented: %s", __FUNCTION__);
+	sassy_dbg("Not implemented: %s\n", __FUNCTION__);
 }
 
 

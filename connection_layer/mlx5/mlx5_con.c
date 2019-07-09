@@ -32,12 +32,12 @@ int sassy_mlx5_con_register_device(int ifindex) {
 	infos[device_counter] = kmalloc(sizeof(struct sassy_mlx5_con_info), GFP_ATOMIC);
 
 	if(!infos[device_counter]) {
-		sassy_error("Allocation error in function %s ", __FUNCTION__);
+		sassy_error("Allocation error in function %s \n", __FUNCTION__);
 		return -1;
 	}
 
-	sassy_dbg("Register MLX5 Device with ifindex=%d", ifindex);
-	sassy_dbg("Assigned sassy_id (%d) to ifindex (%d)", device_counter, ifindex);
+	sassy_dbg("Register MLX5 Device with ifindex=%d\n", ifindex);
+	sassy_dbg("Assigned sassy_id (%d) to ifindex (%d)\n", device_counter, ifindex);
 
 	sassy_core_register_nic(device_counter);
 
@@ -46,13 +46,20 @@ int sassy_mlx5_con_register_device(int ifindex) {
 EXPORT_SYMBOL(sassy_mlx5_con_register_device);
 
 int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts) {
-    sassy_dbg("Not implemented: %s", __FUNCTION__);
+    sassy_dbg("Not implemented: %s\n", __FUNCTION__);
 	return 0;
 }
 EXPORT_SYMBOL(sassy_mlx5_post_optimistical_timestamp);
 
-int sassy_mlx5_post_payload(int sassy_id){
-    sassy_dbg("Not implemented: %s", __FUNCTION__);
+int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u32 cqe_bcnt){
+
+	sassy_dbg("frag_size=%u\n", frag_size);
+	sassy_dbg("cqe_bcnt=%u\n", cqe_bcnt);
+	print_hex_dump_bytes("", DUMP_PREFIX_NONE, va, frag_size);
+	
+	print_hex_dump(KERN_DEBUG, "packet: ", DUMP_PREFIX_NONE, 32, 1,
+				va, frag_size, 0);
+
 	return 0;
 }
 EXPORT_SYMBOL(sassy_mlx5_post_payload);
