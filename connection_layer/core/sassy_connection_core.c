@@ -46,7 +46,7 @@ int sassy_core_register_remote_host(int sassy_id){
 
 	if(remote_host_counter >= MAX_REMOTE_SOURCES) {
 		sassy_dbg("Reached Limit of remote hosts. \n");
-		sassy_dbg("Limit is=%d, remote_host_counter= \n", MAX_REMOTE_SOURCES, remote_host_counter);
+		sassy_dbg("Limit is=%d, remote_host_counter= %d \n", MAX_REMOTE_SOURCES, remote_host_counter);
 		return -1;
 	}
 
