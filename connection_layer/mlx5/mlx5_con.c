@@ -17,6 +17,17 @@ MODULE_VERSION("0.01");
 struct sassy_mlx5_con_info *info;
 
 
+int sassy_mlx5_post_optimistical_timestamp(uint64_t cycle_ts) {
+
+	return 0;
+}
+
+int sassy_mlx5_post_payload(){
+
+	return 0;
+}
+
+
 int sassy_mlx5_con_check_ix(int ix){
 	return info->ix == ix;
 } 
