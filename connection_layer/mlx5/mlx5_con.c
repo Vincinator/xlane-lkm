@@ -15,6 +15,17 @@ MODULE_VERSION("0.01");
 
 struct sassy_mlx5_con_info info;
 
+
+int sassy_mlx5_con_check_ix(int ix){
+	return info.ix == ix;
+} 
+EXPORT_SYMBOL(sassy_mlx5_con_check_ix);
+
+int sassy_mlx5_con_check_cqn(int cqn){
+	return info.cqn == cqn;
+}
+EXPORT_SYMBOL(sassy_mlx5_con_check_cqn);
+
 int sassy_mlx5_con_register_channel(int ix, int cqn){
 
     info.ix = ix;
