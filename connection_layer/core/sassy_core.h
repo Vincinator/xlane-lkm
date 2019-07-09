@@ -30,7 +30,7 @@ struct sassy_packet {
 
 /*  Packet Buffer for one remote host */
 struct sassy_rx_buffer {
-	struct sassy_packet[RX_CYCLE_SIZE] packets;
+	struct sassy_packet packets[RX_CYCLE_SIZE];
 	int next_index;
 };
 
