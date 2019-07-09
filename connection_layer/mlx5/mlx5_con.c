@@ -13,7 +13,6 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CON][MLX5]"
 
-
 struct sassy_mlx5_con_info info;
 
 int sassy_mlx5_con_register_channel(int ix, int cqn){
@@ -21,6 +20,8 @@ int sassy_mlx5_con_register_channel(int ix, int cqn){
 	info.ix = ix;
 	info.cqn = cqn;
 	sassy_dbg("Channel %d registered with cqn=%d", ix, cqn);
+
+	return 0;
 }
 EXPORT_SYMBOL(sassy_mlx5_con_register_channel);
 
