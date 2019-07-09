@@ -110,6 +110,8 @@ static int __init sassy_mlx5_con_init(void)
 
 static void __exit sassy_mlx5_con_exit(void) 
 {
+	int i;
+
     sassy_dbg("exiting.. \n");
 
     for(i = 0; i < device_counter; i ++) {
