@@ -18,15 +18,16 @@ struct sassy_mlx5_con_info *info;
 
 
 int sassy_mlx5_post_optimistical_timestamp(uint64_t cycle_ts) {
-
+    sassy_dbg("Not implemented: %s", __FUNCTION__);
 	return 0;
 }
+EXPORT_SYMBOL(sassy_mlx5_post_optimistical_timestamp);
 
-int sassy_mlx5_post_payload(){
-
+int sassy_mlx5_post_payload(void){
+    sassy_dbg("Not implemented: %s", __FUNCTION__);
 	return 0;
 }
-
+EXPORT_SYMBOL(sassy_mlx5_post_payload);
 
 int sassy_mlx5_con_check_ix(int ix){
 	return info->ix == ix;
