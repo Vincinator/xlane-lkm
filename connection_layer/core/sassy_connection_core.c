@@ -2,6 +2,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <sassy/logger.h>
+#include <linux/slab.h>
 
 #include "sassy_core.h"
 

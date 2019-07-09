@@ -18,7 +18,7 @@
 /* 
  * Prefixes NIC device ID and SASSY Context (e.g. [SASSY][NIC4][CONSENSUS])
  */
-#define sassy_errir(format, arg...)						\
+#define sassy_error(format, arg...)						\
 ({														\
 	if (1)												\
 		printk(KERN_ERR LOG_PREFIX format, ##arg);	\
