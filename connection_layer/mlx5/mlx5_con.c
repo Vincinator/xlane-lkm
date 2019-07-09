@@ -13,7 +13,7 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CON][MLX5]"
 
-struct sassy_mlx5_con_info info;
+struct sassy_mlx5_con_info info;
 
 int sassy_mlx5_con_register_channel(int ix, int cqn){
 
