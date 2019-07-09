@@ -2,6 +2,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <sassy/logger.h>
+#include <linux/slab.h>
 
 #include <sassy/mlx5_con.h>
 
@@ -41,7 +42,7 @@ static int __init sassy_mlx5_con_init(void)
 {
 
     sassy_dbg("init\n");
-    
+
     info = kmalloc(sizeof(struct sassy_mlx5_con_info), GFP_ATOMIC);
 
     sassy_dbg("init done\n");
