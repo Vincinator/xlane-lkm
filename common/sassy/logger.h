@@ -12,7 +12,7 @@
 #define sassy_dbg(format, ...)						\
 ({														\
 	if (1)												\
-		printk(KERN_DEBUG LOG_PREFIX format, ## __VA_ARGS__);	\
+		printk(KERN_DEBUG LOG_PREFIX ## format, ## __VA_ARGS__);	\
 })
 
 /* 
@@ -21,6 +21,6 @@
 #define sassy_error(format, ...)						\
 ({														\
 	if (1)												\
-		printk(KERN_ERR LOG_PREFIX format, ## __VA_ARGS__);		\
+		printk(KERN_ERR LOG_PREFIX ## format, ## __VA_ARGS__);		\
 })
 #endif /* _SASSY_LOGGER_H_ */
