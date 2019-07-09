@@ -40,6 +40,7 @@ int sassy_core_register_nic(int sassy_id) {
 	
 	return 0;
 }
+EXPORT_SYMBOL(sassy_core_register_nic);
 
 int sassy_core_register_remote_host(int sassy_id){
 	struct sassy_rx_table *rxt = score->rx_tables[sassy_id];
