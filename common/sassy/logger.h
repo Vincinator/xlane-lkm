@@ -14,7 +14,6 @@
 	if (1)												\
 		printk(KERN_DEBUG LOG_PREFIX format, ##arg);	\
 })
-#endif /* _SASSY_LOGGER_H_ */
 
 /* 
  * Prefixes NIC device ID and SASSY Context (e.g. [SASSY][NIC4][CONSENSUS])
