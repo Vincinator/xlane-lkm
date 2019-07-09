@@ -45,8 +45,8 @@ int sassy_core_register_remote_host(int sassy_id){
 	struct sassy_rx_table *rxt = score->rx_tables[sassy_id];
 
 	if(remote_host_counter >= MAX_REMOTE_SOURCES) {
-		sassy_dbg("Reached Limit of remote hosts. \n");
-		sassy_dbg("Limit is=%d, remote_host_counter= %d \n", MAX_REMOTE_SOURCES, remote_host_counter);
+		sassy_error("Reached Limit of remote hosts. \n");
+		sassy_error("Limit is=%d, remote_host_counter= %d \n", MAX_REMOTE_SOURCES, remote_host_counter);
 		return -1;
 	}
 
@@ -64,14 +64,14 @@ static int __init sassy_connection_core_init(void)
 	score = kmalloc(sizeof(struct sassy_core), GFP_ATOMIC);
 
 	if(!score) {
-		sassy_dbg("allocation of sassy core failed\n");
+		sassy_error("allocation of sassy core failed\n");
 		return -1;
 	}
 
 	score->rx_tables = kmalloc_array(MAX_NIC_PORTS, sizeof(struct sassy_rx_table *), GFP_ATOMIC);
 
 	if(!score->rx_tables) {
-		sassy_dbg("allocation of score->rx_tablesfailed\n");
+		sassy_error("allocation of score->rx_tablesfailed\n");
 		return -1;
 	}
 
