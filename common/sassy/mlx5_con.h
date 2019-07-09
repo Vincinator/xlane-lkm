@@ -9,16 +9,16 @@ struct sassy_mlx5_con_info {
 	int cqn;
 };
 
-int sassy_mlx5_con_register_device(int ifindex);
+int sassy_mlx5_con_register_device(int sassy_id, int ifindex);
 
-int sassy_mlx5_con_register_channel(int ix, int cqn);
-int sassy_mlx5_con_check_cqn(int cqn);
-int sassy_mlx5_con_check_ix(int ix);
+int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn);
+int sassy_mlx5_con_check_cqn(int sassy_id, int cqn);
+int sassy_mlx5_con_check_ix(int sassy_id, int ix);
 
 
 
-int sassy_mlx5_post_optimistical_timestamp(uint64_t cycle_ts);
-int sassy_mlx5_post_payload(void);
+int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts);
+int sassy_mlx5_post_payload(int sassy_id);
 
 
 #endif /* _SASSY_MLX5_CON_H_ */
