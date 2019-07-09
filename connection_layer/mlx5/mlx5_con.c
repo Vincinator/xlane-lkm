@@ -13,23 +13,23 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CON][MLX5]"
 
-struct sassy_mlx5_con_info info;
+struct sassy_mlx5_con_info *info;
 
 
 int sassy_mlx5_con_check_ix(int ix){
-	return info.ix == ix;
+	return info->ix == ix;
 } 
 EXPORT_SYMBOL(sassy_mlx5_con_check_ix);
 
 int sassy_mlx5_con_check_cqn(int cqn){
-	return info.cqn == cqn;
+	return info->cqn == cqn;
 }
 EXPORT_SYMBOL(sassy_mlx5_con_check_cqn);
 
 int sassy_mlx5_con_register_channel(int ix, int cqn){
 
-    info.ix = ix;
-    info.cqn = cqn;
+    info->ix = ix;
+    info->cqn = cqn;
     sassy_dbg("Channel %d registered with cqn=%d", ix, cqn);
 
     return 0;
@@ -41,16 +41,19 @@ static int __init sassy_mlx5_con_init(void)
 {
 
     sassy_dbg("init\n");
+    
+    info = kmalloc(sizeof(struct sassy_mlx5_con_info), GFP_ATOMIC);
 
+    sassy_dbg("init done\n");
     return 0;
 }
 
 
 static void __exit sassy_mlx5_con_exit(void) 
 {
-
-    sassy_dbg("exit\n");
-
+    sassy_dbg("exiting.. \n");
+    kfree(info);
+    sassy_dbg("exited\n");
 }
 
 
