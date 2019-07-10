@@ -2,6 +2,7 @@
 #define _SASSY_DEV_H_
 
 
+#include <sassy/sassy_pm.h>
 
 struct sassy_device {
 	int ifindex;  /* corresponds to ifindex of net_device */	
