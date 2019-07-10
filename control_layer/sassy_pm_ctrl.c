@@ -282,3 +282,4 @@ void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 
 	sassy_dbg("Pacemaker ctrl interfaces created for device (%d)\n", sdev->ifindex);
 }
+EXPORT_SYMBOL(init_sassy_pm_ctrl_interfaces);
