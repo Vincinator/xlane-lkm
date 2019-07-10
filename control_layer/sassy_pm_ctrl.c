@@ -93,7 +93,7 @@ static int sassy_hb_ctrl_proc_open(struct inode *inode, struct file *file)
 static ssize_t sassy_cpumgmt_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
 {
 	int err;
-	char kernel_buffer[SYNCBEAT_NUMBUF];
+	char kernel_buffer[SASSY_NUMBUF];
 	int tocpu = -1;
 	struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info*)PDE_DATA(file_inode(file));
 	size_t size;
