@@ -2,6 +2,8 @@
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 
+#include <linux/kernel.h>
+
 #include <sassy/sassy.h>
 #include <sassy/sassy_dev.h>
 #include <sassy/sassy_hb.h>
