@@ -21,7 +21,7 @@
 #define SASSY_MLX5_DEVICES_LIMIT 5 	/* Number of allowed mlx5 devices that can connect to SASSY */
 #define MAX_CPU_NUMBER 55
 
-int sassy_core_register_nic(int sassy_id);
+int sassy_core_register_nic(int sassy_id, int ifindex);
 
 enum sassy_pacemaker_state {
 	SASSY_PM_UNINIT = 0,
