@@ -89,6 +89,9 @@ static int __init sassy_connection_core_init(void)
 		return -1;
 	}
 
+
+	proc_mkdir("sassy", NULL);
+
 	sassy_dbg("init done\n");
 
 	return 0;
