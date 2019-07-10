@@ -9,7 +9,7 @@
 struct sassy_network_address_info {
 	uint32_t dst_ip; 			
 	unsigned char *dst_mac; 				
-}
+};
 
 
 enum sassy_pacemaker_state {
