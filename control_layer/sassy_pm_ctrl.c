@@ -93,10 +93,10 @@ static ssize_t sassy_cpumgmt_write(struct file *file, const char __user *user_bu
 	int err;
 	char kernel_buffer[SYNCBEAT_NUMBUF];
 	int tocpu = -1;
-	struct sassy_device *sdev = (struct sassy_device*)PDE_DATA(file_inode(file));
+	struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info*)PDE_DATA(file_inode(file));
 	size_t size;
 
-	if (!sdev)
+	if (!spminfo)
 		return -ENODEV;
 
 	size = min(sizeof(kernel_buffer) - 1, count);
@@ -121,7 +121,7 @@ static ssize_t sassy_cpumgmt_write(struct file *file, const char __user *user_bu
 		return -ENODEV;
 
 
-	sdev->active_cpu = tocpu;
+	spminfo->active_cpu = tocpu;
 
 	return count;
 error:
@@ -131,7 +131,7 @@ error:
 
 static int sassy_cpumgmt_show(struct seq_file *m, void *v)
 {
-	struct sassy_device *spminfo = (struct sassy_device*) m->private;
+	struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info*) m->private;
 
 	if (!spminfo)
 		return -ENODEV;
