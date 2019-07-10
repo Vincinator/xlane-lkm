@@ -102,7 +102,7 @@ void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminfo) {
     uint64_t ts1, ts2;
     int counter = 0; /* update counter for each hb destination - just for testing.. */
 
-    for(i = 0; i < spminfo->targets_size; i++) {
+    for(i = 0; i < spminfo->num_of_targets; i++) {
         tail_ptr = skb_tail_pointer(tdata[i].skb);
         data_ptr = (tail_ptr - sizeof(struct sassy_heartbeat_packet));
         skb_get(tdata[i].skb);
