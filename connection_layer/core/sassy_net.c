@@ -75,6 +75,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uin
 
 	/* Get Source IP Address from net_device */
 	uint32_t src_ip = dev->ip_ptr->ifa_list->ifa_address;
+	int length = sizeof(struct sassy_heartbeat_packet);
 
 	sassy_dbg("HB SRC IP: %pI4", src_ip );
 
