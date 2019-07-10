@@ -43,7 +43,7 @@ int sassy_pm_stop(struct sassy_pacemaker_info *spminfo);
 void pm_state_transition_to(struct sassy_pacemaker_info *spminfo, enum sassy_pacemaker_state state);
 const char *pm_state_string(sassy_pacemaker_state_t state);
 
-
+void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminfo);
 
 
 #endif

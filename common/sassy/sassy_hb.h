@@ -12,7 +12,7 @@ struct sassy_remote_process_info {
 
 
 struct sassy_heartbeat_packet {
-	u8 alive_rp;		/* Number of alive processes */
+	u8 alive_rp;						/* Number of alive processes */
 	struct sassy_remote_process_info rpinfo[MAX_PROCESSES_PER_HOST];
 };
 
