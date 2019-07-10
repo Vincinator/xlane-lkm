@@ -7,7 +7,7 @@
 #define CYCLES_PER_100MS 240000000
 
 
-
+#define MAX_CPU_NUMBER 55
 
 struct sassy_network_address_info {
 	uint32_t dst_ip; 			

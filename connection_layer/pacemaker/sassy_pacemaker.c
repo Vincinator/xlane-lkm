@@ -110,7 +110,7 @@ void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo) {
 
 struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo, int host_number)
 {
-    struct sassy_device *sdev = container_of(spminfo, struct sassy_device, pminfo)
+    struct sassy_device *sdev = container_of(spminfo, struct sassy_device, pminfo);
 
     if (!spminfo) {
         sassy_error("Could not setup skb, sassy_pacemaker_info is NULL\n");
