@@ -15,6 +15,9 @@
 #define CYCLES_PER_10MS 24000000
 #define CYCLES_PER_100MS 240000000
 
+#define MAX_PROCESSES_PER_HOST 16
+
+
 #define SASSY_MLX5_DEVICES_LIMIT 5 	/* Number of allowed mlx5 devices that can connect to SASSY */
 #define MAX_CPU_NUMBER 55
 
