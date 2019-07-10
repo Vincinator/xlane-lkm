@@ -11,6 +11,13 @@
 
 
 
+#define UDP_LENGTH sizeof(struct udphdr)
+#define IP_LENGTH sizeof(struct iphdr)
+#define ETH_LENGTH sizeof(struct ethhdr)
+#define UDP_PROTOCOL_NUMBER 17
+#define SKB_QUICK_TTL 64
+#define IP_HEADER_VERSION 4
+#define IP_HEADER_LENGTH 5
 
 void sassy_hex_to_ip(char *retval, int dst_ip)
 {
