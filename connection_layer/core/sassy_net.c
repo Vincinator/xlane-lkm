@@ -80,7 +80,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uin
 	uint32_t src_ip = dev->ip_ptr->ifa_list->ifa_address;
 	int length = sizeof(struct sassy_heartbeat_packet);
 
-	sassy_dbg("HB SRC IP: %pI4", (void*) src_ip);
+	//sassy_dbg("HB SRC IP: %pI4", (void*) src_ip);
 
 	if (!src_ip){
 		sassy_error("No source IP for netdevice condfigured");
