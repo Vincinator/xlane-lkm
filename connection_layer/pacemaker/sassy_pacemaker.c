@@ -4,6 +4,8 @@
 #include <linux/kthread.h>
 #include <linux/sched.h>
 
+#include <linux/kernel.h>
+
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <linux/udp.h>
