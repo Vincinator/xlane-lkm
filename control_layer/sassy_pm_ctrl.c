@@ -275,13 +275,13 @@ void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 	proc_mkdir(name_buf, NULL);
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/ctrl", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_hb_ctrl_ops, sdev->pminfo);
+	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_hb_ctrl_ops, &sdev->pminfo);
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/targets", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_target_ops, sdev->pminfo);
+	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_target_ops, &sdev->pminfo);
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/cpu", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_cpumgmt_ops, sdev->pminfo);
+	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_cpumgmt_ops, &sdev->pminfo);
 
 	sassy_dbg("Pacemaker ctrl interfaces created for device (%d)\n", sdev->ifindex);
 }
