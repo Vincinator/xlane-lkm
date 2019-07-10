@@ -18,12 +18,13 @@ struct sassy_network_address_info {
 	unsigned char *dst_mac; 				
 };
 
-
 enum sassy_pacemaker_state {
 	SASSY_PM_UNINIT = 0,
 	SASSY_PM_READY = 1,
 	SASSY_PM_EMITTING = 2,
 };
+
+typedef enum sassy_pacemaker_state sassy_pacemaker_state_t;
 
 struct sassy_pacemaker_info {
 	enum sassy_pacemaker_state state;
@@ -40,7 +41,7 @@ void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo);
 int sassy_pm_start(struct sassy_pacemaker_info *spminfo);
 int sassy_pm_stop(struct sassy_pacemaker_info *spminfo);
 void pm_state_transition_to(struct sassy_pacemaker_info *spminfo, enum sassy_pacemaker_state state);
-const char *pm_state_string(syncbeat_pacemaker_state_t state);
+const char *pm_state_string(sassy_pacemaker_state_t state);
 
 
 

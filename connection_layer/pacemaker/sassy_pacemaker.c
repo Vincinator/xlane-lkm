@@ -37,7 +37,7 @@ static inline bool can_fire(uint64_t prev_time, uint64_t cur_time)
     return (cur_time - prev_time) >= CYCLES_PER_100MS;
 }
 
-const char *pm_state_string(syncbeat_pacemaker_state_t state)
+const char *pm_state_string(sassy_pacemaker_state_t state)
 {
     switch (state) {
     case SASSY_PM_UNINIT: return "SASSY_PM_UNINIT";
