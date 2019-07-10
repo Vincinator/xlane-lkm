@@ -191,7 +191,7 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 			sassy_dbg(" ip: %s\n", input_str);
 			read_ip = 0;
 		}else {
-			spminfo->targets[i].dst_mac = convert_mac(input_str);
+			spminfo->targets[i].dst_mac = sassy_convert_mac(input_str);
 			if (!spminfo->targets[i].dst_mac) {
 				sassy_error(" Invalid MAC. Failed to convert to byte string.\n");
 				err = -EINVAL;

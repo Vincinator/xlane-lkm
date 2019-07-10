@@ -47,6 +47,7 @@ int sassy_ip_convert(const char *str)
 
 	return -EINVAL;
 }
+EXPORT_SYMBOL(sassy_ip_convert);
 
 /*
  * Converts an MAC address to hex char array
@@ -67,7 +68,7 @@ unsigned char *sassy_convert_mac(const char *str)
 
 	return NULL;
 }
-
+EXPORT_SYMBOL(sassy_convert_mac);
 
 
 struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uint32_t dst_ip)
@@ -88,7 +89,6 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uin
 		sassy_error("No source IP for netdevice condfigured");
 		return NULL;
 	}
-
 
 	/* Size placeholder for payload */
 	hb_payload = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_ATOMIC);
@@ -131,3 +131,4 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uin
 	mac_skb_quick->h_proto = htons((u16) 0x0800);
 	return skb;
 }
+EXPORT_SYMBOL(compose_heartbeat_skb);
