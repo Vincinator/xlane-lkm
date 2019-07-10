@@ -34,7 +34,7 @@ int sassy_core_write_packet(int sassy_id, int remote_id) {
 
 
 /* Called by Connection Layer Glue (e.g. mlx5_con.c) */
-int sassy_core_register_nic(int sassy_id) {
+int sassy_core_register_nic(int sassy_id, int ifindex) {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
 	sassy_dbg("register nic at sassy core\n");
@@ -43,9 +43,10 @@ int sassy_core_register_nic(int sassy_id) {
 	score->rx_tables[sassy_id]->rhost_buffers = kmalloc_array(MAX_REMOTE_SOURCES, sizeof(struct sassy_rx_buffer*), GFP_ATOMIC);
 	
 	score->sdevices[sassy_id] = kmalloc(sizeof(struct sassy_device), GFP_ATOMIC);
+	score->sdevices[sassy_id]->ifindex = ifindex;
+	score->sdevices[sassy_id]->sassy_id = sassy_id;
 
-	
-	snprintf(name_buf,  sizeof name_buf, "sassy/%d/pacemaker", sdev->ifindex);
+	snprintf(name_buf,  sizeof name_buf, "sassy/%d", ifindex);
 	proc_mkdir(name_buf, NULL);
 
 	/* Initialize Control Interfaces for NIC */
