@@ -15,11 +15,7 @@
 #include <linux/slab.h>
 
 
-#include <sassy/sassy_pm.h>
-#include <sassy/sassy_net.h>
-#include <sassy/sassy_dev.h>
-#include <sassy/sassy_hb.h>
-#include <sassy/logger.h>
+#include <sassy/sassy.h>
 
 
 struct target_data {
