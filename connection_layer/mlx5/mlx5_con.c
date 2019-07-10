@@ -1,11 +1,11 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
-#include <sassy/logger.h>
 #include <linux/slab.h>
 
 #include <sassy/mlx5_con.h>
 #include <sassy/sassy.h>
+#include <sassy/logger.h>
 
 
 MODULE_LICENSE("GPL");

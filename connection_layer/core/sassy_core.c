@@ -1,12 +1,11 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
-#include <sassy/logger.h>
 #include <linux/slab.h>
 
 #include "sassy_core.h"
 #include <sassy/sassy.h>
-#include <sassy/sassy_pm.h>
+#include <sassy/logger.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");

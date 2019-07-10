@@ -10,10 +10,7 @@
 #include <linux/slab.h>
 #include <linux/inetdevice.h>
 
-#include <sassy/sassy_pm.h>
-#include <sassy/sassy_net.h>
-#include <sassy/sassy_hb.h>
-#include <sassy/sassy_dev.h>
+#include <sassy/sassy.h>
 #include <sassy/logger.h>
 
 #define UDP_LENGTH sizeof(struct udphdr)

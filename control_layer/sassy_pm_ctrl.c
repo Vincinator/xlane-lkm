@@ -8,11 +8,6 @@
 #include <linux/kernel.h>
 
 #include <sassy/sassy.h>
-#include <sassy/sassy_dev.h>
-#include <sassy/sassy_hb.h>
-#include <sassy/sassy_net.h>
-#include <sassy/sassy_pm.h>
-
 #include <sassy/logger.h>
 
 static ssize_t sassy_hb_ctrl_proc_write(struct file *file, const char __user *buffer, size_t count, loff_t *data)
