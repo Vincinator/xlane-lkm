@@ -12,6 +12,7 @@
 #include <linux/etherdevice.h>
 #include <linux/ip.h>
 #include <net/ip.h>
+#include <linux/slab.h>
 
 
 #include <sassy/sassy_pm.h>

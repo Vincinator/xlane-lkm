@@ -1,6 +1,10 @@
 #ifndef _SASSY_H_
 #define _SASSY_H_
 
+
+#define MAX_SYNCBEAT_PROC_NAME  64
+
+
 #define MAX_REMOTE_SOURCES 16
 
 
