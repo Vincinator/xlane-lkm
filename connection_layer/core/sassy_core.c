@@ -5,6 +5,7 @@
 #include <linux/slab.h>
 
 #include "sassy_core.h"
+#include <sassy/sassy.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
