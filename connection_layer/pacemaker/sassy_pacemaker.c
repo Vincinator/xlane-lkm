@@ -14,7 +14,9 @@
 #include <sassy/sassy_pm.h>
 #include <sassy/sassy_net.h>
 #include <sassy/sassy_dev.h>
+#include <sassy/sassy_hb.h>
 #include <sassy/logger.h>
+
 
 struct target_data {
     struct sk_buff *skb;
