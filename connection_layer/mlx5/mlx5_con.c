@@ -51,8 +51,9 @@ int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts) {
 }
 EXPORT_SYMBOL(sassy_mlx5_post_optimistical_timestamp);
 
-int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u32 cqe_bcnt){
+int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom, u32 cqe_bcnt){
 
+	u8 *payload = (u8*) va;
 	sassy_dbg("sassy_id=%d\n", sassy_id);
 	sassy_dbg("frag_size=%u\n", frag_size);
 	sassy_dbg("cqe_bcnt=%u\n", cqe_bcnt);
@@ -60,7 +61,9 @@ int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u32 cqe_bcnt)
 	print_hex_dump(KERN_DEBUG, "packet: ", DUMP_PREFIX_NONE, 32, 1,
 				va, frag_size, 0);
 
-	
+	sassy_dbg("DST MAC=%pM", payload + 64);
+	sassy_dbg("SRC MAC=%pM", payload + 64 + 6);
+
 
 	return 0;
 }

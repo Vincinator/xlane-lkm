@@ -18,6 +18,6 @@ int sassy_mlx5_con_check_ix(int sassy_id, int ix);
 
 
 int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts);
-int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u32 cqe_bcnt);
+int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom, u32 cqe_bcnt);
 
 #endif /* _SASSY_MLX5_CON_H_ */
