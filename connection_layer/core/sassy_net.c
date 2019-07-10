@@ -123,7 +123,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uin
 	ip_send_check(iph_skb_quick);
 
 	/* Put MAC header */
-	eth_header(skb, dev, ETH_P_802_3, dst_mac, ndev->dev_addr, length + UDP_LENGTH + IP_LENGTH + ETH_LENGTH);
+	eth_header(skb, dev, ETH_P_802_3, dst_mac, dev->dev_addr, length + UDP_LENGTH + IP_LENGTH + ETH_LENGTH);
 	skb_reset_mac_header(skb);
 	mac_skb_quick = eth_hdr(skb);
 	mac_skb_quick->h_proto = htons((u16) 0x0800);
