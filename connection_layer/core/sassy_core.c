@@ -6,6 +6,7 @@
 
 #include "sassy_core.h"
 #include <sassy/sassy.h>
+#include <sassy/sassy_pm.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
