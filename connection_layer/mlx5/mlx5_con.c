@@ -19,9 +19,7 @@ MODULE_VERSION("0.01");
 
 /* Initialized in sassy_mlx5_con_init*/
 struct sassy_mlx5_con_info **infos;
-
 int device_counter = 0;
-
 
 
 int sassy_update_heartbeat_payload(int sassy_id ) {
@@ -47,7 +45,7 @@ int sassy_mlx5_con_register_device(int ifindex) {
 	sassy_dbg("Register MLX5 Device with ifindex=%d\n", ifindex);
 	sassy_dbg("Assigned sassy_id (%d) to ifindex (%d)\n", device_counter, ifindex);
 
-	sassy_core_register_nic(device_counter);
+	sassy_core_register_nic(device_counter, ifindex);
 
 	return device_counter++;
 }
