@@ -171,7 +171,7 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 	}
 
 	kernel_buffer[size] = '\0';
-	if (spminfo->num_of_targets < 0 || spminfo->num_of_targets > SYNCBEAT_TARGETS_BUF){
+	if (spminfo->num_of_targets < 0 || spminfo->num_of_targets > SASSY_TARGETS_BUF){
 		sassy_error(" num_of_targets is invalid! \n");
 		return -EINVAL;
 	}
@@ -181,7 +181,7 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 		sassy_dbg(" reading: %s", input_str);
 		if(strcmp(input_str, "") == 0 || strlen(input_str) <= 2)
 			continue;
-		if(i  > SYNCBEAT_TARGETS_BUF){
+		if(i  > SASSY_TARGETS_BUF){
 			sassy_error(" Target buffer full! Not all targets are applied, increase buffer in sassy source.\n");
 			break;
 		}
