@@ -38,6 +38,15 @@ struct sassy_heartbeat_packet {
 };
 
 
+struct sassy_pacemaker_info {
+	enum sassy_pacemaker_state state;
+
+	int active_cpu;
+
+	int num_of_targets;
+	struct sassy_network_address_info targets[MAX_REMOTE_SOURCES];
+
+};
 
 struct sassy_device {
 	int ifindex;  /* corresponds to ifindex of net_device */	
@@ -60,15 +69,7 @@ enum sassy_pacemaker_state {
 
 typedef enum sassy_pacemaker_state sassy_pacemaker_state_t;
 
-struct sassy_pacemaker_info {
-	enum sassy_pacemaker_state state;
 
-	int active_cpu;
-
-	int num_of_targets;
-	struct sassy_network_address_info targets[MAX_REMOTE_SOURCES];
-
-};
 
 struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo, int host_number);
 void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo);
