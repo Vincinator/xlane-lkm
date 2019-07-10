@@ -16,6 +16,6 @@ EXTRA_CFLAGS+=-I$(src)/../../common/
 
 
 obj-y := sassycore.o
-sassycore-objs := sassy_connection_core.o
+sassycore-objs := sassy_connection_core.o sassy_net.c
 
 endif

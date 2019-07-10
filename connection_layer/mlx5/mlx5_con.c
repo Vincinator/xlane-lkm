@@ -53,12 +53,14 @@ EXPORT_SYMBOL(sassy_mlx5_post_optimistical_timestamp);
 
 int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u32 cqe_bcnt){
 
+	sassy_dbg("sassy_id=%d\n", sassy_id);
 	sassy_dbg("frag_size=%u\n", frag_size);
 	sassy_dbg("cqe_bcnt=%u\n", cqe_bcnt);
-	print_hex_dump_bytes("", DUMP_PREFIX_NONE, va, frag_size);
-	
+
 	print_hex_dump(KERN_DEBUG, "packet: ", DUMP_PREFIX_NONE, 32, 1,
 				va, frag_size, 0);
+
+	
 
 	return 0;
 }
