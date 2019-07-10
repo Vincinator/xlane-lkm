@@ -1,11 +1,12 @@
-#include <linux/sassy.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 
-#include "sassy_net.h"
-#include "sassy_devmgmt.h"
-#include "sassy_hb.h"
-#include "sassy_hb_ctrl.h"
+#include <sassy/sassy.h>
+#include <sassy/sassy_dev.h>
+#include <sassy/sassy_hb.h>
+#include <sassy/sassy_net.h>
+#include <sassy/sassy_pm.h>
+
 
 static ssize_t sassy_hb_ctrl_proc_write(struct file *file, const char __user *buffer, size_t count, loff_t *data)
 {
