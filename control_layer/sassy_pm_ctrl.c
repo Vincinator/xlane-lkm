@@ -150,7 +150,7 @@ static int sassy_cpumgmt_open(struct inode *inode, struct file *file)
 static ssize_t sassy_target_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
 {
 	int err;
-	char kernel_buffer[SYNCBEAT_TARGETS_BUF];
+	char kernel_buffer[SASSY_TARGETS_BUF];
 	char *search_str;
 	struct sassy_pacemaker_info *spminfo =  (struct sassy_pacemaker_info*) PDE_DATA(file_inode(file));
 	size_t size = min(sizeof(kernel_buffer) - 1, count);

@@ -4,6 +4,8 @@
 
 #define MAX_SYNCBEAT_PROC_NAME  64
 
+#define SASSY_TARGETS_BUF 512
+
 
 #define MAX_REMOTE_SOURCES 16
 
