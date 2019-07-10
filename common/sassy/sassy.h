@@ -44,6 +44,15 @@ struct sassy_heartbeat_packet {
 	struct sassy_remote_process_info rpinfo[MAX_PROCESSES_PER_HOST];
 };
 
+struct sassy_network_address_info {
+	uint32_t dst_ip; 			
+	unsigned char *dst_mac; 				
+};
+
+struct sassy_mlx5_con_info {
+	int ix;
+	int cqn;
+};
 
 struct sassy_pacemaker_info {
 	enum sassy_pacemaker_state state;
@@ -63,15 +72,7 @@ struct sassy_device {
 
 };
 
-struct sassy_network_address_info {
-	uint32_t dst_ip; 			
-	unsigned char *dst_mac; 				
-};
 
-struct sassy_mlx5_con_info {
-	int ix;
-	int cqn;
-};
 
 struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo, int host_number);
 void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo);
