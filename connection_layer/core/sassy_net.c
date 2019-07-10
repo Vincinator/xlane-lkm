@@ -8,6 +8,7 @@
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
 #include <linux/slab.h>
+#include <linux/inetdevice.h>
 
 #include <sassy/sassy_pm.h>
 #include <sassy/sassy_net.h>
