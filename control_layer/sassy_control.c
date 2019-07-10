@@ -9,7 +9,8 @@ MODULE_DESCRIPTION("SASSY MLX5 Connection");
 MODULE_VERSION("0.01");
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][CON][MLX5]"
+#define LOG_PREFIX "[SASSY][CTRL]"
+
 
 
 static int __init sassy_control_init(void)

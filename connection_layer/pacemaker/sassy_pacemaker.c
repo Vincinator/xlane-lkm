@@ -214,3 +214,19 @@ int sassy_pm_stop(struct sassy_pacemaker_info *spminfo)
     pm_state_transition_to(spminfo, SASSY_PM_READY);
     return 0;
 }
+
+int sassy_pm_reset(struct sassy_pacemaker_info *spminfo) 
+{
+    sassy_dbg("Reset Pacemaker Configuration\n");
+
+    if (!spminfo) {
+        sassy_error("No Device. %s\n", __FUNCTION__);
+        return -ENODEV;
+    }
+
+    /* no need to overwrite old values*/
+    spminfo->num_of_targets = 0;
+
+    return 0;
+
+}

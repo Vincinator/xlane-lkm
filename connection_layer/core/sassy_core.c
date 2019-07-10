@@ -14,9 +14,7 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
-/* RX Data */
 struct sassy_core *score;
-
 
 int remote_host_counter = 0;
 
@@ -38,9 +36,16 @@ int sassy_core_register_nic(int sassy_id) {
 	score->rx_tables[sassy_id] = kmalloc(sizeof(struct sassy_rx_table), GFP_ATOMIC);
 	score->rx_tables[sassy_id]->rhost_buffers = kmalloc_array(MAX_REMOTE_SOURCES, sizeof(struct sassy_rx_buffer*), GFP_ATOMIC);
 	
+
+	/* Initialize Control Interfaces for NIC */
+	init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
+
 	return 0;
 }
 EXPORT_SYMBOL(sassy_core_register_nic);
+
+
+
 
 int sassy_core_register_remote_host(int sassy_id){
 	struct sassy_rx_table *rxt = score->rx_tables[sassy_id];
@@ -69,13 +74,19 @@ static int __init sassy_connection_core_init(void)
 		return -1;
 	}
 
-	score->rx_tables = kmalloc_array(MAX_NIC_PORTS, sizeof(struct sassy_rx_table *), GFP_ATOMIC);
+	score->rx_tables = kmalloc_array(MAX_NIC_DEVICES, sizeof(struct sassy_rx_table *), GFP_ATOMIC);
 
 	if(!score->rx_tables) {
-		sassy_error("allocation of score->rx_tablesfailed\n");
+		sassy_error("allocation of score->rx_tables failed\n");
 		return -1;
 	}
 
+	score->sdevices = kmalloc_array(MAX_NIC_DEVICES, sizeof(struct sassy_device *), GFP_ATOMIC);
+
+	if(!score->rx_tables) {
+		sassy_error("allocation of score->sdevices failed\n");
+		return -1;
+	}
 
 	sassy_dbg("init done\n");
 
@@ -86,7 +97,7 @@ static void __exit sassy_connection_core_exit(void)
 {
 
 	sassy_dbg("cleanup\n");
-	
+
 	kfree(score);
 
 	sassy_dbg("cleanup done\n");
