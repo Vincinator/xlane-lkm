@@ -157,7 +157,7 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 	int i = 0;
 	int read_ip = 1; /* first element of tuple is ip address, second is mac */
 
-	if (!sdev) 
+	if (!spminfo) 
 		return -ENODEV;
 
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
