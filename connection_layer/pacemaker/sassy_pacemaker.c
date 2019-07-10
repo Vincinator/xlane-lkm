@@ -23,7 +23,7 @@ struct target_data {
     struct netdev_queue *txq;
 };
 
-struct target_data tdata[MAX_TARGET_HOSTS]; /* pre-packed heartbeat messages for all target hosts */
+struct target_data tdata[MAX_REMOTE_SOURCES]; /* pre-packed heartbeat messages for all target hosts */
 
 struct net_device *ndev;
 
