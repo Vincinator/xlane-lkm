@@ -24,9 +24,9 @@ int device_counter = 0;
 
 
 
-int sassy_update_heartbeat_payload(int sassy_id, ) {
+int sassy_update_heartbeat_payload(int sassy_id ) {
 
-
+	return 0;
 }
 
 
