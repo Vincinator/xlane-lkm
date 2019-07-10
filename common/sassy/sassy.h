@@ -23,6 +23,13 @@
 
 int sassy_core_register_nic(int sassy_id);
 
+enum sassy_pacemaker_state {
+	SASSY_PM_UNINIT = 0,
+	SASSY_PM_READY = 1,
+	SASSY_PM_EMITTING = 2,
+};
+
+typedef enum sassy_pacemaker_state sassy_pacemaker_state_t;
 
 
 
@@ -61,15 +68,10 @@ struct sassy_network_address_info {
 	unsigned char *dst_mac; 				
 };
 
-enum sassy_pacemaker_state {
-	SASSY_PM_UNINIT = 0,
-	SASSY_PM_READY = 1,
-	SASSY_PM_EMITTING = 2,
+struct sassy_mlx5_con_info {
+	int ix;
+	int cqn;
 };
-
-typedef enum sassy_pacemaker_state sassy_pacemaker_state_t;
-
-
 
 struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo, int host_number);
 void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo);
@@ -101,12 +103,6 @@ unsigned char *sassy_convert_mac(const char *str);
 struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uint32_t dst_ip);
 
 
-
-
-struct sassy_mlx5_con_info {
-	int ix;
-	int cqn;
-};
 
 int sassy_mlx5_con_register_device(int ifindex);
 
