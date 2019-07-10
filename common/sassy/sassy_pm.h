@@ -1,3 +1,7 @@
+#ifndef _SASSY_PM_H_
+#define _SASSY_PM_H_
+
+
 #include <sassy/sassy.h>
 
 
@@ -30,3 +34,11 @@ struct sassy_pacemaker_info {
 	struct sassy_network_address_info targets[MAX_REMOTE_SOURCES];
 
 };
+
+struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo, int host_number);
+
+
+
+
+
+#endif
