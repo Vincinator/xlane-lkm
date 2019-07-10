@@ -14,9 +14,6 @@ int sassy_ip_convert(const char *str);
  */
 unsigned char *sassy_convert_mac(const char *str);
 
-struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
-								char *src_mac, char *dst_mac,
-								uint32_t src_ip, uint32_t dst_ip,
-								struct sassy_heartbeat_packet *hb_payload);
+struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uint32_t dst_ip);
 
 #endif
