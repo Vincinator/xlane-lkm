@@ -65,12 +65,28 @@ unsigned char *sassy_convert_mac(const char *str)
 
 
 
-struct sk_buff *compose_skb(struct net_device *dev, char *src_mac, char *dst_mac, uint32_t src_ip, uint32_t dst_ip, char *bytes, int length)
+struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uint32_t dst_ip)
 {
 	struct sk_buff *skb;
 	struct iphdr *iph_skb_quick;
 	struct ethhdr *mac_skb_quick;
 	struct udphdr *uhdr;
+	struct sassy_heartbeat_packet *hb_payload;
+
+	/* Get Source IP Address from net_device */
+	uint32_t src_ip = dev->ip_ptr->ifa_list->ifa_address;
+
+	sassy_dbg("HB SRC IP: %pI4", src_ip );
+
+	if (!src_ip){
+		sassy_error("No source IP for netdevice condfigured");
+		return NULL;
+	}
+
+
+	/* Size placeholder for payload */
+	hb_payload = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_ATOMIC);
+
 
 	skb = alloc_skb(256, GFP_ATOMIC| __GFP_DMA);
 
@@ -78,14 +94,13 @@ struct sk_buff *compose_skb(struct net_device *dev, char *src_mac, char *dst_mac
 
 	skb->dev = dev;
 
-	/* prepare reply */
 	skb_push(skb, length);
-	memcpy(skb->data, bytes, length);
-	printk(KERN_INFO "assemble_skb: Added %d bytes of Data\n", length);
+	memcpy(skb->data, hb_payload, sizeof(struct sassy_heartbeat_packet));
+
 	skb_push(skb, sizeof(struct udphdr));
-	uhdr = (struct udphdr *) skb->data; // udp_hdr(skb);
+	uhdr = (struct udphdr *) skb->data; 
 	uhdr->source = htons((u16) 1111);
-	uhdr->dest = htons((u16) 319); // Precision Time Protocol
+	uhdr->dest = htons((u16) 319); 
 	uhdr->len = htons((u16) (length + UDP_LENGTH));
 
 	/* Put IP header */
@@ -104,7 +119,7 @@ struct sk_buff *compose_skb(struct net_device *dev, char *src_mac, char *dst_mac
 	ip_send_check(iph_skb_quick);
 
 	/* Put MAC header */
-	eth_header(skb, dev, ETH_P_802_3, dst_mac, src_mac, length + UDP_LENGTH + IP_LENGTH + ETH_LENGTH);
+	eth_header(skb, dev, ETH_P_802_3, dst_mac, ndev->dev_addr, length + UDP_LENGTH + IP_LENGTH + ETH_LENGTH);
 	skb_reset_mac_header(skb);
 	mac_skb_quick = eth_hdr(skb);
 	mac_skb_quick->h_proto = htons((u16) 0x0800);

@@ -22,6 +22,14 @@ struct sassy_mlx5_con_info **infos;
 
 int device_counter = 0;
 
+
+
+int sassy_update_heartbeat_payload(int sassy_id, ) {
+
+
+}
+
+
 int sassy_mlx5_con_register_device(int ifindex) {
 	if(device_counter >= SASSY_MLX5_DEVICES_LIMIT) {
 		sassy_error("Reached Limit of maximum connected mlx5 devices.\n");

@@ -86,6 +86,7 @@ static void __exit sassy_connection_core_exit(void)
 {
 
 	sassy_dbg("cleanup\n");
+	
 	kfree(score);
 
 	sassy_dbg("cleanup done\n");
