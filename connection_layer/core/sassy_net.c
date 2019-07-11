@@ -34,7 +34,7 @@ void sassy_hex_to_ip(char *retval, int dst_ip)
 
 struct netdevice *sassy_get_netdevice(int ifindex)
 {
-	struct netdevice *ndev = NULL;
+	struct net_device *ndev = NULL;
 
 	ndev = first_net_device(&init_net);
 
@@ -191,7 +191,7 @@ inline void add_payload(struct sk_buff *skb, void *payload, uint16_t payload_siz
 struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacemaker_info *spminfo, int host_number)
 {
 	struct sk_buff *hb_pkt = NULL;
-	uint16_t payload_size = sizeof(struct sassy_heartbeat_packet);
+	uint16_t payload_size = sizeof(struct sassy_heartbeat_payload);
 	struct sassy_hb_packet_params *hparams  = spminfo->pm_targets[host_number]->hb_pkt_params;
 
 	uint32_t src_ip;

@@ -86,7 +86,7 @@ struct sassy_device {
 	int ifindex;					/* corresponds to ifindex of net_device */	
 	int sassy_id;
 
-	struct netdevice *ndev;
+	struct net_device *ndev;
 
 	/* SASSY CTRL Structures */
 	struct sassy_pacemaker_info 	pminfo;	
