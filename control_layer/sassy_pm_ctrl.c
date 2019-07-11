@@ -34,7 +34,6 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file, const char __user *bu
 
 	kernel_buffer[count] = '\0';
 
-	printk(KERN_INFO "Run: %s\n", kernel_buffer);
 	err = kstrtol(kernel_buffer, 0, &new_hb_state);
 
 	if (err) {

@@ -68,7 +68,7 @@ int sassy_core_register_nic(int ifindex)
 
 	/* Initialize Heartbeat Payload */
 	score->sdevices[sassy_id]->pminfo.heartbeat_packet = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_KERNEL);
-
+	score->sdevices[sassy_id]->pminfo.num_of_targets = 0;
 
 	snprintf(name_buf,  sizeof name_buf, "sassy/%d", ifindex);
 	proc_mkdir(name_buf, NULL);
@@ -106,6 +106,7 @@ int sassy_core_remove_nic(int sassy_id)
 int sassy_core_register_remote_host(int sassy_id)
 {
 	struct sassy_rx_table *rxt = score->rx_tables[sassy_id];
+	struct sassy_sassy_pacemaker_info *spminfo = score->sdevices[sassy_id]->pminfo;
 
 	if(remote_host_counter >= MAX_REMOTE_SOURCES) {
 		sassy_error("Reached Limit of remote hosts. \n");
@@ -114,7 +115,6 @@ int sassy_core_register_remote_host(int sassy_id)
 	}
 
 	rxt->rhost_buffers[remote_host_counter] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
-
 
 	return remote_host_counter++;
 }

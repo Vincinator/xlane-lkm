@@ -177,6 +177,11 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 	uint16_t payload_size = sizeof(struct sassy_heartbeat_packet);
 	uint32_t src_ip;
 
+	if(!spminfo) {
+		sassy_error(" spminfo is NULL\n");
+		return;
+	}
+
 	hb_pkt = prepare_heartbeat_skb(dev, payload_size);
 
 	if(!hb_pkt) {
