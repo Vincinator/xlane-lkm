@@ -78,6 +78,8 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 	char *dst_mac = spminfo->targets[host_number].dst_mac; 
 	uint32_t dst_ip = spminfo->targets[host_number].dst_ip;
 
+	struct sassy_heartbeat_packet *placeholder;
+
 	/* Get Source IP Address from net_device */
 	uint32_t src_ip = dev->ip_ptr->ifa_list->ifa_address;
 
@@ -88,6 +90,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 		sassy_error("No source IP for netdevice condfigured");
 		return NULL;
 	}
+	placeholder = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_ATOMIC);
 
 	skb = alloc_skb(256, GFP_ATOMIC| __GFP_DMA);
 
@@ -96,7 +99,8 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 	skb->dev = dev;
 
 	skb_push(skb, length);
-
+	memcpy(skb->data, placeholder, length);
+	
 	/* Store ptr to payload */
 	spminfo->heartbeat_packet = (struct sassy_heartbeat_packet*) skb->data;
 	
