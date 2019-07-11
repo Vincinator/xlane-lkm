@@ -19,7 +19,7 @@ MODULE_VERSION("0.01");
 
 /* Initialized in sassy_mlx5_con_init*/
 struct sassy_mlx5_con_info **infos;
-static mlx5_devices = 0;
+static int mlx5_devices = 0;
 
 
 int sassy_update_heartbeat_payload(int sassy_id ) {
