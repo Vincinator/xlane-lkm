@@ -152,8 +152,8 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
 	pmtarget->hb_pkt_params = kzalloc(sizeof(struct sassy_hb_packet_params), GFP_KERNEL);
 	pmtarget->hb_pkt_params->hb_payload = kzalloc(sizeof(struct sassy_heartbeat_payload), GFP_KERNEL);
 
-	pmtarget->hb_pkt_params.dst_ip = ip;
-	memcpy(pmtarget->hb_pkt_params.dst_mac, mac, sizeof(unsigned char) * 6);
+	pmtarget->hb_pkt_params->dst_ip = ip;
+	memcpy(pmtarget->hb_pkt_params->dst_mac, mac, sizeof(unsigned char) * 6);
 
 	return remote_host_counter++;
 
