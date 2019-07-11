@@ -288,7 +288,7 @@ void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 EXPORT_SYMBOL(init_sassy_pm_ctrl_interfaces);
 
 
-void clean_sassy_pm_ctrl_interfaces(struct sassy_devices *sdev)
+void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
