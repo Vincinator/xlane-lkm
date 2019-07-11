@@ -172,9 +172,6 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 	}
 
 	kernel_buffer[size] = '\0';
-	spminfo->heartbeat_packet->message = kernel_buffer[0] & 0xFF;
-
-
 
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
