@@ -22,13 +22,6 @@
 #define LOG_PREFIX "[SASSY][PACEMAKER]"
 
 
-
-
-struct target_data tdata[MAX_REMOTE_SOURCES]; /* pre-packed heartbeat messages for all target hosts */
-
-struct net_device *ndev;
-
-
 static inline bool sassy_pacemaker_is_alive(struct sassy_pacemaker_info *spminfo)
 {
     return spminfo->state == SASSY_PM_EMITTING;
@@ -61,11 +54,13 @@ int sassy_heart(void *data)
     uint64_t prev_time, cur_time;
     unsigned long flags;
     struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info *)data;
+    struct sassy_device *sdev = container_of(spminfo, struct sassy_device, pminfo);
+
     int i;
 
     sassy_dbg("Enter %s", __FUNCTION__);
 
-    if(!ndev){
+    if(!sdev || !sdev->ndev){
         sassy_error("netdevice is NULL\n");
         return -1;
     }
@@ -101,20 +96,20 @@ int sassy_heart(void *data)
         prev_time = cur_time;
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
-            if(!tdata[i].skb || !tdata[i].txq){
+            if(!spminfo->pm_targets[i].skb || !spminfo->pm_targets[i].txq){
                 sassy_error(" tdata is invalid!\n");
                 continue;
             }
             local_bh_disable();
-            HARD_TX_LOCK(ndev, tdata[i].txq, smp_processor_id());
+            HARD_TX_LOCK(sdev->ndev, spminfo->pm_targets[i].txq, smp_processor_id());
 
-            if (unlikely(netif_xmit_frozen_or_drv_stopped(tdata[i].txq))) {
+            if (unlikely(netif_xmit_frozen_or_drv_stopped(spminfo->pm_targets[i].txq))) {
                 sassy_error("Device Busy unlocking.\n");
                 goto unlock;
             }
-            netdev_start_xmit(tdata[i].skb, ndev, tdata[i].txq, 0);
+            netdev_start_xmit(spminfo->pm_targets[i].skb, sdev->ndev, spminfo->pm_targets[i].txq, 0);
         unlock:
-            HARD_TX_UNLOCK(ndev, tdata[i].txq);
+            HARD_TX_UNLOCK(sdev->ndev, spminfo->pm_targets[i].txq);
             local_bh_enable();
         }
     }
@@ -131,14 +126,15 @@ int sassy_heart(void *data)
 
 void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo) {
     int i;
+    struct sassy_device *sdev = container_of(spminfo, struct sassy_device, pminfo);
 
     BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
     for(i = 0; i < spminfo->num_of_targets; i++) {
         /* Setup SKB */
-        tdata[i].skb = sassy_setup_hb_packet(spminfo, i);
-        skb_set_queue_mapping(tdata[i].skb, smp_processor_id()); /* Use the queue active_cpu for sending the hb packet */
-        tdata[i].txq = skb_get_tx_queue(ndev, tdata[i].skb); 
+        spminfo->pm_targets[i].skb = sassy_setup_hb_packet(spminfo, i);
+        skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); /* Use the queue active_cpu for sending the hb packet */
+        spminfo->pm_targets[i].txq = skb_get_tx_queue(sdev->ndev, spminfo->pm_targets[i].skb); 
     }
 }
 
