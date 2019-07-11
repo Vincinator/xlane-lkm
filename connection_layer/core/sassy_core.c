@@ -113,7 +113,6 @@ int sassy_core_remove_nic(int sassy_id)
 int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
 {
 	struct sassy_rx_table *rxt;
-	struct sassy_pm_target_info *pminfo;
 	struct sassy_device *sdev;
 	struct sassy_pm_target_info *pmtarget;
 	int ifindex;
@@ -138,8 +137,7 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
 	rxt = score->rx_tables[sassy_id];
 	sdev = score->sdevices[sassy_id];
 
-	pminfo = &sdev->pminfo;
-	pmtarget = &pminfo->pm_targets[remote_host_counter];
+	pmtarget = sdev->pminfo.pm_targets[remote_host_counter];
 
 	if(remote_host_counter >= MAX_REMOTE_SOURCES) {
 		sassy_error("Reached Limit of remote hosts. \n");
