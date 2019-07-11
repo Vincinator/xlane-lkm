@@ -181,7 +181,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 
 	if(!hb_pkt) {
 		sassy_error("Could not create heartbeat packet (%s)\n", __FUNCTION__);
-		return
+		return;
 	}
 
 	src_ip = dev->ip_ptr->ifa_list->ifa_address;
