@@ -192,14 +192,17 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 {
 	struct sk_buff *hb_pkt = NULL;
 	uint16_t payload_size = sizeof(struct sassy_heartbeat_payload);
-	struct sassy_hb_packet_params *hparams  = spminfo->pm_targets[host_number]->hb_pkt_params;
+	struct sassy_hb_packet_params *hparams;
 
 	uint32_t src_ip;
 
-	if(!spminfo) {
-		sassy_error(" spminfo is NULL\n");
+	if(!spminfo || spminfo->pm_targets[host_number]) {
+		sassy_error(" spminfo is invalid \n");
 		return;
 	}
+
+	hparams = spminfo->pm_targets[host_number]->hb_pkt_params;
+
 
 	hb_pkt = prepare_heartbeat_skb(dev, payload_size);
 
