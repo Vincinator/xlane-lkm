@@ -19,6 +19,7 @@ MODULE_VERSION("0.01");
 
 /* Initialized in sassy_mlx5_con_init*/
 struct sassy_mlx5_con_info **infos;
+static mlx5_devices = 0;
 
 
 int sassy_update_heartbeat_payload(int sassy_id ) {
@@ -45,7 +46,7 @@ int sassy_mlx5_con_register_device(int ifindex) {
 	sassy_dbg("Register MLX5 Device with ifindex=%d\n", ifindex);
 	sassy_dbg("Assigned sassy_id (%d) to ifindex (%d)\n", sassy_id, ifindex);
 
-
+	mlx5_devices++;
 	return sassy_id;
 }
 EXPORT_SYMBOL(sassy_mlx5_con_register_device);
@@ -133,7 +134,7 @@ static void __exit sassy_mlx5_con_exit(void)
 
     sassy_dbg("exiting.. \n");
 
-    for(i = 0; i < device_counter; i ++) {
+    for(i = 0; i < mlx5_devices; i ++) {
     	kfree(infos[i]);
     }
 
