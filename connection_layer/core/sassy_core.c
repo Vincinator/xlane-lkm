@@ -133,11 +133,10 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
 	}
 
 	ifindex = score->sdevices[sassy_id]->ifindex;
-
 	rxt = score->rx_tables[sassy_id];
 	sdev = score->sdevices[sassy_id];
 
-	pmtarget = sdev->pminfo.pm_targets[remote_host_counter];
+	pmtarget = &sdev->pminfo.pm_targets[remote_host_counter];
 
 	if(remote_host_counter >= MAX_REMOTE_SOURCES) {
 		sassy_error("Reached Limit of remote hosts. \n");
