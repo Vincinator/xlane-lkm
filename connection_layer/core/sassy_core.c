@@ -155,6 +155,7 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
 	return remote_host_counter++;
 
 }
+EXPORT_SYMBOL(sassy_core_register_remote_host)
 
 
 static int __init sassy_connection_core_init(void)
