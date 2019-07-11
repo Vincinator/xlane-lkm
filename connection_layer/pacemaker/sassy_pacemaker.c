@@ -13,6 +13,7 @@
 #include <linux/ip.h>
 #include <net/ip.h>
 #include <linux/slab.h>
+#include <linux/inetdevice.h>
 
 
 #include <sassy/sassy.h>
@@ -22,10 +23,6 @@
 
 
 
-struct target_data {
-    struct sk_buff *skb;
-    struct netdev_queue *txq;
-};
 
 struct target_data tdata[MAX_REMOTE_SOURCES]; /* pre-packed heartbeat messages for all target hosts */
 
@@ -154,23 +151,9 @@ struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo, int 
         return NULL;
     }
 
-    ndev = first_net_device(&init_net);
-
-    /* Find ifindex of NIX to use to send heartbeats */
-    while (ndev != NULL) {
-        if (ndev->ifindex == sdev->ifindex)
-            break;
-        ndev = next_net_device(ndev);
-    }
-
-    if (!ndev) {
-        sassy_error("Netdevice is NULL %s\n", __FUNCTION__);
-        return NULL;
-    }
-
     sassy_dbg("Composing skb.\n");
 
-    return compose_heartbeat_skb(ndev, spminfo, host_number);
+    return compose_heartbeat_skb(sdev->ndev, spminfo, host_number);
 }
 
 int sassy_pm_start(struct sassy_pacemaker_info *spminfo)

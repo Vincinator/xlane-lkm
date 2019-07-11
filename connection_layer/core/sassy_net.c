@@ -31,6 +31,23 @@ void sassy_hex_to_ip(char *retval, int dst_ip)
                                 ((dst_ip & 0x000000ff)));
 }
 
+
+struct netdevice *sassy_get_netdevice(int ifindex)
+{
+	struct netdevice *ndev = NULL;
+
+	ndev = first_net_device(&init_net);
+
+    while (ndev != NULL) {
+        if (ndev->ifindex == ifindex)
+            return ndev;;
+        ndev = next_net_device(ndev);
+    }
+
+    sassy_error("Netdevice is NULL %s\n", __FUNCTION__);
+    return NULL;
+}
+EXPORT_SYMBOL(sassy_get_netdevice);
 /*
  * Converts an IP address from dotted numbers string to hex.
  */
@@ -175,6 +192,8 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 {
 	struct sk_buff *hb_pkt = NULL;
 	uint16_t payload_size = sizeof(struct sassy_heartbeat_packet);
+	struct sassy_hb_packet_params *hparams  = spminfo->pm_targets[host_number]->hb_pkt_params;
+
 	uint32_t src_ip;
 
 	if(!spminfo) {
@@ -196,10 +215,10 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 		return NULL;
 	}
 
-	add_L2_header(hb_pkt, dev->dev_addr, spminfo->targets[host_number].dst_mac);
-	add_L3_header(hb_pkt, src_ip, spminfo->targets[host_number].dst_ip, payload_size);
+	add_L2_header(hb_pkt, dev->dev_addr, hparams.dst_mac);
+	add_L3_header(hb_pkt, src_ip, hparams.dst_ip, payload_size);
 	add_L4_header(hb_pkt, payload_size);
-	add_payload(hb_pkt, spminfo->heartbeat_packet, payload_size);
+	add_payload(hb_pkt, hparams->hb_payload, payload_size);
 
 	sassy_dbg("Composed Heartbeat\n");
 	return hb_pkt;

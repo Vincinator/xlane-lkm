@@ -59,17 +59,18 @@ int sassy_core_register_nic(int ifindex)
 	if(sassy_id < 0)
 		return -1;
 
+
 	score->rx_tables[sassy_id] = kmalloc(sizeof(struct sassy_rx_table), GFP_KERNEL);
 	score->rx_tables[sassy_id]->rhost_buffers = kmalloc_array(MAX_REMOTE_SOURCES, sizeof(struct sassy_rx_buffer*), GFP_KERNEL);
 	
 	score->sdevices[sassy_id] = kmalloc(sizeof(struct sassy_device), GFP_KERNEL);
 	score->sdevices[sassy_id]->ifindex = ifindex;
 	score->sdevices[sassy_id]->sassy_id = sassy_id;
+    score->sdevices[sassy_id]->ndev = sassy_get_netdevice(ifindex);
+
 
 	/* Initialize Heartbeat Payload */
-	score->sdevices[sassy_id]->pminfo.heartbeat_packet = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_KERNEL);
 	score->sdevices[sassy_id]->pminfo.num_of_targets = 0;
-    pm_state_transition_to(&score->sdevices[sassy_id]->pminfo, SASSY_PM_UNINIT);
 
 
 	snprintf(name_buf,  sizeof name_buf, "sassy/%d", ifindex);
@@ -77,6 +78,10 @@ int sassy_core_register_nic(int ifindex)
 
 	/* Initialize Control Interfaces for NIC */
 	init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
+
+
+	/* Initialize Component States*/
+    pm_state_transition_to(&score->sdevices[sassy_id]->pminfo, SASSY_PM_UNINIT);
 
 	return sassy_id;
 }
@@ -107,7 +112,28 @@ int sassy_core_remove_nic(int sassy_id)
 
 int sassy_core_register_remote_host(int sassy_id)
 {
-	struct sassy_rx_table *rxt = score->rx_tables[sassy_id];
+	struct sassy_rx_table *rxt;
+	struct sassy_pm_target_info *rhost_info;
+	int ifindex;
+
+	if(!score){
+		sassy_error("score is NULL!\n");
+		return -1;
+	}
+
+	if(!score->sdevices || !score->sdevices[sassy_id]){
+		sassy_error("sdevices is invalid!\n");
+		return -1;
+	}
+
+	if(!score->rx_tables || !score->rx_tables[sassy_id]){
+		sassy_error("rx_tables is invalid!\n");
+		return -1;
+	}
+
+	ifindex = score->sdevices[sassy_id]->ifindex;
+
+	rxt = score->rx_tables[sassy_id];
 
 	if(remote_host_counter >= MAX_REMOTE_SOURCES) {
 		sassy_error("Reached Limit of remote hosts. \n");
@@ -117,7 +143,11 @@ int sassy_core_register_remote_host(int sassy_id)
 
 	rxt->rhost_buffers[remote_host_counter] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
 
+	rhost_info->hb_pkt_params = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_KERNEL);
+
+
 	return remote_host_counter++;
+
 }
 
 
