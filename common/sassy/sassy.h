@@ -52,7 +52,7 @@ struct sassy_hb_packet_params {
 	unsigned char *dst_mac; 
 
 	/* Payload  */
-	struct sassy_heartbeat_packet *hb_payload;
+	struct sassy_heartbeat_payload *hb_payload;
 
 };
 

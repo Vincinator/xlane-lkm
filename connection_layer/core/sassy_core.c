@@ -143,7 +143,7 @@ int sassy_core_register_remote_host(int sassy_id)
 
 	rxt->rhost_buffers[remote_host_counter] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
 
-	rhost_info->hb_pkt_params = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_KERNEL);
+	rhost_info->hb_pkt_params = kzalloc(sizeof(struct sassy_heartbeat_payload), GFP_KERNEL);
 
 
 	return remote_host_counter++;

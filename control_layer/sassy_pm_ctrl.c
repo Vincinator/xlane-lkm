@@ -183,7 +183,7 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 		return -ENODEV;
 
 	seq_hex_dump(m,"	",DUMP_PREFIX_OFFSET,
-			  32, 4, spminfo->heartbeat_packet ,sizeof(struct sassy_heartbeat_packet),
+			  32, 4, spminfo->heartbeat_packet ,sizeof(struct sassy_heartbeat_payload),
 			  false);
 
 	return 0;
