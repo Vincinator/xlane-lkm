@@ -19,10 +19,10 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
-struct sassy_core *score;
+static struct sassy_core *score;
 
-int remote_host_counter = 0;
-int device_counter = 0;
+static int remote_host_counter = 0;
+static int device_counter = 0;
 
 
 int sassy_generate_next_id(void) 
