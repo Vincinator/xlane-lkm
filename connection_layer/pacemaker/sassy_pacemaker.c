@@ -72,12 +72,12 @@ int sassy_heart(void *data)
 
     sassy_setup_skbs(spminfo);
 
-    get_cpu();                      /* disable preemption */
-    local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
+    //get_cpu();                      /* disable preemption */
+    //local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
     
     prev_time = rdtsc();
 
-    local_bh_disable();
+    //local_bh_disable();
     while (sassy_pacemaker_is_alive(spminfo)) {
 
         cur_time = rdtsc();
@@ -98,8 +98,8 @@ int sassy_heart(void *data)
     //local_bh_enable();
 
     sassy_dbg(" Exit Heartbeat at device\n");
-    local_irq_restore(flags);
-    put_cpu();
+   // local_irq_restore(flags);
+   // put_cpu();
     sassy_dbg(" leaving heart..\n");
     return 0;
 }
