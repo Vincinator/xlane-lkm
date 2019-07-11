@@ -110,10 +110,12 @@ int sassy_core_remove_nic(int sassy_id)
 }
 
 
-int sassy_core_register_remote_host(int sassy_id)
+int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
 {
 	struct sassy_rx_table *rxt;
-	struct sassy_pm_target_info *rhost_info;
+	struct sassy_pm_target_info *pminfo;
+	struct sassy_device *sdev;
+	struct sassy_pm_target_info *pmtarget;
 	int ifindex;
 
 	if(!score){
@@ -134,6 +136,10 @@ int sassy_core_register_remote_host(int sassy_id)
 	ifindex = score->sdevices[sassy_id]->ifindex;
 
 	rxt = score->rx_tables[sassy_id];
+	sdev = score->sdevices[sassy_id];
+
+	pminfo = &sdev->pminfo;
+	pmtarget = &pminfo->pm_targets[remote_host_counter];
 
 	if(remote_host_counter >= MAX_REMOTE_SOURCES) {
 		sassy_error("Reached Limit of remote hosts. \n");
@@ -143,8 +149,11 @@ int sassy_core_register_remote_host(int sassy_id)
 
 	rxt->rhost_buffers[remote_host_counter] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
 
-	rhost_info->hb_pkt_params = kzalloc(sizeof(struct sassy_heartbeat_payload), GFP_KERNEL);
+	pmtarget->hb_pkt_params = kzalloc(sizeof(struct sassy_hb_packet_params), GFP_KERNEL);
+	pmtarget->hb_pkt_params->hb_payload = kzalloc(sizeof(struct sassy_heartbeat_payload), GFP_KERNEL);
 
+	pmtarget->hb_pkt_params.dst_ip = ip;
+	memcpy(pmtarget->hb_pkt_params.dst_mac, mac, sizeof(unsigned char) * 6);
 
 	return remote_host_counter++;
 

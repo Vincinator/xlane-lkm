@@ -146,6 +146,7 @@ struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo, int 
         sassy_error("Could not setup skb, sassy_pacemaker_info is NULL\n");
         return NULL;
     }
+    
 
     sassy_dbg("Composing skb.\n");
 

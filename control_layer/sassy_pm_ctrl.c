@@ -250,16 +250,22 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 	char kernel_buffer[SASSY_TARGETS_BUF];
 	char *search_str;
 	struct sassy_pacemaker_info *spminfo =  (struct sassy_pacemaker_info*) PDE_DATA(file_inode(file));
+	struct sassy_device *sdev;
 	size_t size = min(sizeof(kernel_buffer) - 1, count);
 	char *input_str;
 	const char delimiters[] = " ,;()";
 	int i = 0;
-	int read_ip = 1; /* first element of tuple is ip address, second is mac */
+	int state = 0; /* first element of tuple is ip address, second is mac */
+	int current_ip;
+	unsigned char *current_mac;	
 
 	if (!spminfo) 
 		return -ENODEV;
 
+	sdev = container_of(spminfo, struct sassy_device, pminfo);	
+
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
+
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
@@ -282,25 +288,27 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 			sassy_error(" Target buffer full! Not all targets are applied, increase buffer in sassy source.\n");
 			break;
 		}
-		if(read_ip) {
-			spminfo->pm_targets[i].hb_pkt_params->dst_ip = sassy_ip_convert(input_str);
-			if (spminfo->pm_targets[i].hb_pkt_params->dst_ip == -EINVAL) {
+		if(state == 0) {
+			current_ip = sassy_ip_convert(input_str);
+			if (current_ip == -EINVAL) {
 				sassy_error(" Error formating IP address. %s\n",__FUNCTION__);
 				return -EINVAL;
 			}
 			sassy_dbg(" ip: %s\n", input_str);
-			read_ip = 0;
-		}else {
-			spminfo->pm_targets[i].hb_pkt_params->dst_mac = sassy_convert_mac(input_str);
-			if (!spminfo->pm_targets[i].hb_pkt_params->dst_mac) {
+			state = 1;
+		}else if(state == 1){
+			current_mac = sassy_convert_mac(input_str);
+			if (!current_mac) {
 				sassy_error(" Invalid MAC. Failed to convert to byte string.\n");
-				err = -EINVAL;
-				return -ENODEV;
+				return -EINVAL;
 			}
 			sassy_dbg(" mac: %s\n", input_str);
-			read_ip = 1;
+			sassy_core_register_remote_host(sdev->sassy_id, current_ip, current_mac);
+			state = 0;
 			i++;
+			kfree(current_mac);
 		}
+
 	}
 	spminfo->num_of_targets = i;
 
