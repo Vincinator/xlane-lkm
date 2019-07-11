@@ -106,7 +106,6 @@ int sassy_core_remove_nic(int sassy_id)
 int sassy_core_register_remote_host(int sassy_id)
 {
 	struct sassy_rx_table *rxt = score->rx_tables[sassy_id];
-	struct sassy_sassy_pacemaker_info *spminfo = score->sdevices[sassy_id]->pminfo;
 
 	if(remote_host_counter >= MAX_REMOTE_SOURCES) {
 		sassy_error("Reached Limit of remote hosts. \n");
