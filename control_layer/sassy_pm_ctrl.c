@@ -286,3 +286,22 @@ void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 	sassy_dbg("Pacemaker ctrl interfaces created for device (%d)\n", sdev->ifindex);
 }
 EXPORT_SYMBOL(init_sassy_pm_ctrl_interfaces);
+
+
+void clean_sassy_pm_ctrl_interfaces(struct sassy_devices *sdev)
+{
+	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/cpu", sdev->ifindex);
+	remove_proc_entry(name_buf, NULL);
+
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/ctrl", sdev->ifindex);
+	remove_proc_entry(name_buf, NULL);
+
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/targets", sdev->ifindex);
+	remove_proc_entry(name_buf, NULL);
+	
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker", sdev->ifindex);
+	remove_proc_entry(name_buf, NULL);
+}
+EXPORT_SYMBOL(clean_sassy_pm_ctrl_interfaces);

@@ -19,7 +19,6 @@ MODULE_VERSION("0.01");
 
 /* Initialized in sassy_mlx5_con_init*/
 struct sassy_mlx5_con_info **infos;
-int device_counter = 0;
 
 
 int sassy_update_heartbeat_payload(int sassy_id ) {
@@ -29,25 +28,25 @@ int sassy_update_heartbeat_payload(int sassy_id ) {
 
 
 int sassy_mlx5_con_register_device(int ifindex) {
-	if(device_counter >= SASSY_MLX5_DEVICES_LIMIT) {
-		sassy_error("Reached Limit of maximum connected mlx5 devices.\n");
-		sassy_error("Limit=%d, device_counter=%d\n", SASSY_MLX5_DEVICES_LIMIT, device_counter);
+	
+	int sassy_id = sassy_core_register_nic(ifindex);
+
+	if(sassy_id > 0){
 		return -1;
 	}
 
-	infos[device_counter] = kmalloc(sizeof(struct sassy_mlx5_con_info), GFP_ATOMIC);
+	infos[sassy_id] = kmalloc(sizeof(struct sassy_mlx5_con_info), GFP_ATOMIC);
 
-	if(!infos[device_counter]) {
+	if(!infos[sassy_id]) {
 		sassy_error("Allocation error in function %s \n", __FUNCTION__);
 		return -1;
 	}
 
 	sassy_dbg("Register MLX5 Device with ifindex=%d\n", ifindex);
-	sassy_dbg("Assigned sassy_id (%d) to ifindex (%d)\n", device_counter, ifindex);
+	sassy_dbg("Assigned sassy_id (%d) to ifindex (%d)\n", sassy_id, ifindex);
 
-	sassy_core_register_nic(device_counter, ifindex);
 
-	return device_counter++;
+	return sassy_id;
 }
 EXPORT_SYMBOL(sassy_mlx5_con_register_device);
 

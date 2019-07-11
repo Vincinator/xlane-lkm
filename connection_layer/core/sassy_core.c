@@ -22,6 +22,19 @@ MODULE_VERSION("0.01");
 struct sassy_core *score;
 
 int remote_host_counter = 0;
+int device_counter = 0;
+
+
+int sassy_generate_next_id(void) 
+{
+	if(device_counter >= SASSY_MLX5_DEVICES_LIMIT) {
+		sassy_error("Reached Limit of maximum connected mlx5 devices.\n");
+		sassy_error("Limit=%d, device_counter=%d\n", SASSY_MLX5_DEVICES_LIMIT, device_counter);
+		return -1;
+	}
+
+	return device_counter++;
+}
 
 struct sassy_rx_buffer * sassy_get_rx_buffer(int sassy_id, int remote_id) {
 	return score->rx_tables[sassy_id]->rhost_buffers[remote_host_counter];
@@ -34,10 +47,16 @@ int sassy_core_write_packet(int sassy_id, int remote_id) {
 
 
 /* Called by Connection Layer Glue (e.g. mlx5_con.c) */
-int sassy_core_register_nic(int sassy_id, int ifindex) {
+int sassy_core_register_nic(int ifindex) {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+	int sassy_id;
 
 	sassy_dbg("register nic at sassy core\n");
+
+	sassy_id = sassy_generate_next_id();
+
+	if(sassy_id < 0)
+		return -1;
 
 	score->rx_tables[sassy_id] = kmalloc(sizeof(struct sassy_rx_table), GFP_ATOMIC);
 	score->rx_tables[sassy_id]->rhost_buffers = kmalloc_array(MAX_REMOTE_SOURCES, sizeof(struct sassy_rx_buffer*), GFP_ATOMIC);
@@ -52,11 +71,29 @@ int sassy_core_register_nic(int sassy_id, int ifindex) {
 	/* Initialize Control Interfaces for NIC */
 	init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
 
-	return 0;
+	return sassy_id;
 }
 EXPORT_SYMBOL(sassy_core_register_nic);
 
 
+int sassy_core_remove_nic(int sassy_id)
+{
+	int i;
+	/* Remove Ctrl Interfaces for NIC */
+	clean_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
+
+	snprintf(name_buf,  sizeof name_buf, "sassy/%d", score->sdevices[sassy_id]->ifindex);
+	proc_mkdir(name_buf, NULL);
+
+	/* Free Memory used for this NIC */
+
+	for(i = 0; i < MAX_PROCESSES_PER_HOST; i++){
+		kfree(score->rx_tables[sassy_id]->rhost_buffers[i]);
+	}
+	kfree(score->rx_tables[sassy_id]);
+	kfree(score->sdevices[sassy_id]);
+
+}
 
 
 int sassy_core_register_remote_host(int sassy_id){
