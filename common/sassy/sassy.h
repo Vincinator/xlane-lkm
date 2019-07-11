@@ -70,7 +70,7 @@ struct sassy_pm_target_info {
 	/* Data for transmitting the packet  */
     struct sk_buff *skb;
     struct netdev_queue *txq;
-}
+};
 
 
 struct sassy_pacemaker_info {
