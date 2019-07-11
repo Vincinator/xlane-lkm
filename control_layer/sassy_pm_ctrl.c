@@ -152,7 +152,6 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 	char kernel_buffer[SASSY_TARGETS_BUF];
 	struct sassy_pacemaker_info *spminfo =  (struct sassy_pacemaker_info*) PDE_DATA(file_inode(file));
 	size_t size = min(sizeof(kernel_buffer) - 1, count);
-	u8 message = -1;
 
 	if (!spminfo) 
 		return -ENODEV;
@@ -333,6 +332,10 @@ void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 
 	snprintf(name_buf,  sizeof name_buf, "sassy/%d/pacemaker", sdev->ifindex);
 	proc_mkdir(name_buf, NULL);
+
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/payload", sdev->ifindex);
+	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_payload_ops, &sdev->pminfo);
+
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/ctrl", sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_hb_ctrl_ops, &sdev->pminfo);
