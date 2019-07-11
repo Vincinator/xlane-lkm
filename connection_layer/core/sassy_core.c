@@ -150,10 +150,18 @@ static int __init sassy_connection_core_init(void)
 
 static void __exit sassy_connection_core_exit(void) 
 {
+	int i;
 
 	sassy_dbg("cleanup\n");
 
+	for(i = 0; i < device_counter; i++){
+		sassy_core_remove_nic(i);
+	} 
+
+
 	kfree(score);
+
+
 
 	sassy_dbg("cleanup done\n");
 
