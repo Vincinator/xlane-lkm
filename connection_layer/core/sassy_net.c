@@ -201,7 +201,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 		return;
 	}
 
-	hparams = spminfo->pm_targets[host_number]->hb_pkt_params;
+	hparams = spminfo->pm_targets[host_number].hb_pkt_params;
 
 
 	hb_pkt = prepare_heartbeat_skb(dev, payload_size);
