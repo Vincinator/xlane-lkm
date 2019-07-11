@@ -32,7 +32,7 @@ int sassy_mlx5_con_register_device(int ifindex) {
 	
 	int sassy_id = sassy_core_register_nic(ifindex);
 
-	if(sassy_id > 0){
+	if(sassy_id < 0){
 		return -1;
 	}
 
