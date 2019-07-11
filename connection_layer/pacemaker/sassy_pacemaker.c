@@ -58,52 +58,6 @@ void pm_state_transition_to(struct sassy_pacemaker_info *spminfo, enum sassy_pac
     sassy_dbg(" State Transition from %s to %s \n", pm_state_string(spminfo->state), pm_state_string(state));
     spminfo->state = state;
 }
-
-
-int sassy_heart(void *data)
-{
-    uint64_t prev_time, cur_time;
-    unsigned long flags;
-    struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info *)data;
-
-    sassy_dbg("Enter %s", __FUNCTION__);
-    
-    pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
-
-    sassy_setup_skbs(spminfo);
-
-    get_cpu();                      /* disable preemption */
-    local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
-    
-    prev_time = rdtsc();
-
-    local_bh_disable();
-    while (sassy_pacemaker_is_alive(spminfo)) {
-
-        cur_time = rdtsc();
-
-        /* Loop until pacemaker can fire*/
-        if (!can_fire(prev_time, cur_time))
-            continue;
-
-        prev_time = cur_time;
-        sassy_dbg(" before send all hb\n");
-
-        //sassy_send_all_heartbeats(spminfo);
-        sassy_dbg(" after send all hb\n");
-
-    }
-    sassy_dbg(" exit loop\n");
-
-    local_bh_enable();
-
-    sassy_dbg(" Exit Heartbeat at device\n");
-    local_irq_restore(flags);
-    put_cpu();
-    sassy_dbg(" leaving heart..\n");
-    return 0;
-}
-
 static inline void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminfo) {
     int i;
     int err;
@@ -156,6 +110,52 @@ unlock:
     sassy_dbg(" exit send loop\n");
 
 }
+
+
+int sassy_heart(void *data)
+{
+    uint64_t prev_time, cur_time;
+    unsigned long flags;
+    struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info *)data;
+
+    sassy_dbg("Enter %s", __FUNCTION__);
+    
+    pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
+
+    sassy_setup_skbs(spminfo);
+
+    get_cpu();                      /* disable preemption */
+    local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
+    
+    prev_time = rdtsc();
+
+    local_bh_disable();
+    while (sassy_pacemaker_is_alive(spminfo)) {
+
+        cur_time = rdtsc();
+
+        /* Loop until pacemaker can fire*/
+        if (!can_fire(prev_time, cur_time))
+            continue;
+
+        prev_time = cur_time;
+        sassy_dbg(" before send all hb\n");
+
+        //sassy_send_all_heartbeats(spminfo);
+        sassy_dbg(" after send all hb\n");
+
+    }
+    sassy_dbg(" exit loop\n");
+
+    local_bh_enable();
+
+    sassy_dbg(" Exit Heartbeat at device\n");
+    local_irq_restore(flags);
+    put_cpu();
+    sassy_dbg(" leaving heart..\n");
+    return 0;
+}
+
 
 
 void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo) {
