@@ -170,7 +170,7 @@ struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo, int 
 
     sassy_dbg("Composing skb.\n");
 
-    return compose_heartbeat_skb(ndev, spminfo->targets[host_number].dst_mac, spminfo->targets[host_number].dst_ip);
+    return compose_heartbeat_skb(ndev, spminfo, host_number);
 }
 
 int sassy_pm_start(struct sassy_pacemaker_info *spminfo)

@@ -146,6 +146,56 @@ static int sassy_cpumgmt_open(struct inode *inode, struct file *file)
 	return single_open(file, sassy_cpumgmt_show,PDE_DATA(file_inode(file)));
 }
 
+static ssize_t sassy_payload_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
+{
+	int err;
+	char kernel_buffer[SASSY_TARGETS_BUF];
+	struct sassy_pacemaker_info *spminfo =  (struct sassy_pacemaker_info*) PDE_DATA(file_inode(file));
+	size_t size = min(sizeof(kernel_buffer) - 1, count);
+	u8 message = -1;
+
+	if (!spminfo) 
+		return -ENODEV;
+
+	memset(kernel_buffer, 0, sizeof(kernel_buffer));
+
+	err = copy_from_user(kernel_buffer, user_buffer, count);
+	if (err) {
+		sassy_error(" Copy from user failed%s\n", __FUNCTION__);
+		goto error;
+	}
+
+	kernel_buffer[size] = '\0';
+	spminfo->heartbeat_packet->message = kernel_buffer & 0xFF;
+
+	return count;
+error:
+	sassy_error("Setting Payload Message for heartbeat failed.%s\n", __FUNCTION__);
+	return err;
+}
+
+static int sassy_payload_show(struct seq_file *m, void *v)
+{
+	struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info*) m->private;
+	int i;
+	char *current_payload = kmalloc(16, GFP_KERNEL);
+
+	if (!spminfo)
+		return -ENODEV;
+
+	seq_hex_dump(m,"	",DUMP_PREFIX_OFFSET,
+			  32, 4, spminfo->heartbeat_packet ,sizeof(struct sassy_heartbeat_packet),
+			  false);
+
+	return 0;
+}
+
+static int sassy_payload_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, sassy_payload_show,PDE_DATA(file_inode(file)));
+}
+
+
 static ssize_t sassy_target_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
 {
 	int err;
@@ -267,6 +317,16 @@ static const struct file_operations sassy_cpumgmt_ops = {
 		.release = single_release,
 };
 
+static const struct file_operations sassy_payload_ops = {
+		.owner	= THIS_MODULE,
+		.open	= sassy_payload_open,
+		.write	= sassy_payload_write,
+		.read	= seq_read,
+		.llseek	= seq_lseek,
+		.release = single_release,
+};
+
+
 void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
@@ -291,6 +351,9 @@ EXPORT_SYMBOL(init_sassy_pm_ctrl_interfaces);
 void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/payload", sdev->ifindex);
+	remove_proc_entry(name_buf, NULL);
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/cpu", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);

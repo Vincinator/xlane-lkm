@@ -40,6 +40,7 @@ struct sassy_remote_process_info {
 
 
 struct sassy_heartbeat_packet {
+	u8 message;							/* short message bundled with this hb */
 	u8 alive_rp;						/* Number of alive processes */
 	struct sassy_remote_process_info rpinfo[MAX_PROCESSES_PER_HOST];
 };
@@ -61,6 +62,8 @@ struct sassy_pacemaker_info {
 
 	int num_of_targets;
 	struct sassy_network_address_info targets[MAX_REMOTE_SOURCES];
+
+	struct sassy_heartbeat_packet *heartbeat_packet;
 
 };
 

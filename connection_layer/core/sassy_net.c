@@ -68,28 +68,26 @@ unsigned char *sassy_convert_mac(const char *str)
 EXPORT_SYMBOL(sassy_convert_mac);
 
 
-struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uint32_t dst_ip)
+struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacemaker_info *spminfo, int host_number)
 {
 	struct sk_buff *skb;
 	struct iphdr *iph_skb_quick;
 	struct ethhdr *mac_skb_quick;
 	struct udphdr *uhdr;
-	struct sassy_heartbeat_packet *hb_payload;
+
+	char *dst_mac = spminfo->targets[host_number].dst_mac; 
+	uint32_t dst_ip = spminfo->targets[host_number].dst_ip;
 
 	/* Get Source IP Address from net_device */
 	uint32_t src_ip = dev->ip_ptr->ifa_list->ifa_address;
-	int length = sizeof(struct sassy_heartbeat_packet);
 
-	//sassy_dbg("HB SRC IP: %pI4", (void*) src_ip);
+	/* Size of Payload */
+	int length = sizeof(struct sassy_heartbeat_packet);
 
 	if (!src_ip){
 		sassy_error("No source IP for netdevice condfigured");
 		return NULL;
 	}
-
-	/* Size placeholder for payload */
-	hb_payload = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_ATOMIC);
-
 
 	skb = alloc_skb(256, GFP_ATOMIC| __GFP_DMA);
 
@@ -98,8 +96,10 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, char *dst_mac, uin
 	skb->dev = dev;
 
 	skb_push(skb, length);
-	memcpy(skb->data, hb_payload, sizeof(struct sassy_heartbeat_packet));
 
+	/* Store ptr to payload */
+	spminfo->heartbeat_packet = (struct sassy_heartbeat_packet*) skb->data;
+	
 	skb_push(skb, sizeof(struct udphdr));
 	uhdr = (struct udphdr *) skb->data; 
 	uhdr->source = htons((u16) 1111);
