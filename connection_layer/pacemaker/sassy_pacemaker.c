@@ -104,7 +104,7 @@ int sassy_heart(void *data)
         prev_time = cur_time;
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
-            if(!tdata[i] || !tdata[i].skb || !tdata[i].txq){
+            if(!tdata[i].skb || !tdata[i].txq){
                 sassy_error(" tdata is invalid!\n");
                 continue;
             }
@@ -123,7 +123,7 @@ int sassy_heart(void *data)
     }
     sassy_dbg(" exit loop\n");
     sassy_dbg(" Exit Heartbeat at device\n");
-    
+
     local_irq_restore(flags);
     put_cpu();
     sassy_dbg(" leaving heart..\n");
