@@ -196,7 +196,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 
 	uint32_t src_ip;
 
-	if(!spminfo || !spminfo->pm_targets[host_number]) {
+	if(!spminfo) {
 		sassy_error(" spminfo is invalid \n");
 		return;
 	}
