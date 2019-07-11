@@ -185,7 +185,7 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 			sassy_error(" exceeded max of remote targets %d >= %d \n", i, MAX_REMOTE_SOURCES);
 			break;
 		}
-		if(!spminfo->pm_targets[i] || spminfo->pm_targets[i].hb_pkt_params
+		if(!spminfo->pm_targets[i].hb_pkt_params
 			|| spminfo->pm_targets[i].hb_pkt_params->hb_payload){
 			sassy_error(" target uninitialized.\n");
 			continue;
@@ -221,7 +221,7 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 
 	for(i=0; i < spminfo->num_of_targets; i++){
 
-		if(!spminfo->pm_targets[i] || spminfo->pm_targets[i].hb_pkt_params || 
+		if(spminfo->pm_targets[i].hb_pkt_params || 
 			spminfo->pm_targets[i].hb_pkt_params->hb_payload){
 			sassy_error("Target is uninitialized (%d)\n", i);
 			continue;
