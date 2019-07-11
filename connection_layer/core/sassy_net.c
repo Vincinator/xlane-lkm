@@ -197,6 +197,6 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 	add_payload(hb_pkt, spminfo->heartbeat_packet, payload_size);
 
 	sassy_dbg("Composed Heartbeat\n");
-	return skb;
+	return hb_pkt;
 }
 EXPORT_SYMBOL(compose_heartbeat_skb);
