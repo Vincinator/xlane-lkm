@@ -81,12 +81,11 @@ int sassy_heart(void *data)
 
     sassy_setup_skbs(spminfo);
 
-    get_cpu();                      /* disable preemption */
-    local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
+    //get_cpu();                      /* disable preemption */
+    //local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
     
     prev_time = rdtsc();
 
-    local_bh_disable();
     while (sassy_pacemaker_is_alive(spminfo)) {
 
         cur_time = rdtsc();
@@ -98,7 +97,7 @@ int sassy_heart(void *data)
         prev_time = cur_time;
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
-         
+            local_bh_disable();
             HARD_TX_LOCK(ndev, tdata[i].txq, smp_processor_id());
 
             if (unlikely(netif_xmit_frozen_or_drv_stopped(tdata[i].txq))) {
@@ -108,14 +107,14 @@ int sassy_heart(void *data)
             netdev_start_xmit(tdata[i].skb, ndev, tdata[i].txq, 0);
         unlock:
             HARD_TX_UNLOCK(ndev, tdata[i].txq);
+            local_bh_enable();
         }
     }
     sassy_dbg(" exit loop\n");
-    local_bh_enable();
 
     sassy_dbg(" Exit Heartbeat at device\n");
-    local_irq_restore(flags);
-    put_cpu();
+    //local_irq_restore(flags);
+    //put_cpu();
     sassy_dbg(" leaving heart..\n");
     return 0;
 }
@@ -182,6 +181,7 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
     }
 
     active_cpu = spminfo->active_cpu;
+    sassy_dbg("num of hb targets: %d", spminfo->num_of_targets);
 
     cpumask_clear(&mask);
     heartbeat_task = kthread_create(&sassy_heart, spminfo, "sassy Heartbeat thread");
