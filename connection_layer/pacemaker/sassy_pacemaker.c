@@ -59,15 +59,6 @@ void pm_state_transition_to(struct sassy_pacemaker_info *spminfo, enum sassy_pac
     spminfo->state = state;
 }
 
-static inline void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminfo) {
-    int i;
-    int err;
-    uint64_t ts1, ts2;
-
-   
-
-}
-
 int sassy_heart(void *data)
 {
     uint64_t prev_time, cur_time;
@@ -76,13 +67,29 @@ int sassy_heart(void *data)
     int i;
 
     sassy_dbg("Enter %s", __FUNCTION__);
-    
+
+    if(!ndev){
+        sassy_error("netdevice is NULL\n");
+        return -1;
+    }
+
+    if(!spminfo){
+        sassy_error("spminfo is NULL\n");
+        return -1;
+    }
+
+    if(spminfo->num_of_targets <= 0){
+        sassy_error("num_of_targets is invalid\n");
+        return -1;
+    }
+
+
     pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
     sassy_setup_skbs(spminfo);
 
-    //get_cpu();                      /* disable preemption */
-    //local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
+    get_cpu();                      /* disable preemption */
+    local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
     
     prev_time = rdtsc();
 
@@ -97,6 +104,10 @@ int sassy_heart(void *data)
         prev_time = cur_time;
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
+            if(!tdata[i] || !tdata[i].skb || !tdata[i].txq){
+                sassy_error(" tdata is invalid!\n");
+                continue;
+            }
             local_bh_disable();
             HARD_TX_LOCK(ndev, tdata[i].txq, smp_processor_id());
 
@@ -111,10 +122,10 @@ int sassy_heart(void *data)
         }
     }
     sassy_dbg(" exit loop\n");
-
     sassy_dbg(" Exit Heartbeat at device\n");
-    //local_irq_restore(flags);
-    //put_cpu();
+    
+    local_irq_restore(flags);
+    put_cpu();
     sassy_dbg(" leaving heart..\n");
     return 0;
 }
