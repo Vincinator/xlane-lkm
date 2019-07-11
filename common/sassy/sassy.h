@@ -87,7 +87,7 @@ int sassy_pm_stop(struct sassy_pacemaker_info *spminfo);
 int sassy_pm_start(struct sassy_pacemaker_info *spminfo);
 
 void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);
-void clean_sassy_pm_ctrl_interfaces(struct sassy_devices *sdev)
+void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 
 
 
