@@ -63,52 +63,17 @@ static inline void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminf
     int i;
     int err;
     uint64_t ts1, ts2;
-    int counter = 0; /* update counter for each hb destination - just for testing.. */
 
-    for(i = 0; i < spminfo->num_of_targets; i++) {
-        //tail_ptr = skb_tail_pointer(tdata[i].skb);
-        //data_ptr = (tail_ptr - sizeof(struct sassy_heartbeat_packet));
-        //skb_get(tdata[i].skb);
-        //skb->tstamp = current_time;
-
-        // data_ptr[0] = (counter >> 24) & 0xFF;
-        // data_ptr[1] = (counter >> 16) & 0xFF;
-        // data_ptr[2] = (counter >> 8) & 0xFF;
-        // data_ptr[3] = counter & 0xFF;
-        // counter = counter + 1;
-
-        HARD_TX_LOCK(ndev, tdata[i].txq, smp_processor_id());
-
-        if (unlikely(netif_xmit_frozen_or_drv_stopped(tdata[i].txq))) {
-            err = NETDEV_TX_BUSY;
-            sassy_error("Device Busy unlocking.\n");
-            ts1 = rdtsc();
-            counter++;
-            goto unlock;
-        }
-        counter = 0;
-        ts1 = rdtsc();
-
-        err = netdev_start_xmit(tdata[i].skb, ndev, tdata[i].txq, 0);
-
-unlock:
-        ts2 = rdtsc();
-
-        HARD_TX_UNLOCK(ndev, tdata[i].txq);
-
-        if(counter > 100)
-            sassy_pm_stop(spminfo); // Auto Stop after 100 consecutive fails
-    
-    }
+   
 
 }
-
 
 int sassy_heart(void *data)
 {
     uint64_t prev_time, cur_time;
     unsigned long flags;
     struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info *)data;
+    int i;
 
     sassy_dbg("Enter %s", __FUNCTION__);
     
@@ -132,7 +97,18 @@ int sassy_heart(void *data)
 
         prev_time = cur_time;
 
-        sassy_send_all_heartbeats(spminfo);
+        for(i = 0; i < spminfo->num_of_targets; i++) {
+         
+            HARD_TX_LOCK(ndev, tdata[i].txq, smp_processor_id());
+
+            if (unlikely(netif_xmit_frozen_or_drv_stopped(tdata[i].txq))) {
+                sassy_error("Device Busy unlocking.\n");
+                goto unlock;
+            }
+            netdev_start_xmit(tdata[i].skb, ndev, tdata[i].txq, 0);
+        unlock:
+            HARD_TX_UNLOCK(ndev, tdata[i].txq);
+        }
     }
     sassy_dbg(" exit loop\n");
     local_bh_enable();
