@@ -69,6 +69,8 @@ int sassy_core_register_nic(int ifindex)
 	/* Initialize Heartbeat Payload */
 	score->sdevices[sassy_id]->pminfo.heartbeat_packet = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_KERNEL);
 	score->sdevices[sassy_id]->pminfo.num_of_targets = 0;
+    pm_state_transition_to(score->sdevices[sassy_id]->pminfo, SASSY_PM_UNINIT);
+
 
 	snprintf(name_buf,  sizeof name_buf, "sassy/%d", ifindex);
 	proc_mkdir(name_buf, NULL);

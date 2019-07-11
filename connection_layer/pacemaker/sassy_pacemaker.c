@@ -87,17 +87,17 @@ int sassy_heart(void *data)
             continue;
 
         prev_time = cur_time;
-        sassy_dbg(" before send all hb");
+        sassy_dbg(" before send all hb\n");
 
         sassy_send_all_heartbeats(spminfo);
-        sassy_dbg(" after send all hb");
+        sassy_dbg(" after send all hb\n");
 
     }
-    sassy_dbg(" exit loop");
+    sassy_dbg(" exit loop\n");
 
-    local_bh_enable();
+    //local_bh_enable();
 
-    sassy_dbg(" Exit Heartbeat at device");
+    sassy_dbg(" Exit Heartbeat at device\n");
     local_irq_restore(flags);
     put_cpu();
     sassy_dbg(" leaving heart..\n");
@@ -110,7 +110,7 @@ void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminfo) {
     uint64_t ts1, ts2;
     int counter = 0; /* update counter for each hb destination - just for testing.. */
 
-    sassy_dbg(" before send loop");
+    sassy_dbg(" before send loop\n");
 
     for(i = 0; i < spminfo->num_of_targets; i++) {
         //tail_ptr = skb_tail_pointer(tdata[i].skb);
@@ -123,10 +123,10 @@ void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminfo) {
         // data_ptr[2] = (counter >> 8) & 0xFF;
         // data_ptr[3] = counter & 0xFF;
         // counter = counter + 1;
-        sassy_dbg(" before HARD TX LOCK");
+        sassy_dbg(" before HARD TX LOCK\n");
 
         HARD_TX_LOCK(ndev, tdata[i].txq, smp_processor_id());
-        sassy_dbg(" after HARD TX LOCK");
+        sassy_dbg(" after HARD TX LOCK\n");
 
         if (unlikely(netif_xmit_frozen_or_drv_stopped(tdata[i].txq))) {
             err = NETDEV_TX_BUSY;
@@ -138,22 +138,22 @@ void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminfo) {
         counter = 0;
         ts1 = rdtsc();
 
-        sassy_dbg(" before netdev_start_xmit");
+        sassy_dbg(" before netdev_start_xmit\n");
         err = netdev_start_xmit(tdata[i].skb, ndev, tdata[i].txq, 0);
-        sassy_dbg(" after netdev_start_xmit");
+        sassy_dbg(" after netdev_start_xmit\n");
 
 unlock:
         ts2 = rdtsc();
-        sassy_dbg(" before HARD TX UNLOCK");
+        sassy_dbg(" before HARD TX UNLOCK\n");
 
         HARD_TX_UNLOCK(ndev, tdata[i].txq);
-        sassy_dbg(" after HARD TX UNLOCK");
+        sassy_dbg(" after HARD TX UNLOCK\n");
 
         if(counter > 100)
             sassy_pm_stop(spminfo); // Auto Stop after 100 consecutive fails
     
     }
-    sassy_dbg(" exit send loop");
+    sassy_dbg(" exit send loop\n");
 
 }
 

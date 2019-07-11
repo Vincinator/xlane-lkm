@@ -122,6 +122,7 @@ static ssize_t sassy_cpumgmt_write(struct file *file, const char __user *user_bu
 
 
 	spminfo->active_cpu = tocpu;
+    pm_state_transition_to(spminfo, SASSY_PM_READY);
 
 	return count;
 error:
