@@ -58,13 +58,12 @@ void pm_state_transition_to(struct sassy_pacemaker_info *spminfo, enum sassy_pac
     sassy_dbg(" State Transition from %s to %s \n", pm_state_string(spminfo->state), pm_state_string(state));
     spminfo->state = state;
 }
+
 static inline void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminfo) {
     int i;
     int err;
     uint64_t ts1, ts2;
     int counter = 0; /* update counter for each hb destination - just for testing.. */
-
-    sassy_dbg(" before send loop\n");
 
     for(i = 0; i < spminfo->num_of_targets; i++) {
         //tail_ptr = skb_tail_pointer(tdata[i].skb);
@@ -77,10 +76,8 @@ static inline void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminf
         // data_ptr[2] = (counter >> 8) & 0xFF;
         // data_ptr[3] = counter & 0xFF;
         // counter = counter + 1;
-        sassy_dbg(" before HARD TX LOCK\n");
 
         HARD_TX_LOCK(ndev, tdata[i].txq, smp_processor_id());
-        sassy_dbg(" after HARD TX LOCK\n");
 
         if (unlikely(netif_xmit_frozen_or_drv_stopped(tdata[i].txq))) {
             err = NETDEV_TX_BUSY;
@@ -92,22 +89,17 @@ static inline void sassy_send_all_heartbeats(struct sassy_pacemaker_info *spminf
         counter = 0;
         ts1 = rdtsc();
 
-        sassy_dbg(" before netdev_start_xmit\n");
         err = netdev_start_xmit(tdata[i].skb, ndev, tdata[i].txq, 0);
-        sassy_dbg(" after netdev_start_xmit\n");
 
 unlock:
         ts2 = rdtsc();
-        sassy_dbg(" before HARD TX UNLOCK\n");
 
         HARD_TX_UNLOCK(ndev, tdata[i].txq);
-        sassy_dbg(" after HARD TX UNLOCK\n");
 
         if(counter > 100)
             sassy_pm_stop(spminfo); // Auto Stop after 100 consecutive fails
     
     }
-    sassy_dbg(" exit send loop\n");
 
 }
 
@@ -139,14 +131,10 @@ int sassy_heart(void *data)
             continue;
 
         prev_time = cur_time;
-        sassy_dbg(" before send all hb\n");
 
-        //sassy_send_all_heartbeats(spminfo);
-        sassy_dbg(" after send all hb\n");
-
+        sassy_send_all_heartbeats(spminfo);
     }
     sassy_dbg(" exit loop\n");
-
     local_bh_enable();
 
     sassy_dbg(" Exit Heartbeat at device\n");
