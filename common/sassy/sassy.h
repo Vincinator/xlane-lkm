@@ -124,7 +124,7 @@ unsigned char *sassy_convert_mac(const char *str);
 
 struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacemaker_info *spminfo, int host_number);
 
-struct netdevice *sassy_get_netdevice(int ifindex);
+struct net_device *sassy_get_netdevice(int ifindex);
 
 int sassy_mlx5_con_register_device(int ifindex);
 
