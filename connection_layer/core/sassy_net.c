@@ -90,7 +90,10 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 		sassy_error("No source IP for netdevice condfigured");
 		return NULL;
 	}
-	placeholder = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_ATOMIC);
+
+	placeholder = kmalloc(sizeof(struct sassy_heartbeat_packet), GFP_ATOMIC);
+	placeholder->message = 0xFF;
+	placeholder->alive_rp = 0x33;
 
 	skb = alloc_skb(256, GFP_ATOMIC| __GFP_DMA);
 
@@ -100,9 +103,9 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 
 	skb_push(skb, length);
 	memcpy(skb->data, placeholder, length);
-	
+
 	/* Store ptr to payload */
-	spminfo->heartbeat_packet = (struct sassy_heartbeat_packet*) skb->data;
+	//spminfo->heartbeat_packet = (struct sassy_heartbeat_packet*) skb->data;
 	
 	skb_push(skb, sizeof(struct udphdr));
 	uhdr = (struct udphdr *) skb->data; 
