@@ -148,29 +148,60 @@ static int sassy_cpumgmt_open(struct inode *inode, struct file *file)
 
 static ssize_t sassy_payload_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
 {
-	int err;
+	int ret = 0;
 	char kernel_buffer[SASSY_TARGETS_BUF];
 	struct sassy_pacemaker_info *spminfo =  (struct sassy_pacemaker_info*) PDE_DATA(file_inode(file));
 	size_t size = min(sizeof(kernel_buffer) - 1, count);
+	const char delimiters[] = " ,;";
+	char *input_str;
+	char *search_str;
+	int i = 0;
 
-	if (!spminfo) 
-		return -ENODEV;
+	if (!spminfo){
+		sassy_error("spminfo is NULL.\n");
+		ret = -ENODEV;
+		goto out;
+	}
 
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
-	err = copy_from_user(kernel_buffer, user_buffer, count);
-	if (err) {
+	ret = copy_from_user(kernel_buffer, user_buffer, count);
+	if (ret) {
 		sassy_error(" Copy from user failed%s\n", __FUNCTION__);
-		goto error;
+		goto out;
 	}
 
 	kernel_buffer[size] = '\0';
 	spminfo->heartbeat_packet->message = kernel_buffer[0] & 0xFF;
 
-	return count;
-error:
-	sassy_error("Setting Payload Message for heartbeat failed.%s\n", __FUNCTION__);
-	return err;
+
+
+	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
+	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
+		sassy_dbg(" reading: %s", input_str);
+		if(strcmp(input_str, "") == 0)
+			continue;
+		if(i  >= MAX_REMOTE_SOURCES ){
+			sassy_error(" exceeded max of remote targets %d >= %d \n", i, MAX_REMOTE_SOURCES);
+			break;
+		}
+		if(!spminfo->pm_targets[i] || spminfo->pm_targets[i]->hb_pkt_params
+			|| spminfo->pm_targets[i]->hb_pkt_params->hb_payload){
+			sassy_error(" target uninitialized.\n");
+			continue;
+		}
+
+		// TODO: Parse more input to hb_payload struct. 
+		//		 Since this is only a test tool, prio for this task is low.
+		spminfo->pm_targets[i]->hb_pkt_params->hb_payload->message = input_str[0] & 0xFF;
+		
+		sassy_dbg(" payload message: %s\n", input_str[0] & 0xFF);
+		i++;
+		
+	}
+
+out:
+	return ret;
 }
 
 static int sassy_payload_show(struct seq_file *m, void *v)
@@ -178,13 +209,34 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 	struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info*) m->private;
 	int i;
 	char *current_payload = kmalloc(16, GFP_KERNEL);
+	char *current_ip = kmalloc(16, GFP_KERNEL); /* strlen of 255.255.255.255 is 15*/
+	int ret = 0;
 
-	if (!spminfo)
-		return -ENODEV;
+	if (!spminfo){
+		sassy_error("spminfo is NULL.\n");
+		ret = -ENODEV;
+		goto out;
+	}
 
-	seq_hex_dump(m,"	",DUMP_PREFIX_OFFSET,
-			  32, 4, spminfo->heartbeat_packet ,sizeof(struct sassy_heartbeat_payload),
-			  false);
+
+	for(i=0; i < spminfo->num_of_targets; i++){
+
+		if(!spminfo->pm_targets[i] || spminfo->pm_targets[i]->hb_pkt_params || 
+			spminfo->pm_targets[i]->hb_pkt_params->hb_payload){
+			sassy_error("Target is uninitialized (%d)\n", i);
+			continue;
+		}
+
+		sassy_hex_to_ip(current_ip, spminfo->targets[i].dst_ip);
+		seq_printf(m, "%s: \n", current_ip);
+		seq_hex_dump(m,"	",DUMP_PREFIX_OFFSET,
+		  32, 1, spminfo->pm_targets[i]->hb_pkt_params->hb_payload ,sizeof(struct sassy_heartbeat_payload),
+		  false);
+	}
+
+out:
+	kfree(current_ip);
+	kfree(current_payload);
 
 	return 0;
 }
