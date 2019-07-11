@@ -227,7 +227,7 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 			continue;
 		}
 
-		sassy_hex_to_ip(current_ip, spminfo->targets[i].dst_ip);
+		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params->dst_ip);
 		seq_printf(m, "%s: \n", current_ip);
 		seq_hex_dump(m,"	",DUMP_PREFIX_OFFSET,
 		  32, 1, spminfo->pm_targets[i]->hb_pkt_params->hb_payload ,sizeof(struct sassy_heartbeat_payload),
@@ -286,16 +286,16 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 			break;
 		}
 		if(read_ip) {
-			spminfo->targets[i].dst_ip = sassy_ip_convert(input_str);
-			if (spminfo->targets[i].dst_ip == -EINVAL) {
+			spminfo->pm_targets[i].hb_pkt_params->dst_ip = sassy_ip_convert(input_str);
+			if (spminfo->pm_targets[i].hb_pkt_params->dst_ip == -EINVAL) {
 				sassy_error(" Error formating IP address. %s\n",__FUNCTION__);
 				return -EINVAL;
 			}
 			sassy_dbg(" ip: %s\n", input_str);
 			read_ip = 0;
 		}else {
-			spminfo->targets[i].dst_mac = sassy_convert_mac(input_str);
-			if (!spminfo->targets[i].dst_mac) {
+			spminfo->pm_targets[i].hb_pkt_params->dst_mac = sassy_convert_mac(input_str);
+			if (!spminfo->pm_targets[i].hb_pkt_params->dst_mac) {
 				sassy_error(" Invalid MAC. Failed to convert to byte string.\n");
 				err = -EINVAL;
 				return -ENODEV;
@@ -323,12 +323,12 @@ static int sassy_target_show(struct seq_file *m, void *v)
 		return -ENODEV;
 
 	for(i = 0; i < spminfo->num_of_targets; i++){
-		sassy_hex_to_ip(current_ip, spminfo->targets[i].dst_ip);
+		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params->dst_ip);
 		seq_printf(m, "(%s,", current_ip );
 		seq_printf(m, "%x:%x:%x:%x:%x:%x)\n", 
-			spminfo->targets[i].dst_mac[0], spminfo->targets[i].dst_mac[1],
-			spminfo->targets[i].dst_mac[2], spminfo->targets[i].dst_mac[3],
-			spminfo->targets[i].dst_mac[4], spminfo->targets[i].dst_mac[5]);
+			spminfo->pm_targets[i].hb_pkt_params->dst_mac[0], spminfo->pm_targets[i].hb_pkt_params->dst_mac[1],
+			spminfo->pm_targets[i].hb_pkt_params->dst_mac[2], spminfo->pm_targets[i].hb_pkt_params->dst_mac[3],
+			spminfo->pm_targets[i].hb_pkt_params->dst_mac[4], spminfo->pm_targets[i].hb_pkt_params->dst_mac[5]);
 	}
 	kfree(current_ip);
 
