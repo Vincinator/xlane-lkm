@@ -80,6 +80,7 @@ EXPORT_SYMBOL(sassy_core_register_nic);
 int sassy_core_remove_nic(int sassy_id)
 {
 	int i;
+	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
 	/* Remove Ctrl Interfaces for NIC */
 	clean_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
