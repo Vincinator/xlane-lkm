@@ -78,7 +78,7 @@ inline struct sk_buff *prepare_heartbeat_skb(struct net_device *dev, uint16_t pa
 
 	if(!skb) {
 		sassy_error("Could not allocate SKB");
-		return NULL
+		return NULL;
 	}
 
 	/* Reserve space for network headers */
