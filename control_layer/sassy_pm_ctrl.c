@@ -185,15 +185,15 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 			sassy_error(" exceeded max of remote targets %d >= %d \n", i, MAX_REMOTE_SOURCES);
 			break;
 		}
-		if(!spminfo->pm_targets[i] || spminfo->pm_targets[i]->hb_pkt_params
-			|| spminfo->pm_targets[i]->hb_pkt_params->hb_payload){
+		if(!spminfo->pm_targets[i] || spminfo->pm_targets[i].hb_pkt_params
+			|| spminfo->pm_targets[i].hb_pkt_params->hb_payload){
 			sassy_error(" target uninitialized.\n");
 			continue;
 		}
 
 		// TODO: Parse more input to hb_payload struct. 
 		//		 Since this is only a test tool, prio for this task is low.
-		spminfo->pm_targets[i]->hb_pkt_params->hb_payload->message = input_str[0] & 0xFF;
+		spminfo->pm_targets[i].hb_pkt_params->hb_payload->message = input_str[0] & 0xFF;
 		
 		sassy_dbg(" payload message: %s\n", input_str[0] & 0xFF);
 		i++;
@@ -221,8 +221,8 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 
 	for(i=0; i < spminfo->num_of_targets; i++){
 
-		if(!spminfo->pm_targets[i] || spminfo->pm_targets[i]->hb_pkt_params || 
-			spminfo->pm_targets[i]->hb_pkt_params->hb_payload){
+		if(!spminfo->pm_targets[i] || spminfo->pm_targets[i].hb_pkt_params || 
+			spminfo->pm_targets[i].hb_pkt_params->hb_payload){
 			sassy_error("Target is uninitialized (%d)\n", i);
 			continue;
 		}
@@ -230,7 +230,7 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params->dst_ip);
 		seq_printf(m, "%s: \n", current_ip);
 		seq_hex_dump(m,"	",DUMP_PREFIX_OFFSET,
-		  32, 1, spminfo->pm_targets[i]->hb_pkt_params->hb_payload ,sizeof(struct sassy_heartbeat_payload),
+		  32, 1, spminfo->pm_targets[i].hb_pkt_params->hb_payload ,sizeof(struct sassy_heartbeat_payload),
 		  false);
 	}
 
