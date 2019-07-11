@@ -32,7 +32,7 @@ void sassy_hex_to_ip(char *retval, int dst_ip)
 }
 
 
-struct netdevice *sassy_get_netdevice(int ifindex)
+struct net_device *sassy_get_netdevice(int ifindex)
 {
 	struct net_device *ndev = NULL;
 
