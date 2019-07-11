@@ -47,7 +47,8 @@ int sassy_core_write_packet(int sassy_id, int remote_id) {
 
 
 /* Called by Connection Layer Glue (e.g. mlx5_con.c) */
-int sassy_core_register_nic(int ifindex) {
+int sassy_core_register_nic(int ifindex) 
+{
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 	int sassy_id;
 
@@ -79,6 +80,7 @@ EXPORT_SYMBOL(sassy_core_register_nic);
 int sassy_core_remove_nic(int sassy_id)
 {
 	int i;
+
 	/* Remove Ctrl Interfaces for NIC */
 	clean_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
 
@@ -96,7 +98,8 @@ int sassy_core_remove_nic(int sassy_id)
 }
 
 
-int sassy_core_register_remote_host(int sassy_id){
+int sassy_core_register_remote_host(int sassy_id)
+{
 	struct sassy_rx_table *rxt = score->rx_tables[sassy_id];
 
 	if(remote_host_counter >= MAX_REMOTE_SOURCES) {
