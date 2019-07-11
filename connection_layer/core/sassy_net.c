@@ -10,6 +10,8 @@
 #include <linux/slab.h>
 #include <linux/inetdevice.h>
 
+#include <linux/kernel.h>
+
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
 
@@ -52,7 +54,7 @@ EXPORT_SYMBOL(sassy_ip_convert);
 unsigned char *sassy_convert_mac(const char *str)
 {
 	unsigned int tmp_data[6];
-	unsigned char *bytestring_mac = kmalloc(sizeof(unsigned char) * 6, GFP_ATOMIC);
+	unsigned char *bytestring_mac = kmalloc(sizeof(unsigned char) * 6, GFP_KERNEL);
 	int i;
 
 	if (sscanf(str, "%2x:%2x:%2x:%2x:%2x:%2x", &tmp_data[0], &tmp_data[1],
@@ -68,71 +70,133 @@ unsigned char *sassy_convert_mac(const char *str)
 EXPORT_SYMBOL(sassy_convert_mac);
 
 
+
+inline struct sk_buff *prepare_heartbeat_skb(struct net_device *dev, uint16_t payload_size)
+{
+	uint16_t skb_size = payload_size + LL_RESERVED_SPACE(dev);
+	struct sk_buff *skb = alloc_skb(skb_size, GFP_ATOMIC);
+
+	if(!skb) {
+		sassy_error("Could not allocate SKB");
+		return NULL
+	}
+
+	/* Reserve space for network headers */
+	skb_reserve(skb, LL_RESERVED_SPACE(dev));
+
+	skb->dev = dev;
+	skb->pkt_type = PACKET_OTHERHOST;
+	skb->protocol = htons(ETH_P_IP);
+	skb->ip_summed = CHECKSUM_NONE;
+	skb->priority = 0;
+	skb->next = skb->prev = NULL;
+
+	return skb;
+}
+
+
+inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
+{
+	struct ethhdr *eth = NULL;
+	
+
+	skb_set_mac_header(skb, 0);
+	
+	eth = (struct ethhdr *) skb_put(skb, ETH_HLEN);
+	if(!eth) {
+		sassy_error("Could not get ethhdr from skb (%s)\n", __FUNCTION__);
+		return;
+	}
+	
+	eth->h_proto = htons(ETH_P_IP);
+	memcpy(eth->h_source, src_mac, ETH_ALEN);
+	memcpy(eth->h_dest, dst_mac, ETH_ALEN);
+	
+}
+
+
+inline void add_L3_header(struct sk_buff *skb, uint32_t src_ip, uint32_t dst_ip, uint16_t payload_size )
+{	
+	struct iphdr *ipv4 = NULL;
+	
+	skb_set_network_header(skb, sizeof(struct ethhdr));
+
+	ipv4 = (struct iphdr *)skb_put(skb, sizeof(struct iphdr));
+
+	if(!ipv4) {
+		sassy_error("Could not get ipv4 Header from skb (%s)\n", __FUNCTION__);
+		return;
+	}
+	
+	ipv4->version = IPVERSION;
+	ipv4->ihl = sizeof(struct iphdr) >> 2;
+	ipv4->tos = 0;
+	ipv4->id = 0;
+	ipv4->ttl = 0x40;
+	ipv4->frag_off = 0;
+	ipv4->protocol = IPPROTO_UDP;
+	ipv4->saddr = htonl(src_ip);
+	ipv4->daddr = htonl(dst_ip);
+	ipv4->tot_len = htons((u16) (payload_size + IP_LENGTH + UDP_LENGTH));
+	ipv4->check = 0;
+	
+	skb_set_transport_header(skb, sizeof(struct ethhdr) + sizeof(struct iphdr));
+
+}
+
+inline void add_L4_header(struct sk_buff *skb, uint16_t payload_size)
+{
+	struct udphdr *udp = NULL;
+
+	udp = (struct udphdr *)skb_put(skb, sizeof(struct udphdr));
+	if(udp)
+	{
+		udp->source = htons((u16) 1111);;
+		udp->dest = htons((u16) 319);
+		udp->len = htons((u16) payload_size);
+		udp->check = 0;
+	}
+}
+
+inline void add_payload(struct sk_buff *skb, void *payload, uint16_t payload_size)
+{
+	void *data = (void *)skb_put(skb, payload_size);
+
+	if(!data){
+		sassy_error("Could not get data ptr to skb data\n (%s)", __FUNCTION__);
+		return;
+	}
+	/* Must make sure to use the same payload size as the paylaod size in the skb allocation! */
+	memcpy(data, payload, payload_size);
+}
+
+
 struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacemaker_info *spminfo, int host_number)
 {
-	struct sk_buff *skb;
-	struct iphdr *iph_skb_quick;
-	struct ethhdr *mac_skb_quick;
-	struct udphdr *uhdr;
+	struct sk_buff *hb_pkt = NULL;
+	uint16_t payload_size = sizeof(struct sassy_heartbeat_packet);
+	uint32_t src_ip;
 
-	char *dst_mac = spminfo->targets[host_number].dst_mac; 
-	uint32_t dst_ip = spminfo->targets[host_number].dst_ip;
+	hb_pkt = prepare_heartbeat_skb(dev, payload_size);
 
-	struct sassy_heartbeat_packet *placeholder;
+	if(!hb_pkt) {
+		sassy_error("Could not create heartbeat packet (%s)\n", __FUNCTION__);
+		return
+	}
 
-	/* Get Source IP Address from net_device */
-	uint32_t src_ip = dev->ip_ptr->ifa_list->ifa_address;
-
-	/* Size of Payload */
-	int length = sizeof(struct sassy_heartbeat_packet);
+	src_ip = dev->ip_ptr->ifa_list->ifa_address;
 
 	if (!src_ip){
 		sassy_error("No source IP for netdevice condfigured");
 		return NULL;
 	}
 
-	placeholder = kmalloc(sizeof(struct sassy_heartbeat_packet), GFP_ATOMIC);
-	placeholder->message = 0xFF;
-	placeholder->alive_rp = 0x33;
+	add_L2_header(hb_pkt, dev->dev_addr, spminfo->targets[host_number].dst_mac);
+	add_L3_header(hb_pkt, src_ip, spminfo->targets[host_number].dst_ip, payload_size);
+	add_L4_header(hb_pkt, payload_size);
+	add_payload(hb_pkt, spminfo->heartbeat_packet, payload_size);
 
-	skb = alloc_skb(256, GFP_ATOMIC| __GFP_DMA);
-
-	skb_reserve(skb, UDP_LENGTH + IP_LENGTH + ETH_LENGTH + length);
-
-	skb->dev = dev;
-
-	skb_push(skb, length);
-	memcpy(skb->data, placeholder, length);
-
-	/* Store ptr to payload */
-	//spminfo->heartbeat_packet = (struct sassy_heartbeat_packet*) skb->data;
-	
-	skb_push(skb, sizeof(struct udphdr));
-	uhdr = (struct udphdr *) skb->data; 
-	uhdr->source = htons((u16) 1111);
-	uhdr->dest = htons((u16) 319); 
-	uhdr->len = htons((u16) (length + UDP_LENGTH));
-
-	/* Put IP header */
-	skb_push(skb, sizeof(struct iphdr));
-	skb_reset_network_header(skb);
-	iph_skb_quick = ip_hdr(skb);
-	iph_skb_quick->version = IP_HEADER_VERSION;
-	iph_skb_quick->ihl = IP_HEADER_LENGTH;
-	iph_skb_quick->id = 0x09bc; // + counter;
-	iph_skb_quick->ttl = SKB_QUICK_TTL;
-	iph_skb_quick->tot_len = htons((u16) (length + IP_LENGTH + UDP_LENGTH));
-	iph_skb_quick->saddr = htonl(src_ip);
-	iph_skb_quick->daddr = htonl(dst_ip);
-	iph_skb_quick->protocol = UDP_PROTOCOL_NUMBER; //UDP
-	iph_skb_quick->frag_off = htons((u16) 0x4000);
-	ip_send_check(iph_skb_quick);
-
-	/* Put MAC header */
-	eth_header(skb, dev, ETH_P_802_3, dst_mac, dev->dev_addr, length + UDP_LENGTH + IP_LENGTH + ETH_LENGTH);
-	skb_reset_mac_header(skb);
-	mac_skb_quick = eth_hdr(skb);
-	mac_skb_quick->h_proto = htons((u16) 0x0800);
+	sassy_dbg("Composed Heartbeat\n");
 	return skb;
 }
 EXPORT_SYMBOL(compose_heartbeat_skb);

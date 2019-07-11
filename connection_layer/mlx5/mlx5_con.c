@@ -36,7 +36,7 @@ int sassy_mlx5_con_register_device(int ifindex) {
 		return -1;
 	}
 
-	infos[sassy_id] = kmalloc(sizeof(struct sassy_mlx5_con_info), GFP_ATOMIC);
+	infos[sassy_id] = kmalloc(sizeof(struct sassy_mlx5_con_info), GFP_KERNEL);
 
 	if(!infos[sassy_id]) {
 		sassy_error("Allocation error in function %s \n", __FUNCTION__);
@@ -120,7 +120,7 @@ static int __init sassy_mlx5_con_init(void)
 
     sassy_dbg("init\n");
 
-    infos = kmalloc_array(SASSY_MLX5_DEVICES_LIMIT, sizeof(struct sassy_mlx5_con_info *), GFP_ATOMIC);
+    infos = kmalloc_array(SASSY_MLX5_DEVICES_LIMIT, sizeof(struct sassy_mlx5_con_info *), GFP_KERNEL);
 
     sassy_dbg("init done\n");
     return 0;

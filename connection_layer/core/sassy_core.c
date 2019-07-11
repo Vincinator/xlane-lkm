@@ -59,15 +59,15 @@ int sassy_core_register_nic(int ifindex)
 	if(sassy_id < 0)
 		return -1;
 
-	score->rx_tables[sassy_id] = kmalloc(sizeof(struct sassy_rx_table), GFP_ATOMIC);
-	score->rx_tables[sassy_id]->rhost_buffers = kmalloc_array(MAX_REMOTE_SOURCES, sizeof(struct sassy_rx_buffer*), GFP_ATOMIC);
+	score->rx_tables[sassy_id] = kmalloc(sizeof(struct sassy_rx_table), GFP_KERNEL);
+	score->rx_tables[sassy_id]->rhost_buffers = kmalloc_array(MAX_REMOTE_SOURCES, sizeof(struct sassy_rx_buffer*), GFP_KERNEL);
 	
-	score->sdevices[sassy_id] = kmalloc(sizeof(struct sassy_device), GFP_ATOMIC);
+	score->sdevices[sassy_id] = kmalloc(sizeof(struct sassy_device), GFP_KERNEL);
 	score->sdevices[sassy_id]->ifindex = ifindex;
 	score->sdevices[sassy_id]->sassy_id = sassy_id;
 
 	/* Initialize Heartbeat Payload */
-	score->sdevices[sassy_id]->pminfo.heartbeat_packet = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_ATOMIC);
+	score->sdevices[sassy_id]->pminfo.heartbeat_packet = kzalloc(sizeof(struct sassy_heartbeat_packet), GFP_KERNEL);
 
 
 	snprintf(name_buf,  sizeof name_buf, "sassy/%d", ifindex);
@@ -113,7 +113,7 @@ int sassy_core_register_remote_host(int sassy_id)
 		return -1;
 	}
 
-	rxt->rhost_buffers[remote_host_counter] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_ATOMIC);
+	rxt->rhost_buffers[remote_host_counter] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
 
 
 	return remote_host_counter++;
@@ -124,21 +124,21 @@ static int __init sassy_connection_core_init(void)
 {
 	sassy_dbg("init\n");
 
-	score = kmalloc(sizeof(struct sassy_core), GFP_ATOMIC);
+	score = kmalloc(sizeof(struct sassy_core), GFP_KERNEL);
 
 	if(!score) {
 		sassy_error("allocation of sassy core failed\n");
 		return -1;
 	}
 
-	score->rx_tables = kmalloc_array(MAX_NIC_DEVICES, sizeof(struct sassy_rx_table *), GFP_ATOMIC);
+	score->rx_tables = kmalloc_array(MAX_NIC_DEVICES, sizeof(struct sassy_rx_table *), GFP_KERNEL);
 
 	if(!score->rx_tables) {
 		sassy_error("allocation of score->rx_tables failed\n");
 		return -1;
 	}
 
-	score->sdevices = kmalloc_array(MAX_NIC_DEVICES, sizeof(struct sassy_device *), GFP_ATOMIC);
+	score->sdevices = kmalloc_array(MAX_NIC_DEVICES, sizeof(struct sassy_device *), GFP_KERNEL);
 
 	if(!score->rx_tables) {
 		sassy_error("allocation of score->sdevices failed\n");
