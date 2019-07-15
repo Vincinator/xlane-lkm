@@ -99,7 +99,7 @@ int sassy_heart(void *data)
         local_bh_disable();
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
-            txq = skb_get_tx_queue(odev, spminfo->pm_targets[i].skb);
+            txq = skb_get_tx_queue(sdev->ndev, spminfo->pm_targets[i].skb);
 
             if(!txq) {
                 sassy_error("txq is NULL! \n");
