@@ -138,12 +138,10 @@ int sassy_validate_sassy_device(int sassy_id) {
         sassy_error("score is NULL!\n");
         return -1;
     }
-
     if(sassy_id < 0 || sassy_id > MAX_NIC_DEVICES){
         sassy_error("invalid sassy_id! %d\n", sassy_id);
         return -1;
     }
-
     if(!score->sdevices || !score->sdevices[sassy_id]){
         sassy_error("sdevices is invalid!\n");
         return -1;
