@@ -151,8 +151,7 @@ int sassy_heart(void *data)
 
 
     for(i = 0; i < spminfo->num_of_targets; i++) {
-        if(!spminfo->pm_targets[i] || spminfo->pm_targets[i].hb_pkt_params
-            || spminfo->pm_targets[i].hb_pkt_params->hb_payload) {
+        if(!spminfo->pm_targets[i].hb_pkt_params) {
             sassy_error(" HB Target is not initialized");
             return -1;
         }
