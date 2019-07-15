@@ -36,13 +36,20 @@ void sassy_reset_remote_host_counter(int sassy_id){
     rxt = score->rx_tables[sassy_id];
     sdev = score->sdevices[sassy_id];
 
+    if(!rxt || !sdev)
+        return;
+
     /* Free Memory of all  */
     for(i = 0; i < MAX_REMOTE_SOURCES; i++){
 
         pmtarget = &sdev->pminfo.pm_targets[i];
 
         kfree(rxt->rhost_buffers[i]);
-        kfree(pmtarget->hb_pkt_params->hb_payload);
+    
+        if(!pmtarget->hb_pkt_params)
+            continue;
+
+       // kfree(pmtarget->hb_pkt_params->hb_payload);
         kfree(pmtarget->hb_pkt_params->dst_mac);
         kfree(pmtarget->hb_pkt_params);
     }
@@ -198,10 +205,11 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
         sassy_error("pmtarget is NULL\n");
         return -1;
     }
-    
+
     rxt->rhost_buffers[sdev->pminfo.num_of_targets] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
     pmtarget->hb_pkt_params = kzalloc(sizeof(struct sassy_hb_packet_params), GFP_KERNEL);
-    pmtarget->hb_pkt_params->hb_payload = kzalloc(sizeof(struct sassy_heartbeat_payload), GFP_KERNEL);
+//    pmtarget->hb_pkt_params->hb_payload = kzalloc(sizeof(struct sassy_heartbeat_payload), GFP_KERNEL);
+    pmtarget->hb_pkt_params->hb_active_ix = 0;
     pmtarget->hb_pkt_params->dst_mac = kmalloc(sizeof(unsigned char) * 6, GFP_KERNEL);
     pmtarget->hb_pkt_params->dst_ip = ip;
     memcpy(pmtarget->hb_pkt_params->dst_mac, mac, sizeof(unsigned char) * 6);

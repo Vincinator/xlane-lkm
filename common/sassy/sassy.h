@@ -47,13 +47,24 @@ struct sassy_heartbeat_payload {
 
 
 struct sassy_hb_packet_params {
-	/* Parameters used to Build the SKB */
 	uint32_t dst_ip; 			
 	unsigned char *dst_mac; 
 
-	/* Payload  */
-	struct sassy_heartbeat_payload *hb_payload;
+	/* pacemaker MUST copy in every loop. 
+	 * Thus, we need a copy of hb_payload to continue the copy in the pacemaker
+	 * even when a new version is currently written.
+	 *
+	 * The hb_active_ix member of this struct tells which index can be used by the pacemaker.
+	 */
+	struct sassy_heartbeat_payload hb_payload[2];
+	int hb_active_ix;
 
+	/* if updating != 0, then pacemaker will not update skb
+	 * uses old values in skb until updating == 0 */
+	int updating;	
+
+	/* pacemaker locks payload if it is using it */
+	spinlock_t lock;			
 };
 
 struct sassy_mlx5_con_info {

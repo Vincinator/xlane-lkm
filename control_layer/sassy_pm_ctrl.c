@@ -156,6 +156,7 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 	char *input_str;
 	char *search_str;
 	int i = 0;
+	int hb_active_ix;
 
 	if (!spminfo){
 		sassy_error("spminfo is NULL.\n");
@@ -190,7 +191,12 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 
 		// TODO: Parse more input to hb_payload struct. 
 		//		 Since this is only a test tool, prio for this task is low.
-		spminfo->pm_targets[i].hb_pkt_params->hb_payload->message = input_str[0] & 0xFF;
+
+		// invert 0<->1 (and make sure {0,1} is the only possible input)
+		hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params->hb_active_ix);
+
+		spminfo->pm_targets[i].hb_pkt_params->hb_payload[hb_active_ix]->message = input_str[0] & 0xFF;
+		spminfo->pm_targets[i].hb_pkt_params->hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params->hb_active_ix);
 		
 		sassy_dbg(" payload message: %02X\n", input_str[0] & 0xFF);
 		i++;

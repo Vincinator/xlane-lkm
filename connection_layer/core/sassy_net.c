@@ -221,7 +221,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 	add_L2_header(hb_pkt, dev->dev_addr, hparams->dst_mac);
 	add_L3_header(hb_pkt, src_ip, hparams->dst_ip, payload_size);
 	add_L4_header(hb_pkt, payload_size);
-	add_payload(hb_pkt, hparams->hb_payload, payload_size);
+	add_payload(hb_pkt, hparams->hb_payload[hparams->hb_active_ix], payload_size);
 
 	sassy_dbg("Composed Heartbeat\n");
 	return hb_pkt;

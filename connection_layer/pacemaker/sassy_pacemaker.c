@@ -64,14 +64,64 @@ static inline void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo) {
 }
 
 
+static inline void sassy_send_hb(struct netdev_queue *txq, struct net_device *ndev, struct sk_buff *skb){
+    int i, ret;
+
+    txq = skb_get_tx_queue(ndev, skb);
+    skb_get(skb); /* keep this. otherwise this thread locks the system */ 
+
+    if(!txq) {
+        sassy_error("txq is NULL! \n");
+        continue;
+    }
+
+    HARD_TX_LOCK(ndev, txq, smp_processor_id());
+
+    if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
+        sassy_error("Device Busy unlocking.\n");
+        goto unlock;
+    } 
+    ret = netdev_start_xmit(skb, ndev, txq, 0);
+    
+    switch (ret) {
+        case NETDEV_TX_OK:
+            break;
+        case NET_XMIT_DROP:
+            sassy_error(" XMIT error NET_XMIT_DROP");
+            break;
+        case NET_XMIT_CN:
+            sassy_error(" XMIT error NET_XMIT_CN");
+            break;
+        case NETDEV_TX_BUSY:
+            sassy_error(" XMIT error NETDEV_TX_BUSY");
+            break;
+        default: 
+            sassy_error(" xmit error. unsupported return code from driver: %d\n", ret);
+            break;
+    }
+unlock:
+HARD_TX_UNLOCK(ndev, txq);
+    
+} 
+
+
+static inline void sassy_update_skb_payload(struct sk_buff *skb, struct sassy_heartbeat_payload *hb_payload){
+    unsigned char* tail_ptr;
+    unsigned char* data_ptr;
+
+    tail_ptr = skb_tail_pointer(tdata[i].skb);
+    data_ptr = (tail_ptr - sizeof(struct sassy_heartbeat_payload));
+
+    memcpy(data_ptr, hb_payload, sizeof(struct sassy_heartbeat_payload));
+}
+
 int sassy_heart(void *data)
 {
     uint64_t prev_time, cur_time;
     unsigned long flags;
     struct sassy_pacemaker_info *spminfo;
     struct sassy_device *sdev = (struct sassy_device *)data;
-    struct netdev_queue *txq;
-
+    struct sassy_heartbeat_payload *hb_payload;
     int i;
     int ret;
 
@@ -95,9 +145,19 @@ int sassy_heart(void *data)
     }
 
 
-    pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
     sassy_setup_skbs(spminfo);
+
+
+    for(i = 0; i < spminfo->num_of_targets; i++) {
+        if(!spminfo->pm_targets[i] || spminfo->pm_targets[i].hb_pkt_params
+            || spminfo->pm_targets[i].hb_pkt_params->hb_payload) {
+            sassy_error(" HB Target is not initialized");
+            return -1;
+        }
+    }
+
+    pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
     get_cpu();                      /* disable preemption */
     local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
@@ -124,42 +184,15 @@ int sassy_heart(void *data)
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
 
-            txq = skb_get_tx_queue(sdev->ndev, spminfo->pm_targets[i].skb);
-
-            skb_get(spminfo->pm_targets[i].skb); /* keep this. otherwise this thread locks the system */ 
-
-            if(!txq) {
-                sassy_error("txq is NULL! \n");
-                continue;
-            }
-
-            HARD_TX_LOCK(sdev->ndev, txq, smp_processor_id());
-
-            if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
-                sassy_error("Device Busy unlocking.\n");
-                goto unlock;
-            } 
-            ret = netdev_start_xmit(spminfo->pm_targets[i].skb, sdev->ndev, txq, 0);
+            // Always update payload to avoid jitter!
+            hb_active_ix    = spminfo->pm_targets[i].hb_pkt_params->hb_active_ix;
+            hb_payload      = spminfo->pm_targets[i].hb_pkt_params->hb_payload[hb_active_ix];
+            sassy_update_skb_payload(spminfo->pm_targets[i].skb, hb_payload);
+        
+            sassy_send_hb(sdev->ndev, txq, spminfo->pm_targets[i].skb);
             
-            switch (ret) {
-                case NETDEV_TX_OK:
-                    break;
-                case NET_XMIT_DROP:
-                    sassy_error(" XMIT error NET_XMIT_DROP");
-                    break;
-                case NET_XMIT_CN:
-                    sassy_error(" XMIT error NET_XMIT_CN");
-                    break;
-                case NETDEV_TX_BUSY:
-                    sassy_error(" XMIT error NETDEV_TX_BUSY");
-                    break;
-                default: 
-                    sassy_error(" xmit error. unsupported return code from driver: %d\n", ret);
-                    break;
-            }
-unlock:
-            HARD_TX_UNLOCK(sdev->ndev, txq);
         }
+ 
 
     }
 
