@@ -186,7 +186,7 @@ int sassy_heart(void *data)
 
             // Always update payload to avoid jitter!
             hb_active_ix    = spminfo->pm_targets[i].hb_pkt_params->hb_active_ix;
-            hb_payload      = spminfo->pm_targets[i].hb_pkt_params->hb_payload[hb_active_ix];
+            hb_payload      = &spminfo->pm_targets[i].hb_pkt_params->hb_payload[hb_active_ix];
             sassy_update_skb_payload(spminfo->pm_targets[i].skb, hb_payload);
         
             sassy_send_hb(sdev->ndev, txq, spminfo->pm_targets[i].skb);
