@@ -201,7 +201,8 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
         return -ENODEV;
     }
 
-    sdev = container_of(spminfo, struct sassy_device, pminfo)
+    sdev = container_of(spminfo, struct sassy_device, pminfo);
+    
     if(!sdev){
         sassy_error("No sdev \n");
         return -ENODEV;
