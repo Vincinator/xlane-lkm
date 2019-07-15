@@ -94,6 +94,9 @@ int sassy_heart(void *data)
             continue;
 
         prev_time = cur_time;
+
+        local_bh_disable();
+
         for(i = 0; i < spminfo->num_of_targets; i++) {
             sassy_error(" Access num of targets: %d \n", spminfo->num_of_targets);
             sassy_error(" Access skb of target: %px \n", spminfo->pm_targets[i].skb);
@@ -101,6 +104,7 @@ int sassy_heart(void *data)
             sassy_error(" netdev: %px \n", sdev->ndev);
         }
 
+        local_bh_enable();
 
 #if 0
 
