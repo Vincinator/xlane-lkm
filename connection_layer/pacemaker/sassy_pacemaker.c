@@ -68,7 +68,7 @@ int sassy_heart(void *data)
     uint64_t prev_time, cur_time;
     unsigned long flags;
     struct sassy_pacemaker_info *spminfo;
-    struct sassy_device *sdev = (struct sassy_pacemaker_info *)data;
+    struct sassy_device *sdev = (struct sassy_device *)data;
     struct netdev_queue *txq;
 
     int i;
