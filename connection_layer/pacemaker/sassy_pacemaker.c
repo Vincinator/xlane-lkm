@@ -110,33 +110,33 @@ int sassy_heart(void *data)
             txq = skb_get_tx_queue(sdev->ndev, spminfo->pm_targets[i].skb);
 
             if(!txq) {
-                sassy_error("txq is NULL! \n");
+               // sassy_error("txq is NULL! \n");
                 continue;
             }
 
             HARD_TX_LOCK(sdev->ndev, txq, smp_processor_id());
 
             if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
-                sassy_error("Device Busy unlocking.\n");
+               // sassy_error("Device Busy unlocking.\n");
                 goto unlock;
             } 
             ret = netdev_start_xmit(spminfo->pm_targets[i].skb, sdev->ndev, txq, 0);
         
             switch (ret) {
                 case NETDEV_TX_OK:
-                    sassy_dbg(" NETDEV_TX_OK\n");
+                   // sassy_dbg(" NETDEV_TX_OK\n");
                     break;
                 case NET_XMIT_DROP:
-                    sassy_error(" XMIT error NET_XMIT_DROP");
+                    //sassy_error(" XMIT error NET_XMIT_DROP");
                     break;
                 case NET_XMIT_CN:
-                    sassy_error(" XMIT error NET_XMIT_CN");
+                    //sassy_error(" XMIT error NET_XMIT_CN");
                     break;
                 case NETDEV_TX_BUSY:
-                    sassy_error(" XMIT error NETDEV_TX_BUSY");
+                   // sassy_error(" XMIT error NETDEV_TX_BUSY");
                     break;
                 default: 
-                    sassy_error(" xmit error. unsupported return code from driver: %d\n", ret);
+                    //sassy_error(" xmit error. unsupported return code from driver: %d\n", ret);
                     break;
             }
 unlock:
