@@ -94,6 +94,10 @@ int sassy_heart(void *data)
             continue;
 
         prev_time = cur_time;
+        sassy_error(" Access num of targets: %d \n", spminfo->num_of_targets);
+        
+
+#if 0
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
             if(!spminfo->pm_targets[i].skb || !spminfo->pm_targets[i].txq){
@@ -112,6 +116,7 @@ int sassy_heart(void *data)
             HARD_TX_UNLOCK(sdev->ndev, spminfo->pm_targets[i].txq);
             local_bh_enable();
         }
+#endif
     }
     sassy_dbg(" exit loop\n");
     sassy_dbg(" Exit Heartbeat at device\n");
