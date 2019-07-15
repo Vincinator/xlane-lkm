@@ -91,7 +91,6 @@ int sassy_core_register_nic(int ifindex)
     score->sdevices[sassy_id]->ndev = sassy_get_netdevice(ifindex);
     score->sdevices[sassy_id]->pminfo.num_of_targets = 0;
 
-
     snprintf(name_buf,  sizeof name_buf, "sassy/%d", ifindex);
     proc_mkdir(name_buf, NULL);
 
@@ -199,16 +198,27 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
         sassy_error("pmtarget is NULL\n");
         return -1;
     }
-
+    sassy_dbg(" write rhost_buffers \n");
     rxt->rhost_buffers[sdev->pminfo.num_of_targets] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
 
     pmtarget->hb_pkt_params = kzalloc(sizeof(struct sassy_hb_packet_params), GFP_KERNEL);
+    sassy_dbg(" 2 \n");
+
     pmtarget->hb_pkt_params->hb_payload = kzalloc(sizeof(struct sassy_heartbeat_payload), GFP_KERNEL);
+    sassy_dbg(" 3 \n");
+
     pmtarget->hb_pkt_params->dst_mac = kmalloc(sizeof(unsigned char) * 6, GFP_KERNEL);
+    sassy_dbg(" 4 \n");
 
     pmtarget->hb_pkt_params->dst_ip = ip;
+    sassy_dbg(" 5 \n");
+
     memcpy(pmtarget->hb_pkt_params->dst_mac, mac, sizeof(unsigned char) * 6);
+    sassy_dbg(" 6 \n");
+
     sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
+    sassy_dbg(" 7 \n");
+
     return 0;
 
 }
