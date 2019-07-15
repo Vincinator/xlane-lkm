@@ -179,10 +179,26 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
     }
 
     rxt = score->rx_tables[sassy_id];
+
+    if(!rxt){
+        sassy_error("rxt is NULL \n");
+        return -1;
+    }
+
     sdev = score->sdevices[sassy_id];
+
+    if(!sdev) {
+        sassy_error("sdev is NULL \n");
+        return -1;
+    }
 
     ifindex = sdev->ifindex;
     pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
+
+    if(!pmtarget){
+        sassy_error("pmtarget is NULL\n");
+        return -1;
+    }
 
     rxt->rhost_buffers[sdev->pminfo.num_of_targets] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
 
@@ -192,8 +208,8 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
 
     pmtarget->hb_pkt_params->dst_ip = ip;
     memcpy(pmtarget->hb_pkt_params->dst_mac, mac, sizeof(unsigned char) * 6);
-
-    return sdev->pminfo.num_of_targets++;
+    sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
+    return 0;
 
 }
 EXPORT_SYMBOL(sassy_core_register_remote_host);
