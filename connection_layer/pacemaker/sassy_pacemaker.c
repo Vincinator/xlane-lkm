@@ -94,12 +94,16 @@ int sassy_heart(void *data)
             continue;
 
         prev_time = cur_time;
-        sassy_error(" Access num of targets: %d \n", spminfo->num_of_targets);
-        
+        for(i = 0; i < spminfo->num_of_targets; i++) {
+            sassy_error(" Access num of targets: %d \n", spminfo->num_of_targets);
+            sassy_error(" Access skb of target: %px \n", spminfo->pm_targets[i].skb);
+            sassy_error(" Access txq of target: %px \n", spminfo->pm_targets[i].txq);
+            sassy_error(" netdev: %px \n", sdev->ndev);
+        }
+
 
 #if 0
 
-        for(i = 0; i < spminfo->num_of_targets; i++) {
             if(!spminfo->pm_targets[i].skb || !spminfo->pm_targets[i].txq){
                 sassy_error(" tdata is invalid!\n");
                 continue;
