@@ -125,6 +125,7 @@ int sassy_heart(void *data)
     struct sassy_heartbeat_payload *hb_payload;
     int i;
     int ret;
+    int hb_active_ix;
 
     sassy_dbg("Enter %s", __FUNCTION__);
 
