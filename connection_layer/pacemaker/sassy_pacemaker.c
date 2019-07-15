@@ -99,7 +99,7 @@ int sassy_heart(void *data)
 
         /* If netdev is offline, then stop pacemaker */
         if (unlikely(!netif_running(sdev->ndev) || !netif_carrier_ok(sdev->ndev))) {
-            sassy_pm_stop();
+            sassy_pm_stop(spminfo);
             continue;
         }
 
@@ -144,7 +144,7 @@ int sassy_heart(void *data)
         }
         
         local_bh_enable();
-        sassy_pm_stop(); // only send single packet (debug)
+        sassy_pm_stop(spminfo); // only send single packet (debug)
 
     }
     sassy_dbg(" exit loop\n");
