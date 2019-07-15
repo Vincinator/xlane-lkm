@@ -144,7 +144,7 @@ unlock:
         }
 
         local_bh_enable();
-        sassy_pm_stop(spminfo); // only send single packet (debug)
+        //sassy_pm_stop(spminfo); // only send single packet (debug)
 
     }
     sassy_dbg(" exit loop\n");
