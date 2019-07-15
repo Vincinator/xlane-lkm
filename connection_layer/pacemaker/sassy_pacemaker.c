@@ -98,10 +98,14 @@ int sassy_heart(void *data)
         local_bh_disable();
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
+            HARD_TX_LOCK(sdev->ndev, spminfo->pm_targets[i].txq, smp_processor_id());
+
             sassy_error(" Access num of targets: %d \n", spminfo->num_of_targets);
             sassy_error(" Access skb of target: %px \n", spminfo->pm_targets[i].skb);
             sassy_error(" Access txq of target: %px \n", spminfo->pm_targets[i].txq);
             sassy_error(" netdev: %px \n", sdev->ndev);
+            HARD_TX_UNLOCK(sdev->ndev, spminfo->pm_targets[i].txq);
+
         }
 
         local_bh_enable();
@@ -113,7 +117,6 @@ int sassy_heart(void *data)
                 continue;
             }
             local_bh_disable();
-            HARD_TX_LOCK(sdev->ndev, spminfo->pm_targets[i].txq, smp_processor_id());
 
             if (unlikely(netif_xmit_frozen_or_drv_stopped(spminfo->pm_targets[i].txq))) {
                 sassy_error("Device Busy unlocking.\n");
