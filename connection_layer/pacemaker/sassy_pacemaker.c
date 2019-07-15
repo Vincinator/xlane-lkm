@@ -126,7 +126,7 @@ int sassy_heart(void *data)
 
             txq = skb_get_tx_queue(sdev->ndev, spminfo->pm_targets[i].skb);
 
-            skb_get(spminfo->pm_targets[i].skb);
+            skb_get(spminfo->pm_targets[i].skb); /* keep this. otherwise this thread locks the system */ 
 
             if(!txq) {
                 sassy_error("txq is NULL! \n");
@@ -143,7 +143,6 @@ int sassy_heart(void *data)
             
             switch (ret) {
                 case NETDEV_TX_OK:
-                    sassy_dbg(" NETDEV_TX_OK\n");
                     break;
                 case NET_XMIT_DROP:
                     sassy_error(" XMIT error NET_XMIT_DROP");
@@ -161,8 +160,6 @@ int sassy_heart(void *data)
 unlock:
             HARD_TX_UNLOCK(sdev->ndev, txq);
         }
-
-        //sassy_pm_stop(spminfo); // only send single packet (debug)
 
     }
 
