@@ -110,7 +110,7 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, struct sassy_he
     unsigned char* tail_ptr;
     unsigned char* data_ptr;
 
-    tail_ptr = skb_tail_pointer(tdata[i].skb);
+    tail_ptr = skb_tail_pointer(skb);
     data_ptr = (tail_ptr - sizeof(struct sassy_heartbeat_payload));
 
     memcpy(data_ptr, hb_payload, sizeof(struct sassy_heartbeat_payload));
