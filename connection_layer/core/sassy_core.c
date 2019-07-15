@@ -170,10 +170,16 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
         return -1;
     }
 
+    sdev = score->sdevices[sassy_id];
+
+    if(!sdev) {
+        sassy_error("sdev is NULL \n");
+        return -1;
+    }
 
     if(sdev->pminfo.num_of_targets >= MAX_REMOTE_SOURCES) {
         sassy_error("Reached Limit of remote hosts. \n");
-        sassy_error("Limit is=%d, num_of_targets= %d \n", MAX_REMOTE_SOURCES, sdev->pminfo.num_of_targets);
+        sassy_error("Limit is=%d \n", MAX_REMOTE_SOURCES);
         return -1;
     }
 
@@ -184,12 +190,6 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
         return -1;
     }
 
-    sdev = score->sdevices[sassy_id];
-
-    if(!sdev) {
-        sassy_error("sdev is NULL \n");
-        return -1;
-    }
 
     ifindex = sdev->ifindex;
     pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
