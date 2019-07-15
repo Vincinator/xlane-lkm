@@ -21,9 +21,35 @@ MODULE_VERSION("0.01");
 
 static struct sassy_core *score;
 
-static int remote_host_counter = 0;
 static int device_counter = 0;
 
+
+void sassy_reset_remote_host_counter(int sassy_id){
+	int i;
+	struct sassy_rx_table *rxt;
+	struct sassy_device *sdev;
+	struct sassy_pm_target_info *pmtarget;
+
+	if(sassy_validate_sassy_device(sassy_id))
+		return;
+
+	rxt = score->rx_tables[sassy_id];
+	sdev = score->sdevices[sassy_id];
+
+	/* Free Memory of all  */
+	for(i = 0; i < MAX_REMOTE_SOURCES; i++){
+
+		pmtarget = &sdev->pminfo.pm_targets[i];
+
+		kfree(rxt->rhost_buffers[i]);
+		kfree(pmtarget->hb_pkt_params->hb_payload);
+		kfree(pmtarget->hb_pkt_params->dst_mac);
+		kfree(pmtarget->hb_pkt_params);
+	}
+	sdev->pminfo.num_of_targets = 0;
+	sassy_dbg(" set num_of_targets to 0\n");
+}
+EXPORT_SYMBOL(sassy_reset_remote_host_counter);
 
 int sassy_generate_next_id(void) 
 {
@@ -34,10 +60,6 @@ int sassy_generate_next_id(void)
 	}
 
 	return device_counter++;
-}
-
-struct sassy_rx_buffer * sassy_get_rx_buffer(int sassy_id, int remote_id) {
-	return score->rx_tables[sassy_id]->rhost_buffers[remote_host_counter];
 }
 
 int sassy_core_write_packet(int sassy_id, int remote_id) {
@@ -67,9 +89,6 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->ifindex = ifindex;
 	score->sdevices[sassy_id]->sassy_id = sassy_id;
     score->sdevices[sassy_id]->ndev = sassy_get_netdevice(ifindex);
-
-
-	/* Initialize Heartbeat Payload */
 	score->sdevices[sassy_id]->pminfo.num_of_targets = 0;
 
 
@@ -93,6 +112,10 @@ int sassy_core_remove_nic(int sassy_id)
 	int i;
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
+	if(sassy_validate_sassy_device(sassy_id)){
+		return -1;
+	}
+
 	/* Remove Ctrl Interfaces for NIC */
 	clean_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
 
@@ -109,16 +132,13 @@ int sassy_core_remove_nic(int sassy_id)
 
 }
 
-
-int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
-{
-	struct sassy_rx_table *rxt;
-	struct sassy_device *sdev;
-	struct sassy_pm_target_info *pmtarget;
-	int ifindex;
-
+int sassy_validate_sassy_device(int sassy_id) {
 	if(!score){
 		sassy_error("score is NULL!\n");
+		return -1;
+	}
+	if(sassy_id < 0 || sassy_id > MAX_NIC_DEVICES){
+		sassy_error("invalid sassy_id! %d\n", sassy_id);
 		return -1;
 	}
 
@@ -131,28 +151,49 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
 		sassy_error("rx_tables is invalid!\n");
 		return -1;
 	}
+	return 0;
+}
+EXPORT_SYMBOL(sassy_validate_sassy_device);
 
-	ifindex = score->sdevices[sassy_id]->ifindex;
-	rxt = score->rx_tables[sassy_id];
-	sdev = score->sdevices[sassy_id];
+int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
+{
+	struct sassy_rx_table *rxt;
+	struct sassy_device *sdev;
+	struct sassy_pm_target_info *pmtarget;
+	int ifindex;
 
-	pmtarget = &sdev->pminfo.pm_targets[remote_host_counter];
-
-	if(remote_host_counter >= MAX_REMOTE_SOURCES) {
-		sassy_error("Reached Limit of remote hosts. \n");
-		sassy_error("Limit is=%d, remote_host_counter= %d \n", MAX_REMOTE_SOURCES, remote_host_counter);
+	if(!mac){
+		sassy_error("input mac is NULL!\n");
 		return -1;
 	}
 
-	rxt->rhost_buffers[remote_host_counter] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
+	if(sassy_validate_sassy_device(sassy_id)){
+		return -1;
+	}
+
+
+	if(sdev->pminfo.num_of_targets >= MAX_REMOTE_SOURCES) {
+		sassy_error("Reached Limit of remote hosts. \n");
+		sassy_error("Limit is=%d, num_of_targets= %d \n", MAX_REMOTE_SOURCES, sdev->pminfo.num_of_targets);
+		return -1;
+	}
+
+	rxt = score->rx_tables[sassy_id];
+	sdev = score->sdevices[sassy_id];
+
+	ifindex = sdev->ifindex;
+	pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
+
+	rxt->rhost_buffers[sdev->pminfo.num_of_targets] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
 
 	pmtarget->hb_pkt_params = kzalloc(sizeof(struct sassy_hb_packet_params), GFP_KERNEL);
 	pmtarget->hb_pkt_params->hb_payload = kzalloc(sizeof(struct sassy_heartbeat_payload), GFP_KERNEL);
+	pmtarget->hb_pkt_params->dst_mac = kmalloc(sizeof(unsigned char) * 6, GFP_KERNEL);
 
 	pmtarget->hb_pkt_params->dst_ip = ip;
 	memcpy(pmtarget->hb_pkt_params->dst_mac, mac, sizeof(unsigned char) * 6);
 
-	return remote_host_counter++;
+	return sdev->pminfo.num_of_targets++;
 
 }
 EXPORT_SYMBOL(sassy_core_register_remote_host);

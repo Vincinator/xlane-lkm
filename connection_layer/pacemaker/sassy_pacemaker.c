@@ -195,6 +195,8 @@ int sassy_pm_stop(struct sassy_pacemaker_info *spminfo)
 
 int sassy_pm_reset(struct sassy_pacemaker_info *spminfo) 
 {
+    struct sassy_device *sdev;
+
     sassy_dbg("Reset Pacemaker Configuration\n");
 
     if (!spminfo) {
@@ -202,9 +204,9 @@ int sassy_pm_reset(struct sassy_pacemaker_info *spminfo)
         return -ENODEV;
     }
 
-    /* no need to overwrite old values*/
-    spminfo->num_of_targets = 0;
+    sdev = container_of(spminfo, struct sassy_device, pminfo);
 
+    sassy_reset_remote_host_counter(sdev->sassy_id);
     return 0;
 
 }

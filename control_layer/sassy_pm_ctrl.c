@@ -264,8 +264,12 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 
 	sdev = container_of(spminfo, struct sassy_device, pminfo);	
 
-	memset(kernel_buffer, 0, sizeof(kernel_buffer));
+	if(!sdev){
+		sassy_error(" Could not find sassy device!\n");
+		return -ENODEV;
+	}
 
+	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {

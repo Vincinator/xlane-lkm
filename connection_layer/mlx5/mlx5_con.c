@@ -52,12 +52,14 @@ int sassy_mlx5_con_register_device(int ifindex) {
 EXPORT_SYMBOL(sassy_mlx5_con_register_device);
 
 int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts) {
+
     sassy_dbg("Not implemented: %s\n", __FUNCTION__);
 	return 0;
 }
 EXPORT_SYMBOL(sassy_mlx5_post_optimistical_timestamp);
 
 int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom, u32 cqe_bcnt){
+
 
 	u8 *payload = (u8*) va;
 	sassy_dbg("sassy_id=%d\n", sassy_id);
@@ -100,6 +102,11 @@ int sassy_mlx5_con_check_cqn(int sassy_id, int cqn){
 EXPORT_SYMBOL(sassy_mlx5_con_check_cqn);
 
 int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn){
+
+	if(sassy_validate_sassy_device(sassy_id)){
+		return -1;
+	}
+
 	if(sassy_id < 0 || sassy_id >= SASSY_MLX5_DEVICES_LIMIT ){
 		sassy_error("sassy_id was %d in %s\n", sassy_id, __FUNCTION__);
 		return 0;
