@@ -55,6 +55,7 @@ int sassy_heart(void *data)
     unsigned long flags;
     struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info *)data;
     struct sassy_device *sdev = container_of(spminfo, struct sassy_device, pminfo);
+    struct netdev_queue *txq;
 
     int i;
 
@@ -98,41 +99,26 @@ int sassy_heart(void *data)
         local_bh_disable();
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
-            HARD_TX_LOCK(sdev->ndev, spminfo->pm_targets[i].txq, smp_processor_id());
+            txq = skb_get_tx_queue(odev, spminfo->pm_targets[i].skb);
 
-        
-            netdev_start_xmit(spminfo->pm_targets[i].skb, sdev->ndev, spminfo->pm_targets[i].txq, i < (spminfo->num_of_targets - 1));
-            
-            if (unlikely(netif_xmit_frozen_or_drv_stopped(spminfo->pm_targets[i].txq))) {
-                sassy_error("Device Busy unlocking.\n");
-                goto unlock;
-            }
-
-        unlock:
-            HARD_TX_UNLOCK(sdev->ndev, spminfo->pm_targets[i].txq);
-
-        }
-
-        local_bh_enable();
-
-#if 0
-
-            if(!spminfo->pm_targets[i].skb || !spminfo->pm_targets[i].txq){
-                sassy_error(" tdata is invalid!\n");
+            if(!txq) {
+                sassy_error("txq is NULL! \n");
                 continue;
             }
-            local_bh_disable();
 
-            if (unlikely(netif_xmit_frozen_or_drv_stopped(spminfo->pm_targets[i].txq))) {
+            HARD_TX_LOCK(sdev->ndev, txq, smp_processor_id());
+
+            if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
                 sassy_error("Device Busy unlocking.\n");
-                goto unlock;
+            } else {
+                netdev_start_xmit(spminfo->pm_targets[i].skb, sdev->ndev, txq, 0);
             }
-            netdev_start_xmit(spminfo->pm_targets[i].skb, sdev->ndev, spminfo->pm_targets[i].txq, 0);
-        unlock:
-            HARD_TX_UNLOCK(sdev->ndev, spminfo->pm_targets[i].txq);
-            local_bh_enable();
+
+            HARD_TX_UNLOCK(sdev->ndev, txq);
+
         }
-#endif
+        local_bh_enable();
+
     }
     sassy_dbg(" exit loop\n");
     sassy_dbg(" Exit Heartbeat at device\n");
@@ -155,7 +141,6 @@ void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo) {
         /* Setup SKB */
         spminfo->pm_targets[i].skb = sassy_setup_hb_packet(spminfo, i);
         skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); /* Use the queue active_cpu for sending the hb packet */
-        spminfo->pm_targets[i].txq = skb_get_tx_queue(sdev->ndev, spminfo->pm_targets[i].skb); 
     }
 }
 
