@@ -216,7 +216,7 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
     sassy_dbg("num of hb targets: %d", spminfo->num_of_targets);
 
     cpumask_clear(&mask);
-    heartbeat_task = kthread_create(&sdev, spminfo, "sassy Heartbeat thread");
+    heartbeat_task = kthread_create(&sassy_heart, sdev, "sassy Heartbeat thread");
     kthread_bind(heartbeat_task, active_cpu);
 
     if (IS_ERR(heartbeat_task)) {
