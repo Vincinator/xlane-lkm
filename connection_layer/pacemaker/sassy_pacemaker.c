@@ -139,10 +139,10 @@ int sassy_heart(void *data)
                     sassy_error(" xmit error. unsupported return code from driver: %d\n", ret);
                     break;
             }
-
+unlock:
             HARD_TX_UNLOCK(sdev->ndev, txq);
         }
-        
+
         local_bh_enable();
         sassy_pm_stop(spminfo); // only send single packet (debug)
 
