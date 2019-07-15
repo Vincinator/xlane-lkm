@@ -58,6 +58,7 @@ int sassy_heart(void *data)
     struct netdev_queue *txq;
 
     int i;
+    int ret;
 
     sassy_dbg("Enter %s", __FUNCTION__);
 
@@ -96,7 +97,14 @@ int sassy_heart(void *data)
 
         prev_time = cur_time;
 
+        /* If netdev is offline, then stop pacemaker */
+        if (unlikely(!netif_running(sdev->ndev) || !netif_carrier_ok(sdev->ndev))) {
+            sassy_pm_stop();
+            continue;
+        }
+
         local_bh_disable();
+
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
             txq = skb_get_tx_queue(sdev->ndev, spminfo->pm_targets[i].skb);
@@ -110,14 +118,33 @@ int sassy_heart(void *data)
 
             if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
                 sassy_error("Device Busy unlocking.\n");
-            } else {
-                netdev_start_xmit(spminfo->pm_targets[i].skb, sdev->ndev, txq, 0);
+                goto unlock;
+            } 
+            ret = netdev_start_xmit(spminfo->pm_targets[i].skb, sdev->ndev, txq, 0);
+        
+            switch (ret) {
+                case NETDEV_TX_OK:
+                    sassy_dbg(" NETDEV_TX_OK\n");
+                    break;
+                case NET_XMIT_DROP:
+                    sassy_error(" XMIT error NET_XMIT_DROP");
+                    break;
+                case NET_XMIT_CN:
+                    sassy_error(" XMIT error NET_XMIT_CN");
+                    break;
+                case NETDEV_TX_BUSY:
+                    sassy_error(" XMIT error NETDEV_TX_BUSY");
+                    break;
+                default: 
+                    sassy_error(" xmit error. unsupported return code from driver: %d\n", ret);
+                    break;
             }
 
             HARD_TX_UNLOCK(sdev->ndev, txq);
-
         }
+        
         local_bh_enable();
+        sassy_pm_stop(); // only send single packet (debug)
 
     }
     sassy_dbg(" exit loop\n");
