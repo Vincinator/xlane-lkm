@@ -73,7 +73,7 @@ static inline void sassy_send_hb( struct net_device *ndev, struct sk_buff *skb){
 
     if(!txq) {
         sassy_error("txq is NULL! \n");
-        continue;
+        return;
     }
 
     HARD_TX_LOCK(ndev, txq, smp_processor_id());
