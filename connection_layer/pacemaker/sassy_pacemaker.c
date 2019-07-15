@@ -64,8 +64,9 @@ static inline void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo) {
 }
 
 
-static inline void sassy_send_hb(struct netdev_queue *txq, struct net_device *ndev, struct sk_buff *skb){
+static inline void sassy_send_hb( struct net_device *ndev, struct sk_buff *skb){
     int i, ret;
+    struct netdev_queue *txq;
 
     txq = skb_get_tx_queue(ndev, skb);
     skb_get(skb); /* keep this. otherwise this thread locks the system */ 
@@ -189,7 +190,7 @@ int sassy_heart(void *data)
             hb_payload      = &spminfo->pm_targets[i].hb_pkt_params->hb_payload[hb_active_ix];
             sassy_update_skb_payload(spminfo->pm_targets[i].skb, hb_payload);
         
-            sassy_send_hb(sdev->ndev, txq, spminfo->pm_targets[i].skb);
+            sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
             
         }
  
