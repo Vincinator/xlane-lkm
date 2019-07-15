@@ -195,9 +195,9 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 		// invert 0<->1 (and make sure {0,1} is the only possible input)
 		hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params->hb_active_ix);
 
-		spminfo->pm_targets[i].hb_pkt_params->hb_payload[hb_active_ix]->message = input_str[0] & 0xFF;
+		spminfo->pm_targets[i].hb_pkt_params->hb_payload[hb_active_ix].message = input_str[0] & 0xFF;
 		spminfo->pm_targets[i].hb_pkt_params->hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params->hb_active_ix);
-		
+
 		sassy_dbg(" payload message: %02X\n", input_str[0] & 0xFF);
 		i++;
 		
