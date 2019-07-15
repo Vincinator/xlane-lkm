@@ -21,6 +21,7 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PACEMAKER]"
 
+struct task_struct *heartbeat_task;
 
 static inline bool sassy_pacemaker_is_alive(struct sassy_pacemaker_info *spminfo)
 {
@@ -122,7 +123,10 @@ int sassy_heart(void *data)
         }
 
         for(i = 0; i < spminfo->num_of_targets; i++) {
+
             txq = skb_get_tx_queue(sdev->ndev, spminfo->pm_targets[i].skb);
+
+            skb_get(spminfo->pm_targets[i].skb);
 
             if(!txq) {
                 sassy_error("txq is NULL! \n");
@@ -136,7 +140,7 @@ int sassy_heart(void *data)
                 goto unlock;
             } 
             ret = netdev_start_xmit(spminfo->pm_targets[i].skb, sdev->ndev, txq, 0);
-        
+            
             switch (ret) {
                 case NETDEV_TX_OK:
                     sassy_dbg(" NETDEV_TX_OK\n");
@@ -189,7 +193,6 @@ struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo, int 
 
 int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
 {
-    struct task_struct *heartbeat_task;
     struct cpumask mask;
     int active_cpu;
     struct sassy_device *sdev;
@@ -202,7 +205,7 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
     }
 
     sdev = container_of(spminfo, struct sassy_device, pminfo);
-    
+
     if(!sdev){
         sassy_error("No sdev \n");
         return -ENODEV;
