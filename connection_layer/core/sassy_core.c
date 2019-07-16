@@ -62,13 +62,8 @@ void sassy_reset_remote_host_counter(int sassy_id){
 
         kfree(rxt->rhost_buffers[i]);
     
-        if(!pmtarget->hb_pkt_params)
-            continue;
-
-       // kfree(pmtarget->hb_pkt_params->hb_payload);
-        kfree(pmtarget->hb_pkt_params->dst_mac);
-        kfree(pmtarget->hb_pkt_params);
     }
+
     sdev->pminfo.num_of_targets = 0;
     sassy_dbg(" set num_of_targets to 0\n");
 }
@@ -108,6 +103,14 @@ int sassy_core_register_nic(int ifindex)
     score->rx_tables[sassy_id] = kmalloc(sizeof(struct sassy_rx_table), GFP_KERNEL);
     score->rx_tables[sassy_id]->rhost_buffers = kmalloc_array(MAX_REMOTE_SOURCES, sizeof(struct sassy_rx_buffer*), GFP_KERNEL);
     
+    /* Allocate each rhost ring buffer*/
+
+    for(i = 0; i < MAX_REMOTE_SOURCES; i++){
+        score->rx_tables[sassy_id]->rhost_buffers[i] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
+
+    }
+
+
     score->sdevices[sassy_id] = kmalloc(sizeof(struct sassy_device), GFP_KERNEL);
     score->sdevices[sassy_id]->ifindex = ifindex;
     score->sdevices[sassy_id]->sassy_id = sassy_id;
@@ -193,12 +196,14 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
         return -1;
     }
 
+
     sdev = score->sdevices[sassy_id];
 
     if(!sdev) {
         sassy_error("sdev is NULL \n");
         return -1;
     }
+
 
     if(sdev->pminfo.num_of_targets >= MAX_REMOTE_SOURCES) {
         sassy_error("Reached Limit of remote hosts. \n");
@@ -222,13 +227,10 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
         return -1;
     }
 
-    rxt->rhost_buffers[sdev->pminfo.num_of_targets] = kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
-    pmtarget->hb_pkt_params = kzalloc(sizeof(struct sassy_hb_packet_params), GFP_KERNEL);
-//    pmtarget->hb_pkt_params->hb_payload = kzalloc(sizeof(struct sassy_heartbeat_payload), GFP_KERNEL);
-    pmtarget->hb_pkt_params->hb_active_ix = 0;
-    pmtarget->hb_pkt_params->dst_mac = kmalloc(sizeof(unsigned char) * 6, GFP_KERNEL);
-    pmtarget->hb_pkt_params->dst_ip = ip;
-    memcpy(pmtarget->hb_pkt_params->dst_mac, mac, sizeof(unsigned char) * 6);
+    pmtarget->hb_pkt_params.hb_active_ix = 0;
+    pmtarget->hb_pkt_params.dst_ip = ip;
+    memcpy(&pmtarget->hb_pkt_params.dst_mac, mac, sizeof(unsigned char) * 6);
+    
     sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 
     return 0;

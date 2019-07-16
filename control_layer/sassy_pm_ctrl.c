@@ -186,18 +186,13 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 			break;
 		}
 
-		if(!spminfo->pm_targets[i].hb_pkt_params){
-			sassy_error(" target uninitialized.\n");
-			break;
-		}
-
 		// TODO: Parse more input to hb_payload struct. 
 		//		 Since this is only a test tool, prio for this task is low.
 	
 		// invert 0<->1 (and make sure {0,1} is the only possible input)
-		hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params->hb_active_ix);
-		spminfo->pm_targets[i].hb_pkt_params->hb_payload[hb_active_ix].message = input_str[0] & 0xFF;
-		spminfo->pm_targets[i].hb_pkt_params->hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params->hb_active_ix);
+		hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params.hb_active_ix);
+		spminfo->pm_targets[i].hb_pkt_params.hb_payload[hb_active_ix].message = input_str[0] & 0xFF;
+		spminfo->pm_targets[i].hb_pkt_params.hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params.hb_active_ix);
 
 		sassy_dbg(" payload message: %02X\n", input_str[0] & 0xFF);
 		i++;
@@ -341,9 +336,9 @@ static int sassy_target_show(struct seq_file *m, void *v)
 		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params->dst_ip);
 		seq_printf(m, "(%s,", current_ip );
 		seq_printf(m, "%x:%x:%x:%x:%x:%x)\n", 
-			spminfo->pm_targets[i].hb_pkt_params->dst_mac[0], spminfo->pm_targets[i].hb_pkt_params->dst_mac[1],
-			spminfo->pm_targets[i].hb_pkt_params->dst_mac[2], spminfo->pm_targets[i].hb_pkt_params->dst_mac[3],
-			spminfo->pm_targets[i].hb_pkt_params->dst_mac[4], spminfo->pm_targets[i].hb_pkt_params->dst_mac[5]);
+			spminfo->pm_targets[i].hb_pkt_params->dst_mac[0], spminfo->pm_targets[i].hb_pkt_params.dst_mac[1],
+			spminfo->pm_targets[i].hb_pkt_params->dst_mac[2], spminfo->pm_targets[i].hb_pkt_params.dst_mac[3],
+			spminfo->pm_targets[i].hb_pkt_params->dst_mac[4], spminfo->pm_targets[i].hb_pkt_params.dst_mac[5]);
 	}
 	kfree(current_ip);
 

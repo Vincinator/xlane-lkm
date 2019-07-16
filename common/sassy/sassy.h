@@ -48,7 +48,7 @@ struct sassy_heartbeat_payload {
 
 struct sassy_hb_packet_params {
 	uint32_t dst_ip; 			
-	unsigned char *dst_mac; 
+	unsigned char dst_mac[6]; 
 
 	/* pacemaker MUST copy in every loop. 
 	 * Thus, we need a copy of hb_payload to continue the copy in the pacemaker
@@ -76,7 +76,7 @@ struct sassy_pm_target_info {
 	int target_id;
 
 	/* Params used to build the SKB for TX */
-	struct sassy_hb_packet_params *hb_pkt_params;
+	struct sassy_hb_packet_params hb_pkt_params;
 
 	/* Data for transmitting the packet  */
     struct sk_buff *skb;

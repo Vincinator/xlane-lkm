@@ -151,13 +151,6 @@ int sassy_heart(void *data)
     sassy_setup_skbs(spminfo);
 
 
-    for(i = 0; i < spminfo->num_of_targets; i++) {
-        if(!spminfo->pm_targets[i].hb_pkt_params) {
-            sassy_error(" HB Target is not initialized");
-            return -1;
-        }
-    }
-
     pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
     get_cpu();                      /* disable preemption */
@@ -186,8 +179,8 @@ int sassy_heart(void *data)
         for(i = 0; i < spminfo->num_of_targets; i++) {
 
             // Always update payload to avoid jitter!
-            hb_active_ix    =  spminfo->pm_targets[i].hb_pkt_params->hb_active_ix;
-            hb_payload      = &spminfo->pm_targets[i].hb_pkt_params->hb_payload[hb_active_ix];
+            hb_active_ix    =  spminfo->pm_targets[i].hb_pkt_params.hb_active_ix;
+            hb_payload      = &spminfo->pm_targets[i].hb_pkt_params.hb_payload[hb_active_ix];
             sassy_update_skb_payload(spminfo->pm_targets[i].skb, hb_payload);
         
             sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
