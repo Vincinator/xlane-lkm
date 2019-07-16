@@ -183,12 +183,12 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 
 		if(i  >= MAX_REMOTE_SOURCES ){
 			sassy_error(" exceeded max of remote targets %d >= %d \n", i, MAX_REMOTE_SOURCES);
-			return ret;
+			return -EINVAL;
 		}
 
 		if(!spminfo->pm_targets[i].hb_pkt_params){
 			sassy_error(" target uninitialized.\n");
-			return ret;
+			return -EINVAL;
 		}
 
 		// TODO: Parse more input to hb_payload struct. 
@@ -202,13 +202,10 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 		sassy_dbg(" payload message: %02X\n", input_str[0] & 0xFF);
 		i++;
 
-		// No delimeters were found, finished processing.
-		if(strcmp(input_str, search_str) == 0)
-			break;
 	}
 
 out:
-	return ret;
+	return count;
 }
 
 static int sassy_payload_show(struct seq_file *m, void *v)
