@@ -225,10 +225,10 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 			continue;
 		}
 
-		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params->dst_ip);
+		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params.dst_ip);
 		seq_printf(m, "%s: \n", current_ip);
 		seq_hex_dump(m,"	",DUMP_PREFIX_OFFSET,
-		  32, 1, spminfo->pm_targets[i].hb_pkt_params->hb_payload ,sizeof(struct sassy_heartbeat_payload),
+		  32, 1, spminfo->pm_targets[i].hb_pkt_params.hb_payload ,sizeof(struct sassy_heartbeat_payload),
 		  false);
 	}
 
@@ -333,7 +333,7 @@ static int sassy_target_show(struct seq_file *m, void *v)
 		return -ENODEV;
 
 	for(i = 0; i < spminfo->num_of_targets; i++){
-		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params->dst_ip);
+		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params.dst_ip);
 		seq_printf(m, "(%s,", current_ip );
 		seq_printf(m, "%x:%x:%x:%x:%x:%x)\n", 
 			spminfo->pm_targets[i].hb_pkt_params.dst_mac[0], spminfo->pm_targets[i].hb_pkt_params.dst_mac[1],
