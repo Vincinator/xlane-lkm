@@ -177,12 +177,15 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
 		sassy_dbg(" reading: %s", input_str);
+
 		if(strcmp(input_str, "") == 0)
 			continue;
+
 		if(i  >= MAX_REMOTE_SOURCES ){
 			sassy_error(" exceeded max of remote targets %d >= %d \n", i, MAX_REMOTE_SOURCES);
 			break;
 		}
+
 		if(!spminfo->pm_targets[i].hb_pkt_params
 			|| spminfo->pm_targets[i].hb_pkt_params->hb_payload){
 			sassy_error(" target uninitialized.\n");
