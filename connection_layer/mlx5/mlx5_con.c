@@ -73,8 +73,10 @@ int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
 	sassy_dbg("SRC MAC=%pM", payload + headroom + 6);
 	sassy_dbg("SRC IP=%pI4", payload + headroom + 6 + 6 + 14);
 	sassy_dbg("DST IP=%pI4", payload + headroom + 6 + 6 + 14 + 4);
-	print_hex_dump(KERN_DEBUG, "Message: ", DUMP_PREFIX_NONE, 16, 1,
-					payload + headroom + 6 + 6 + 14 + 4 + 8, 16, 0);
+
+	print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
+					payload + headroom + 6 + 6 + 14 + 4 + 8, sizeof(struct sassy_heartbeat_payload), 0);
+	
 	return 0;
 }
 EXPORT_SYMBOL(sassy_mlx5_post_payload);

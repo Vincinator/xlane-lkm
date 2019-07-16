@@ -24,6 +24,20 @@ static struct sassy_core *score;
 static int device_counter = 0;
 
 
+void sassy_post_payload(int sassy_id, struct sassy_heartbeat_payload *hb_payload, unsigned char *remote_mac){
+
+    /* Check if mac_address and remote ID from hb_payload match */
+
+    /* Check if num of alive processes changed since last HB */
+
+        /* If changed -> write updates to rx buffer */
+
+        /* If nothing changed -> only */
+
+
+}
+
+
 void sassy_reset_remote_host_counter(int sassy_id){
     int i;
     struct sassy_rx_table *rxt;
