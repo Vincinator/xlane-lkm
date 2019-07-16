@@ -22,10 +22,6 @@ struct sassy_mlx5_con_info **infos;
 static int mlx5_devices = 0;
 
 
-int sassy_update_heartbeat_payload(int sassy_id ) {
-
-	return 0;
-}
 
 
 int sassy_mlx5_con_register_device(int ifindex) {
@@ -59,9 +55,8 @@ int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts) {
 EXPORT_SYMBOL(sassy_mlx5_post_optimistical_timestamp);
 
 int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom, u32 cqe_bcnt){
-
-
 	u8 *payload = (u8*) va;
+
 	sassy_dbg("sassy_id=%d\n", sassy_id);
 	sassy_dbg("frag_size=%u\n", frag_size);
 	sassy_dbg("cqe_bcnt=%u\n", cqe_bcnt);
@@ -74,8 +69,8 @@ int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
 	sassy_dbg("SRC IP=%pI4", payload + headroom + 6 + 6 + 14);
 	sassy_dbg("DST IP=%pI4", payload + headroom + 6 + 6 + 14 + 4);
 
-	print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
-					payload + headroom + 6 + 6 + 14 + 4 + 8, sizeof(struct sassy_heartbeat_payload), 0);
+	sassy_post_payload(sassy_id, payload + headroom + 6, 
+		(struct sassy_heartbeat_payload*)(payload + headroom + 6 + 6 + 14 + 4 + 8 + 4));
 	
 	return 0;
 }

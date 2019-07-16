@@ -24,7 +24,13 @@ static struct sassy_core *score;
 static int device_counter = 0;
 
 
-void sassy_post_payload(int sassy_id, struct sassy_heartbeat_payload *hb_payload, unsigned char *remote_mac){
+void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_heartbeat_payload *hb_payload){
+
+    u8 *payload_raw_ptr = (u8*) hb_payload;
+
+    // .. Test only ..
+    print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
+                    payload_raw_ptr, sizeof(struct sassy_heartbeat_payload), 0);
 
     /* Get remote id from remote_hosts hashtable */
         /* Check if remote_mac is already registered? */
