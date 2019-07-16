@@ -101,7 +101,7 @@ static ssize_t sassy_cpumgmt_write(struct file *file, const char __user *user_bu
 
 	size = min(sizeof(kernel_buffer) - 1, count);
 
-	sassy_error(" Write init count=%lu %s\n", count, __FUNCTION__);
+	sassy_dbg(" Write init count=%lu %s\n", count, __FUNCTION__);
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
@@ -178,22 +178,19 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
 		sassy_dbg(" reading: %s", input_str);
 
-		if(strcmp(input_str, "") == 0)
-			continue;
-
-		if(i  >= MAX_REMOTE_SOURCES ){
+		if(i >= MAX_REMOTE_SOURCES ){
 			sassy_error(" exceeded max of remote targets %d >= %d \n", i, MAX_REMOTE_SOURCES);
 			return -EINVAL;
 		}
 
-		if(!spminfo->pm_targets[i].hb_pkt_params){
+		if(!spminfo->pm_targets[i] || !spminfo->pm_targets[i].hb_pkt_params){
 			sassy_error(" target uninitialized.\n");
 			return -EINVAL;
 		}
 
 		// TODO: Parse more input to hb_payload struct. 
 		//		 Since this is only a test tool, prio for this task is low.
-
+	
 		// invert 0<->1 (and make sure {0,1} is the only possible input)
 		hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params->hb_active_ix);
 		spminfo->pm_targets[i].hb_pkt_params->hb_payload[hb_active_ix].message = input_str[0] & 0xFF;
