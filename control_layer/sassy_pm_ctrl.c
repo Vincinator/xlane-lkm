@@ -220,11 +220,6 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 
 	for(i=0; i < spminfo->num_of_targets; i++){
 
-		if(!spminfo->pm_targets[i].hb_pkt_params){
-			sassy_error("Target is uninitialized (%d)\n", i);
-			continue;
-		}
-
 		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params.dst_ip);
 		seq_printf(m, "%s: \n", current_ip);
 		seq_hex_dump(m,"	",DUMP_PREFIX_OFFSET,
