@@ -228,6 +228,11 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
         return -ENODEV;
     }
 
+    if(spminfo->state != SASSY_PM_READY) {
+        sassy_error(" Pacemaker is not in ready state! \n");
+        return -EPERM;
+    }
+
     sdev = container_of(spminfo, struct sassy_device, pminfo);
 
     if(!sdev){
