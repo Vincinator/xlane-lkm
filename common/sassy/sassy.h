@@ -154,4 +154,6 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac);
 int sassy_validate_sassy_device(int sassy_id);
 void sassy_reset_remote_host_counter(int sassy_id);
 
+void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_heartbeat_payload *hb_payload);
+
 #endif /* _SASSY_H_ */

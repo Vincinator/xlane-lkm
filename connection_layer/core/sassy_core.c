@@ -42,9 +42,9 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_he
     /* Update Ring Buffer with the given buffer ID */
         /* TODO: Copy hb_payload vs reference to DMA memory? */
         /* Update next index of ring buffer on success */
-    
 }
 
+EXPORT_SYMBOL(sassy_post_payload);
 
 void sassy_reset_remote_host_counter(int sassy_id){
     int i;
