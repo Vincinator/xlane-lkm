@@ -311,6 +311,7 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 
 	}
 	spminfo->num_of_targets = i;
+	sassy_dbg("Number of targets is now: %d\n", i);
 
 	return count;
 error:

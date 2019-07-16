@@ -212,6 +212,7 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
         return -1;
     }
 
+
     rxt = score->rx_tables[sassy_id];
 
     if(!rxt){

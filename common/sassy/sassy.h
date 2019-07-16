@@ -74,6 +74,7 @@ struct sassy_mlx5_con_info {
 
 struct sassy_pm_target_info {
 	int target_id;
+	int active; 
 
 	/* Params used to build the SKB for TX */
 	struct sassy_hb_packet_params hb_pkt_params;
