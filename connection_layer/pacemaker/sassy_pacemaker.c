@@ -272,8 +272,8 @@ int sassy_pm_reset(struct sassy_pacemaker_info *spminfo)
         sassy_error("No Device. %s\n", __FUNCTION__);
         return -ENODEV;
     }
-    
-    if(spminfo.state == SASSY_PM_EMITTING){
+
+    if(spminfo->state == SASSY_PM_EMITTING){
         sassy_error("Can not reset targets when pacemaker is running\n");
         return -EPERM;
     }
