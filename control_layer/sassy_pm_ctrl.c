@@ -336,9 +336,9 @@ static int sassy_target_show(struct seq_file *m, void *v)
 		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params->dst_ip);
 		seq_printf(m, "(%s,", current_ip );
 		seq_printf(m, "%x:%x:%x:%x:%x:%x)\n", 
-			spminfo->pm_targets[i].hb_pkt_params->dst_mac[0], spminfo->pm_targets[i].hb_pkt_params.dst_mac[1],
-			spminfo->pm_targets[i].hb_pkt_params->dst_mac[2], spminfo->pm_targets[i].hb_pkt_params.dst_mac[3],
-			spminfo->pm_targets[i].hb_pkt_params->dst_mac[4], spminfo->pm_targets[i].hb_pkt_params.dst_mac[5]);
+			spminfo->pm_targets[i].hb_pkt_params.dst_mac[0], spminfo->pm_targets[i].hb_pkt_params.dst_mac[1],
+			spminfo->pm_targets[i].hb_pkt_params.dst_mac[2], spminfo->pm_targets[i].hb_pkt_params.dst_mac[3],
+			spminfo->pm_targets[i].hb_pkt_params.dst_mac[4], spminfo->pm_targets[i].hb_pkt_params.dst_mac[5]);
 	}
 	kfree(current_ip);
 
