@@ -186,10 +186,9 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 			break;
 		}
 
-		if(!spminfo->pm_targets[i].hb_pkt_params
-			|| spminfo->pm_targets[i].hb_pkt_params->hb_payload){
+		if(!spminfo->pm_targets[i].hb_pkt_params){
 			sassy_error(" target uninitialized.\n");
-			continue;
+			return ret;
 		}
 
 		// TODO: Parse more input to hb_payload struct. 

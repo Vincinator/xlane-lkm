@@ -26,15 +26,17 @@ static int device_counter = 0;
 
 void sassy_post_payload(int sassy_id, struct sassy_heartbeat_payload *hb_payload, unsigned char *remote_mac){
 
-    /* Check if mac_address and remote ID from hb_payload match */
+    /* Get remote id from remote_hosts hashtable */
+        /* Check if remote_mac is already registered? */
+            /* yes: does the remote_id match the remote_id from payload?*/
+                /* no: Throw an Error and Drop packet (error handling) */
 
-    /* Check if num of alive processes changed since last HB */
+    /* Get Buffer ID from remote_hosts hashtable entry */
 
-        /* If changed -> write updates to rx buffer */
-
-        /* If nothing changed -> only */
-
-
+    /* Update Ring Buffer with the given buffer ID */
+        /* TODO: Copy hb_payload vs reference to DMA memory? */
+        /* Update next index of ring buffer on success */
+    
 }
 
 
