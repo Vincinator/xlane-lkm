@@ -91,6 +91,7 @@ int sassy_core_register_nic(int ifindex)
 {
     char name_buf[MAX_SYNCBEAT_PROC_NAME];
     int sassy_id;
+    int i;
 
     sassy_dbg("register nic at sassy core\n");
 
@@ -230,7 +231,7 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
     pmtarget->hb_pkt_params.hb_active_ix = 0;
     pmtarget->hb_pkt_params.dst_ip = ip;
     memcpy(&pmtarget->hb_pkt_params.dst_mac, mac, sizeof(unsigned char) * 6);
-    
+
     sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 
     return 0;
