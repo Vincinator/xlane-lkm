@@ -46,7 +46,7 @@ struct sassy_protocol {
 
 	int protocol_id;
 
-	char name[MAX_APP_NAME]; 
+	char name[128]; 
 
 	struct sassy_protocol_ctrl_ops ctrl_ops;
 
