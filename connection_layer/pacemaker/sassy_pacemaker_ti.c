@@ -33,7 +33,7 @@ static ssize_t sassy_test_procfile_write(struct file *file, const char __user *u
 {
 	int err;
 	char kernel_buffer[count+1];
-	struct sassy_test_procfile_container *container = (struct sassy_test_procfile_container*) m->private;
+	struct sassy_test_procfile_container *container = (struct sassy_test_procfile_container*)PDE_DATA(file_inode(file));
 	struct sassy_pacemaker_info *spminfo = container->spminfo;
 
 	long state = -1;
