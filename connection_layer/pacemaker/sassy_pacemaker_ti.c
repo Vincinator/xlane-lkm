@@ -21,7 +21,6 @@
 
 
 void sassy_pm_test_update_proc_state(struct sassy_pacemaker_info *spminfo, int procid, int state){
-	int procid = container->procid;
 	struct sassy_process_info *cur_pinfo = &spminfo->tdata.pinfos[procid];
 	
 	cur_pinfo->ps = state & 0xFF;
