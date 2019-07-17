@@ -16,9 +16,6 @@
 #include "avail_protos_info_ops.h"
 
 
-LIST_HEAD(available_protocols_l) ;
-
-
 static const struct file_operations sassy_proto_info_ops = {
 		.owner	= THIS_MODULE,
 		.open	= proto_info_open,
