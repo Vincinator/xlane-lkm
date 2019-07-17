@@ -12,9 +12,10 @@ clean:
 
 else
 EXTRA_CFLAGS+=-I$(src)/../../common/
+EXTRA_CFLAGS+=-I$(src)/include/
 
-obj-y := sassy_app_fd.o
-sassy_app_fd-objs := sassy_app_fd.o
-
+obj-y := sassy_fd.o sassy_fd_tx.o
+sassy_app_fd-objs := sassy_fd.o
+sassy_fd_tx-objs := tx/sassy_fd_tx_ctrl.o
 
 endif

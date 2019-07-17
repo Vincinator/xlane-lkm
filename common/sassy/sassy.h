@@ -24,6 +24,40 @@
 int sassy_core_register_nic(int ifindex);
 
 
+
+struct sassy_protocol_ctrl_ops {
+
+	/* Initializes data and user space interfaces */
+	int (*init)(struct sassy_device*);
+
+	int (*start)(struct sassy_device*);
+
+	int (*stop)(struct sassy_device*);
+
+	/* free memory of app and remove user space interfaces */
+	int (*clean) (struct sassy_device*);
+
+	/* get statistics of application and write it to buff */
+	int (*info)(struct sassy_device*, char *, size_t);
+};
+
+
+struct sassy_protocol {
+
+	int protocol_id;
+
+	char name[MAX_APP_NAME]; 
+
+	struct sassy_protocol_ctrl_ops ctrl_ops;
+
+	struct list_head sassy_app_list_head;
+
+	/* private data of protocol handling */
+	void *priv;
+
+};
+
+
 enum sassy_pacemaker_test_state {
 	SASSY_PM_TEST_UNINIT = 0,
 	SASSY_PM_TEST_INIT = 1,
@@ -123,6 +157,9 @@ struct sassy_device {
 	/* SASSY CTRL Structures */
 	struct sassy_pacemaker_info 	pminfo;	
 
+	/* Can only use one protocol at a time. */
+	struct sassy_protocol *protocol;
+
 };
 
 
@@ -180,5 +217,6 @@ void sassy_pm_test_create_processes(struct sassy_pacemaker_info *spminfo, int nu
 
 
 void sassy_pm_test_clear_all_processes(struct sassy_pacemaker_info *spminfo);
+
 
 #endif /* _SASSY_H_ */
