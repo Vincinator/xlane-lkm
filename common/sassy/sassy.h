@@ -41,8 +41,9 @@ struct sassy_protocol_ctrl_ops {
 	/* free memory of app and remove user space interfaces */
 	int (*clean) (struct sassy_device*);
 
-	/* get statistics of application and write it to buff */
-	int (*info)(struct sassy_device*, char *, size_t);
+	/* Write statistics to debug console  */
+	int (*info)(struct sassy_device*);
+
 };
 
 
