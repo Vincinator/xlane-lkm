@@ -3,6 +3,7 @@
 #include <linux/seq_file.h>
 #include <linux/kthread.h>
 #include <linux/sched.h>
+#include <linux/uaccess.h>
 
 #include <linux/kernel.h>
 
