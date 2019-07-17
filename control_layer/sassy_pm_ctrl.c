@@ -398,8 +398,6 @@ static int sassy_test_ctrl_show(struct seq_file *m, void *v)
 	else
 		seq_printf(m, "active dummy user space processes: %d", spminfo->tdata.active_processes);
 	
-	kfree(current_ip);
-
 	return 0;
 }
 
