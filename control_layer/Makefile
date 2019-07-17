@@ -1,2 +1,0 @@
-EXTRA_CFLAGS+=-I$(src)/../common/
-
