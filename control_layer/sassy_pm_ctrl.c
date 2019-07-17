@@ -358,10 +358,8 @@ static ssize_t sassy_test_ctrl_write(struct file *file, const char __user *user_
 	if (!spminfo)
 		return -ENODEV;
 
-	if (count == 0) {
-		err = -EINVAL;
-		goto error;
-	}
+	if (count == 0)
+		return -EINVAL;
 
 	err = copy_from_user(kernel_buffer, buffer, count);
 
