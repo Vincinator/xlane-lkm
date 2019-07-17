@@ -13,6 +13,10 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/err.h>
+
+#include <linux/list.h>
+
+
 #include "available_info/avail_protos_mgmt.h"
 
 LIST_HEAD(available_protocols_l);

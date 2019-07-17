@@ -8,6 +8,16 @@
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
 
+#include <linux/list.h>
+
+#include <linux/proc_fs.h>
+#include <linux/seq_file.h>
+#include <linux/slab.h>
+#include <linux/uaccess.h>
+#include <linux/module.h>
+
+#include <linux/err.h>
+
 
 /* 
  * Selects protocol <sproto> for sassy device <sdev>. 
