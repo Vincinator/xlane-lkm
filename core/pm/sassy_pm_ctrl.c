@@ -377,7 +377,6 @@ static ssize_t sassy_test_ctrl_write(struct file *file, const char __user *user_
 		return err;
 	}
 
-	sassy_pm_test_create_processes(spminfo, new_active_processes);
 
 	sassy_dbg("created %d active user space");
 

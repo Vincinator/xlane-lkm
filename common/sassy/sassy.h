@@ -220,11 +220,6 @@ void sassy_reset_remote_host_counter(int sassy_id);
 
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_heartbeat_payload *hb_payload);
 
-void sassy_pm_test_create_processes(struct sassy_pacemaker_info *spminfo, int num_of_proc);
-
-
-void sassy_pm_test_clear_all_processes(struct sassy_pacemaker_info *spminfo);
-
 
 int sassy_register_protocol(struct sassy_protocol *proto);
 int sassy_remove_protocol(struct sassy_protocol *proto);
