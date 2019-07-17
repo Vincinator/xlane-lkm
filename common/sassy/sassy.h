@@ -165,7 +165,7 @@ struct sassy_device {
 	struct sassy_pacemaker_info 	pminfo;	
 
 	/* Can only use one protocol at a time. */
-	struct sassy_protocol *protocol;
+	struct sassy_protocol *proto;
 
 };
 

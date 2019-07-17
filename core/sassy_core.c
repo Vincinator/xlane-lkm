@@ -132,7 +132,7 @@ int sassy_core_register_nic(int ifindex)
 
     /* Initialize Control Interfaces for NIC */
     init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
-
+    init_proto_selector(score->sdevices[sassy_id]);
 
 
     /* Initialize Component States*/
@@ -157,6 +157,8 @@ int sassy_core_remove_nic(int sassy_id)
 
     /* Remove Ctrl Interfaces for NIC */
     clean_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
+    remove_proto_selector(score->sdevices[sassy_id]);
+
 
     snprintf(name_buf,  sizeof name_buf, "sassy/%d", score->sdevices[sassy_id]->ifindex);
     proc_mkdir(name_buf, NULL);
@@ -287,6 +289,8 @@ static int __init sassy_connection_core_init(void)
     
     // /proc/sassy/<id>/protocols/<protos>
     init_sassy_proto_info_interfaces();
+
+
 
 
     sassy_dbg("init done\n");
