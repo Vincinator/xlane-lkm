@@ -396,7 +396,7 @@ static int sassy_test_ctrl_show(struct seq_file *m, void *v)
 	if(spminfo->state == SASSY_PM_TEST_UNINIT)
 		seq_printf(m, "Not Initialized\n");
 	else
-		seq_printf(m, "active dummy user space processes: %d", spminfo->active_processes);
+		seq_printf(m, "active dummy user space processes: %d", spminfo->tdata.active_processes);
 	
 	kfree(current_ip);
 
