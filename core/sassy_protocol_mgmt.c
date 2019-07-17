@@ -5,6 +5,11 @@
 #include <linux/list.h>
 
 #include <linux/kernel.h>
+#include <linux/proc_fs.h>
+#include <linux/seq_file.h>
+#include <linux/slab.h>
+#include <linux/uaccess.h>
+#include <linux/module.h>
 
 LIST_HEAD(available_protocols_l) ;
 
