@@ -13,7 +13,7 @@
 
 #include <linux/err.h>
 
-#include "sassy_proto_info_ops.h"
+#include "avail_protos_info_ops.h"
 
 
 LIST_HEAD(available_protocols_l) ;
