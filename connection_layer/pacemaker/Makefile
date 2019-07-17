@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0
+#
+# Makefile for the SASSY pacemaker
+#
 
 EXTRA_CFLAGS += -I$(src)/../../common/
 obj-y := sassy_pm.o
