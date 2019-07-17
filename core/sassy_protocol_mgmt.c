@@ -4,6 +4,7 @@
 
 #include <linux/list.h>
 
+#include <linux/kernel.h>
 
 LIST_HEAD(available_protocols_l) ;
 
