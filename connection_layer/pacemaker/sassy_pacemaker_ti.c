@@ -42,8 +42,7 @@ static ssize_t sassy_test_procfile_write(struct file *file, const char __user *u
 		return -ENODEV;
 
 	if (count == 0) {
-		err = -EINVAL;
-		goto error;
+		return -EINVAL;
 	}
 
 	err = copy_from_user(kernel_buffer, buffer, count);
