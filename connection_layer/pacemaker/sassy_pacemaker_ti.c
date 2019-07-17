@@ -22,7 +22,7 @@
 
 void sassy_pm_test_update_proc_state(struct sassy_pacemaker_info *spminfo, int procid, int state){
 	int procid = container->procid;
-	struct sassy_process_info *cur_pinfo = spminfo->tdata.pinfos[procid];
+	struct sassy_process_info *cur_pinfo = &spminfo->tdata.pinfos[procid];
 	
 	cur_pinfo->ps = state & 0xFF;
 	sassy_dbg("Process %d updated state to %hhu", procid, cur_pinfo->ps);
@@ -73,7 +73,7 @@ static int sassy_test_procfile_show(struct seq_file *m, void *v)
 	struct sassy_test_procfile_container *container = (struct sassy_test_procfile_container*) m->private;
 	struct sassy_pacemaker_info *spminfo = container->spminfo;
 	int procid = container->procid;
-	struct sassy_process_info *cur_pinfo = spminfo->tdata.pinfos[procid];
+	struct sassy_process_info *cur_pinfo = &spminfo->tdata.pinfos[procid];
 
 	int i;
 
@@ -122,7 +122,7 @@ void sassy_pm_create_test_procfile(struct sassy_test_procfile_container *contain
 
 void sassy_pm_create_test_data(struct sassy_pacemaker_info *spminfo, int procid) {
 
-	struct sassy_process_info *cur_pinfo = spminfo->tdata.pinfos[procid];
+	struct sassy_process_info *cur_pinfo = &spminfo->tdata.pinfos[procid];
 
 	cur_pinfo->pid 	=  procid & 0xFF;		/* procid must fit in one byte (aka <= 255) */
 	cur_pinfo->ps 	=  1;					/* Init proc as running */
