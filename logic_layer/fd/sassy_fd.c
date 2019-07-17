@@ -41,6 +41,7 @@ static int __init sassy_fd_init(void)
 
 	sassy_dbg("init\n");
 
+	sassy_register_protocol(&fd_protocol);
 	return 0;
 }
 
@@ -49,7 +50,8 @@ static void __exit sassy_fd_exit(void)
 {
 
 	sassy_dbg("exit\n");
-
+	
+	sassy_remove_protocol(&fd_protocol);
 }
 
 

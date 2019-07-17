@@ -1,6 +1,8 @@
 #ifndef _SASSY_H_
 #define _SASSY_H_
 
+#include <linux/list.h>
+
 
 #define MAX_SYNCBEAT_PROC_NAME  64
 
@@ -50,7 +52,8 @@ struct sassy_protocol {
 
 	struct sassy_protocol_ctrl_ops ctrl_ops;
 
-	struct list_head sassy_app_list_head;
+    struct list_head listh;
+
 
 	/* private data of protocol handling */
 	void *priv;
@@ -218,5 +221,8 @@ void sassy_pm_test_create_processes(struct sassy_pacemaker_info *spminfo, int nu
 
 void sassy_pm_test_clear_all_processes(struct sassy_pacemaker_info *spminfo);
 
+
+int sassy_register_protocol(struct sassy_protocol *proto);
+int sassy_remove_protocol(struct sassy_protocol *proto);
 
 #endif /* _SASSY_H_ */
