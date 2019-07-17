@@ -74,8 +74,8 @@ static int proto_selector_open(struct inode *inode, struct file *file)
 
 static const struct file_operations proto_selector_ops = {
 		.owner	= THIS_MODULE,
-		.open	= proto_info_open,
-		.write	= proto_info_write,
+		.open	= proto_selector_open,
+		.write	= proto_selector_write,
 		.read	= seq_read,
 		.llseek	= seq_lseek,
 		.release = single_release,
