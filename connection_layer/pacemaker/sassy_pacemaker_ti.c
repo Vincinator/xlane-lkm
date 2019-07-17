@@ -81,8 +81,6 @@ static int sassy_test_procfile_show(struct seq_file *m, void *v)
 	
 	seq_printf(m, "state: %hhu", cur_pinfo->ps);
 	
-	kfree(current_ip);
-
 	return 0;
 }
 
