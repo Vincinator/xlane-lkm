@@ -114,8 +114,8 @@ void sassy_pm_create_test_procfile(struct sassy_test_procfile_container *contain
 		return;
 	}
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test/%d", sdev->ifindex, procid);
-	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_test_ctrl_ops, container);
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test/%d", sdev->ifindex, container->procid);
+	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_test_procfile_ops, container);
 
 
 }
@@ -124,29 +124,29 @@ void sassy_pm_create_test_data(struct sassy_pacemaker_info *spminfo, int procid)
 
 	struct sassy_process_info *cur_pinfo = spminfo->tdata.pinfos[procid];
 
-	cur_pinfo.pid 	=  procid & 0xFF;		/* procid must fit in one byte (aka <= 255) */
-	cur_pinfo.ps 	=  1;					/* Init proc as running */
+	cur_pinfo->pid 	=  procid & 0xFF;		/* procid must fit in one byte (aka <= 255) */
+	cur_pinfo->ps 	=  1;					/* Init proc as running */
 
 }
 
 void sassy_pm_test_create_processes(struct sassy_pacemaker_info *spminfo, int num_of_proc){
-	struct sassy_test_procfile_container **container;
+	struct sassy_test_procfile_container **containers;
 	int i;
 
 	if(num_of_proc >= MAX_PROCESSES_PER_HOST) {
 		sassy_error("Can not create %d processes - SASSY Proc Limit is %d", num_of_proc, MAX_PROCESSES_PER_HOST);
 	}
 
-	container = kmalloc_array(num_of_proc, sizeof(struct sassy_test_procfile_container *), GFP_KERNEL);
+	containers = kmalloc_array(num_of_proc, sizeof(struct sassy_test_procfile_container *), GFP_KERNEL);
 	for(i=0; i<num_of_proc;i++){
 		
-		container[i] = kmalloc(sizeof(struct sassy_test_procfile_container),GFP_KERNEL);
+		containers[i] = kmalloc(sizeof(struct sassy_test_procfile_container),GFP_KERNEL);
 
-		container[i]->procid = i;
-		container[i]->spminfo = spminfo;
+		containers[i]->procid = i;
+		containers[i]->spminfo = spminfo;
 
 		sassy_pm_create_test_data(spminfo, i);
-		sassy_pm_create_test_procfile(container);
+		sassy_pm_create_test_procfile(containers[i]);
 	}
 
 	spminfo->tdata.active_processes = num_of_proc;
