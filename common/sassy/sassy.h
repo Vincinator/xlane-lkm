@@ -176,4 +176,9 @@ void sassy_reset_remote_host_counter(int sassy_id);
 
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_heartbeat_payload *hb_payload);
 
+void sassy_pm_test_create_processes(struct sassy_pacemaker_info *spminfo, int num_of_proc);
+
+
+
+
 #endif /* _SASSY_H_ */

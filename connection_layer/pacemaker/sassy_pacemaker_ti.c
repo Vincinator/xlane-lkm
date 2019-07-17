@@ -147,3 +147,4 @@ void sassy_pm_test_create_processes(struct sassy_pacemaker_info *spminfo, int nu
 
 	spminfo->tdata.active_processes = num_of_proc;
 }
+EXPORT_SYMBOL(sassy_pm_test_create_processes);
