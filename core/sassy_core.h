@@ -55,4 +55,9 @@ struct sassy_core {
 
 };
 
+
+
+void init_sassy_proto_ctrl_interfaces(struct sassy_device *sdev);
+void clean_sassy_proto_ctrl_interfaces(struct sassy_device *sdev);
+
 #endif /* _SASSY_DEV_H_ */

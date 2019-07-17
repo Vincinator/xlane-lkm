@@ -134,8 +134,12 @@ int sassy_core_register_nic(int ifindex)
     init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
 
 
+
     /* Initialize Component States*/
     pm_state_transition_to(&score->sdevices[sassy_id]->pminfo, SASSY_PM_UNINIT);
+
+
+
 
     return sassy_id;
 }
@@ -250,6 +254,9 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
 EXPORT_SYMBOL(sassy_core_register_remote_host);
 
 
+
+
+
 static int __init sassy_connection_core_init(void)
 {
     sassy_dbg("init\n");
@@ -277,6 +284,10 @@ static int __init sassy_connection_core_init(void)
 
 
     proc_mkdir("sassy", NULL);
+    
+    // /proc/sassy/<id>/protocols/<protos>
+    init_sassy_proto_info_interfaces();
+
 
     sassy_dbg("init done\n");
 
@@ -296,6 +307,8 @@ static void __exit sassy_connection_core_exit(void)
 
     kfree(score);
 
+    // /proc/sassy/<id>/protocols/<protos>
+    clean_sassy_proto_info_interfaces();
 
 
     sassy_dbg("cleanup done\n");

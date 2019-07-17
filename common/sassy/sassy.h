@@ -29,6 +29,8 @@ int sassy_core_register_nic(int ifindex);
 
 struct sassy_protocol_ctrl_ops {
 
+	int (*init_ctrl)(void);
+
 	/* Initializes data and user space interfaces */
 	int (*init)(struct sassy_device*);
 

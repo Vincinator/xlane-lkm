@@ -495,11 +495,13 @@ void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/targets", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 	
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test", sdev->ifindex);
+	remove_proc_entry(name_buf, NULL);
+	
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test", sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
+
 
 }
 EXPORT_SYMBOL(clean_sassy_pm_ctrl_interfaces);
