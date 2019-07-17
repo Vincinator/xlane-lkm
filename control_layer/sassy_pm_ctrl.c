@@ -361,7 +361,7 @@ static ssize_t sassy_test_ctrl_write(struct file *file, const char __user *user_
 	if (count == 0)
 		return -EINVAL;
 
-	err = copy_from_user(kernel_buffer, buffer, count);
+	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
 		sassy_error("Copy from user failed%s\n", __FUNCTION__);
