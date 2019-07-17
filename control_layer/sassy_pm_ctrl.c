@@ -365,7 +365,7 @@ static ssize_t sassy_test_ctrl_write(struct file *file, const char __user *user_
 
 	if (err) {
 		sassy_error("Copy from user failed%s\n", __FUNCTION__);
-		goto error;
+		return err;
 	}
 
 	kernel_buffer[count] = '\0';
@@ -374,7 +374,7 @@ static ssize_t sassy_test_ctrl_write(struct file *file, const char __user *user_
 
 	if (err) {
 		sassy_error(" Error converting input%s\n", __FUNCTION__);
-		goto error;
+		return err;
 	}
 
 	sassy_pm_test_create_processes(spminfo, new_active_processes);
