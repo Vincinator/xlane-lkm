@@ -179,6 +179,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_he
 void sassy_pm_test_create_processes(struct sassy_pacemaker_info *spminfo, int num_of_proc);
 
 
-
+void sassy_pm_test_clear_all_processes(struct sassy_pacemaker_info *spminfo);
 
 #endif /* _SASSY_H_ */

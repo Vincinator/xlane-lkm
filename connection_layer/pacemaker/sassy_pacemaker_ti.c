@@ -24,7 +24,10 @@ void sassy_pm_test_update_proc_state(struct sassy_pacemaker_info *spminfo, int p
 	struct sassy_process_info *cur_pinfo = &spminfo->tdata.pinfos[procid];
 	
 	cur_pinfo->ps = state & 0xFF;
-	sassy_dbg("Process %d updated state to %hhu", procid, cur_pinfo->ps);
+	sassy_dbg("Process %d updated state to %hhu\n", procid, cur_pinfo->ps);
+
+	/* Update Payload! */
+
 }
 
 
@@ -62,7 +65,7 @@ static ssize_t sassy_test_procfile_write(struct file *file, const char __user *u
 
 	sassy_pm_test_update_proc_state(spminfo, container->procid, state);
 
-	sassy_dbg("created %d active user space");
+	sassy_dbg("created %d active user space\n", container->procid);
 
 }
 
@@ -122,9 +125,39 @@ void sassy_pm_create_test_data(struct sassy_pacemaker_info *spminfo, int procid)
 
 	cur_pinfo->pid 	=  procid & 0xFF;		/* procid must fit in one byte (aka <= 255) */
 	cur_pinfo->ps 	=  1;					/* Init proc as running */
+}
+
+
+void sassy_pm_remove_procfile(struct sassy_pacemaker_info *spminfo, int procid){
+	struct sassy_device *sdev = container_of(spminfo, struct sassy_device, pminfo);
+
+	if(!sdev){
+		sassy_error("Could not find sdev\n");
+		return;
+	}
+
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test/%d", sdev->ifindex, procid);
+	remove_proc_entry(name_buf, NULL);
 
 }
 
+void sassy_pm_test_clear_all_processes(struct sassy_pacemaker_info *spminfo) {
+	int i;
+
+
+	for(i=0; i < spminfo->tdata.active_processes; i++){
+		sassy_pm_remove_procfile(spminfo, i);
+	}
+	spminfo->tdata.state = SASSY_PM_TEST_UNINIT;
+	spminfo->tdata.active_processes = 0;
+
+}
+EXPORT_SYMBOL(sassy_pm_test_clear_all_processes);
+
+
+/* if num_of_proc > 0: create dummy proc files
+ * else: clear and remove exisiting dummy proc files
+ */
 void sassy_pm_test_create_processes(struct sassy_pacemaker_info *spminfo, int num_of_proc){
 	struct sassy_test_procfile_container **containers;
 	int i;
@@ -133,18 +166,23 @@ void sassy_pm_test_create_processes(struct sassy_pacemaker_info *spminfo, int nu
 		sassy_error("Can not create %d processes - SASSY Proc Limit is %d", num_of_proc, MAX_PROCESSES_PER_HOST);
 	}
 
-	containers = kmalloc_array(num_of_proc, sizeof(struct sassy_test_procfile_container *), GFP_KERNEL);
-	for(i=0; i<num_of_proc;i++){
-		
-		containers[i] = kmalloc(sizeof(struct sassy_test_procfile_container),GFP_KERNEL);
+	// Clear previous processes
+	sassy_pm_test_clear_all_processes(spminfo);
 
-		containers[i]->procid = i;
-		containers[i]->spminfo = spminfo;
+	if(num_of_proc > 0) {
+		containers = kmalloc_array(num_of_proc, sizeof(struct sassy_test_procfile_container *), GFP_KERNEL);
+		for(i=0; i<num_of_proc;i++){
+			containers[i] = kmalloc(sizeof(struct sassy_test_procfile_container),GFP_KERNEL);
 
-		sassy_pm_create_test_data(spminfo, i);
-		sassy_pm_create_test_procfile(containers[i]);
+			containers[i]->procid = i;
+			containers[i]->spminfo = spminfo;
+
+			sassy_pm_create_test_data(spminfo, i);
+			sassy_pm_create_test_procfile(containers[i]);
+		}
+		spminfo->tdata.state = SASSY_PM_TEST_INIT;
+		spminfo->tdata.active_processes = num_of_proc;
 	}
 
-	spminfo->tdata.active_processes = num_of_proc;
 }
 EXPORT_SYMBOL(sassy_pm_test_create_processes);
