@@ -391,7 +391,7 @@ static int sassy_test_ctrl_show(struct seq_file *m, void *v)
 	if (!spminfo)
 		return -ENODEV;
 
-	if(spminfo->state == SASSY_PM_TEST_UNINIT)
+	if(spminfo->tdata.state == SASSY_PM_TEST_UNINIT)
 		seq_printf(m, "Not Initialized\n");
 	else
 		seq_printf(m, "active dummy user space processes: %d", spminfo->tdata.active_processes);
