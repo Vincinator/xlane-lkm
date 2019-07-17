@@ -2,6 +2,7 @@
 #define _SASSY_H_
 
 #include <linux/list.h>
+#include <linux/spinlock_types.h>
 
 
 #define MAX_SYNCBEAT_PROC_NAME  64

@@ -11,6 +11,8 @@
 #include <linux/uaccess.h>
 #include <linux/module.h>
 
+#include <linux/err.h>
+
 LIST_HEAD(available_protocols_l) ;
 
 
