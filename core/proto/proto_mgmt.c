@@ -3,7 +3,7 @@
  */
 
 
-#include "sassy_core.h"
+#include "../sassy_core.h"
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
 #include <linux/list.h>
