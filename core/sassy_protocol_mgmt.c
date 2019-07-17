@@ -102,7 +102,7 @@ int sassy_remove_protocol(struct sassy_protocol *proto) {
 
 	sassy_remove_protocol_info_iface(proto);
 
-	list_del(&proto->listh, &available_protocols_l);
+	list_del(&proto->listh);
 
 	return 0;
 }
