@@ -49,7 +49,7 @@ static ssize_t sassy_test_procfile_write(struct file *file, const char __user *u
 
 	if (err) {
 		sassy_error("Copy from user failed%s\n", __FUNCTION__);
-		goto error;
+		return err;
 	}
 
 	kernel_buffer[count] = '\0';
@@ -58,7 +58,7 @@ static ssize_t sassy_test_procfile_write(struct file *file, const char __user *u
 
 	if (err) {
 		sassy_error(" Error converting input%s\n", __FUNCTION__);
-		goto error;
+		return err;
 	}
 
 	sassy_pm_test_update_proc_state(spminfo, container->procid, state);
