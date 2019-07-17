@@ -12,7 +12,7 @@ clean:
 
 else
 
-EXTRA_CFLAGS+=-I$(src)/../../common/
+EXTRA_CFLAGS += -I$(src)/../../common/
 
 
 obj-y := sassycore.o
