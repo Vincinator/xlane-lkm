@@ -23,6 +23,12 @@
 
 int sassy_core_register_nic(int ifindex);
 
+
+enum sassy_pacemaker_test_state {
+	SASSY_PM_TEST_UNINIT = 0,
+	SASSY_PM_TEST_INIT = 1,
+};
+
 enum sassy_pacemaker_state {
 	SASSY_PM_UNINIT = 0,
 	SASSY_PM_READY = 1,
@@ -33,16 +39,16 @@ typedef enum sassy_pacemaker_state sassy_pacemaker_state_t;
 
 
 
-struct sassy_remote_process_info {
-	u8 rpid;	/* Process ID on remote host */
-	u8 rps;		/* Status of remote process */
+struct sassy_process_info {
+	u8 pid;		/* Process ID on remote host */
+	u8 ps;		/* Status of remote process */
 };
 
 
 struct sassy_heartbeat_payload {
 	u8 message;							/* short message bundled with this hb */
 	u8 alive_rp;						/* Number of alive processes */
-	struct sassy_remote_process_info rpinfo[MAX_PROCESSES_PER_HOST];
+	struct sassy_process_info pinfo[MAX_PROCESSES_PER_HOST];
 };
 
 
@@ -72,6 +78,12 @@ struct sassy_mlx5_con_info {
 	int cqn;
 };
 
+struct sassy_pacemaker_test_data {
+	enum sassy_pacemaker_test_state state;
+	int active_processes; 		/* Number of active processes */
+	struct sassy_process_info	pinfos[MAX_PROCESSES_PER_HOST];
+};
+
 struct sassy_pm_target_info {
 	int target_id;
 	int active; 
@@ -82,8 +94,13 @@ struct sassy_pm_target_info {
 	/* Data for transmitting the packet  */
     struct sk_buff *skb;
     struct netdev_queue *txq;
+
 };
 
+struct sassy_test_procfile_container {
+	struct sassy_pacemaker_info *spminfo;
+	int procid;
+};
 
 struct sassy_pacemaker_info {
 	enum sassy_pacemaker_state state;
@@ -92,6 +109,9 @@ struct sassy_pacemaker_info {
 
 	int num_of_targets;
 	struct sassy_pm_target_info pm_targets[MAX_REMOTE_SOURCES];
+
+	/* Test Data */
+    struct sassy_pacemaker_test_data tdata;
 };
 
 struct sassy_device {

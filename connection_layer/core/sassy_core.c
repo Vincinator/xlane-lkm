@@ -123,7 +123,10 @@ int sassy_core_register_nic(int ifindex)
     score->sdevices[sassy_id]->sassy_id = sassy_id;
     score->sdevices[sassy_id]->ndev = sassy_get_netdevice(ifindex);
     score->sdevices[sassy_id]->pminfo.num_of_targets = 0;
-
+    
+    /* Test Init */
+    score->sdevices[sassy_id]->pminfo.tdata.state = SASSY_PM_TEST_UNINIT;
+    
     snprintf(name_buf,  sizeof name_buf, "sassy/%d", ifindex);
     proc_mkdir(name_buf, NULL);
 

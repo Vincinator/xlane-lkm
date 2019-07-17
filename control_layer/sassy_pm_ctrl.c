@@ -347,6 +347,68 @@ static int sassy_target_open(struct inode *inode, struct file *file)
 }
 
 
+
+static ssize_t sassy_test_ctrl_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
+{
+	int err;
+	char kernel_buffer[count+1];
+	struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info*)PDE_DATA(file_inode(file));
+	long new_active_processes = -1;
+
+	if (!spminfo)
+		return -ENODEV;
+
+	if (count == 0) {
+		err = -EINVAL;
+		goto error;
+	}
+
+	err = copy_from_user(kernel_buffer, buffer, count);
+
+	if (err) {
+		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		goto error;
+	}
+
+	kernel_buffer[count] = '\0';
+
+	err = kstrtol(kernel_buffer, 0, &new_active_processes);
+
+	if (err) {
+		sassy_error(" Error converting input%s\n", __FUNCTION__);
+		goto error;
+	}
+
+	sassy_pm_test_create_processes(spminfo, new_active_processes);
+
+	sassy_dbg("created %d active user space");
+
+}
+
+static int sassy_test_ctrl_show(struct seq_file *m, void *v)
+{
+	struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info*) m->private;
+	int i;
+
+	if (!spminfo)
+		return -ENODEV;
+
+	if(spminfo->state == SASSY_PM_TEST_UNINIT)
+		seq_printf(m, "Not Initialized\n")M
+	else
+		seq_printf(m, "active dummy user space processes: %d", spminfo->active_processes);
+	
+	kfree(current_ip);
+
+	return 0;
+}
+
+static int sassy_test_ctrl_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, sassy_test_ctrl_show,PDE_DATA(file_inode(file)));
+}
+
+
 static const struct file_operations sassy_target_ops = {
 		.owner	= THIS_MODULE,
 		.open	= sassy_target_open,
@@ -383,6 +445,15 @@ static const struct file_operations sassy_payload_ops = {
 		.release = single_release,
 };
 
+static const struct file_operations sassy_test_ctrl_ops = {
+		.owner	= THIS_MODULE,
+		.open	= sassy_test_ctrl_open,
+		.write	= sassy_test_ctrl_write,
+		.read	= seq_read,
+		.llseek	= seq_lseek,
+		.release = single_release,
+};
+
 
 void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 {
@@ -391,9 +462,15 @@ void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 	snprintf(name_buf,  sizeof name_buf, "sassy/%d/pacemaker", sdev->ifindex);
 	proc_mkdir(name_buf, NULL);
 
+	snprintf(name_buf,  sizeof name_buf, "sassy/%d/pacemaker/test", sdev->ifindex);
+	proc_mkdir(name_buf, NULL);
+
+
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test/ctrl", sdev->ifindex);
+	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_test_ctrl_ops, &sdev->pminfo);
+
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/payload", sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_payload_ops, &sdev->pminfo);
-
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/ctrl", sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_hb_ctrl_ops, &sdev->pminfo);
@@ -427,5 +504,9 @@ void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 	
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
+
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test", sdev->ifindex);
+	remove_proc_entry(name_buf, NULL);
+
 }
 EXPORT_SYMBOL(clean_sassy_pm_ctrl_interfaces);
