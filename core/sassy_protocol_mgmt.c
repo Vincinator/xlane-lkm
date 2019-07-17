@@ -84,7 +84,7 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 	/* Initialize /proc/sassy/protocols/<name> interface */
 	sassy_register_protocol_info_iface(proto);
 
-	sassy_dbg("Added protocol: %s"proto->name);
+	sassy_dbg("Added protocol: %s",proto->name);
 
 	return 0;
 }
