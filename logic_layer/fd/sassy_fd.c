@@ -4,7 +4,7 @@
 #include <sassy/logger.h>
 #include <sassy/sassy.h>
 
-#include "include/sassy_app_fd_ops.h"
+#include "include/sassy_fd_ops.h"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
