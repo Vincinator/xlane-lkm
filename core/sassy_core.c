@@ -25,9 +25,9 @@ static int device_counter = 0;
 
 
 
-const char *sassy_get_protocol_name(int protocol_id)
+const char *sassy_get_protocol_name(sassy_protocol_t protocol_type)
 {
-    switch (protocol_id) {
+    switch (protocol_type) {
         case 1: return "Failure Detector";
         case 2: return "Echo";
         case 3: return "Consensus";

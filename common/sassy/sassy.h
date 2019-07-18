@@ -27,7 +27,12 @@
 int sassy_core_register_nic(int ifindex);
 
 
-
+enum sassy_protocol_type {
+	SASSY_PROTO_ECHO = 0,
+	SASSY_PROTO_FD = 1,
+	SASSY_PROTO_CONSENSUS = 2,
+}
+typedef enum sassy_protocol_type sassy_protocol_t;
 
 enum sassy_pacemaker_test_state {
 	SASSY_PM_TEST_UNINIT = 0,
@@ -157,9 +162,7 @@ struct sassy_protocol_ctrl_ops {
 
 struct sassy_protocol {
 
-	int protocol_id;
-
-	char *name; 
+	sassy_protocol_t proto_type;
 
 	struct sassy_protocol_ctrl_ops ctrl_ops;
 
@@ -225,6 +228,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_he
 int sassy_register_protocol(struct sassy_protocol *proto);
 int sassy_remove_protocol(struct sassy_protocol *proto);
 
-const char *sassy_get_protocol_name(int protocol_id);
+const char *sassy_get_protocol_name(sassy_protocol_t protocol_type);
 
 #endif /* _SASSY_H_ */

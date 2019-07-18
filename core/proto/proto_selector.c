@@ -39,7 +39,7 @@ int sassy_select_protocol(struct sassy_device *sdev, struct sassy_protocol *spro
 	}
 
 	sdev->proto = sproto;
-	sassy_dbg(" successfully switchted to protocol: %s with id %d\n", sproto->name, sproto->protocol_id);
+	sassy_dbg(" successfully switchted to protocol: %s with id %d\n", sproto->name, sproto->proto_type);
 	return 0;
 }
 
@@ -64,7 +64,8 @@ static int proto_selector_show(struct seq_file *m, void *v)
 		return -1;
 	}
 
-	seq_printf(m, "sdev uses protocol %s with id %d\n", sassy_get_protocol_name(sdev->proto->protocol_id), sdev->proto->protocol_id);
+	seq_printf(m, "sdev uses protocol %s with id %d\n", 
+		sassy_get_protocol_name(sdev->proto->proto_type), sdev->proto->proto_type);
 
 	return 0;
 }

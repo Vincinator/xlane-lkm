@@ -29,8 +29,7 @@ static const struct sassy_protocol_ctrl_ops fd_ops = {
 static int __init sassy_fd_init(void){
 	sassy_dbg("init\n");
 
-	fd_protocol.protocol_id = 1;
-	fd_protocol.name = "fd\0";
+	fd_protocol.proto_type = SASSY_PROTO_FD;
 	fd_protocol.ctrl_ops = fd_ops;
 	fd_protocol.priv = (void*) &fd_priv;
 
