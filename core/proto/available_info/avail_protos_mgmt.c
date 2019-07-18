@@ -38,7 +38,7 @@ void clean_sassy_proto_info_interfaces(void)
 	remove_proc_entry("sassy/protocols", NULL);
 }
 
-void sassy_register_protocol_info_iface(struct sassy_protocol *proto) 
+void sassy_register_protocol_info_iface(const struct sassy_protocol *proto) 
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
@@ -48,7 +48,7 @@ void sassy_register_protocol_info_iface(struct sassy_protocol *proto)
 
 }
 
-void sassy_remove_protocol_info_iface(struct sassy_protocol *proto) 
+void sassy_remove_protocol_info_iface(const struct sassy_protocol *proto) 
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
