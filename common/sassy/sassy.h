@@ -31,7 +31,8 @@ enum sassy_protocol_type {
 	SASSY_PROTO_ECHO = 0,
 	SASSY_PROTO_FD = 1,
 	SASSY_PROTO_CONSENSUS = 2,
-}
+};
+
 typedef enum sassy_protocol_type sassy_protocol_t;
 
 enum sassy_pacemaker_test_state {
