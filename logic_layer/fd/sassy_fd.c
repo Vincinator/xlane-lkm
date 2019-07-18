@@ -15,12 +15,10 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][PROTOCOL][FD]"
 
 
-struct sassy_fd_priv priv = {
-	.state = SASSY_FD_UNINIT,
-	.sdev = NULL,
-};
+struct sassy_fd_priv priv;
+struct sassy_protocol fd_protocol;
 
-struct sassy_protocol_ops fd_ops = {
+const struct sassy_protocol_ops fd_ops = {
 	.init = fd_init,
 	.start = fd_start,
 	.stop = fd_stop,
@@ -28,18 +26,16 @@ struct sassy_protocol_ops fd_ops = {
 	.info = fd_info,
 };
 
-struct sassy_protocol fd_protocol = {	
-	.protocol_id = 1,
-	.name = "FailureDetector",
-	.ctrl_ops = fd_ops,
-	.priv = priv,
-};
-
 
 static int __init sassy_fd_init(void)
 
 
 	sassy_dbg("init\n");
+
+	fd_protocol.protocol_id = 1;
+	fd_protocol.name = "fd";
+	fd_protocol.ctrl_ops = fd_ops;
+	fd_protocol.priv = priv;
 
 	sassy_register_protocol(&fd_protocol);
 	return 0;

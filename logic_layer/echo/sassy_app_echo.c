@@ -15,12 +15,10 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][PROTO][ECHO]"
 
 
-struct sassy_fd_priv priv = {
-	.state = 0,
-	.sdev = NULL,
-};
+struct sassy_fd_priv priv;
+struct sassy_protocol echo_protocol;
 
-struct sassy_protocol_ops echo_ops = {
+const struct sassy_protocol_ops echo_ops = {
 	.init = echo_init,
 	.start = echo_start,
 	.stop = echo_stop,
@@ -28,18 +26,15 @@ struct sassy_protocol_ops echo_ops = {
 	.info = echo_info,
 };
 
-struct sassy_protocol echo_protocol = {
-	.protocol_id = 2,
-	.name = "echo",
-	.ctrl_ops = echo_ops,
-	.priv = priv,
-};
-
 
 static int __init sassy_app_echo_init(void)
 {
 
 	sassy_dbg("init\n");
+	echo_protocol.protocol_id = 2;
+	echo_protocol.name = "echo";
+	echo_protocol.ctrl_ops = echo_ops;
+	echo_protocol.priv = priv;
 
 	sassy_register_protocol(&echo_protocol);
 
