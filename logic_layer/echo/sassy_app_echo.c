@@ -32,7 +32,7 @@ struct sassy_protocol echo_protocol = {
 	.app_id = 2,
 	.name = "echo",
 	.ops = echo_ops,
-	.priv = priv;
+	.priv = priv,
 };
 
 

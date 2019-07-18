@@ -32,7 +32,7 @@ struct sassy_protocol fd_protocol = {
 	.app_id = 1,
 	.name = "FailureDetector",
 	.ops = fd_ops,
-	.priv = priv;
+	.priv = priv,
 };
 
 
