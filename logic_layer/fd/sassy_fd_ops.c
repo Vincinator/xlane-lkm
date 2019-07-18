@@ -3,9 +3,6 @@
 
 
 int fd_init(struct sassy_device* sdev){
-
-	
-
 	sassy_dbg("fd init");
 	return 0;
 }
