@@ -131,19 +131,19 @@ int sassy_heart(void *data)
 
     if(!sdev || !sdev->ndev){
         sassy_error("netdevice is NULL\n");
-        return -1;
+        return -EINVAL;
     }
 
     spminfo = &(sdev->pminfo);
 
     if(!spminfo){
         sassy_error("spminfo is NULL\n");
-        return -1;
+        return -EINVAL;
     }
 
     if(spminfo->num_of_targets <= 0){
         sassy_error("num_of_targets is invalid\n");
-        return -1;
+        return -EINVAL;
     }
 
 
@@ -233,6 +233,11 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
         return -EPERM;
     }
 
+    if(!spminfo->proto) {
+        sassy_error("No Protocol is selected. Aborting.\n");
+        return -EPERM;
+    }
+    
     sdev = container_of(spminfo, struct sassy_device, pminfo);
 
     if(!sdev){
