@@ -28,7 +28,7 @@ const struct sassy_protocol_ops fd_ops = {
 	.info = fd_info,
 };
 
-const struct sassy_protocol fd_protocol = {
+struct sassy_protocol fd_protocol = {
 	.app_id = 1,
 	.name = "FailureDetector",
 	.ops = fd_ops,
