@@ -12,6 +12,7 @@ clean:
 
 else
 EXTRA_CFLAGS+=-I$(src)/../../common/
+EXTRA_CFLAGS+=-I$(src)/include/
 
 obj-y := sassy_app_echo.o
 sassy_app_echo-objs := sassy_app_echo.o
