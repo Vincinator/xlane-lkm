@@ -64,10 +64,7 @@ static int proto_selector_show(struct seq_file *m, void *v)
 		return -1;
 	}
 
-	copy_to_user(name_buf, sdev->proto->name, strlen(sdev->proto->name));
-
-	seq_printf(m, "sdev uses protocol %s with id %d\n", name_buf, sdev->proto->protocol_id);
-
+	seq_printf(m, "sdev uses protocol %s with id %d\n", sassy_get_protocol_name(sdev->proto->protocol_id), sdev->proto->protocol_id);
 
 	return 0;
 }

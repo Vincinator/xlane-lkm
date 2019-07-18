@@ -225,4 +225,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_he
 int sassy_register_protocol(struct sassy_protocol *proto);
 int sassy_remove_protocol(struct sassy_protocol *proto);
 
+const char *sassy_get_protocol_name(int protocol_id);
+
 #endif /* _SASSY_H_ */

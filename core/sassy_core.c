@@ -24,6 +24,20 @@ static struct sassy_core *score;
 static int device_counter = 0;
 
 
+
+const char *sassy_get_protocol_name(int protocol_id)
+{
+    switch (protocol_id) {
+        case 1: return "Failure Detector";
+        case 2: return "Echo";
+        case 3: return "Consensus";
+        default: return "Unknown Protocol!";
+    }
+}
+
+
+
+
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_heartbeat_payload *hb_payload){
 
     u8 *payload_raw_ptr = (u8*) hb_payload;
