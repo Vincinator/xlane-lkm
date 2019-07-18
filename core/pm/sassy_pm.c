@@ -233,16 +233,18 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
         return -EPERM;
     }
 
-    if(!spminfo->proto) {
-        sassy_error("No Protocol is selected. Aborting.\n");
-        return -EPERM;
-    }
-    
+
+
     sdev = container_of(spminfo, struct sassy_device, pminfo);
 
     if(!sdev){
         sassy_error("No sdev \n");
         return -ENODEV;
+    }
+    
+    if(!sdev->proto) {
+        sassy_error("No Protocol is selected. Aborting.\n");
+        return -EPERM;
     }
 
     if (spminfo->active_cpu > MAX_CPU_NUMBER || spminfo->active_cpu < 0) {
