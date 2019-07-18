@@ -28,7 +28,7 @@ const struct sassy_protocol_ops fd_ops = {
 	.info = fd_info,
 };
 
-struct sassy_protocol fd_protocol = {
+struct sassy_protocol fd_protocol = {	
 	.app_id = 1,
 	.name = "FailureDetector",
 	.ops = fd_ops,
@@ -37,7 +37,7 @@ struct sassy_protocol fd_protocol = {
 
 
 static int __init sassy_fd_init(void)
-{	
+
 
 	sassy_dbg("init\n");
 

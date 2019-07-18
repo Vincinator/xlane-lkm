@@ -221,7 +221,7 @@ void sassy_reset_remote_host_counter(int sassy_id);
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_heartbeat_payload *hb_payload);
 
 
-int sassy_register_protocol(const struct sassy_protocol *proto);
-int sassy_remove_protocol(const struct sassy_protocol *proto);
+int sassy_register_protocol(struct sassy_protocol *proto);
+int sassy_remove_protocol(struct sassy_protocol *proto);
 
 #endif /* _SASSY_H_ */
