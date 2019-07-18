@@ -162,7 +162,7 @@ struct sassy_protocol_ctrl_ops {
 
 struct sassy_protocol {
 
-	sassy_protocol_t proto_type;
+	enum sassy_protocol_type proto_type;
 
 	struct sassy_protocol_ctrl_ops ctrl_ops;
 
@@ -228,6 +228,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_he
 int sassy_register_protocol(struct sassy_protocol *proto);
 int sassy_remove_protocol(struct sassy_protocol *proto);
 
-const char *sassy_get_protocol_name(sassy_protocol_t protocol_type);
+const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type);
 
 #endif /* _SASSY_H_ */
