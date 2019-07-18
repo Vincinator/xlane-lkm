@@ -20,7 +20,7 @@ static const struct sassy_fd_priv priv = {
 	.sdev = NULL,
 };
 
-static const struct sassy_protocol_ops fd_ops = {
+const struct sassy_protocol_ops fd_ops = {
 	.init = fd_init,
 	.start = fd_start,
 	.stop = fd_stop,
@@ -28,9 +28,9 @@ static const struct sassy_protocol_ops fd_ops = {
 	.info = fd_info,
 };
 
-static const struct sassy_protocol fd_protocol = {
+const struct sassy_protocol fd_protocol = {
 	.app_id = 1,
-	.name = "Failure Detector",
+	.name = "FailureDetector",
 	.ops = fd_ops,
 	.priv = priv;
 };

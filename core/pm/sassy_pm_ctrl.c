@@ -457,10 +457,6 @@ void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 	snprintf(name_buf,  sizeof name_buf, "sassy/%d/pacemaker", sdev->ifindex);
 	proc_mkdir(name_buf, NULL);
 
-
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test/ctrl", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_test_ctrl_ops, &sdev->pminfo);
-
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/payload", sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_payload_ops, &sdev->pminfo);
 
@@ -492,9 +488,6 @@ void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 	remove_proc_entry(name_buf, NULL);
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/targets", sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
-	
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 	
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker", sdev->ifindex);
