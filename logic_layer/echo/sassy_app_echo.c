@@ -15,7 +15,7 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][PROTO][ECHO]"
 
 
-struct sassy_fd_priv priv;
+struct sassy_echo_priv priv;
 struct sassy_protocol echo_protocol;
 
 static const struct sassy_protocol_ctrl_ops echo_ops = {
