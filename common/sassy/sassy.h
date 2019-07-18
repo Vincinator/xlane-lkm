@@ -52,7 +52,7 @@ struct sassy_protocol {
 
 	int protocol_id;
 
-	const char name[128]; 
+	const char *name; 
 
 	struct sassy_protocol_ctrl_ops ctrl_ops;
 

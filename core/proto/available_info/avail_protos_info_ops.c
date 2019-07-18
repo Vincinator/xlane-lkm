@@ -13,6 +13,8 @@
 
 #include <linux/err.h>
 
+#undef LOG_PREFIX
+#define LOG_PREFIX "[SASSY][CORE]"
 
 ssize_t proto_info_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
 {

@@ -18,6 +18,8 @@
 
 #include <linux/err.h>
 
+#undef LOG_PREFIX
+#define LOG_PREFIX "[SASSY][CORE]"
 
 /* 
  * Selects protocol <sproto> for sassy device <sdev>. 

@@ -19,6 +19,11 @@
 
 #include "available_info/avail_protos_mgmt.h"
 
+
+#undef LOG_PREFIX
+#define LOG_PREFIX "[SASSY][CORE]"
+
+
 LIST_HEAD(available_protocols_l);
 
 
