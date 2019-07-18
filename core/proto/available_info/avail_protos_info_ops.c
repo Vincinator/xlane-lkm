@@ -32,6 +32,7 @@ int proto_info_show(struct seq_file *m, void *v)
 		seq_printf(m, "Protocol or name is NULL!\n");
 		return 0;
 	}
+	sassy_dbg("%px", sproto);
 	seq_printf(m, "Protocol %s has id %d\n", sassy_get_protocol_name(sproto->proto_type), sproto->proto_type);
 	return 0;
 }
