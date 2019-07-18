@@ -33,7 +33,7 @@ static int __init sassy_app_echo_init(void)
 	echo_protocol.protocol_id = 2;
 	echo_protocol.name = "echo";
 	echo_protocol.ctrl_ops = echo_ops;
-	echo_protocol.priv = priv;
+	echo_protocol.priv = (void*) &priv;
 
 	sassy_register_protocol(&echo_protocol);
 
