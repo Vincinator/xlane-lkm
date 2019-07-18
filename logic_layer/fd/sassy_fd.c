@@ -30,7 +30,7 @@ static int __init sassy_fd_init(void){
 	sassy_dbg("init\n");
 
 	fd_protocol.protocol_id = 1;
-	fd_protocol.name = "fd";
+	fd_protocol.name = "fd\0";
 	fd_protocol.ctrl_ops = fd_ops;
 	fd_protocol.priv = (void*) &fd_priv;
 
