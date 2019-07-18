@@ -15,7 +15,7 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][PROTOCOL][FD]"
 
 
-struct sassy_fd_priv priv;
+static struct sassy_fd_priv fd_priv;
 struct sassy_protocol fd_protocol;
 
 static const struct sassy_protocol_ctrl_ops fd_ops = {
@@ -32,7 +32,7 @@ static int __init sassy_fd_init(void){
 	fd_protocol.protocol_id = 1;
 	fd_protocol.name = "fd";
 	fd_protocol.ctrl_ops = fd_ops;
-	fd_protocol.priv = (void*) &priv;
+	fd_protocol.priv = (void*) &fd_priv;
 
 	sassy_register_protocol(&fd_protocol);
 	return 0;
