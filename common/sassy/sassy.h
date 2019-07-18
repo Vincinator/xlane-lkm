@@ -165,6 +165,8 @@ struct sassy_protocol {
 
 	enum sassy_protocol_type proto_type;
 
+	char *name;
+
 	struct sassy_protocol_ctrl_ops ctrl_ops;
 
     struct list_head listh;

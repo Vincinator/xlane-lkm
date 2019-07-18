@@ -42,7 +42,7 @@ void sassy_register_protocol_info_iface(struct sassy_protocol *proto)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
-	snprintf(name_buf, sizeof name_buf, "sassy/protocols/%s", sassy_get_protocol_name(proto->proto_type));
+	snprintf(name_buf, sizeof name_buf, "sassy/protocols/%s", proto->name);
 	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_proto_info_ops, &proto);
 	sassy_dbg("Added protocol. \n");
 
@@ -52,7 +52,7 @@ void sassy_remove_protocol_info_iface(struct sassy_protocol *proto)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
-	snprintf(name_buf, sizeof name_buf, "sassy/protocols/%s",sassy_get_protocol_name(proto->proto_type));
+	snprintf(name_buf, sizeof name_buf, "sassy/protocols/%s", proto->name);
 	remove_proc_entry(name_buf, NULL);
 }
 

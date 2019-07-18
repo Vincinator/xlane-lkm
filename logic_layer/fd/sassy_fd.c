@@ -31,6 +31,7 @@ static int __init sassy_fd_init(void){
 
 	fd_protocol.proto_type = SASSY_PROTO_FD;
 	fd_protocol.ctrl_ops = fd_ops;
+	fd_protocol.name = "fd";
 	fd_protocol.priv = (void*) &fd_priv;
 
 	sassy_register_protocol(&fd_protocol);

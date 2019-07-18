@@ -28,9 +28,9 @@ static int device_counter = 0;
 const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 {
     switch (protocol_type) {
-        case 1: return "Failure Detector";
-        case 2: return "Echo";
-        case 3: return "Consensus";
+        case SASSY_PROTO_FD: return "Failure Detector";
+        case SASSY_PROTO_ECHO: return "Echo";
+        case SASSY_PROTO_CONSENSUS: return "Consensus";
         default: return "Unknown Protocol!";
     }
 }

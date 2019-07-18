@@ -31,6 +31,7 @@ static int __init sassy_app_echo_init(void)
 
 	sassy_dbg("init\n");
 	echo_protocol.proto_type = SASSY_PROTO_ECHO;
+	echo_protocol.name = "echo";
 	echo_protocol.ctrl_ops = echo_ops;
 	echo_protocol.priv = (void*) &echo_priv;
 	sassy_register_protocol(&echo_protocol);
