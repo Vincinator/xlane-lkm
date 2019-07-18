@@ -49,7 +49,7 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 EXPORT_SYMBOL(sassy_register_protocol);
 
 
-int sassy_remove_protocol(struct sassy_protocol *proto) {
+int sassy_remove_protocol(const struct sassy_protocol *proto) {
 
 	if(!proto) {
 		sassy_error("Protocol is NULL\n");

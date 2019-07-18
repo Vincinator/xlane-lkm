@@ -28,7 +28,7 @@ const struct sassy_protocol_ops echo_ops = {
 	.info = echo_info,
 };
 
-struct sassy_protocol echo_protocol = {
+const struct sassy_protocol echo_protocol = {
 	.app_id = 2,
 	.name = "echo",
 	.ops = echo_ops,
