@@ -32,10 +32,9 @@ int proto_info_show(struct seq_file *m, void *v)
 		seq_printf(m, "Protocol or name is NULL!\n");
 		return 0;
 	}
-
-	snprintf(name_buf, sizeof name_buf, "%s", sproto->name);
+	copy_to_user(name_buf, sproto->name, sizeof(sproto->name));
 	seq_printf(m, "Protocol %s has id %d\n", name_buf, sproto->protocol_id);
-	
+
 	return 0;
 }
 

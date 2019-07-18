@@ -64,7 +64,7 @@ static int proto_selector_show(struct seq_file *m, void *v)
 		return -1;
 	}
 
-	snprintf(name_buf, sizeof name_buf, "%s", sdev->proto->name);
+	copy_to_user(name_buf, sproto->name, sizeof(sproto->name));
 
 	seq_printf(m, "sdev uses protocol %s with id %d\n", name_buf, sdev->proto->protocol_id);
 
