@@ -28,7 +28,7 @@ int proto_info_show(struct seq_file *m, void *v)
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
 
-	if(!sproto ||!sproto->name){
+	if(!sproto ){
 		seq_printf(m, "Protocol or name is NULL!\n");
 		return 0;
 	}

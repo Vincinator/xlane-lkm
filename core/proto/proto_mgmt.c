@@ -41,7 +41,7 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 	/* Initialize /proc/sassy/protocols/<name> interface */
 	sassy_register_protocol_info_iface(proto);
 
-	sassy_dbg("Added protocol: %s",proto->name);
+	sassy_dbg("Added protocol: %s",sassy_get_protocol_name(sproto->proto_type));
 
 	return 0;
 }
@@ -55,7 +55,8 @@ int sassy_remove_protocol(struct sassy_protocol *proto) {
 		sassy_error("Protocol is NULL\n");
 		return -EINVAL;
 	}
-	sassy_dbg("Remove protocol: %s", proto->name);
+	
+	sassy_dbg("Remove protocol: %s",sassy_get_protocol_name(proto->proto_type));
 
 	/* Remove /proc/sassy/protocols/<name> interface */
 	sassy_remove_protocol_info_iface(proto);

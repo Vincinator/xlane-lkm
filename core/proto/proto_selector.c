@@ -59,7 +59,7 @@ static int proto_selector_show(struct seq_file *m, void *v)
 		sassy_error(" sdev is NULL %s!\n", __FUNCTION__);
 		return -EINVAL;
 	}
-	if(!sdev->proto || !sdev->proto->name ){
+	if(!sdev->proto ){
 		seq_printf(m, "sdev does not use a protocol yet\n");
 		return -1;
 	}
