@@ -26,7 +26,7 @@ int proto_info_show(struct seq_file *m, void *v)
 {
 	struct sassy_protocol *sproto = (struct sassy_protocol*) m->private;
 
-	if(!sproto || !sproto->name)
+	if(!sproto ||!sproto->name)
 		seq_printf(m, "Protocol name is NULL!\n");
 	else
 		seq_printf(m, "Protocol %s has id %d\n", sproto->name, sproto->protocol_id);
