@@ -18,7 +18,7 @@ MODULE_VERSION("0.01");
 struct sassy_fd_priv priv;
 struct sassy_protocol echo_protocol;
 
-static const struct sassy_protocol_ops echo_ops = {
+static const struct sassy_protocol_ctrl_ops echo_ops = {
 	.init = echo_init,
 	.start = echo_start,
 	.stop = echo_stop,
