@@ -2,34 +2,34 @@
 #include <sassy/sassy.h>
 
 
-int fd_init(struct sassy_device* sdev){
+int echo_init(struct sassy_device* sdev){
 
 	
 
-	sassy_dbg("fd init");
+	sassy_dbg("echo init");
 	return 0;
 }
 
-int fd_start(struct sassy_device* sdev){
+int echo_start(struct sassy_device* sdev){
 
-	sassy_dbg("fd start");
+	sassy_dbg("echo start");
 	return 0;
 }
 
-int fd_stop(struct sassy_device* sdev){
+int echo_stop(struct sassy_device* sdev){
 
-	sassy_dbg("fd stop");
+	sassy_dbg("echo stop");
 	return 0;
 }
 
-int fd_clean(struct sassy_device* sdev){
+int echo_clean(struct sassy_device* sdev){
 
-	sassy_dbg("fd clean");
+	sassy_dbg("echo clean");
 	return 0;
 }
 
-int fd_info(struct sassy_device* sdev){
+int echo_info(struct sassy_device* sdev){
 
-	sassy_dbg("fd info");
+	sassy_dbg("echo info");
 	return 0;
 }
