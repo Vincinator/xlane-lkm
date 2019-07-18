@@ -27,21 +27,6 @@
 int sassy_core_register_nic(int ifindex);
 
 
-struct sassy_protocol {
-
-	int protocol_id;
-
-	const char *name; 
-
-	struct sassy_protocol_ctrl_ops ctrl_ops;
-
-    struct list_head listh;
-
-
-	/* private data of protocol handling */
-	void *priv;
-
-};
 
 
 enum sassy_pacemaker_test_state {
@@ -134,6 +119,9 @@ struct sassy_pacemaker_info {
     struct sassy_pacemaker_test_data tdata;
 };
 
+
+struct sassy_protocol;
+
 struct sassy_device {
 	int ifindex;					/* corresponds to ifindex of net_device */	
 	int sassy_id;
@@ -164,6 +152,21 @@ struct sassy_protocol_ctrl_ops {
 
 	/* Write statistics to debug console  */
 	int (*info)(struct sassy_device*);
+
+};
+
+struct sassy_protocol {
+
+	int protocol_id;
+
+	const char *name; 
+
+	struct sassy_protocol_ctrl_ops ctrl_ops;
+
+    struct list_head listh;
+
+	/* private data of protocol handling */
+	void *priv;
 
 };
 
