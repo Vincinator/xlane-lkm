@@ -39,7 +39,7 @@ int sassy_select_protocol(struct sassy_device *sdev, struct sassy_protocol *spro
 	}
 
 	sdev->proto = sproto;
-	sassy_dbg(" successfully switchted to protocol: %s with id %d\n", sproto->name, sproto->proto_type);
+	sassy_dbg(" successfully switchted to protocol: %s with id %d\n", sassy_get_protocol_name(proto->proto_type), sproto->proto_type);
 	return 0;
 }
 
