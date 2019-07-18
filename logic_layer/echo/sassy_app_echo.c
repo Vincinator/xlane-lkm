@@ -31,7 +31,7 @@ struct sassy_protocol_ops echo_ops = {
 struct sassy_protocol echo_protocol = {
 	.protocol_id = 2,
 	.name = "echo",
-	.ops = echo_ops,
+	.ctrl_ops = echo_ops,
 	.priv = priv,
 };
 
