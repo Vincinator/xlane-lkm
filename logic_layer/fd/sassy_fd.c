@@ -18,14 +18,13 @@ MODULE_VERSION("0.01");
 struct sassy_fd_priv priv;
 struct sassy_protocol fd_protocol;
 
-const struct sassy_protocol_ops fd_ops = {
+static const struct sassy_protocol_ops fd_ops = {
 	.init = fd_init,
 	.start = fd_start,
 	.stop = fd_stop,
 	.clean = fd_clean,
 	.info = fd_info,
 };
-
 
 static int __init sassy_fd_init(void)
 
