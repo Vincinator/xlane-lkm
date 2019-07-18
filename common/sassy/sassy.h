@@ -27,27 +27,6 @@
 int sassy_core_register_nic(int ifindex);
 
 
-
-struct sassy_protocol_ctrl_ops {
-
-	int (*init_ctrl)(void);
-
-	/* Initializes data and user space interfaces */
-	int (*init)(struct sassy_device*);
-
-	int (*start)(struct sassy_device*);
-
-	int (*stop)(struct sassy_device*);
-
-	/* free memory of app and remove user space interfaces */
-	int (*clean) (struct sassy_device*);
-
-	/* Write statistics to debug console  */
-	int (*info)(struct sassy_device*);
-
-};
-
-
 struct sassy_protocol {
 
 	int protocol_id;
@@ -166,6 +145,25 @@ struct sassy_device {
 
 	/* Can only use one protocol at a time. */
 	struct sassy_protocol *proto;
+
+};
+
+struct sassy_protocol_ctrl_ops {
+
+	int (*init_ctrl)(void);
+
+	/* Initializes data and user space interfaces */
+	int (*init)(struct sassy_device*);
+
+	int (*start)(struct sassy_device*);
+
+	int (*stop)(struct sassy_device*);
+
+	/* free memory of app and remove user space interfaces */
+	int (*clean) (struct sassy_device*);
+
+	/* Write statistics to debug console  */
+	int (*info)(struct sassy_device*);
 
 };
 
