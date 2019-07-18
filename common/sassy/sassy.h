@@ -5,7 +5,7 @@
 #include <linux/spinlock_types.h>
 
 
-#define MAX_SYNCBEAT_PROC_NAME  64
+#define MAX_SYNCBEAT_PROC_NAME  256
 
 #define SASSY_TARGETS_BUF 512
 #define SASSY_NUMBUF 13
@@ -52,7 +52,7 @@ struct sassy_protocol {
 
 	int protocol_id;
 
-	char name[128]; 
+	const char name[128]; 
 
 	struct sassy_protocol_ctrl_ops ctrl_ops;
 

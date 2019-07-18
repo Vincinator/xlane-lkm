@@ -57,7 +57,7 @@ static int proto_selector_show(struct seq_file *m, void *v)
 		return -EINVAL;
 	}
 
-	if(!sdev->proto)
+	if(!sdev->proto || !sdev->proto->name )
 		seq_printf(m, "sdev does not use a protocol yet\n");
 	else
 		seq_printf(m, "sdev uses protocol %s with id %d\n", sdev->proto->name, sdev->proto->protocol_id);
