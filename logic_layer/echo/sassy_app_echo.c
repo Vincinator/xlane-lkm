@@ -17,6 +17,7 @@ MODULE_VERSION("0.01");
 
 struct sassy_echo_priv priv;
 struct sassy_protocol echo_protocol;
+EXPORT_SYMBOL(echo_protocol);
 
 static const struct sassy_protocol_ctrl_ops echo_ops = {
 	.init = echo_init,
@@ -34,10 +35,7 @@ static int __init sassy_app_echo_init(void)
 	echo_protocol.name = "echo";
 	echo_protocol.ctrl_ops = echo_ops;
 	echo_protocol.priv = (void*) &priv;
-
 	sassy_register_protocol(&echo_protocol);
-
-
 	return 0;
 }
 

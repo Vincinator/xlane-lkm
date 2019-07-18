@@ -25,11 +25,17 @@ ssize_t proto_info_write(struct file *file, const char __user *user_buffer, size
 int proto_info_show(struct seq_file *m, void *v)
 {
 	struct sassy_protocol *sproto = (struct sassy_protocol*) m->private;
+	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
-	if(!sproto ||!sproto->name)
-		seq_printf(m, "Protocol name is NULL!\n");
-	else
-		seq_printf(m, "Protocol %s has id %d\n", sproto->name, sproto->protocol_id);
+
+	if(!sproto ||!sproto->name){
+		seq_printf(m, "Protocol or name is NULL!\n");
+		return 0;
+	}
+
+	snprintf(name_buf, sizeof name_buf, "%s", sproto->name);
+	seq_printf(m, "Protocol %s has id %d\n", name_buf, sproto->protocol_id);
+	
 	return 0;
 }
 
