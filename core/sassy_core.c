@@ -35,6 +35,12 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 }
 
 
+void sassy_post_ts(int sassy_id, ){
+
+    
+}
+EXPORT_SYMBOL(sassy_post_ts);
+
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
 
     u8 *payload_raw_ptr = (u8*) payload;

@@ -23,7 +23,6 @@ static int mlx5_devices = 0;
 
 
 
-
 int sassy_mlx5_con_register_device(int ifindex) {
 	
 	int sassy_id = sassy_core_register_nic(ifindex);
@@ -49,8 +48,12 @@ EXPORT_SYMBOL(sassy_mlx5_con_register_device);
 
 int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts) {
 
-    sassy_dbg("Not implemented: %s\n", __FUNCTION__);
-	return 0;
+    if(sassy_id < 0 || !score->sdevices[sassy_id] ||score->sdevices[sassy_id]->rx_state == SASSY_RX_DISABLED)
+        return 0;
+
+    sassy_post_ts(sassy_id, cycle_ts);
+    
+    return 0;
 }
 EXPORT_SYMBOL(sassy_mlx5_post_optimistical_timestamp);
 
