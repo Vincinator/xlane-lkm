@@ -14,7 +14,7 @@ static ssize_t sassy_rx_ctrl_write(struct file *file, const char __user *user_bu
 {
 	int err;
 	char kernel_buffer[count+1];
-	struct sassy_device *sdev = (struct sassy_core*)PDE_DATA(file_inode(file));
+	struct sassy_device *sdev = (struct sassy_device*)PDE_DATA(file_inode(file));
 	long new_state = -1;
 
 	if (!sdev)
