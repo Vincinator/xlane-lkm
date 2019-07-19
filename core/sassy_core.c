@@ -35,7 +35,8 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 }
 
 
-void sassy_post_ts(int sassy_id, uint64_t cycles){
+void sassy_post_ts(int sassy_id, uint64_t cycles)
+{
     
     if(!score->sdevices[sassy_id] ||score->sdevices[sassy_id]->rx_state == SASSY_RX_DISABLED)
         return;

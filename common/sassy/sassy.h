@@ -254,4 +254,6 @@ struct sassy_protocol* sassy_find_protocol_by_id(int protocol_id);
 void clean_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);
 void init_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);
 
+void sassy_post_ts(int sassy_id, uint64_t cycles);
+
 #endif /* _SASSY_H_ */
