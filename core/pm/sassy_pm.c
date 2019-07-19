@@ -65,7 +65,7 @@ static inline void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo) {
 
 
 static inline void sassy_send_hb( struct net_device *ndev, struct sk_buff *skb){
-    int i, ret;
+    int ret;
     struct netdev_queue *txq;
 
     txq = skb_get_tx_queue(ndev, skb);

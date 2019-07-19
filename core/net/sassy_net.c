@@ -203,7 +203,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev, struct sassy_pacem
 	hparams = &spminfo->pm_targets[host_number].pkt_data;
 
 
-	hb_pkt = prepare_heartbeat_skb(deve);
+	hb_pkt = prepare_heartbeat_skb(dev);
 
 	if(!hb_pkt) {
 		sassy_error("Could not create heartbeat packet (%s)\n", __FUNCTION__);
