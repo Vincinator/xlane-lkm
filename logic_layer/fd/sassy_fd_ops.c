@@ -32,7 +32,8 @@ int fd_info(struct sassy_device* sdev){
 }
 
 
-int fd_post_payload(struct sassy_device*, void* payload){
+int fd_post_payload(struct sassy_device*, void* payload)
+{
 
 	// .. Test only ..
     print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
@@ -42,7 +43,8 @@ int fd_post_payload(struct sassy_device*, void* payload){
     sassy_dbg("fd payload received\n");
 }
 
-int fd_post_ts(struct sassy_device*, uint64_t ts){
+int fd_post_ts(struct sassy_device*, uint64_t ts)
+{
 
 
     sassy_dbg("fd optimistical timestamp received. \n");

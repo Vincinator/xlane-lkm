@@ -31,7 +31,8 @@ int echo_info(struct sassy_device* sdev){
 	return 0;
 }
 
-int echo_post_payload(struct sassy_device* sdev, void *payload){
+int echo_post_payload(struct sassy_device* sdev, void *payload)
+{
 
 	// .. Test only ..
     print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
@@ -42,7 +43,8 @@ int echo_post_payload(struct sassy_device* sdev, void *payload){
 	return 0;
 }
 
-int echo_post_ts(struct sassy_device* sdev, uint64_t ts){
+int echo_post_ts(struct sassy_device* sdev, uint64_t ts)
+{
 
 	sassy_dbg("echo post optimistical ts");
 	return 0;
