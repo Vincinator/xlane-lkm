@@ -2,6 +2,8 @@
 #include <sassy/sassy.h>
 
 
+#include "include/sassy_echo.h"
+
 int echo_init(struct sassy_device* sdev){
 	sassy_dbg("echo init");
 	return 0;
