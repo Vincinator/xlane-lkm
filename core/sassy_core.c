@@ -53,7 +53,7 @@ EXPORT_SYMBOL(sassy_post_ts);
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
 
     u8 *payload_raw_ptr = (u8*) payload;
-    u8 protocol_id = &payload_raw_ptr;
+    u8 protocol_id = *payload_raw_ptr;
     struct sassy_device *sdev;
     struct sassy_protocol *sproto = NULL;
 
