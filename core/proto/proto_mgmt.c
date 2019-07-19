@@ -27,6 +27,23 @@
 LIST_HEAD(available_protocols_l);
 
 
+struct sassy_protocol* sassy_find_protocol_by_id(int protocol_id) 
+{
+	struct sassy_protocol *sproto, *tmp_proto;
+	sproto = NULL;
+
+	list_for_each_entry (tmp_proto, &available_protocols_l, listh) 
+    { 
+    	if(tmp_proto->proto_type == protocol_id){
+    		sproto = tmp_proto;
+    		break;
+    	}
+    }
+    return sproto;
+}
+EXPORT_SYMBOL(sassy_find_protocol_by_id);
+
+
 int sassy_register_protocol(struct sassy_protocol *proto)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
@@ -41,7 +58,7 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 	/* Initialize /proc/sassy/protocols/<name> interface */
 	sassy_register_protocol_info_iface(proto);
 
-	sassy_dbg("Added protocol: %s",sassy_get_protocol_name(proto->proto_type));
+	sassy_dbg("Added protocol: %s", sassy_get_protocol_name(proto->proto_type));
 
 	return 0;
 }

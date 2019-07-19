@@ -21,32 +21,47 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
-/* 
- * Selects protocol <sproto> for sassy device <sdev>. 
- * Includes safety checks before selecting protocol.
- */
-int sassy_select_protocol(struct sassy_device *sdev, struct sassy_protocol *sproto)
-{
 
-	if(!sdev || !sproto){
-		sassy_error(" Invalid Input - NULL reference. \n");
+/* Only used for debugging. The goal is to load all protocols and select based on the protocol id in the payload.
+ * For now, we use only one protocol at a time - to eliminate potential error sources.
+ * ... and to see if this protocol multiplexing introduces latency or (worse) jitter.
+ */
+static ssize_t proto_selector_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
+{
+	int err;
+	char kernel_buffer[count+1];
+	struct sassy_device *sdev = (struct sassy_device*)PDE_DATA(file_inode(file));
+	struct sassy_protocol *sproto = NULL;
+	long new_protocol = -1;
+
+	if (!sdev)
+		return -ENODEV;
+
+	if (count == 0) {
+		sassy_error("sassy device is NULL.\n");
 		return -EINVAL;
 	}
 
-	if(sdev->proto != NULL){
-		sassy_error(" sdev %d uses protocol %d - clean up old protocol first. BUG.\n");
-		return -EPERM;
+	err = copy_from_user(kernel_buffer, buffer, count);
+
+	if (err) {
+		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		return err; 
 	}
 
+	kernel_buffer[count] = '\0';
+
+	err = kstrtol(kernel_buffer, 0, &new_protocol);
+
+	if (err) {
+		sassy_error(" Error converting input%s\n", __FUNCTION__);
+		return err;
+	}
+
+
+	sproto = sassy_find_protocol_by_id(new_protocol);
 	sdev->proto = sproto;
-	sassy_dbg(" successfully switchted to protocol: %s with id %d\n", sassy_get_protocol_name(sproto->proto_type), sproto->proto_type);
-	return 0;
-}
 
-
-static ssize_t proto_selector_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
-{
-	sassy_dbg("Nothing to write here!\n");
 	return count;
 }
 
