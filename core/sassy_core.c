@@ -34,27 +34,12 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
     }
 }
 
-bool sassy_rx_enabled(void) 
-{
-    score->rx_enabled == SASSY_CORE_RX_ENABLED;
-}
-
 
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
 
     u8 *payload_raw_ptr = (u8*) payload;
     u8 protocol_id = &payload_raw_ptr;
     struct sassy_device *sdev;
-
-    if(!remote_mac){
-        sassy_error("remote mac is NULL \n");
-        return;
-    }
-
-    if(!payload){
-        sassy_error("payload is NULL \n");
-        return;
-    }
 
     if(sassy_id < 0) {
         sassy_error("sassy id is -1\n");
@@ -68,7 +53,17 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
         return;
     }
 
-    if(sdev->pminfo.state != SASSY_PM_EMITTING){
+    if(sdev->rx_state == SASSY_RX_DISABLED){
+        return;
+    }
+
+    if(!remote_mac){
+        sassy_error("remote mac is NULL \n");
+        return;
+    }
+
+    if(!payload){
+        sassy_error("payload is NULL \n");
         return;
     }
 
@@ -200,7 +195,7 @@ int sassy_core_remove_nic(int sassy_id)
     /* Remove Ctrl Interfaces for NIC */
     clean_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
     clean_sassy_rx_ctrl_interfaces(score->sdevices[sassy_id]);
-    
+
     remove_proto_selector(score->sdevices[sassy_id]);
 
 
