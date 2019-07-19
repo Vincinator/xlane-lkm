@@ -23,7 +23,6 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
-extern struct sassy_core *score;
 
 LIST_HEAD(available_protocols_l);
 
@@ -49,6 +48,8 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
+	struct sassy_core *score = sassy_core();
+	
 	if(!proto) {
 		sassy_error("Protocol is NULL\n");
 		return -EINVAL;

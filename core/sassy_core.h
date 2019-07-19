@@ -71,5 +71,7 @@ void init_proto_selector(struct sassy_device  *sdev);
 void remove_proto_selector(struct sassy_device *sdev);
 
 
+struct sassy_core * sassy_core(void);
+
 
 #endif /* _SASSY_DEV_H_ */

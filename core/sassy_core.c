@@ -20,9 +20,14 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][CORE]"
 
 static struct sassy_core *score;
-EXPORT_SYMBOL(score);
 
 static int device_counter = 0;
+
+struct sassy_core * sassy_core(void)
+{
+    return score;
+}
+EXPORT_SYMBOL(sassy_core);
 
 
 const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
