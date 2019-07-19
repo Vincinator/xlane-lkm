@@ -321,8 +321,8 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac, int pr
     pmtarget->pkt_data.dst_ip = ip;
     pmtarget->pkt_data.protocol_id = protocol_id;
 
-    pmtarget->pkt_data.pkt_payload[0] = kzmalloc(SASSY_PAYLOAD_BYTES, GFP_KERNEL);
-    pmtarget->pkt_data.pkt_payload[1] = kzmalloc(SASSY_PAYLOAD_BYTES, GFP_KERNEL);
+    pmtarget->pkt_data.pkt_payload[0] = kzalloc(SASSY_PAYLOAD_BYTES, GFP_KERNEL);
+    pmtarget->pkt_data.pkt_payload[1] = kzalloc(SASSY_PAYLOAD_BYTES, GFP_KERNEL);
 
     sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload[0]);
     sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload[1]);
