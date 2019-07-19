@@ -267,6 +267,7 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac, int pr
     }
 
     if(sassy_validate_sassy_device(sassy_id)){
+        sassy_error(" Invalid sassy_id/n");
         return -1;
     }
 

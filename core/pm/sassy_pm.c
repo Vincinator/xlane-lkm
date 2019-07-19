@@ -186,7 +186,6 @@ int sassy_heart(void *data)
             sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
             
         }
- 
 
     }
 

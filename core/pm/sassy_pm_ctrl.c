@@ -283,7 +283,7 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
 		sassy_dbg(" reading: %s", input_str);
-		if(strcmp(input_str, "") == 0 || strlen(input_str) <= 2)
+		if(strcmp(input_str, "") == 0 || strlen(input_str) <= 0)
 			continue;
 		if(i  > SASSY_TARGETS_BUF){
 			sassy_error(" Target buffer full! Not all targets are applied, increase buffer in sassy source.\n");
@@ -312,8 +312,13 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 				sassy_error(" Error converting input buffer: %s\n", input_str);
 				goto error;
 			}
+
+			sassy_dbg(" protocol: %d\n", current_protocol);
+
 			sassy_core_register_remote_host(sdev->sassy_id, current_ip, current_mac, current_protocol);
+
 			i++;
+			state = 0;
 			kfree(current_mac);
 		}
 
