@@ -57,6 +57,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
     struct sassy_device *sdev;
     struct sassy_protocol *sproto = NULL;
 
+ 
     if(sassy_id < 0) {
         sassy_error("sassy id is -1\n");
         return;
@@ -120,6 +121,7 @@ void sassy_reset_remote_host_counter(int sassy_id){
     for(i = 0; i < MAX_REMOTE_SOURCES; i++){
 
         pmtarget = &sdev->pminfo.pm_targets[i];
+
 
         kfree(pmtarget->pkt_data.pkt_payload[0]);
         kfree(pmtarget->pkt_data.pkt_payload[1]);

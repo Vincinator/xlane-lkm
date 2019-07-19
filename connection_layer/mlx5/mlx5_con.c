@@ -64,6 +64,10 @@ int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
 	if(sassy_id < 0)
 		return 0;
 
+   // Debug:
+    print_hex_dump(KERN_DEBUG, "Packet: ", DUMP_PREFIX_NONE, 16, 1,
+                    va, frag_size, 0);
+
 	sassy_post_payload(sassy_id, payload + headroom + 6, payload + headroom + 6 + 6 + 14 + 4 + 8 + 4);
 	
 	return 0;
