@@ -185,6 +185,9 @@ inline void add_payload(struct sk_buff *skb, void *payload)
 	}
 
 	memcpy(data, payload, SASSY_PAYLOAD_BYTES);
+
+  	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
+			data, SASSY_PAYLOAD_BYTES, 0);
 }
 
 
