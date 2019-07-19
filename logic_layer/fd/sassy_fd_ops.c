@@ -1,31 +1,53 @@
 #include <sassy/logger.h>
 #include <sassy/sassy.h>
 
+#include "include/sassy_fd.h"
 
-int fd_init(struct sassy_device* sdev){
+int fd_init(struct sassy_device* sdev)
+{
+	/* Initialize */
+
 	sassy_dbg("fd init\n");
 	return 0;
 }
 
-int fd_start(struct sassy_device* sdev){
+
+int fd_init_payload(void *payload)
+{
+	
+	struct fd_payload *fd_p = (struct fd_payload*) payload;
+
+	fd_p->protocol_id = SASSY_PROTO_FD;
+	fd_p->message = 0;
+	fd_p->alive_rp = 0;
+
+	return 0;
+}
+
+
+int fd_start(struct sassy_device* sdev)
+{
 
 	sassy_dbg("fd start\n");
 	return 0;
 }
 
-int fd_stop(struct sassy_device* sdev){
+int fd_stop(struct sassy_device* sdev)
+{
 
 	sassy_dbg("fd stop\n");
 	return 0;
 }
 
-int fd_clean(struct sassy_device* sdev){
+int fd_clean(struct sassy_device* sdev)
+{
 
 	sassy_dbg("fd clean\n");
 	return 0;
 }
 
-int fd_info(struct sassy_device* sdev){
+int fd_info(struct sassy_device* sdev)
+{
 
 	sassy_dbg("fd info\n");
 	return 0;

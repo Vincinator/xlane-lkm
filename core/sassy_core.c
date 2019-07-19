@@ -248,12 +248,13 @@ int sassy_validate_sassy_device(int sassy_id) {
 }
 EXPORT_SYMBOL(sassy_validate_sassy_device);
 
-int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
+int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac, int protocol_id)
 {
     struct sassy_rx_table *rxt;
     struct sassy_device *sdev;
     struct sassy_pm_target_info *pmtarget;
     int ifindex;
+    struct sassy_protocol *sproto;
 
     if(!mac){
         sassy_error("input mac is NULL!\n");
@@ -272,6 +273,18 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
         return -1;
     }
 
+    /* Check if Protocol ID is supported. */
+    if(protocol_id < 0 ||protocol_id > MAX_PROTOCOLS){
+        sassy_error("Protocol Number %d is invalid\n", protocol_id);
+        return -1;
+    }
+
+    sproto = score->protocols[protocol_id];
+
+    if(!sproto){
+        sassy_error("Protocol id %d is valid, but protocol is not initialized. BUG.", protocol_id);
+        return -1;
+    }
 
     if(sdev->pminfo.num_of_targets >= MAX_REMOTE_SOURCES) {
         sassy_error("Reached Limit of remote hosts. \n");
@@ -296,9 +309,13 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac)
         return -1;
     }
 
-    pmtarget->hb_pkt_params.hb_active_ix = 0;
-    pmtarget->hb_pkt_params.dst_ip = ip;
-    memcpy(&pmtarget->hb_pkt_params.dst_mac, mac, sizeof(unsigned char) * 6);
+    pmtarget->pkt_data.hb_active_ix = 0;
+    pmtarget->pkt_data.dst_ip = ip;
+    pmtarget->pkt_data.protocol = protocol_id;
+
+    sproto->ctrl_ops->init_payload(pmtarget->pkt_data.pkt_payload);
+
+    memcpy(&pmtarget->pkt_data.dst_mac, mac, sizeof(unsigned char) * 6);
 
     sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 

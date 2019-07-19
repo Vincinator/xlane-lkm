@@ -186,15 +186,15 @@ static ssize_t sassy_payload_write(struct file *file, const char __user *user_bu
 			break;
 		}
 
-		// TODO: Parse more input to hb_payload struct. 
+		// TODO: Parse more input to pkt_payload struct. 
 		//		 Since this is only a test tool, prio for this task is low.
 	
 		// invert 0<->1 (and make sure {0,1} is the only possible input)
-		hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params.hb_active_ix);
-		spminfo->pm_targets[i].hb_pkt_params.hb_payload[hb_active_ix].message = input_str[0] & 0xFF;
-		spminfo->pm_targets[i].hb_pkt_params.hb_active_ix = !!!(spminfo->pm_targets[i].hb_pkt_params.hb_active_ix);
+		//hb_active_ix = !!!(spminfo->pm_targets[i].pkt_data.hb_active_ix);
+		//spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix].message = input_str[0] & 0xFF;
+		//spminfo->pm_targets[i].pkt_data.hb_active_ix = !!!(spminfo->pm_targets[i].pkt_data.hb_active_ix);
 
-		sassy_dbg(" payload message: %02X\n", input_str[0] & 0xFF);
+		//sassy_dbg(" payload message: %02X\n", input_str[0] & 0xFF);
 		i++;
 
 	}
@@ -220,10 +220,10 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 
 	for(i=0; i < spminfo->num_of_targets; i++){
 
-		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params.dst_ip);
+		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].pkt_data.dst_ip);
 		seq_printf(m, "%s: \n", current_ip);
 		seq_hex_dump(m,"	",DUMP_PREFIX_OFFSET,
-		  32, 1, spminfo->pm_targets[i].hb_pkt_params.hb_payload ,sizeof(struct sassy_heartbeat_payload),
+		  32, 1, spminfo->pm_targets[i].pkt_data.pkt_payload ,sizeof(struct sassy_packet_payload),
 		  false);
 	}
 
@@ -254,6 +254,7 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 	int state = 0; /* first element of tuple is ip address, second is mac */
 	int current_ip;
 	unsigned char *current_mac;	
+	int current_protocol;
 
 	if (!spminfo) 
 		return -ENODEV;
@@ -303,8 +304,15 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 				return -EINVAL;
 			}
 			sassy_dbg(" mac: %s\n", input_str);
-			sassy_core_register_remote_host(sdev->sassy_id, current_ip, current_mac);
-			state = 0;
+			state = 2;
+
+		}else if(state == 2){
+		 	err = kstrtoint(input_str, 10, &current_protocol);
+			if (err) {
+				sassy_error(" Error converting input buffer: %s\n", input_str);
+				goto error;
+			}
+			sassy_core_register_remote_host(sdev->sassy_id, current_ip, current_mac, current_protocol);
 			i++;
 			kfree(current_mac);
 		}
@@ -315,7 +323,7 @@ static ssize_t sassy_target_write(struct file *file, const char __user *user_buf
 
 	return count;
 error:
-	sassy_error("Setting IP destination for heartbeat failed.%s\n", __FUNCTION__);
+	sassy_error(" Error during parsing of input.%s\n", __FUNCTION__);
 	return err;
 }
 
@@ -329,12 +337,12 @@ static int sassy_target_show(struct seq_file *m, void *v)
 		return -ENODEV;
 
 	for(i = 0; i < spminfo->num_of_targets; i++){
-		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].hb_pkt_params.dst_ip);
+		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].pkt_data.dst_ip);
 		seq_printf(m, "(%s,", current_ip );
 		seq_printf(m, "%x:%x:%x:%x:%x:%x)\n", 
-			spminfo->pm_targets[i].hb_pkt_params.dst_mac[0], spminfo->pm_targets[i].hb_pkt_params.dst_mac[1],
-			spminfo->pm_targets[i].hb_pkt_params.dst_mac[2], spminfo->pm_targets[i].hb_pkt_params.dst_mac[3],
-			spminfo->pm_targets[i].hb_pkt_params.dst_mac[4], spminfo->pm_targets[i].hb_pkt_params.dst_mac[5]);
+			spminfo->pm_targets[i].pkt_data.dst_mac[0], spminfo->pm_targets[i].pkt_data.dst_mac[1],
+			spminfo->pm_targets[i].pkt_data.dst_mac[2], spminfo->pm_targets[i].pkt_data.dst_mac[3],
+			spminfo->pm_targets[i].pkt_data.dst_mac[4], spminfo->pm_targets[i].pkt_data.dst_mac[5]);
 	}
 	kfree(current_ip);
 

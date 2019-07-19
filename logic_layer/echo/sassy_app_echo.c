@@ -5,6 +5,7 @@
 #include <sassy/sassy.h>
 
 #include "include/sassy_echo_ops.h"
+#include "include/sassy_echo.h"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
@@ -26,6 +27,8 @@ static const struct sassy_protocol_ctrl_ops echo_ops = {
 	.info = echo_info,
 	.post_payload = echo_post_payload,
 	.post_ts = echo_post_ts,
+	.init_payload = echo_init_payload,
+
 };
 
 static int __init sassy_app_echo_init(void)

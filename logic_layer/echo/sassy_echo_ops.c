@@ -45,6 +45,20 @@ int echo_post_payload(struct sassy_device* sdev, unsigned char *remote_mac, void
 	return 0;
 }
 
+int echo_init_payload(void *payload)
+{
+	
+	struct echo_payload *fd_p = (struct echo_payload*) payload;
+
+	fd_p->protocol_id = SASSY_PROTO_ECHO;
+	fd_p->message = 0;
+	fd_p->alive_rp = 0;
+
+	return 0;
+}
+
+
+
 int echo_post_ts(struct sassy_device* sdev, unsigned char *remote_mac, uint64_t ts)
 {
 	

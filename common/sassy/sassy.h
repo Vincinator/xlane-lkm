@@ -25,6 +25,8 @@
 #define MAX_CPU_NUMBER 55
 
 #define SASSY_PAYLOAD_BYTES 64
+#define SASSY_HEADER_BYTES 128		// TODO: this should be more than enough for UDP/ipv4
+#define SASSY_PKT_BYTES SASSY_PAYLOAD_BYTES+SASSY_HEADER_BYTES
 
 int sassy_core_register_nic(int ifindex);
 
@@ -63,26 +65,32 @@ struct sassy_process_info {
 };
 
 
-struct sassy_heartbeat_payload {
 
-	u8 protocol_id; 		/* must be the first element */
-	u8 message;				/* short message bundled with this hb */
-	u8 alive_rp;			/* Number of alive processes */
-	struct sassy_process_info pinfo[MAX_PROCESSES_PER_HOST];
+
+
+
+struct sassy_packet_payload {
+
+
 };
 
 
-struct sassy_hb_packet_params {
+struct sassy_packet_data {
 	uint32_t dst_ip; 			
 	unsigned char dst_mac[6]; 
 
+	int protocol_id;
+
 	/* pacemaker MUST copy in every loop. 
-	 * Thus, we need a copy of hb_payload to continue the copy in the pacemaker
+	 * Thus, we need a copy of pkt_payload to continue the copy in the pacemaker
 	 * even when a new version is currently written.
 	 *
 	 * The hb_active_ix member of this struct tells which index can be used by the pacemaker.
+	 * 
+	 * Size of pkt_payload MUST be SASSY_PAYLOAD_BYTES 
 	 */
-	struct sassy_heartbeat_payload hb_payload[2];
+	void* pkt_payload[2];
+
 	int hb_active_ix;
 
 	/* if updating != 0, then pacemaker will not update skb
@@ -109,7 +117,7 @@ struct sassy_pm_target_info {
 	int active; 
 
 	/* Params used to build the SKB for TX */
-	struct sassy_hb_packet_params hb_pkt_params;
+	struct sassy_packet_data pkt_data;
 
 	/* Data for transmitting the packet  */
     struct sk_buff *skb;
@@ -159,6 +167,8 @@ struct sassy_protocol_ctrl_ops {
 
 	/* Initializes data and user space interfaces */
 	int (*init)(struct sassy_device*);
+
+	int (*init_payload)(void* data);
 
 	int (*start)(struct sassy_device*);
 
