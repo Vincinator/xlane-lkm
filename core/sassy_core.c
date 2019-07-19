@@ -46,7 +46,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
         return;
     }
 
-    sdev = score->sdevices[sassy_id]
+    sdev = score->sdevices[sassy_id];
     
     if(!sdev) {
         sassy_error("sdev is NULL\n");
