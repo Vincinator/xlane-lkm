@@ -59,7 +59,7 @@ static ssize_t proto_selector_write(struct file *file, const char __user *user_b
 	}
 
 
-	sproto = sassy_find_protocol_by_id(new_protocol);
+	sproto = sassy_find_protocol_by_id((new_protocol & 0xFF));
 	sdev->proto = sproto;
 
 	return count;

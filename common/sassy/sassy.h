@@ -70,7 +70,7 @@ struct sassy_packet_data {
 	uint32_t dst_ip; 			
 	unsigned char dst_mac[6]; 
 
-	int protocol_id;
+	u8 protocol_id;
 
 	/* pacemaker MUST copy in every loop. 
 	 * Thus, we need a copy of pkt_payload to continue the copy in the pacemaker
@@ -249,7 +249,7 @@ int sassy_remove_protocol(struct sassy_protocol *proto);
 
 const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type);
 
-struct sassy_protocol* sassy_find_protocol_by_id(int protocol_id);
+struct sassy_protocol* sassy_find_protocol_by_id(u8 protocol_id);
 
 
 void clean_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);

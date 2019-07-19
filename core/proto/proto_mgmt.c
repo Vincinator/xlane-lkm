@@ -27,7 +27,7 @@
 LIST_HEAD(available_protocols_l);
 
 
-struct sassy_protocol* sassy_find_protocol_by_id(int protocol_id) 
+struct sassy_protocol* sassy_find_protocol_by_id(u8 protocol_id) 
 {
 	struct sassy_protocol *sproto, *tmp_proto;
 	sproto = NULL;
@@ -49,7 +49,7 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
 	struct sassy_core *score = sassy_core();
-	
+
 	if(!proto) {
 		sassy_error("Protocol is NULL\n");
 		return -EINVAL;
