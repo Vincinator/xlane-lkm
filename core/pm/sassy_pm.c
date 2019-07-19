@@ -106,14 +106,14 @@ HARD_TX_UNLOCK(ndev, txq);
 } 
 
 
-static inline void sassy_update_skb_payload(struct sk_buff *skb, struct sassy_heartbeat_payload *hb_payload){
+static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload){
     unsigned char* tail_ptr;
     unsigned char* data_ptr;
 
     tail_ptr = skb_tail_pointer(skb);
-    data_ptr = (tail_ptr - sizeof(struct sassy_heartbeat_payload));
+    data_ptr = (tail_ptr - SASSY_PAYLOAD_BYTES);
 
-    memcpy(data_ptr, hb_payload, sizeof(struct sassy_heartbeat_payload));
+    memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
 }
 
 int sassy_heart(void *data)
@@ -122,7 +122,7 @@ int sassy_heart(void *data)
     unsigned long flags;
     struct sassy_pacemaker_info *spminfo;
     struct sassy_device *sdev = (struct sassy_device *)data;
-    struct sassy_heartbeat_payload *hb_payload;
+    struct sassy_packet_payload *pkt_payload;
     int i;
     int ret;
     int hb_active_ix;
@@ -179,9 +179,9 @@ int sassy_heart(void *data)
         for(i = 0; i < spminfo->num_of_targets; i++) {
 
             // Always update payload to avoid jitter!
-            hb_active_ix    =  spminfo->pm_targets[i].hb_pkt_params.hb_active_ix;
-            hb_payload      = &spminfo->pm_targets[i].hb_pkt_params.hb_payload[hb_active_ix];
-            sassy_update_skb_payload(spminfo->pm_targets[i].skb, hb_payload);
+            hb_active_ix    =  spminfo->pm_targets[i].pkt_data.hb_active_ix;
+            pkt_payload      = &spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
+            sassy_update_skb_payload(spminfo->pm_targets[i].skb, pkt_payload);
         
             sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
             
@@ -196,8 +196,6 @@ int sassy_heart(void *data)
     sassy_dbg(" leaving heart..\n");
     return 0;
 }
-
-
 
 
 struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo, int host_number)
