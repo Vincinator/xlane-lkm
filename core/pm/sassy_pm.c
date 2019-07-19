@@ -75,6 +75,8 @@ static inline void sassy_send_hb( struct net_device *ndev, struct sk_buff *skb){
         sassy_error("txq is NULL! \n");
         return;
     }
+    
+    sassy_dbg("skb_get_queue_mapping of skb: %hu", skb_get_queue_mapping(skb));
 
     HARD_TX_LOCK(ndev, txq, smp_processor_id());
 
