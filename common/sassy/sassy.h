@@ -233,6 +233,6 @@ int sassy_remove_protocol(struct sassy_protocol *proto);
 
 const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type);
 
-struct sassy_protocol* sassy_find_protocol_by_id(int protocol_id) 
+struct sassy_protocol* sassy_find_protocol_by_id(int protocol_id);
 
 #endif /* _SASSY_H_ */

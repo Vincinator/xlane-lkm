@@ -68,19 +68,19 @@ static ssize_t proto_selector_write(struct file *file, const char __user *user_b
 static int proto_selector_show(struct seq_file *m, void *v)
 {
 	struct sassy_device *sdev = (struct sassy_device*) m->private;
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
 	if(!sdev){
 		sassy_error(" sdev is NULL %s!\n", __FUNCTION__);
 		return -EINVAL;
 	}
-	if(!sdev->proto ){
+	if(!sdev->proto){
 		seq_printf(m, "sdev does not use a protocol yet\n");
 		return -1;
 	}
 
+
 	seq_printf(m, "sdev uses protocol %s with id %d\n", 
-		sassy_get_protocol_name(sdev->proto->proto_type), sdev->proto->proto_type);
+			sassy_get_protocol_name(sdev->proto->proto_type), sdev->proto->proto_type);
 
 	return 0;
 }
