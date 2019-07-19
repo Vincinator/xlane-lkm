@@ -32,7 +32,6 @@ void init_sassy_proto_info_interfaces(void)
 
 }
 
-
 void clean_sassy_proto_info_interfaces(void)
 {
 	remove_proc_entry("sassy/protocols", NULL);

@@ -93,7 +93,7 @@ void init_proto_selector(struct sassy_device  *sdev)
 
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/protocol", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &proto_selector_ops, &sdev);
+	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &proto_selector_ops, sdev);
 
 	sassy_dbg(" added proto selector\n");
 
