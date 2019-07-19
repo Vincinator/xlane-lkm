@@ -79,14 +79,14 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
 
     if(protocol_id < 0 ||protocol_id > MAX_PROTOCOLS){
         sassy_error("Protocol ID is faulty \n");
-        return -EINVAL;
+        return;
     }
     
     sproto = score->protocols[protocol_id];
 
     if(!sproto){
         sassy_error("failed to get protocol handler\n");
-        return -EINVAL;
+        return;
     }
 
     sproto->ctrl_ops.post_payload(sdev, remote_mac, (void*) payload);
