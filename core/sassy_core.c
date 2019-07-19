@@ -311,9 +311,10 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac, int pr
 
     pmtarget->pkt_data.hb_active_ix = 0;
     pmtarget->pkt_data.dst_ip = ip;
-    pmtarget->pkt_data.protocol = protocol_id;
+    pmtarget->pkt_data.protocol_id = protocol_id;
 
-    sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload);
+    sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload[0]);
+    sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload[1]);
 
     memcpy(&pmtarget->pkt_data.dst_mac, mac, sizeof(unsigned char) * 6);
 
