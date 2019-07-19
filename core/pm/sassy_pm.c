@@ -70,40 +70,17 @@ static inline void sassy_send_hb( struct net_device *ndev, struct sk_buff *skb){
 
     txq = skb_get_tx_queue(ndev, skb);
     skb_get(skb); /* keep this. otherwise this thread locks the system */ 
-
-    if(!txq) {
-        sassy_error("txq is NULL! \n");
-        return;
-    }
-    
-    sassy_dbg("skb_get_queue_mapping of skb: %hu", skb_get_queue_mapping(skb));
-
+  
     HARD_TX_LOCK(ndev, txq, smp_processor_id());
 
     if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
         sassy_error("Device Busy unlocking.\n");
         goto unlock;
-    } 
-    ret = netdev_start_xmit(skb, ndev, txq, 0);
-    
-    switch (ret) {
-        case NETDEV_TX_OK:
-            break;
-        case NET_XMIT_DROP:
-            sassy_error(" XMIT error NET_XMIT_DROP");
-            break;
-        case NET_XMIT_CN:
-            sassy_error(" XMIT error NET_XMIT_CN");
-            break;
-        case NETDEV_TX_BUSY:
-            sassy_error(" XMIT error NETDEV_TX_BUSY");
-            break;
-        default: 
-            sassy_error(" xmit error. unsupported return code from driver: %d\n", ret);
-            break;
     }
+    //skb_queue_head 
+    ret = netdev_start_xmit(skb, ndev, txq, 0);
 unlock:
-HARD_TX_UNLOCK(ndev, txq);
+    HARD_TX_UNLOCK(ndev, txq);
     
 } 
 
@@ -184,7 +161,6 @@ int sassy_heart(void *data)
             hb_active_ix    =  spminfo->pm_targets[i].pkt_data.hb_active_ix;
             pkt_payload      = &spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
             sassy_update_skb_payload(spminfo->pm_targets[i].skb, pkt_payload);
-        
             sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
             
         }
