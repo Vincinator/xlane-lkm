@@ -310,7 +310,6 @@ static int __init sassy_connection_core_init(void)
         return -1;
     }
 
-    score->state = SASSY_RX_DISABLED; /* Enabled sassy after NIC flow steering is configured! */
 
     score->rx_tables = kmalloc_array(MAX_NIC_DEVICES, sizeof(struct sassy_rx_table *), GFP_KERNEL);
 
