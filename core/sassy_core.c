@@ -85,7 +85,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
     }
 
     if(protocol_id < 0 ||protocol_id > MAX_PROTOCOLS){
-        sassy_error("Protocol ID is faulty \n");
+        sassy_error("Protocol ID is faulty %d\n", protocol_id);
         return;
     }
     
