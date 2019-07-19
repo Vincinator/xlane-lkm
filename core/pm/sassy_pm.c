@@ -122,7 +122,7 @@ int sassy_heart(void *data)
     unsigned long flags;
     struct sassy_pacemaker_info *spminfo;
     struct sassy_device *sdev = (struct sassy_device *)data;
-    struct sassy_packet_payload *pkt_payload;
+    void *pkt_payload;
     int i;
     int ret;
     int hb_active_ix;
