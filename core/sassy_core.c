@@ -49,6 +49,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
     u8 *payload_raw_ptr = (u8*) payload;
     u8 protocol_id = &payload_raw_ptr;
     struct sassy_device *sdev;
+    struct sassy_protocol *sproto = NULL;
 
     if(sassy_id < 0) {
         sassy_error("sassy id is -1\n");
@@ -76,17 +77,19 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
         return;
     }
 
+    if(protocol_id < 0 ||protocol_id > MAX_PROTOCOLS){
+        sassy_error("Protocol ID is faulty \n");
+        return -EINVAL;
+    }
     
-    /* Check Protocol ID */
-    if(protocol_id != (sdev->proto->proto_type & 0xFF)){
-        sassy_error("protocol is not enabled\n");
-        return;
+    sproto = score->protocols[protocol_id];
+
+    if(!sproto){
+        sassy_error("failed to get protocol handler\n");
+        return -EINVAL;
     }
 
-    // TODO: get protocol from protocol id -> this will enable protocol per payload handling..
-
-    sdev->proto->ctrl_ops.post_payload(sdev, remote_mac, (void*) payload);
-
+    sproto->ctrl_ops.post_payload(sdev, remote_mac, (void*) payload);
 
 }
 
@@ -313,12 +316,17 @@ static int __init sassy_connection_core_init(void)
 
     score = kmalloc(sizeof(struct sassy_core), GFP_KERNEL);
 
-
     if(!score) {
         sassy_error("allocation of sassy core failed\n");
         return -1;
     }
 
+    score->protocols = kmalloc_array(MAX_PROTOCOLS, sizeof(struct sassy_protocol*), GFP_KERNEL);
+
+    if(!score->protocols){
+        sassy_error("allocation of protocol ptr buffer failed\n");
+        return -1;
+    }
 
     score->rx_tables = kmalloc_array(MAX_NIC_DEVICES, sizeof(struct sassy_rx_table *), GFP_KERNEL);
 
@@ -358,6 +366,7 @@ static void __exit sassy_connection_core_exit(void)
         sassy_core_remove_nic(i);
     } 
 
+    // TODO: free all sassy core components! 
 
     kfree(score);
 

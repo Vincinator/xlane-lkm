@@ -58,6 +58,19 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 	/* Initialize /proc/sassy/protocols/<name> interface */
 	sassy_register_protocol_info_iface(proto);
 
+	/* Add protocol ptr to score array */
+	if(proto->proto_type < 0 || proto->proto_type > MAX_PROTOCOLS){
+		sassy_error("Protocol ID is faulty \n");
+		return -EINVAL;
+	}
+
+	if(!score->protocols){
+		sassy_error("protocols is not initialized\n");
+		return -EPERM;
+	}
+
+	score->protocols[proto->proto_type] =  proto;
+
 	sassy_dbg("Added protocol: %s", sassy_get_protocol_name(proto->proto_type));
 
 	return 0;

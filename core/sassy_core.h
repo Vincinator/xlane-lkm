@@ -4,6 +4,10 @@
 #include <linux/types.h>
 
 
+
+#define MAX_PROTOCOLS 4
+
+
 #define MAX_NIC_DEVICES 8
 #define SASSY_PACKET_PAYLOAD_SIZE 32
 
@@ -46,9 +50,12 @@ struct sassy_rx_table {
  * ifindex of NIC PORT corresponds to array position of struct sassy_rx_table *tables. 
  */
 struct sassy_core {	
+
+	struct sassy_protocol **protocols; 			/* All Available Protocols */
+	int registered_protocols;					/* Must be less or equal to MAX_PROTOCOLS */
+
 	/* NIC independent Data */
 	struct sassy_rx_table **rx_tables;	/* Each NIC port (identified by ifindex) has a own table */
- // struct sassy_tx_table **tx_tables; // TODO
 
 	/* NIC specific Data */
 	struct sassy_device **sdevices;	
