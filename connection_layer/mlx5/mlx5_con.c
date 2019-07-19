@@ -69,8 +69,7 @@ int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
 	sassy_dbg("SRC IP=%pI4", payload + headroom + 6 + 6 + 14);
 	sassy_dbg("DST IP=%pI4", payload + headroom + 6 + 6 + 14 + 4);
 
-	sassy_post_payload(sassy_id, payload + headroom + 6, 
-		(struct sassy_heartbeat_payload*)(payload + headroom + 6 + 6 + 14 + 4 + 8 + 4));
+	sassy_post_payload(sassy_id, payload + headroom + 6,payload + headroom + 6 + 6 + 14 + 4 + 8 + 4);
 	
 	return 0;
 }
