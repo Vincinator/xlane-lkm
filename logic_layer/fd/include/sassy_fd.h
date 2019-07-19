@@ -9,4 +9,4 @@ struct fd_payload {
 	u8 message;				/* short message bundled with this hb */
 	u8 alive_rp;			/* Number of alive processes */
 	struct sassy_process_info pinfo[MAX_PROCESSES_PER_HOST];
-}
+};
