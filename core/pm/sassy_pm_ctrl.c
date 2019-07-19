@@ -223,7 +223,7 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 		sassy_hex_to_ip(current_ip, spminfo->pm_targets[i].pkt_data.dst_ip);
 		seq_printf(m, "%s: \n", current_ip);
 		seq_hex_dump(m,"	",DUMP_PREFIX_OFFSET,
-		  32, 1, spminfo->pm_targets[i].pkt_data.pkt_payload ,sizeof(struct sassy_packet_payload),
+		  32, 1, spminfo->pm_targets[i].pkt_data.pkt_payload, SASSY_PAYLOAD_BYTES,
 		  false);
 	}
 
@@ -386,7 +386,7 @@ static ssize_t sassy_test_ctrl_write(struct file *file, const char __user *user_
 	}
 
 
-	sassy_dbg("created %d active user space");
+	sassy_dbg("created %d active user space\n",new_active_processes );
 
 }
 
