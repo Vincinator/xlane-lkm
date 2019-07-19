@@ -18,12 +18,14 @@ int fd_init_payload(void *payload)
 	struct fd_payload *fd_p = (struct fd_payload*) payload;
 	int i;
 	
+	sassy_dbg("initializing FD payload\n");
+
 	fd_p->protocol_id = SASSY_PROTO_FD;
 	fd_p->message = 42;
 	fd_p->alive_rp = 43;
 
 	for(i=0; i < MAX_PROCESSES_PER_HOST;i++){
-		fd_p->pinfo[i].pid = i;
+		fd_p->pinfo[i].pid = i & 0xFF;
 		fd_p->pinfo[i].ps = 0;
 	}
 
