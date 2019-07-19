@@ -23,6 +23,7 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
+extern struct sassy_core *score;
 
 LIST_HEAD(available_protocols_l);
 

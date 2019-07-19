@@ -20,6 +20,7 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][CORE]"
 
 static struct sassy_core *score;
+EXPORT_SYMBOL(score);
 
 static int device_counter = 0;
 
