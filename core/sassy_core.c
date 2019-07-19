@@ -116,6 +116,9 @@ void sassy_reset_remote_host_counter(int sassy_id){
 
         pmtarget = &sdev->pminfo.pm_targets[i];
 
+        kfree(pmtarget->pkt_data.pkt_payload[0]);
+        kfree(pmtarget->pkt_data.pkt_payload[1]);
+
         kfree(rxt->rhost_buffers[i]);
     
     }
@@ -187,9 +190,6 @@ int sassy_core_register_nic(int ifindex)
 
     /* Initialize Component States*/
     pm_state_transition_to(&score->sdevices[sassy_id]->pminfo, SASSY_PM_UNINIT);
-
-
-
 
     return sassy_id;
 }
@@ -312,6 +312,9 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac, int pr
     pmtarget->pkt_data.hb_active_ix = 0;
     pmtarget->pkt_data.dst_ip = ip;
     pmtarget->pkt_data.protocol_id = protocol_id;
+
+    pmtarget->pkt_data.pkt_payload[0] = kmalloc(SASSY_PAYLOAD_BYTES, GFP_KERNEL);
+    pmtarget->pkt_data.pkt_payload[1] = kmalloc(SASSY_PAYLOAD_BYTES, GFP_KERNEL);
 
     sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload[0]);
     sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload[1]);
