@@ -24,6 +24,8 @@ static const struct sassy_protocol_ctrl_ops fd_ops = {
 	.stop = fd_stop,
 	.clean = fd_clean,
 	.info = fd_info,
+	.post_payload = fd_post_payload,
+	.post_ts = fd_post_ts,
 };
 
 static int __init sassy_fd_init(void){

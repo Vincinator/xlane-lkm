@@ -24,6 +24,8 @@
 #define SASSY_MLX5_DEVICES_LIMIT 5 	/* Number of allowed mlx5 devices that can connect to SASSY */
 #define MAX_CPU_NUMBER 55
 
+#define SASSY_PAYLOAD_BYTES 64
+
 int sassy_core_register_nic(int ifindex);
 
 
@@ -57,8 +59,10 @@ struct sassy_process_info {
 
 
 struct sassy_heartbeat_payload {
-	u8 message;							/* short message bundled with this hb */
-	u8 alive_rp;						/* Number of alive processes */
+
+	u8 protocol_id; 		/* must be the first element */
+	u8 message;				/* short message bundled with this hb */
+	u8 alive_rp;			/* Number of alive processes */
 	struct sassy_process_info pinfo[MAX_PROCESSES_PER_HOST];
 };
 
@@ -155,6 +159,10 @@ struct sassy_protocol_ctrl_ops {
 
 	/* free memory of app and remove user space interfaces */
 	int (*clean) (struct sassy_device*);
+
+	int (*post_payload) (struct sassy_device*, void* payload);
+
+	int (*post_ts) (struct sassy_device*, uint64_t ts);
 
 	/* Write statistics to debug console  */
 	int (*info)(struct sassy_device*);

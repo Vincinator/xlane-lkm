@@ -25,8 +25,6 @@ ssize_t proto_info_write(struct file *file, const char __user *user_buffer, size
 int proto_info_show(struct seq_file *m, void *v)
 {
 	struct sassy_protocol *sproto = (struct sassy_protocol*) m->private;
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
-
 
 	if(!sproto ){
 		seq_printf(m, "Protocol or name is NULL!\n");

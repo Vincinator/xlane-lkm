@@ -38,24 +38,26 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 
 
 
-void sassy_post_payload(int sassy_id, unsigned char *remote_mac, struct sassy_heartbeat_payload *hb_payload){
+void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
 
-    u8 *payload_raw_ptr = (u8*) hb_payload;
+    u8 *payload_raw_ptr = (u8*) payload;
+    u8 protocol_id = &payload_raw_ptr;
+    struct sassy_device *sdev = score->sdevices[sassy_id];
+    
+    if(!sdev) {
+        sassy_error("sdev is NULL\n");
+        return;
+    }
+    
+    /* Check Protocol ID */
+    if(hb_payload->protocol_id != (sdev->proto->protocol_type & 0xFF))){
+        sassy_error("protocol is not enabled\n");
+        return;
+    }
 
-    // .. Test only ..
-    print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
-                    payload_raw_ptr, sizeof(struct sassy_heartbeat_payload), 0);
+    // TODO: get protocol from protocol id -> this will enable protocol per payload handling..
 
-    /* Get remote id from remote_hosts hashtable */
-        /* Check if remote_mac is already registered? */
-            /* yes: does the remote_id match the remote_id from payload?*/
-                /* no: Throw an Error and Drop packet (error handling) */
-
-    /* Get Buffer ID from remote_hosts hashtable entry */
-
-    /* Update Ring Buffer with the given buffer ID */
-        /* TODO: Copy hb_payload vs reference to DMA memory? */
-        /* Update next index of ring buffer on success */
+    sdev->proto->ops->post_payload(sdev, (void*) payload);
 }
 
 EXPORT_SYMBOL(sassy_post_payload);
