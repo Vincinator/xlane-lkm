@@ -60,9 +60,6 @@ struct sassy_core {
 void init_sassy_proto_info_interfaces(void);
 void clean_sassy_proto_info_interfaces(void);
 
-void init_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);
-void clean_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);
-
 void init_proto_selector(struct sassy_device  *sdev);
 void remove_proto_selector(struct sassy_device *sdev);
 

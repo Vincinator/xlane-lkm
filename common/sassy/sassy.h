@@ -250,4 +250,8 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type);
 
 struct sassy_protocol* sassy_find_protocol_by_id(int protocol_id);
 
+
+void clean_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);
+void init_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);
+
 #endif /* _SASSY_H_ */
