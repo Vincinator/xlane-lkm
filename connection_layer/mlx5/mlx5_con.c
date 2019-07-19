@@ -57,7 +57,6 @@ EXPORT_SYMBOL(sassy_mlx5_post_optimistical_timestamp);
 int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom, u32 cqe_bcnt){
 	u8 *payload = (u8*) va;
 
-
 	/* Check if sassy_id is valid */
 	if(sassy_id < 0)
 		return 0;
