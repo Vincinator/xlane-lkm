@@ -50,7 +50,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
     }
     
     /* Check Protocol ID */
-    if(protocol_id != (sdev->proto.protocol_type & 0xFF))){
+    if(protocol_id != (sdev->proto.protocol_type & 0xFF)){
         sassy_error("protocol is not enabled\n");
         return;
     }
