@@ -37,7 +37,7 @@ int fd_post_payload(struct sassy_device*, void* payload)
 
 	// .. Test only ..
     print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
-                    payload_raw_ptr, SASSY_PAYLOAD_BYTES, 0);
+                    payload, SASSY_PAYLOAD_BYTES, 0);
 
 
     sassy_dbg("fd payload received\n");
