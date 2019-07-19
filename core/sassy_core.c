@@ -57,7 +57,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
 
     // TODO: get protocol from protocol id -> this will enable protocol per payload handling..
 
-    sdev->proto->ctrl_ops->post_payload(sdev, (void*) payload);
+    sdev->proto->ctrl_ops.post_payload(sdev, (void*) payload);
 }
 
 EXPORT_SYMBOL(sassy_post_payload);
