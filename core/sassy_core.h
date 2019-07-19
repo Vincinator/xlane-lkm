@@ -45,7 +45,7 @@ struct sassy_rx_table {
  * This struct holds references to all tables.
  * ifindex of NIC PORT corresponds to array position of struct sassy_rx_table *tables. 
  */
-struct sassy_core {
+struct sassy_core {	
 	/* NIC independent Data */
 	struct sassy_rx_table **rx_tables;	/* Each NIC port (identified by ifindex) has a own table */
  // struct sassy_tx_table **tx_tables; // TODO
@@ -60,8 +60,12 @@ struct sassy_core {
 void init_sassy_proto_info_interfaces(void);
 void clean_sassy_proto_info_interfaces(void);
 
+void init_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);
+void clean_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);
 
 void init_proto_selector(struct sassy_device  *sdev);
 void remove_proto_selector(struct sassy_device *sdev);
+
+
 
 #endif /* _SASSY_DEV_H_ */

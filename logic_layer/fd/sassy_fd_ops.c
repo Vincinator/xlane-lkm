@@ -32,21 +32,21 @@ int fd_info(struct sassy_device* sdev){
 }
 
 
-int fd_post_payload(struct sassy_device* sdev, void* payload)
+int fd_post_payload(struct sassy_device* sdev, unsigned char *remote_mac, void* payload)
 {
 
 	// .. Test only ..
     print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
                     payload, SASSY_PAYLOAD_BYTES, 0);
 
-
+	sassy_dbg("SRC MAC=%pM", remote_mac);
     sassy_dbg("fd payload received\n");
 }
 
-int fd_post_ts(struct sassy_device* sdev, uint64_t ts)
+int fd_post_ts(struct sassy_device* sdev, unsigned char *remote_mac, uint64_t ts)
 {
 
-
+	sassy_dbg("SRC MAC=%pM", remote_mac);
     sassy_dbg("fd optimistical timestamp received. \n");
 
 }

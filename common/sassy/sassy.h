@@ -29,6 +29,11 @@
 int sassy_core_register_nic(int ifindex);
 
 
+enum sassy_rx_state {
+	SASSY_RX_DISABLED = 0,
+	SASSY_RX_ENABLED = 1,
+};
+
 enum sassy_protocol_type {
 	SASSY_PROTO_ECHO = 0,
 	SASSY_PROTO_FD = 1,
@@ -136,6 +141,8 @@ struct sassy_device {
 	int ifindex;					/* corresponds to ifindex of net_device */	
 	int sassy_id;
 
+	enum sassy_rx_state rx_state; 
+
 	struct net_device *ndev;
 
 	/* SASSY CTRL Structures */
@@ -160,9 +167,9 @@ struct sassy_protocol_ctrl_ops {
 	/* free memory of app and remove user space interfaces */
 	int (*clean) (struct sassy_device*);
 
-	int (*post_payload) (struct sassy_device*, void* payload);
+	int (*post_payload) (struct sassy_device*, unsigned char *remote_mac, void* payload);
 
-	int (*post_ts) (struct sassy_device*, uint64_t ts);
+	int (*post_ts) (struct sassy_device*, unsigned char *remote_mac, uint64_t ts);
 
 	/* Write statistics to debug console  */
 	int (*info)(struct sassy_device*);

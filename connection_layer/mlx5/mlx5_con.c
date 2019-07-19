@@ -57,19 +57,12 @@ EXPORT_SYMBOL(sassy_mlx5_post_optimistical_timestamp);
 int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom, u32 cqe_bcnt){
 	u8 *payload = (u8*) va;
 
-	sassy_dbg("sassy_id=%d\n", sassy_id);
-	sassy_dbg("frag_size=%u\n", frag_size);
-	sassy_dbg("cqe_bcnt=%u\n", cqe_bcnt);
 
-	print_hex_dump(KERN_DEBUG, "packet: ", DUMP_PREFIX_NONE, 32, 1,
-				va, frag_size, 0);
+	/* Check if sassy_id is valid */
+	if(sassy_id < 0)
+		return 0;
 
-	sassy_dbg("DST MAC=%pM", payload + headroom);
-	sassy_dbg("SRC MAC=%pM", payload + headroom + 6);
-	sassy_dbg("SRC IP=%pI4", payload + headroom + 6 + 6 + 14);
-	sassy_dbg("DST IP=%pI4", payload + headroom + 6 + 6 + 14 + 4);
-
-	sassy_post_payload(sassy_id, payload + headroom + 6,payload + headroom + 6 + 6 + 14 + 4 + 8 + 4);
+	sassy_post_payload(sassy_id, payload + headroom + 6, payload + headroom + 6 + 6 + 14 + 4 + 8 + 4);
 	
 	return 0;
 }

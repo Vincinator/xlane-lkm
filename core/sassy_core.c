@@ -24,7 +24,6 @@ static struct sassy_core *score;
 static int device_counter = 0;
 
 
-
 const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 {
     switch (protocol_type) {
@@ -35,19 +34,44 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
     }
 }
 
-
+bool sassy_rx_enabled(void) 
+{
+    score->rx_enabled == SASSY_CORE_RX_ENABLED;
+}
 
 
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
 
     u8 *payload_raw_ptr = (u8*) payload;
     u8 protocol_id = &payload_raw_ptr;
-    struct sassy_device *sdev = score->sdevices[sassy_id];
+    struct sassy_device *sdev;
+
+    if(!remote_mac){
+        sassy_error("remote mac is NULL \n");
+        return;
+    }
+
+    if(!payload){
+        sassy_error("payload is NULL \n");
+        return;
+    }
+
+    if(sassy_id < 0) {
+        sassy_error("sassy id is -1\n");
+        return;
+    }
+
+    sdev = score->sdevices[sassy_id]
     
     if(!sdev) {
         sassy_error("sdev is NULL\n");
         return;
     }
+
+    if(sdev->pminfo.state != SASSY_PM_EMITTING){
+        return;
+    }
+
     
     /* Check Protocol ID */
     if(protocol_id != (sdev->proto->proto_type & 0xFF)){
@@ -57,7 +81,9 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
 
     // TODO: get protocol from protocol id -> this will enable protocol per payload handling..
 
-    sdev->proto->ctrl_ops.post_payload(sdev, (void*) payload);
+    sdev->proto->ctrl_ops.post_payload(sdev, remote_mac, (void*) payload);
+
+
 }
 
 EXPORT_SYMBOL(sassy_post_payload);
@@ -140,8 +166,8 @@ int sassy_core_register_nic(int ifindex)
     score->sdevices[sassy_id]->ndev = sassy_get_netdevice(ifindex);
     score->sdevices[sassy_id]->pminfo.num_of_targets = 0;
     score->sdevices[sassy_id]->proto = NULL;
-    /* Test Init */
-    score->sdevices[sassy_id]->pminfo.tdata.state = SASSY_PM_TEST_UNINIT;
+
+    score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
     
     snprintf(name_buf,  sizeof name_buf, "sassy/%d", ifindex);
     proc_mkdir(name_buf, NULL);
@@ -149,7 +175,7 @@ int sassy_core_register_nic(int ifindex)
     /* Initialize Control Interfaces for NIC */
     init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
     init_proto_selector(score->sdevices[sassy_id]);
-
+    init_sassy_rx_ctrl_interfaces(score->sdevices[sassy_id]);
 
     /* Initialize Component States*/
     pm_state_transition_to(&score->sdevices[sassy_id]->pminfo, SASSY_PM_UNINIT);
@@ -173,6 +199,8 @@ int sassy_core_remove_nic(int sassy_id)
 
     /* Remove Ctrl Interfaces for NIC */
     clean_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
+    clean_sassy_rx_ctrl_interfaces(score->sdevices[sassy_id]);
+    
     remove_proto_selector(score->sdevices[sassy_id]);
 
 
@@ -281,10 +309,13 @@ static int __init sassy_connection_core_init(void)
 
     score = kmalloc(sizeof(struct sassy_core), GFP_KERNEL);
 
+
     if(!score) {
         sassy_error("allocation of sassy core failed\n");
         return -1;
     }
+
+    score->state = SASSY_CORE_RX_DISABLED; /* Enabled sassy after NIC flow steering is configured! */
 
     score->rx_tables = kmalloc_array(MAX_NIC_DEVICES, sizeof(struct sassy_rx_table *), GFP_KERNEL);
 
