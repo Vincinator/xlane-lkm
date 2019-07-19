@@ -54,7 +54,7 @@ static int sassy_rx_ctrl_show(struct seq_file *m, void *v)
 	struct sassy_device *sdev = (struct sassy_device*) m->private;
 	int i;
 
-	if (!score)
+	if (!sdev)
 		return -ENODEV;
 
 	seq_printf(m, "sassy core RX state: %d\n", sdev->rx_state);
