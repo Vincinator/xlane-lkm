@@ -86,7 +86,7 @@ void init_sassy_rx_ctrl_interfaces(struct sassy_device *sdev)
 	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_core_ctrl_ops, sdev);
 
 }
-EXPORT_SYMBOL(init_sassy_core_ctrl_interfaces);
+EXPORT_SYMBOL(init_sassy_rx_ctrl_interfaces);
 
 
 void clean_sassy_rx_ctrl_interfaces(struct sassy_device *sdev)
@@ -97,4 +97,4 @@ void clean_sassy_rx_ctrl_interfaces(struct sassy_device *sdev)
 	remove_proc_entry(name_buf, NULL);
 
 }
-EXPORT_SYMBOL(clean_sassy_core_ctrl_interfaces);
+EXPORT_SYMBOL(clean_sassy_rx_ctrl_interfaces);
