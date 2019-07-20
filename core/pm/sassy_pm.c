@@ -77,7 +77,7 @@ static inline void sassy_send_hb( struct net_device *ndev, struct sk_buff *skb){
         sassy_error("Device Busy unlocking.\n");
         goto unlock;
     }
-    
+
     //skb_queue_head 
     ret = netdev_start_xmit(skb, ndev, txq, 0);
 unlock:
@@ -126,17 +126,14 @@ int sassy_heart(void *data)
         return -EINVAL;
     }
 
-
-
     sassy_setup_skbs(spminfo);
-
 
     pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
     get_cpu();                      /* disable preemption */
-    local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
+    //local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
     
-    local_bh_disable();
+    //local_bh_disable();
 
     prev_time = rdtsc();
 
@@ -168,8 +165,8 @@ int sassy_heart(void *data)
 
     }
 
-    local_bh_enable();
-    local_irq_restore(flags);
+   // local_bh_enable();
+   // local_irq_restore(flags);
     put_cpu();
     sassy_dbg(" leaving heart..\n");
     return 0;
