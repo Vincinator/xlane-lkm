@@ -140,6 +140,8 @@ struct sassy_device {
 	int ifindex;					/* corresponds to ifindex of net_device */	
 	int sassy_id;
 
+	int verbose;					/* Prints more information when set to 1 during RX/TX to dmesg*/ 
+
 	enum sassy_rx_state rx_state; 
 
 	struct net_device *ndev;
@@ -252,8 +254,8 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type);
 struct sassy_protocol* sassy_find_protocol_by_id(u8 protocol_id);
 
 
-void clean_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);
-void init_sassy_rx_ctrl_interfaces(struct sassy_device *sdev);
+void clean_sassy_ctrl_interfaces(struct sassy_device *sdev);
+void init_sassy_ctrl_interfaces(struct sassy_device *sdev);
 
 void sassy_post_ts(int sassy_id, uint64_t cycles);
 

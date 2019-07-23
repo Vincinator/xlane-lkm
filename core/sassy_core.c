@@ -46,7 +46,9 @@ void sassy_post_ts(int sassy_id, uint64_t cycles)
     
     if(!score->sdevices[sassy_id] ||score->sdevices[sassy_id]->rx_state == SASSY_RX_DISABLED)
         return;
-    sassy_dbg("ts %llu", cycles);
+
+    if(score->sdevices[sassy_id]->verbose == 1)
+        sassy_dbg("ts %llu", cycles);
 }
 EXPORT_SYMBOL(sassy_post_ts);
 
@@ -95,6 +97,10 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void* payload){
         sassy_error("failed to get protocol handler\n");
         return;
     }
+
+    if(score->sdevices[sassy_id]->verbose == 1)
+        print_hex_dump(KERN_DEBUG, "Packet: ", DUMP_PREFIX_NONE, 16, 1,
+                payload, SASSY_PAYLOAD_BYTES, 0);
 
     sproto->ctrl_ops.post_payload(sdev, remote_mac, (void*) payload);
 
@@ -184,7 +190,7 @@ int sassy_core_register_nic(int ifindex)
     score->sdevices[sassy_id]->ndev = sassy_get_netdevice(ifindex);
     score->sdevices[sassy_id]->pminfo.num_of_targets = 0;
     score->sdevices[sassy_id]->proto = NULL;
-
+    score->sdevices[sassy_id]->verbose = 0;
     score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
     
     snprintf(name_buf,  sizeof name_buf, "sassy/%d", ifindex);
@@ -193,7 +199,7 @@ int sassy_core_register_nic(int ifindex)
     /* Initialize Control Interfaces for NIC */
     init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
     init_proto_selector(score->sdevices[sassy_id]);
-    init_sassy_rx_ctrl_interfaces(score->sdevices[sassy_id]);
+    init_sassy_ctrl_interfaces(score->sdevices[sassy_id]);
 
     /* Initialize Component States*/
     pm_state_transition_to(&score->sdevices[sassy_id]->pminfo, SASSY_PM_UNINIT);
@@ -214,7 +220,7 @@ int sassy_core_remove_nic(int sassy_id)
 
     /* Remove Ctrl Interfaces for NIC */
     clean_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
-    clean_sassy_rx_ctrl_interfaces(score->sdevices[sassy_id]);
+    clean_sassy_ctrl_interfaces(score->sdevices[sassy_id]);
 
     remove_proto_selector(score->sdevices[sassy_id]);
 
