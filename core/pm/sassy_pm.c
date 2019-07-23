@@ -151,7 +151,7 @@ int sassy_heart(void *data)
         if (unlikely(!netif_running(sdev->ndev) || !netif_carrier_ok(sdev->ndev))) {
             sassy_pm_stop(spminfo);
             local_bh_enable();
-            local_irq_restore(flags)
+            local_irq_restore(flags);
             continue;
         }
 
