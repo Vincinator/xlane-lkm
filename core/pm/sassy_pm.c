@@ -131,9 +131,6 @@ int sassy_heart(void *data)
     pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
     get_cpu();                      /* disable preemption */
-    //local_irq_save(flags);          /* Disable hard interrupts on the local CPU */
-    
-    //local_bh_disable();
 
     prev_time = rdtsc();
 
@@ -147,9 +144,14 @@ int sassy_heart(void *data)
 
         prev_time = cur_time;
 
+        local_irq_save(flags);
+        local_bh_disable();
+
         /* If netdev is offline, then stop pacemaker */
         if (unlikely(!netif_running(sdev->ndev) || !netif_carrier_ok(sdev->ndev))) {
             sassy_pm_stop(spminfo);
+            local_bh_enable();
+            local_irq_restore(flags)
             continue;
         }
 
@@ -160,13 +162,11 @@ int sassy_heart(void *data)
             pkt_payload      = &spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
             sassy_update_skb_payload(spminfo->pm_targets[i].skb, pkt_payload);
             sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
-            
         }
-
+        local_bh_enable();
+        local_irq_restore(flags);
     }
 
-   // local_bh_enable();
-   // local_irq_restore(flags);
     put_cpu();
     sassy_dbg(" leaving heart..\n");
     return 0;
