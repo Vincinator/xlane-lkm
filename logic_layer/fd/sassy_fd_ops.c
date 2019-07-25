@@ -70,13 +70,16 @@ int fd_post_payload(struct sassy_device* sdev, unsigned char *remote_mac, void* 
     //                payload, SASSY_PAYLOAD_BYTES, 0);
 
 	//sassy_dbg("SRC MAC=%pM", remote_mac);
-    sassy_dbg("fd payload received\n");
+
+	if(sdev->verbose)
+    	sassy_dbg("fd payload received\n");
 }
 
 int fd_post_ts(struct sassy_device* sdev, unsigned char *remote_mac, uint64_t ts)
 {
 
-	//sassy_dbg("SRC MAC=%pM", remote_mac);
-    sassy_dbg("fd optimistical timestamp received. \n");
-
+	if(sdev->verbose){
+		//sassy_dbg("SRC MAC=%pM", remote_mac);
+    	sassy_dbg("fd optimistical timestamp received. \n");
+	}
 }
