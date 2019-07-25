@@ -95,6 +95,7 @@ struct sassy_packet_data {
 struct sassy_mlx5_con_info {
 	int ix;
 	int cqn;
+	void *c; /* mlx5 channel */
 };
 
 struct sassy_pacemaker_test_data {
@@ -229,7 +230,8 @@ struct net_device *sassy_get_netdevice(int ifindex);
 
 int sassy_mlx5_con_register_device(int ifindex);
 
-int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn);
+/* c is void ptr to  struct mlx5e_channel *c  */
+int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn, void *c);
 int sassy_mlx5_con_check_cqn(int sassy_id, int cqn);
 int sassy_mlx5_con_check_ix(int sassy_id, int ix);
 
@@ -258,5 +260,7 @@ void clean_sassy_ctrl_interfaces(struct sassy_device *sdev);
 void init_sassy_ctrl_interfaces(struct sassy_device *sdev);
 
 void sassy_post_ts(int sassy_id, uint64_t cycles);
+
+void* sassy_mlx5_get_channel(int sassy_id);
 
 #endif /* _SASSY_H_ */

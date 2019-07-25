@@ -128,7 +128,6 @@ void sassy_reset_remote_host_counter(int sassy_id){
 
         pmtarget = &sdev->pminfo.pm_targets[i];
 
-
         kfree(pmtarget->pkt_data.pkt_payload[0]);
         kfree(pmtarget->pkt_data.pkt_payload[1]);
 

@@ -97,7 +97,18 @@ int sassy_mlx5_con_check_cqn(int sassy_id, int cqn){
 }
 EXPORT_SYMBOL(sassy_mlx5_con_check_cqn);
 
-int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn){
+void* sassy_mlx5_get_channel(int sassy_id) 
+{
+	
+	if(!infos[sassy_id] ||!infos[sassy_id]->c){
+		sassy_error("Can not get channel. \n");
+		return NULL;
+	}
+	return infos[sassy_id]->c;
+}
+EXPORT_SYMBOL(sassy_mlx5_get_channel);
+
+int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn, void *c){
 
 	if(sassy_validate_sassy_device(sassy_id)){
 		return -1;
@@ -110,6 +121,7 @@ int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn){
 
     infos[sassy_id]->ix = ix;
     infos[sassy_id]->cqn = cqn;
+    infos[sassy_id]->c = c;
 
     sassy_dbg("Channel %d registered with cqn=%d", ix, cqn);
 
