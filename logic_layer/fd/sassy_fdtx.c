@@ -173,7 +173,7 @@ vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
 
 	priv = (struct sassy_fd_priv *)vmf->vma->vm_private_data;
-	if (sdev->ubuf) {
+	if (priv->tx_buf) {
 		page = virt_to_page(priv->tx_buf);
 		get_page(page);
 		vmf->page = page;
