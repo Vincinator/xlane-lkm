@@ -1,4 +1,5 @@
 #pragma once
+#include <sassy/sassy.h>
 
 
 int sassy_bypass_init_class(void);
