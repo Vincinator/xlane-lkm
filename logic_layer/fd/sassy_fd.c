@@ -18,11 +18,6 @@ MODULE_VERSION("0.01");
 static struct sassy_fd_priv fd_priv;
 struct sassy_protocol fd_protocol;
 
-static struct sassy_fd_priv *fd_priv(){
-	return &fd_priv;
-}
-
-
 static const struct sassy_protocol_ctrl_ops fd_ops = {
 	.init = fd_init,
 	.start = fd_start,
