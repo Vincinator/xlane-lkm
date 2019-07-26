@@ -7,6 +7,7 @@
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
+#include <linux/mm_types.h>
 
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
@@ -164,7 +165,7 @@ void bypass_vma_close(struct vm_area_struct *vma)
 	sassy_dbg( "[SASSY] Simple VMA close.\n");
 }
 
-int bypass_vm_fault(struct vm_fault *vmf)
+vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 {
 	struct page *page;
 	struct sassy_fd_priv *priv;
