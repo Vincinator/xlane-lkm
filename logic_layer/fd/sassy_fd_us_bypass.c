@@ -12,8 +12,8 @@
 #include <linux/fs.h>
 #include <linux/mm.h>
 
-#include "../include/sassy_fd_us_bypass.h"
-#include "../include/sassy_fd.h"
+#include "include/sassy_fd_us_bypass.h"
+#include "include/sassy_fd.h"
 
 #define DEVNAME "sassy_fd_tx_mem"
 
