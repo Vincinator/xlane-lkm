@@ -2,7 +2,7 @@
 #include <sassy/sassy.h>
 
 #include "include/sassy_fd.h"
-#include "include/sassy_fd_us_bypass.h"
+#include "include/sassy_fdtx.h"
 
 int fd_init(struct sassy_device* sdev)
 {

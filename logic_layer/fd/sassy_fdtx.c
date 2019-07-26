@@ -12,7 +12,7 @@
 #include <linux/fs.h>
 #include <linux/mm.h>
 
-#include "include/sassy_fd_us_bypass.h"
+#include "include/sassy_fdtx.h"
 #include "include/sassy_fd.h"
 
 #define DEVNAME "sassy_fd_tx_mem"
@@ -211,8 +211,6 @@ static int sassy_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 	bypass_vma_open(vma);
 	return 0;
 }
-
-
 
 
 static const struct file_operations bypass_fileops = {
