@@ -3,6 +3,10 @@
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
+#include <linux/uaccess.h>
+#include <linux/seq_file.h>
+#include <linux/slab.h>
+#include <linux/uaccess.h>
 
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
