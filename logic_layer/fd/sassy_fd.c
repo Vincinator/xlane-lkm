@@ -5,6 +5,8 @@
 #include <sassy/sassy.h>
 
 #include "include/sassy_fd_ops.h"
+#include "include/sassy_fd.h"
+
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
