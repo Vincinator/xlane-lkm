@@ -90,7 +90,7 @@ ssize_t sassy_bypass_read(struct file *filp, char *buf, size_t count, loff_t *f_
 
 	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
 
-	BUG_ON(sdev == NULL);
+	BUG_ON(priv == NULL);
 
 	if (mutex_lock_killable(&priv->tx_mutex))
 		return -EINTR;
