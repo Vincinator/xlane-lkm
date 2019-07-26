@@ -5,10 +5,24 @@
 
 int fd_init(struct sassy_device* sdev)
 {
-	/* Initialize */
+	
+	int err = 0;
+
+	err = sassy_bypass_init_class();
+	
+	if(err)
+		goto error;
+	
+	err = sassy_setup_chardev(sdev);
+
+	if(err)
+		goto error;
 
 	sassy_dbg("fd init\n");
 	return 0;
+error:
+	sassy_error("failed to init chardevs for FD protocol\n");
+	return err;
 }
 
 
@@ -50,6 +64,9 @@ int fd_stop(struct sassy_device* sdev)
 int fd_clean(struct sassy_device* sdev)
 {
 
+	sassy_clean_class();
+	// TODO: destroy the char devices
+
 	sassy_dbg("fd clean\n");
 	return 0;
 }
@@ -73,6 +90,8 @@ int fd_post_payload(struct sassy_device* sdev, unsigned char *remote_mac, void* 
 
 	if(sdev->verbose)
     	sassy_dbg("fd payload received\n");
+
+    
 }
 
 int fd_post_ts(struct sassy_device* sdev, unsigned char *remote_mac, uint64_t ts)
