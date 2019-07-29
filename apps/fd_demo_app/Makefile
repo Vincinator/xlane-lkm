@@ -20,5 +20,6 @@ $(TARGET): $(OBJECTS)
 	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@
 	
 clean:
-	-rm -f *.o
+	-rm -f .o
+	-rm -f fd_app
 	-rm -f $(TARGET)
