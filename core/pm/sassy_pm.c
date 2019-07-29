@@ -164,8 +164,8 @@ int sassy_heart(void *data)
             sassy_update_skb_payload(spminfo->pm_targets[i].skb, pkt_payload);
 
             if(sdev->verbose)
-                seq_hex_dump(m,"PM payload: ", DUMP_PREFIX_OFFSET,
-                    32, 1, pkt_payload, SASSY_PAYLOAD_BYTES, false);
+                print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
+                    pkt_payload, SASSY_PAYLOAD_BYTES, 0);
 
             sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
         }
