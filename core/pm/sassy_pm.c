@@ -162,7 +162,7 @@ int sassy_heart(void *data)
 
             // Direct Updates - No double buffer
             if(sdev->proto->ctrl_ops.us_update != NULL)
-                sdev->proto->ctrl_ops->us_update(sdev, pkt_payload);
+                sdev->proto->ctrl_ops.us_update(sdev, pkt_payload);
 
             sassy_update_skb_payload(spminfo->pm_targets[i].skb, pkt_payload);
 
