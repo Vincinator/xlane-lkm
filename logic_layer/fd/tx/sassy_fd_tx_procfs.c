@@ -76,8 +76,8 @@ static int  sassy_fdus_reg_open(struct inode *inode, struct file *file)
 
 static const struct file_operations sassy_fdus_reg_ops = {
 		.owner	= THIS_MODULE,
-		.open	= sassy_fdus_proc_open,
-		.write	= sassy_fdus_proc_write,
+		.open	= sassy_fdus_reg_open,
+		.write	= sassy_fdus_reg_write,
 		.read	= seq_read,
 		.llseek	= seq_lseek,
 		.release = single_release,
