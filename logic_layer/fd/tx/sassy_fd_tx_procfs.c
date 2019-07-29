@@ -98,7 +98,7 @@ void init_sassy_fdus_interfaces(struct sassy_device *sdev)
 EXPORT_SYMBOL(init_sassy_ctrl_interfaces);
 
 
-void clean_sassy_ctrl_interfaces(struct sassy_device *sdev)
+void clean_sassy_fdus_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
@@ -110,4 +110,4 @@ void clean_sassy_ctrl_interfaces(struct sassy_device *sdev)
 
 
 }
-EXPORT_SYMBOL(clean_sassy_ctrl_interfaces);
+EXPORT_SYMBOL(clean_sassy_fdus_interfaces);
