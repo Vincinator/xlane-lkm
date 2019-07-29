@@ -168,7 +168,7 @@ struct sassy_protocol_ctrl_ops {
 
 	int (*stop)(struct sassy_device*);
 
-	int (*us_update)(struct sassy_device*);
+	int (*us_update)(struct sassy_device*, void *payload);
 
 	/* free memory of app and remove user space interfaces */
 	int (*clean) (struct sassy_device*);
