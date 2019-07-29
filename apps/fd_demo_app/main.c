@@ -73,6 +73,7 @@ int running = 1;
 int main(int argc, char **argv)
 {
 	int procid, devid;
+	int counter;
     
     printf("Started Demo! Application. \n");
 
@@ -95,11 +96,15 @@ int main(int argc, char **argv)
     // Get aliveness counter;
     sassy_ulib_setup(devid);
 
-    while(running < 100000000){
-	    
-	    syncbeat_update_status(procid, running);
+    while(running){
+
+	    if(counter >= 255)
+	    	counter = 0;
+
+	    syncbeat_update_status(procid, counter);
 	    
 	    running++;
+	    counter++;
     }
   
     printf("Stopped Demo Application. \n");
