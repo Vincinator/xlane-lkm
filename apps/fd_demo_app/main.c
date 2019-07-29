@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 {
 	int procid, devid;
     
-    printf("Started Demo Application. \n");
+    printf("Started Demo! Application. \n");
 
     if(argc != 3){
     	printf("sudo ./fd_app <procid> <devid>\n");
