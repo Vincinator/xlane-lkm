@@ -109,7 +109,7 @@ int fd_us_update(struct sassy_device *sdev, void *payload)
 		return -ENODEV;
 	}
 
-	for(i = 0; i < priv->num_procs; i++) {
+	for(i = 0; i < MAX_PROCESSES_PER_HOST; i++) {
 		cur_p->pinfo[i].pid = i & 0xFF;
 		// Check aliveness counter and set state
 		cur_p->pinfo[i].ps = (us_counters->ac[i] == last_counters->ac[i]) ? 0 : 1 ;
