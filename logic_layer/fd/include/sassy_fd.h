@@ -12,7 +12,7 @@
 
 /* MUST be smaller than a Page! */
 struct fd_aliveness_counters {
-	uint64_t aliveness_counter[MAX_PROCESSES_PER_HOST];
+	uint64_t ac[MAX_PROCESSES_PER_HOST];
 };
 
 struct sassy_fd_priv {
