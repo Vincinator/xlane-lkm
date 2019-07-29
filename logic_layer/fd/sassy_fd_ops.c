@@ -113,6 +113,17 @@ int fd_us_update(struct sassy_device *sdev, void *payload)
 		cur_p->pinfo[i].pid = i & 0xFF;
 		// Check aliveness counter and set state
 		cur_p->pinfo[i].ps = (us_counters->ac[i] == last_counters->ac[i]) ? 0 : 1 ;
+
+		if(sdev->verbose){
+			if( us_counters->ac[i] != last_counters->ac[i])
+				sassy_dbg("proc: %d state alive!\n");
+			
+		sassy_dbg("us counter: %d last_counter: %d!\n", us_counters->ac[i], last_counters->ac[i]);
+
+		}
+		
+
+		last_counters->ac[i] = us_counters->ac[i];
 	}
 
 	return 0;
