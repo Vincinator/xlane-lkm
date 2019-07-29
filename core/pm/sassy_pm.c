@@ -160,7 +160,13 @@ int sassy_heart(void *data)
             // Always update payload to avoid jitter!
             hb_active_ix    =  spminfo->pm_targets[i].pkt_data.hb_active_ix;
             pkt_payload      = &spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
+
             sassy_update_skb_payload(spminfo->pm_targets[i].skb, pkt_payload);
+
+            if(sdev->verbose)
+                seq_hex_dump(m,"PM payload: ", DUMP_PREFIX_OFFSET,
+                    32, 1, pkt_payload, SASSY_PAYLOAD_BYTES, false);
+
             sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
         }
         local_bh_enable();
