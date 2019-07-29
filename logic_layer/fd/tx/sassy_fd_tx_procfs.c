@@ -88,14 +88,11 @@ void init_sassy_fdus_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
-    snprintf(name_buf,  sizeof name_buf, "sassy/%d/fd", ifindex);
+    snprintf(name_buf,  sizeof name_buf, "sassy/%d/fd", sdev->ifindex);
     proc_mkdir(name_buf, NULL);
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd/register_proc", sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_core_ctrl_ops, sdev);
-
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/debug", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_verbose_ctrl_ops, sdev);
 
 }
 EXPORT_SYMBOL(init_sassy_ctrl_interfaces);
@@ -105,10 +102,10 @@ void clean_sassy_ctrl_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/rx_ctrl", sdev->ifindex);
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd/register_proc", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/debug", sdev->ifindex);
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 
 
