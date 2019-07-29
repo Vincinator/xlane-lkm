@@ -95,7 +95,7 @@ int main(int argc, char **argv)
     // Get aliveness counter;
     sassy_ulib_setup(devid);
 
-    while(running < 1000){
+    while(running < 100000000){
 	    
 	    syncbeat_update_status(procid, running);
 	    
