@@ -21,5 +21,4 @@ $(TARGET): $(OBJECTS)
 	
 clean:
 	-rm -f .o
-	-rm -f fd_app
 	-rm -f $(TARGET)
