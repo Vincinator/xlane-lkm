@@ -108,6 +108,9 @@ ssize_t sassy_bypass_read(struct file *filp, char *buf, size_t count, loff_t *f_
 		ret = -EFAULT;
 		goto out;
 	}
+
+	print_hex_dump(KERN_DEBUG, "Aliveness Counter: ", DUMP_PREFIX_NONE, 16, 1,
+        		priv->tx_buf, SASSY_PAYLOAD_BYTES, 0);
 	
 	*f_pos += count;
 	ret = count;
