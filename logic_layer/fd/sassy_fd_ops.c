@@ -112,7 +112,7 @@ int fd_us_update(struct sassy_device *sdev, void *payload)
 	for(i = 0; i < priv->num_procs; i++) {
 		cur_p->pinfo[i].pid = i & 0xFF;
 		// Check aliveness counter and set state
-		cur_p->pinfo[i].ps = us_counters[i] == last_counters[i] ? 0 : 1 ;
+		cur_p->pinfo[i].ps = (us_counters[i] == last_counters[i]) ? 0 : 1 ;
 	}
 
 	return 0;
