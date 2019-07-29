@@ -93,7 +93,7 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload){
     tail_ptr = skb_tail_pointer(skb);
     data_ptr = (tail_ptr - SASSY_PAYLOAD_BYTES);
 
-    //memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
+    memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
 }
 
 int sassy_heart(void *data)

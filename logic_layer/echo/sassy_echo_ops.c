@@ -21,6 +21,10 @@ int echo_stop(struct sassy_device* sdev){
 	return 0;
 }
 
+int echo_us_update(struct sassy_device* sdev){
+	sassy_dbg("echo us update");
+	return 0;
+}
 int echo_clean(struct sassy_device* sdev){
 
 	sassy_dbg("echo clean");

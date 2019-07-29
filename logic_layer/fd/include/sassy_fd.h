@@ -9,7 +9,15 @@
 #include <linux/fs.h>
 #include <linux/mm.h>
 
+
+/* MUST be smaller than a Page! */
+struct fd_aliveness_counters {
+	uint64_t aliveness_counter[MAX_PROCESSES_PER_HOST];
+};
+
 struct sassy_fd_priv {
+
+	int num_procs;
 	
 	/* Character Device to mmap FD aliveness counter memory to user space */
 	struct device* tx_device;
@@ -23,6 +31,11 @@ struct sassy_fd_priv {
 	struct cdev cdev_rx;
 	struct mutex rx_mutex;
 	char *rx_buf; 			// Ptr to Kernel Mem
+
+	/* Used to compare if aliveness counter was updated */
+	struct fd_aliveness_counters last_counter_values; 
+
+
 
 };
 
