@@ -87,7 +87,6 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 			  enum sassy_timestamp_type type, uint64_t cycles,
 			  int target_id)
 {
-	uint64_t *ptr; /* Pointer for ubuf access */
 
 	if (unlikely(logs->current_timestamps > TIMESTAMP_ARRAY_LIMIT)) {
 		sassy_ts_stop(
@@ -96,11 +95,10 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 		       __FUNCTION__);
 		return -ENOMEM;
 	}
+
 	logs->timestamp_items[logs->current_timestamps].timestamp_tcs = cycles;
 	logs->timestamp_items[logs->current_timestamps].target_id = target_id;
-	/* Hard coded.. proc id is always 0 for this eval, offset is 8 bytes */
-	ptr = (uint64_t *)(sdev->ubuf);
-	*ptr = cycles;
+	
 	logs->current_timestamps += 1;
 	return 0;
 }
