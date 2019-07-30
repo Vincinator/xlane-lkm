@@ -214,6 +214,46 @@ error:
 	return err;
 }
 
+
+int init_log_ctrl(struct sassy_device *sdev, int logid)
+{
+	int err;
+	char name_buf[MAX_SASSY_PROC_NAME];
+
+	if (sdev->verbose)
+		sassy_dbg(" Init TS log with id: %d\n", logid);
+
+	if (!sdev->stats) {
+		err = -ENOMEM;
+		sassy_error(" Stats is not initialized!%s\n", __FUNCTION__);
+		goto error;
+	}
+
+	/* Generate device specific proc name for sassy stats */
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/ts/data/%d",
+		 sdev->ifindex, logid);
+
+	sdev->stats->timestamp_logs[logid]->proc_dir =
+		proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL,
+				 &sassy_procfs_ops,
+				 sdev->stats->timestamp_logs[logid]);
+
+	if (!sdev->stats->timestamp_logs[logid]->proc_dir) {
+		err = -ENOMEM;
+		sassy_error(
+			" Could not create timestamps  procfs data entry%s\n",
+			__FUNCTION__);
+		goto error;
+	}
+	sassy_dbg(" Created %d procfs %s\n",  logid, __FUNCTION__);
+	return 0;
+
+error:
+	sassy_error(" error code: %d for %s\n", err, __FUNCTION__);
+	return err;
+}
+
+
 int init_timestamping(struct sassy_device *sdev)
 {
 	int err;
@@ -302,43 +342,5 @@ error:
 		}
 		sdev->stats->timestamp_amount = 0;
 	}
-	return err;
-}
-
-int init_log_ctrl(struct sassy_device *sdev, int logid)
-{
-	int err;
-	char name_buf[MAX_SASSY_PROC_NAME];
-
-	if (sdev->verbose)
-		sassy_dbg(" Init TS log with id: %d\n", logid);
-
-	if (!sdev->stats) {
-		err = -ENOMEM;
-		sassy_error(" Stats is not initialized!%s\n", __FUNCTION__);
-		goto error;
-	}
-
-	/* Generate device specific proc name for sassy stats */
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/ts/data/%d",
-		 sdev->ifindex, logid);
-
-	sdev->stats->timestamp_logs[logid]->proc_dir =
-		proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL,
-				 &sassy_procfs_ops,
-				 sdev->stats->timestamp_logs[logid]);
-
-	if (!sdev->stats->timestamp_logs[logid]->proc_dir) {
-		err = -ENOMEM;
-		sassy_error(
-			" Could not create timestamps  procfs data entry%s\n",
-			__FUNCTION__);
-		goto error;
-	}
-	sassy_dbg(" Created %d procfs %s\n",  logid, __FUNCTION__);
-	return 0;
-
-error:
-	sassy_error(" error code: %d for %s\n", err, __FUNCTION__);
 	return err;
 }
