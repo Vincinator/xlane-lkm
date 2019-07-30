@@ -77,7 +77,7 @@ static const struct file_operations sassy_procfs_ops = {
 /* Get the corresponding array for type and calls write_to_logmem. */
 int sassy_write_timestamp(struct sassy_device *sdev,
 			  struct sassy_timestamp_logs *logs,
-			  enum sassy_timestamp_type type, uint64_t cycles,
+			  enum sassy_ts_type type, uint64_t cycles,
 			  int target_id)
 {
 
