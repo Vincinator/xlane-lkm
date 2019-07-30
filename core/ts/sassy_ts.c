@@ -2,7 +2,6 @@
 #include <linux/ip.h>
 #include <linux/netdevice.h>
 #include <linux/proc_fs.h>
-#include <linux/sassy.h>
 #include <linux/seq_file.h>
 #include <net/ip.h>
 #include <net/net_namespace.h>
