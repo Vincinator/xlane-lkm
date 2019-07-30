@@ -108,7 +108,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 
 
     if(sdev->ts_state == SASSY_TS_RUNNING)
-        sassy_write_timestamp(sdev, 4, rdtsc(), sassy_id);
+        sassy_write_timestamp(sdev, 2, rdtsc(), sassy_id);
 
 	sproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
 
