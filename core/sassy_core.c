@@ -196,6 +196,9 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d", ifindex);
+
+    init_timestamping(score->sdevices[sassy_id]);
+
 	proc_mkdir(name_buf, NULL);
 
 	/* Initialize Control Interfaces for NIC */
@@ -382,7 +385,6 @@ static int __init sassy_connection_core_init(void)
 	proc_mkdir("sassy", NULL);
 
 
-    init_timestamping(sdev);
 
 	// /proc/sassy/<id>/protocols/<protos>
 	init_sassy_proto_info_interfaces();
