@@ -9,9 +9,8 @@
 
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
-#include <sassy/sassy_ts.h>
 
-const char *ts_state_string(sassy_ts_state_t state)
+const char *ts_state_string(enum sassy_ts_state state)
 {
 	switch (state) {
 	case SASSY_TS_RUNNING:
