@@ -7,7 +7,7 @@
 enum sassy_ts_state {
     SASSY_TS_RUNNING,
     SASSY_TS_READY, 	/* Initialized but not active*/
-    SASSYT_TS_UNINIT,
+    SASSY_TS_UNINIT,
     SASSY_TS_LOG_FULL,
 };
 
