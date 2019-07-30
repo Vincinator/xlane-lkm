@@ -78,6 +78,7 @@ static int sassy_ts_ctrl_open(struct inode *inode, struct file *file)
 			   PDE_DATA(file_inode(file)));
 }
 
+
 static const struct file_operations sassy_ts_ctrl_ops = {
 	.owner = THIS_MODULE,
 	.open = sassy_ts_ctrl_open,

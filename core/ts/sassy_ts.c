@@ -251,6 +251,7 @@ int init_timestamping(struct sassy_device *sdev)
 		goto error;
 	}
 
+
 	sdev->stats->timestamp_amount = 0;
 
 	for (i = 0; i < log_types; i++) {
