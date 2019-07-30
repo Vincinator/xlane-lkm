@@ -4,6 +4,8 @@
 #include <linux/list.h>
 #include <linux/spinlock_types.h>
 
+#include <sassy/sassy_ts.h>
+
 #define MAX_SYNCBEAT_PROC_NAME 256
 
 #define SASSY_TARGETS_BUF 512
@@ -28,6 +30,8 @@
 #define SASSY_PKT_BYTES SASSY_PAYLOAD_BYTES + SASSY_HEADER_BYTES
 
 int sassy_core_register_nic(int ifindex);
+
+
 
 enum sassy_rx_state {
 	SASSY_RX_DISABLED = 0,
@@ -59,6 +63,10 @@ struct sassy_process_info {
 	u8 pid; /* Process ID on remote host */
 	u8 ps; /* Status of remote process */
 };
+
+
+
+
 
 struct sassy_packet_data {
 	uint32_t dst_ip;
@@ -136,6 +144,9 @@ struct sassy_device {
 	int verbose; /* Prints more information when set to 1 during RX/TX to dmesg*/
 
 	enum sassy_rx_state rx_state;
+	enum sassy_ts_state ts_state; 
+
+	struct sassy_stats *stats;
 
 	struct net_device *ndev;
 

@@ -1,6 +1,4 @@
-#include <sassy/sassy_ts.h>
 
-#include "sassy_ts_ctrl.h"
 #include <linux/ip.h>
 #include <linux/netdevice.h>
 #include <linux/proc_fs.h>
@@ -10,9 +8,9 @@
 #include <net/net_namespace.h>
 #include <net/udp.h>
 
-#include "sassy_devmgmt.h"
-#include "sassy_hb.h"
-#include "sassy_net.h"
+#include <sassy/sassy.h>
+#include <sassy/logger.h>
+#include <sassy/sassy_ts.h>
 
 const char *ts_state_string(sassy_timestamping_state_t state)
 {
