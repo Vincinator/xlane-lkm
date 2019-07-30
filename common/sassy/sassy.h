@@ -305,6 +305,11 @@ int sassy_ts_stop(struct sassy_device *sdev);
 int sassy_ts_start(struct sassy_device *sdev);
 int sassy_reset_stats(struct sassy_device *sdev);
 
+int sassy_write_timestamp(struct sassy_device *sdev,
+			  struct sassy_timestamp_logs *logs,
+			  enum sassy_timestamp_type type, uint64_t cycles,
+			  int target_id);
+
 
 
 #endif /* _SASSY_H_ */
