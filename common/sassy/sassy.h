@@ -309,6 +309,6 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 				struct sassy_timestamp_logs *logs,
 				uint64_t cycles, int target_id);
 
-
+const char *ts_state_string(enum sassy_ts_state state);
 
 #endif /* _SASSY_H_ */
