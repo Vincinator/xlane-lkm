@@ -52,8 +52,8 @@ void sassy_post_ts(int sassy_id, uint64_t cycles)
 	if (score->sdevices[sassy_id]->verbose == 1)
 		sassy_dbg("ts %llu", cycles);
 
-    if(sdev->ts_state == SASSY_TS_RUNNING)
-        sassy_write_timestamp(sdev, 1, cycles, sassy_id);
+    if(score->sdevices[sassy_id]->ts_state == SASSY_TS_RUNNING)
+        sassy_write_timestamp(score->sdevices[sassy_id], 1, cycles, sassy_id);
 }
 EXPORT_SYMBOL(sassy_post_ts);
 
