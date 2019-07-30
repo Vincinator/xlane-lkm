@@ -105,7 +105,7 @@ static const struct file_operations proto_selector_ops = {
 
 void init_proto_selector(struct sassy_device *sdev)
 {
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+	char name_buf[MAX_SASSY_PROC_NAME];
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/protocol", sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &proto_selector_ops,
@@ -116,7 +116,7 @@ void init_proto_selector(struct sassy_device *sdev)
 
 void remove_proto_selector(struct sassy_device *sdev)
 {
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+	char name_buf[MAX_SASSY_PROC_NAME];
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/protocol", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);

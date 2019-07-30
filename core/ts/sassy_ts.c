@@ -286,7 +286,7 @@ int init_timestamping(struct sassy_device *sdev)
 		init_log_ctrl(sdev, i);
 	}
 
-	ts_state_transition_to(sdev, SYNCBEAT_TS_READY);
+	ts_state_transition_to(sdev, SASSY_TS_READY);
 
 	return 0;
 
