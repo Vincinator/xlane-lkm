@@ -32,3 +32,6 @@ struct sassy_stats {
 	struct sassy_timestamp_logs **timestamp_logs;
 	int timestamp_amount; /* how many different timestamps types are tracked*/
 };
+
+void ts_state_transition_to(struct sassy_device *sdev,
+			    sassy_timestamping_state_t state);
