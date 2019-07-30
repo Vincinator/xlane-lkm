@@ -263,15 +263,15 @@ int init_timestamping(struct sassy_device *sdev)
 	int i;
 
 	if (sdev->verbose)
-		sassy_dbg(" syncbeat device setup started %s\n", __FUNCTION__);
+		sassy_dbg(" sassy device setup started %s\n", __FUNCTION__);
 
 	if (!sdev) {
 		err = -EINVAL;
-		sassy_error(" syncbeat device is NULL %s\n", __FUNCTION__);
+		sassy_error(" sassy device is NULL %s\n", __FUNCTION__);
 		goto error;
 	}
 
-	sdev->stats = kmalloc(sizeof(struct syncbeat_stats), GFP_ATOMIC);
+	sdev->stats = kmalloc(sizeof(struct sassy_stats), GFP_ATOMIC);
 	if (!sdev->stats) {
 		err = -ENOMEM;
 		sassy_error(" Could not allocate memory for stats.%s\n",
@@ -281,7 +281,7 @@ int init_timestamping(struct sassy_device *sdev)
 
 	sdev->stats->timestamp_logs =
 		kmalloc_array(log_types,
-			      sizeof(struct syncbeat_timestamp_logs *),
+			      sizeof(struct sassy_timestamp_logs *),
 			      GFP_ATOMIC);
 	if (!sdev->stats->timestamp_logs) {
 		err = -ENOMEM;
@@ -296,7 +296,7 @@ int init_timestamping(struct sassy_device *sdev)
 
 	for (i = 0; i < log_types; i++) {
 		sdev->stats->timestamp_logs[i] = kmalloc(
-			sizeof(struct syncbeat_timestamp_logs), GFP_ATOMIC);
+			sizeof(struct sassy_timestamp_logs), GFP_ATOMIC);
 
 		if (!sdev->stats->timestamp_logs[i]) {
 			err = -ENOMEM;
@@ -311,7 +311,7 @@ int init_timestamping(struct sassy_device *sdev)
 
 		sdev->stats->timestamp_logs[i]->timestamp_items =
 			kmalloc_array(TIMESTAMP_ARRAY_LIMIT,
-				      sizeof(struct syncbeat_timestamp_item),
+				      sizeof(struct sassy_timestamp_item),
 				      GFP_ATOMIC);
 
 		if (!sdev->stats->timestamp_logs[i]->timestamp_items) {
