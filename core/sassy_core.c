@@ -196,10 +196,13 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d", ifindex);
+    proc_mkdir(name_buf, NULL);
 
+
+    /* Initialize Timestamping Interfaces for NIC */
+    init_sassy_ts_ctrl_interfaces(score->sdevices[sassy_id]);
     init_timestamping(score->sdevices[sassy_id]);
 
-	proc_mkdir(name_buf, NULL);
 
 	/* Initialize Control Interfaces for NIC */
 	init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
