@@ -51,3 +51,5 @@ void sassy_remove_protocol_info_iface(struct sassy_protocol *proto)
 	snprintf(name_buf, sizeof name_buf, "sassy/protocols/%s", proto->name);
 	remove_proc_entry(name_buf, NULL);
 }
+
+

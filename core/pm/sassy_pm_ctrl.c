@@ -497,7 +497,8 @@ static const struct file_operations sassy_test_ctrl_ops = {
 
 void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 {
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+	char name_buf[MAX_SASSY_PROC_NAME];
+
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker",
 		 sdev->ifindex);
@@ -530,7 +531,7 @@ EXPORT_SYMBOL(init_sassy_pm_ctrl_interfaces);
 
 void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 {
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+	char name_buf[MAX_SASSY_PROC_NAME];
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/payload",
 		 sdev->ifindex);

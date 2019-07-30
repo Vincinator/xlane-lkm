@@ -10,6 +10,7 @@
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
 
+
 static ssize_t sassy_fdus_reg_write(struct file *file,
 				    const char __user *user_buffer,
 				    size_t count, loff_t *data)
