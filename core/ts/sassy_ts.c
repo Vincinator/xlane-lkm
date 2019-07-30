@@ -28,7 +28,7 @@ const char *ts_state_string(sassy_timestamping_state_t state)
 }
 
 void ts_state_transition_to(struct sassy_device *sdev,
-			    sassy_timestamping_state_t state)
+			    enum sassy_timestamping_state state)
 {
 	sassy_dbg(" State Transition from %s to %s \n",
 		  ts_state_string(sdev->pm_state), ts_state_string(state));
