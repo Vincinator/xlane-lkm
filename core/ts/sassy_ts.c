@@ -30,7 +30,7 @@ void ts_state_transition_to(struct sassy_device *sdev,
 			    enum sassy_ts_state state)
 {
 	sassy_dbg(" State Transition from %s to %s \n",
-		  ts_state_string(sdev->pm_state), ts_state_string(state));
+		  ts_state_string(sdev->ts_state), ts_state_string(state));
 	sdev->ts_state = state;
 }
 
