@@ -381,6 +381,9 @@ static int __init sassy_connection_core_init(void)
 
 	proc_mkdir("sassy", NULL);
 
+
+    init_timestamping(sdev);
+
 	// /proc/sassy/<id>/protocols/<protos>
 	init_sassy_proto_info_interfaces();
 
