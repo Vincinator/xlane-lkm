@@ -217,7 +217,7 @@ error:
 int init_timestamping(struct sassy_device *sdev)
 {
 	int err;
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+	char name_buf[MAX_SASSY_PROC_NAME];
 	int cur_log_types = 0;
 	int log_types = SASSY_NUM_TS_LOG_TYPES;
 	int i;
