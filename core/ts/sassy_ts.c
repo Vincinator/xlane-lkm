@@ -76,8 +76,7 @@ static const struct file_operations sassy_procfs_ops = {
 
 /* Get the corresponding array for type and calls write_to_logmem. */
 int sassy_write_timestamp(struct sassy_device *sdev,
-			  struct sassy_timestamp_logs *logs,
-			  enum sassy_ts_type type, uint64_t cycles,
+			  struct sassy_timestamp_logs *logs, uint64_t cycles,
 			  int target_id)
 {
 
@@ -247,8 +246,6 @@ error:
 int init_timestamping(struct sassy_device *sdev)
 {
 	int err;
-	char name_buf[MAX_SASSY_PROC_NAME];
-	int cur_log_types = 0;
 	int log_types = SASSY_NUM_TS_LOG_TYPES;
 	int i;
 
