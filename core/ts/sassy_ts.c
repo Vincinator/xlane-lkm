@@ -11,7 +11,7 @@
 #include <sassy/logger.h>
 #include <sassy/sassy_ts.h>
 
-const char *ts_state_string(sassy_timestamping_state_t state)
+const char *ts_state_string(sassy_ts_state_t state)
 {
 	switch (state) {
 	case SASSY_TS_RUNNING:
@@ -28,7 +28,7 @@ const char *ts_state_string(sassy_timestamping_state_t state)
 }
 
 void ts_state_transition_to(struct sassy_device *sdev,
-			    enum sassy_timestamping_state state)
+			    enum sassy_ts_state state)
 {
 	sassy_dbg(" State Transition from %s to %s \n",
 		  ts_state_string(sdev->pm_state), ts_state_string(state));
