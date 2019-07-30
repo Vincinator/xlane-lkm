@@ -34,4 +34,4 @@ struct sassy_stats {
 };
 
 void ts_state_transition_to(struct sassy_device *sdev,
-			    sassy_timestamping_state_t state);
+			    enum sassy_timestamping_state state);
