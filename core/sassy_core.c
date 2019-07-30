@@ -161,7 +161,7 @@ int sassy_core_write_packet(int sassy_id, int remote_id)
 /* Called by Connection Layer Glue (e.g. mlx5_con.c) */
 int sassy_core_register_nic(int ifindex)
 {
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+	char name_buf[MAX_SASSY_PROC_NAME];
 	int sassy_id;
 	int i;
 
@@ -214,7 +214,7 @@ EXPORT_SYMBOL(sassy_core_register_nic);
 int sassy_core_remove_nic(int sassy_id)
 {
 	int i;
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+	char name_buf[MAX_SASSY_PROC_NAME];
 
 	if (sassy_validate_sassy_device(sassy_id)) {
 		return -1;
