@@ -46,4 +46,3 @@ brief description on how SASSY works (high level).
 For low level details, please refer to the source code. 
 The specification documents have the single purpose to give a 
 brief introduction to the responibilities of that described SASSY component.
-

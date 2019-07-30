@@ -56,7 +56,7 @@ int sassy_ulib_setup(int ifindex) {
 // Very unsecure to let the proc decide where to write - not for production! 
 // TODO: memory protection mechanism - process can only write to its assigned memory
 //			... however, this is just a prototype to show the mechanics. 
-int syncbeat_update_status(int procid, uint64_t status) {
+int sassy_update_status(int procid, uint64_t status) {
         if (!shared_mem_page){
                 printf(" Update status failed, shared mem page not available\n");
                 return -EFAULT;
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 	    if(counter >= 255)
 	    	counter = 0;
 
-	    syncbeat_update_status(procid, counter);
+	    sassy_update_status(procid, counter);
 	    
 	    running++;
 	    counter++;

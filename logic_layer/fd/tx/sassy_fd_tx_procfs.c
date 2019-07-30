@@ -10,11 +10,14 @@
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
 
-static ssize_t sassy_fdus_reg_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
+static ssize_t sassy_fdus_reg_write(struct file *file,
+				    const char __user *user_buffer,
+				    size_t count, loff_t *data)
 {
 	int err;
-	char kernel_buffer[count+1];
-	struct sassy_device *sdev = (struct sassy_device*)PDE_DATA(file_inode(file));
+	char kernel_buffer[count + 1];
+	struct sassy_device *sdev =
+		(struct sassy_device *)PDE_DATA(file_inode(file));
 	long new_state = -1;
 
 	if (!sdev)
@@ -39,12 +42,12 @@ static ssize_t sassy_fdus_reg_write(struct file *file, const char __user *user_b
 		return err;
 	}
 
-	if(new_state == 0) {
+	if (new_state == 0) {
 		sdev->rx_state = SASSY_RX_DISABLED;
 		sassy_dbg("RX disabled\n");
 
 	} else {
-		if(!sdev->proto){
+		if (!sdev->proto) {
 			sassy_error("Protocol must be selected first!\n");
 			sdev->rx_state = SASSY_RX_DISABLED;
 			return count;
@@ -57,57 +60,55 @@ static ssize_t sassy_fdus_reg_write(struct file *file, const char __user *user_b
 
 static int sassy_fdus_reg_show(struct seq_file *m, void *v)
 {
-	struct sassy_device *sdev = (struct sassy_device*) m->private;
+	struct sassy_device *sdev = (struct sassy_device *)m->private;
 	int i;
 
 	if (!sdev)
 		return -ENODEV;
 
 	seq_printf(m, "sassy core RX state: %d\n", sdev->rx_state);
-	
+
 	return 0;
 }
 
-static int  sassy_fdus_reg_open(struct inode *inode, struct file *file)
+static int sassy_fdus_reg_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, sassy_fdus_reg_show,PDE_DATA(file_inode(file)));
+	return single_open(file, sassy_fdus_reg_show,
+			   PDE_DATA(file_inode(file)));
 }
 
-
 static const struct file_operations sassy_fdus_reg_ops = {
-		.owner	= THIS_MODULE,
-		.open	= sassy_fdus_reg_open,
-		.write	= sassy_fdus_reg_write,
-		.read	= seq_read,
-		.llseek	= seq_lseek,
-		.release = single_release,
+	.owner = THIS_MODULE,
+	.open = sassy_fdus_reg_open,
+	.write = sassy_fdus_reg_write,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
-
 
 void init_sassy_fdus_interfaces(struct sassy_device *sdev)
 {
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+	char name_buf[MAX_SASSY_PROC_NAME];
 
-    snprintf(name_buf,  sizeof name_buf, "sassy/%d/fd", sdev->ifindex);
-    proc_mkdir(name_buf, NULL);
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd", sdev->ifindex);
+	proc_mkdir(name_buf, NULL);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd/register_proc", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &sassy_fdus_reg_ops, sdev);
-
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd/register_proc",
+		 sdev->ifindex);
+	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_fdus_reg_ops,
+			 sdev);
 }
 EXPORT_SYMBOL(init_sassy_ctrl_interfaces);
 
-
 void clean_sassy_fdus_interfaces(struct sassy_device *sdev)
 {
-	char name_buf[MAX_SYNCBEAT_PROC_NAME];
+	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd/register_proc", sdev->ifindex);
+	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd/register_proc",
+		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
-
-
 }
 EXPORT_SYMBOL(clean_sassy_fdus_interfaces);

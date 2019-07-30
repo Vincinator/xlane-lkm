@@ -1,9 +1,8 @@
-This repository contains the SASSY project. 
+This repository contains the SASSY project.
 
-### Source Tree Structure
+	## #Source Tree Structure
 
-```
-sassy
+``` sassy
 │ Installation Document
 │ Development Guide
 │
@@ -26,7 +25,7 @@ sassy
 │   
 └─── Logic Layer
     │
-    │   Specification Document
+    │ Specification Document
     │ 
     │
     └─── Test Applications
@@ -43,6 +42,3 @@ sassy
             │ Specification Document
             │ Benchmark Sources
 ```
-
-
-

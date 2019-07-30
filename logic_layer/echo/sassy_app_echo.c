@@ -15,7 +15,6 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PROTO][ECHO]"
 
-
 static struct sassy_echo_priv echo_priv;
 struct sassy_protocol echo_protocol;
 
@@ -33,25 +32,20 @@ static const struct sassy_protocol_ctrl_ops echo_ops = {
 
 static int __init sassy_app_echo_init(void)
 {
-
 	sassy_dbg("init\n");
 	echo_protocol.proto_type = SASSY_PROTO_ECHO;
 	echo_protocol.name = "echo";
 	echo_protocol.ctrl_ops = echo_ops;
-	echo_protocol.priv = (void*) &echo_priv;
+	echo_protocol.priv = (void *)&echo_priv;
 	sassy_register_protocol(&echo_protocol);
 	return 0;
 }
 
-
-static void __exit sassy_app_echo_exit(void) 
+static void __exit sassy_app_echo_exit(void)
 {
-
 	sassy_dbg("exit\n");
 	sassy_remove_protocol(&echo_protocol);
-
 }
-
 
 module_init(sassy_app_echo_init);
 module_exit(sassy_app_echo_exit);

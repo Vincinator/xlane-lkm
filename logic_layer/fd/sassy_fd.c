@@ -7,7 +7,6 @@
 #include "include/sassy_fd_ops.h"
 #include "include/sassy_fd.h"
 
-
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
 MODULE_DESCRIPTION("SASSY app failure detector");
@@ -15,7 +14,6 @@ MODULE_VERSION("0.01");
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PROTOCOL][FD]"
-
 
 static struct sassy_fd_priv fd_priv;
 struct sassy_protocol fd_protocol;
@@ -33,27 +31,25 @@ static const struct sassy_protocol_ctrl_ops fd_ops = {
 
 };
 
-static int __init sassy_fd_init(void){
+static int __init sassy_fd_init(void)
+{
 	sassy_dbg("init\n");
 
 	fd_protocol.proto_type = SASSY_PROTO_FD;
 	fd_protocol.ctrl_ops = fd_ops;
 	fd_protocol.name = "fd";
-	fd_protocol.priv = (void*) &fd_priv;
+	fd_protocol.priv = (void *)&fd_priv;
 
 	sassy_register_protocol(&fd_protocol);
 	return 0;
 }
 
-
-static void __exit sassy_fd_exit(void) 
+static void __exit sassy_fd_exit(void)
 {
-
 	sassy_dbg("exit\n");
-	
+
 	sassy_remove_protocol(&fd_protocol);
 }
-
 
 module_init(sassy_fd_init);
 module_exit(sassy_fd_exit);

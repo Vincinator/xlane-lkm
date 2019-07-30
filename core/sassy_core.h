@@ -3,32 +3,31 @@
 
 #include <linux/types.h>
 
-
-
 #define MAX_PROTOCOLS 4
-
 
 #define MAX_NIC_DEVICES 8
 #define SASSY_PACKET_PAYLOAD_SIZE 32
 
-#define RX_CYCLE_SIZE 1 			/* How many packets per remote host to hold in sassy memory */
+#define RX_CYCLE_SIZE                                                          \
+	1 /* How many packets per remote host to hold in sassy memory */
 
 /* 
  * The size of payload does not exceed the SASSY_PACKET_PAYLOAD_SIZE value.
  * This is true for all sassy packet types!
  */
 typedef enum {
-	SASSY_HB_TYPE 			= 0,	/* Used by failure detector logic */
-	SASSY_CONSENSUS_TYPE 	= 1,	/* Used by consensus logic */
-	SASSY_RAW_TYPE			= 2,	/* Unspecified payload structure */
+	SASSY_HB_TYPE = 0, /* Used by failure detector logic */
+	SASSY_CONSENSUS_TYPE = 1, /* Used by consensus logic */
+	SASSY_RAW_TYPE = 2, /* Unspecified payload structure */
 } sassy_packet_type;
 
 /*
  * Represents a single sassy packet
  */
 struct sassy_packet {
-	sassy_packet_type ptype;					/* Tells Logic Layer how to interpret the payload */
-	u8 payload[SASSY_PACKET_PAYLOAD_SIZE]; 		/* Byte addressable array of tasty sassy packet payload*/
+	sassy_packet_type
+		ptype; /* Tells Logic Layer how to interpret the payload */
+	u8 payload[SASSY_PACKET_PAYLOAD_SIZE]; /* Byte addressable array of tasty sassy packet payload*/
 };
 
 /*  Packet Buffer for one remote host */
@@ -49,29 +48,24 @@ struct sassy_rx_table {
  * This struct holds references to all tables.
  * ifindex of NIC PORT corresponds to array position of struct sassy_rx_table *tables. 
  */
-struct sassy_core {	
-
-	struct sassy_protocol **protocols; 			/* All Available Protocols */
-	int registered_protocols;					/* Must be less or equal to MAX_PROTOCOLS */
+struct sassy_core {
+	struct sassy_protocol **protocols; /* All Available Protocols */
+	int registered_protocols; /* Must be less or equal to MAX_PROTOCOLS */
 
 	/* NIC independent Data */
-	struct sassy_rx_table **rx_tables;	/* Each NIC port (identified by ifindex) has a own table */
+	struct sassy_rx_table **
+		rx_tables; /* Each NIC port (identified by ifindex) has a own table */
 
 	/* NIC specific Data */
-	struct sassy_device **sdevices;	
-
+	struct sassy_device **sdevices;
 };
-
-
 
 void init_sassy_proto_info_interfaces(void);
 void clean_sassy_proto_info_interfaces(void);
 
-void init_proto_selector(struct sassy_device  *sdev);
+void init_proto_selector(struct sassy_device *sdev);
 void remove_proto_selector(struct sassy_device *sdev);
 
-
-struct sassy_core * sassy_core(void);
-
+struct sassy_core *sassy_core(void);
 
 #endif /* _SASSY_DEV_H_ */

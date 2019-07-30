@@ -1,44 +1,21 @@
 #
-# Sassy subsystem configuration
+#Sassy subsystem configuration
 #
 
-menuconfig SASSY
-	bool "Enable SASSY"
-	default y
-	help
-	  This enables the network submodule SASSY
+menuconfig SASSY bool "Enable SASSY" default y help This enables the network submodule SASSY
 
-config SASSY_FD
-	bool "Enable SASSY FD"
-	depends on SASSY
-	default n
-	help
-		Enables Failure Detector Kernel Module
+	config SASSY_FD bool "Enable SASSY FD" depends on SASSY default n help Enables Failure Detector Kernel Module
 
-config SASSY_CONSENSUS
-	bool "Enable SASSY Consensus"
-	depends on SASSY
-	default n
-	help
-		Enables Consensus Kernel Module
+		config SASSY_CONSENSUS bool "Enable SASSY Consensus" depends on
+			SASSY default n help Enables Consensus Kernel Module
 
-config SASSY_ECHO
-	bool "Enable SASSY Echo"
-	depends on SASSY
-	default y
-	help
-		Enables Echo Kernel Module
+				config SASSY_ECHO bool "Enable SASSY Echo" depends on
+					SASSY default y help Enables Echo Kernel Module
 
-config SASSY_MLX5
-	bool "Enable SASSY MLX5 Connection"
-	depends on SASSY
-	default y
-	help
-		Enables MLX5 Driver Support
+						config SASSY_MLX5 bool "Enable SASSY MLX5 Connection" depends
+							on SASSY default y help Enables MLX5 Driver Support
 
-config SASSY_NFP
-	bool "Enable SASSY NFP Connection"
-	depends on SASSY
-	default n
-	help
-		Enables NFP Driver Support
+								config SASSY_NFP bool "Enable SASSY NFP Connection" depends
+									on SASSY default n help
+										Enables NFP Driver
+											Support

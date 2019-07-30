@@ -21,16 +21,18 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
-
 /* Only used for debugging. The goal is to load all protocols and select based on the protocol id in the payload.
  * For now, we use only one protocol at a time - to eliminate potential error sources.
  * ... and to see if this protocol multiplexing introduces latency or (worse) jitter.
  */
-static ssize_t proto_selector_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
+static ssize_t proto_selector_write(struct file *file,
+				    const char __user *user_buffer,
+				    size_t count, loff_t *data)
 {
 	int err;
-	char kernel_buffer[count+1];
-	struct sassy_device *sdev = (struct sassy_device*)PDE_DATA(file_inode(file));
+	char kernel_buffer[count + 1];
+	struct sassy_device *sdev =
+		(struct sassy_device *)PDE_DATA(file_inode(file));
 	struct sassy_protocol *sproto = NULL;
 	long new_protocol = -1;
 
@@ -46,7 +48,7 @@ static ssize_t proto_selector_write(struct file *file, const char __user *user_b
 
 	if (err) {
 		sassy_error("Copy from user failed%s\n", __FUNCTION__);
-		return err; 
+		return err;
 	}
 
 	kernel_buffer[count] = '\0';
@@ -58,7 +60,6 @@ static ssize_t proto_selector_write(struct file *file, const char __user *user_b
 		return err;
 	}
 
-
 	sproto = sassy_find_protocol_by_id((new_protocol & 0xFF));
 	sdev->proto = sproto;
 
@@ -69,51 +70,48 @@ static ssize_t proto_selector_write(struct file *file, const char __user *user_b
 
 static int proto_selector_show(struct seq_file *m, void *v)
 {
-	struct sassy_device *sdev = (struct sassy_device*) m->private;
+	struct sassy_device *sdev = (struct sassy_device *)m->private;
 
-	if(!sdev){
+	if (!sdev) {
 		sassy_error(" sdev is NULL %s!\n", __FUNCTION__);
 		return -EINVAL;
 	}
-	if(!sdev->proto){
+	if (!sdev->proto) {
 		seq_printf(m, "sdev does not use a protocol yet\n");
 		return -1;
 	}
 
-
-	seq_printf(m, "sdev uses protocol %s with id %d\n", 
-			sassy_get_protocol_name(sdev->proto->proto_type), sdev->proto->proto_type);
+	seq_printf(m, "sdev uses protocol %s with id %d\n",
+		   sassy_get_protocol_name(sdev->proto->proto_type),
+		   sdev->proto->proto_type);
 
 	return 0;
 }
 
 static int proto_selector_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, proto_selector_show,PDE_DATA(file_inode(file)));
+	return single_open(file, proto_selector_show,
+			   PDE_DATA(file_inode(file)));
 }
 
-
 static const struct file_operations proto_selector_ops = {
-		.owner	= THIS_MODULE,
-		.open	= proto_selector_open,
-		.write	= proto_selector_write,
-		.read	= seq_read,
-		.llseek	= seq_lseek,
-		.release = single_release,
+	.owner = THIS_MODULE,
+	.open = proto_selector_open,
+	.write = proto_selector_write,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
 };
 
-
-
-void init_proto_selector(struct sassy_device  *sdev) 
+void init_proto_selector(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SYNCBEAT_PROC_NAME];
 
-
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/protocol", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU|S_IRWXO, NULL, &proto_selector_ops, sdev);
+	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &proto_selector_ops,
+			 sdev);
 
 	sassy_dbg(" added proto selector\n");
-
 }
 
 void remove_proto_selector(struct sassy_device *sdev)
@@ -122,5 +120,4 @@ void remove_proto_selector(struct sassy_device *sdev)
 
 	snprintf(name_buf, sizeof name_buf, "sassy/%d/protocol", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
-
 }
