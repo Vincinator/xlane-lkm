@@ -34,13 +34,6 @@ void ts_state_transition_to(struct sassy_device *sdev,
 	sdev->ts_state = state;
 }
 
-int do_sassy_print_devices(void)
-{
-	sassy_dbg(" Printing registered Devices. %s\n", __FUNCTION__);
-	print_sassy_devices();
-	return 0;
-}
-
 int do_sassy_timestamping_clear_stats(void)
 {
 	return 0;
