@@ -187,6 +187,10 @@ int sassy_heart(void *data)
 					       SASSY_PAYLOAD_BYTES, 0);
 
 			sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
+
+            if(sdev->ts_state == SASSY_TS_RUNNING)
+                sassy_write_timestamp(sdev, 0, rdtsc(), i);
+
 		}
 		local_bh_enable();
 		local_irq_restore(flags);

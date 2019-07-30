@@ -76,17 +76,25 @@ static const struct file_operations sassy_procfs_ops = {
 
 /* Get the corresponding array for type and calls write_to_logmem. */
 int sassy_write_timestamp(struct sassy_device *sdev,
-			  struct sassy_timestamp_logs *logs, uint64_t cycles,
+			  int logid, uint64_t cycles,
 			  int target_id)
 {
+	struct sassy_timestamp_logs *logs;
+
+
+	logs = sdev->stats->timestamp_logs[logid];
+
 
 	if (unlikely(logs->current_timestamps > TIMESTAMP_ARRAY_LIMIT)) {
-		sassy_ts_stop(
-			sdev); /* Turn off Sassy tracking, logs are full!*/
+
 		printk(KERN_WARNING " Logs are full! Stopped tracking.%s\n",
 		       __FUNCTION__);
+
+		sassy_ts_stop(sdev);
+
 		return -ENOMEM;
 	}
+
 
 	logs->timestamp_items[logs->current_timestamps].timestamp_tcs = cycles;
 	logs->timestamp_items[logs->current_timestamps].target_id = target_id;

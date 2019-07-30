@@ -51,6 +51,9 @@ void sassy_post_ts(int sassy_id, uint64_t cycles)
 
 	if (score->sdevices[sassy_id]->verbose == 1)
 		sassy_dbg("ts %llu", cycles);
+
+    if(sdev->ts_state == SASSY_TS_RUNNING)
+        sassy_write_timestamp(sdev, 1, cycles, sassy_id);
 }
 EXPORT_SYMBOL(sassy_post_ts);
 
@@ -103,7 +106,14 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		print_hex_dump(KERN_DEBUG, "Packet: ", DUMP_PREFIX_NONE, 16, 1,
 			       payload, SASSY_PAYLOAD_BYTES, 0);
 
+
+    if(sdev->ts_state == SASSY_TS_RUNNING)
+        sassy_write_timestamp(sdev, 4, rdtsc(), sassy_id);
+
 	sproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
+
+    if(sdev->ts_state == SASSY_TS_RUNNING)
+        sassy_write_timestamp(sdev, 3, rdtsc(), sassy_id);
 }
 
 EXPORT_SYMBOL(sassy_post_payload);
