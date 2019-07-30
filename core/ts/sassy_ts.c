@@ -334,7 +334,7 @@ int init_log_ctrl(struct sassy_device *sdev, int logid)
 			__FUNCTION__);
 		goto error;
 	}
-	sassy_dbg(" Created %s procfs %s\n", logname, __FUNCTION__);
+	sassy_dbg(" Created %d procfs %s\n",  logid, __FUNCTION__);
 	return 0;
 
 error:
