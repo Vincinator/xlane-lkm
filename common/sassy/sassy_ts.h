@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sassy/sassy.h>
 
 #define SASSY_NUM_TS_LOG_TYPES 8
 #define TIMESTAMP_ARRAY_LIMIT 100000
