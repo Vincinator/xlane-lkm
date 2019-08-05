@@ -111,6 +111,7 @@ int sassy_heart(void *data)
 	unsigned long flags;
 	struct sassy_pacemaker_info *spminfo;
 	struct sassy_device *sdev = (struct sassy_device *)data;
+    struct net_device *ndev = sdev->ndev;
 	void *pkt_payload;
 	int i;
 	int ret;
@@ -156,8 +157,8 @@ int sassy_heart(void *data)
 		local_bh_disable();
 
 		/* If netdev is offline, then stop pacemaker */
-		if (unlikely(!netif_running(sdev->ndev) ||
-			     !netif_carrier_ok(sdev->ndev))) {
+		if (unlikely(!netif_running(ndev) ||
+			     !netif_carrier_ok(ndev))) {
 			sassy_pm_stop(spminfo);
 			local_bh_enable();
 			local_irq_restore(flags);
@@ -185,7 +186,7 @@ int sassy_heart(void *data)
 			 		       16, 1, pkt_payload,
 			 		       SASSY_PAYLOAD_BYTES, 0);
             */
-			sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
+			sassy_send_hb(ndev, spminfo->pm_targets[i].skb);
 
             if(sdev->ts_state == SASSY_TS_RUNNING)
                 sassy_write_timestamp(sdev, 0, rdtsc(), i);
