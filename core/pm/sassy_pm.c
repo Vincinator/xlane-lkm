@@ -166,7 +166,7 @@ int sassy_heart(void *data)
 
 		for (i = 0; i < spminfo->num_of_targets; i++) {
 			// Always update payload to avoid jitter!
-			hb_active_ix =
+			/*hb_active_ix =
 			     spminfo->pm_targets[i].pkt_data.hb_active_ix;
 			pkt_payload =
 			     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
@@ -184,7 +184,7 @@ int sassy_heart(void *data)
 			 	       "Payload: ", DUMP_PREFIX_NONE,
 			 		       16, 1, pkt_payload,
 			 		       SASSY_PAYLOAD_BYTES, 0);
-
+            */
 			sassy_send_hb(sdev->ndev, spminfo->pm_targets[i].skb);
 
             if(sdev->ts_state == SASSY_TS_RUNNING)
