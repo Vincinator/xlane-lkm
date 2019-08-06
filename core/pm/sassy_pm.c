@@ -116,6 +116,7 @@ int sassy_heart(void *data)
 	int i;
 	int ret;
 	int hb_active_ix;
+	enum sassy_rx_state ts_state = sdev->ts_state
 
 	sassy_dbg("Enter %s", __FUNCTION__);
 
@@ -188,7 +189,7 @@ int sassy_heart(void *data)
             */
 			sassy_send_hb(ndev, spminfo->pm_targets[i].skb);
 
-            if(sdev->ts_state == SASSY_TS_RUNNING)
+            if(ts_state == SASSY_TS_RUNNING)
                 sassy_write_timestamp(sdev, 0, rdtsc(), i);
 
 		}
