@@ -84,7 +84,6 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 
 	logs = sdev->stats->timestamp_logs[logid];
 
-
 	if (unlikely(logs->current_timestamps > TIMESTAMP_ARRAY_LIMIT)) {
 
 		printk(KERN_WARNING " Logs are full! Stopped tracking.%s\n",

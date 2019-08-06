@@ -106,7 +106,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		print_hex_dump(KERN_DEBUG, "Packet: ", DUMP_PREFIX_NONE, 16, 1,
 			       payload, SASSY_PAYLOAD_BYTES, 0);
 
-
     if(sdev->ts_state == SASSY_TS_RUNNING)
         sassy_write_timestamp(sdev, 2, rdtsc(), sassy_id);
 
