@@ -61,8 +61,29 @@ static ssize_t proto_selector_write(struct file *file,
 	}
 
 	sproto = sassy_find_protocol_by_id((new_protocol & 0xFF));
-	sdev->proto = sproto;
+	
+	if(!sproto){
+		sassy_error("Could not find protocol\n");
+		return count;
+	}
 
+	if(sproto == sdev->proto){
+		sassy_error("Protocol already enabled.\n");
+		return count;
+	}
+	
+	if(sdev->pminfo.state == SASSY_PM_EMITTING){
+		sassy_error("Stop pacemaker first!\n");
+		return count;
+	}
+
+	if(sdev->proto){
+		sassy_debug("Cleaning up Old Protocol\n");
+		sdev->proto->ctrl_ops.clean(sdev);
+	}
+
+	// switch to new protocol
+	sdev->proto = sproto;
 	sdev->proto->ctrl_ops.init(sdev);
 
 	return count;
