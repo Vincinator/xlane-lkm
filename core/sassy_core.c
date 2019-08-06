@@ -64,11 +64,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	struct sassy_device *sdev;
 	struct sassy_protocol *sproto = NULL;
 
-	if (sassy_id < 0) {
-		sassy_error("sassy id is -1\n");
-		return;
-	}
-
 	sdev = score->sdevices[sassy_id];
 
 	if (unlikely(!sdev)) {
@@ -76,7 +71,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		return;
 	}
 
-	if (sdev->rx_state == SASSY_RX_DISABLED) {
+	// optimize for enabled case        
+	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED)) {
 		return;
 	}
 
