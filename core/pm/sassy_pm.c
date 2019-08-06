@@ -116,7 +116,7 @@ int sassy_heart(void *data)
 	int i;
 	int ret;
 	int hb_active_ix;
-	enum sassy_ts_state ts_state = sdev->ts_state
+	enum sassy_ts_state ts_state = sdev->ts_state;
 
 	sassy_dbg("Enter %s", __FUNCTION__);
 
