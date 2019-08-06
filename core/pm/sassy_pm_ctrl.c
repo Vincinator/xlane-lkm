@@ -299,7 +299,8 @@ static ssize_t sassy_target_write(struct file *file,
 		sassy_error(" num_of_targets is invalid! \n");
 		return -EINVAL;
 	}
-	i = spminfo->num_of_targets; /* just append */
+	
+	i = 0;
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
 		sassy_dbg(" reading: %s", input_str);
