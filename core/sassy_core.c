@@ -45,12 +45,12 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 
 void sassy_post_ts(int sassy_id, uint64_t cycles)
 {
-	if (!score->sdevices[sassy_id] ||
-	    score->sdevices[sassy_id]->rx_state == SASSY_RX_DISABLED)
+	if (unlikely(!score->sdevices[sassy_id] ||
+	    score->sdevices[sassy_id]->rx_state == SASSY_RX_DISABLED))
 		return;
 
-	if (score->sdevices[sassy_id]->verbose == 1)
-		sassy_dbg("ts %llu", cycles);
+	// if (score->sdevices[sassy_id]->verbose == 1)
+	// 	sassy_dbg("ts %llu", cycles);
 
     if(score->sdevices[sassy_id]->ts_state == SASSY_TS_RUNNING)
         sassy_write_timestamp(score->sdevices[sassy_id], 1, cycles, sassy_id);
@@ -71,7 +71,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 
 	sdev = score->sdevices[sassy_id];
 
-	if (!sdev) {
+	if (unlikely(!sdev)) {
 		sassy_error("sdev is NULL\n");
 		return;
 	}
@@ -80,31 +80,31 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		return;
 	}
 
-	if (!remote_mac) {
-		sassy_error("remote mac is NULL \n");
-		return;
-	}
+	// if (!remote_mac) {
+	// 	sassy_error("remote mac is NULL \n");
+	// 	return;
+	// }
 
-	if (!payload) {
-		sassy_error("payload is NULL \n");
-		return;
-	}
+	// if (!payload) {
+	// 	sassy_error("payload is NULL \n");
+	// 	return;
+	// }
 
-	if (protocol_id < 0 || protocol_id > MAX_PROTOCOLS) {
+	if (unlikely(protocol_id < 0 || protocol_id > MAX_PROTOCOLS)) {
 		sassy_error("Protocol ID is faulty %d\n", protocol_id);
 		return;
 	}
 
 	sproto = score->protocols[protocol_id];
 
-	if (!sproto) {
+	if (unlikely(!sproto)) {
 		sassy_error("failed to get protocol handler\n");
 		return;
 	}
 
-	if (score->sdevices[sassy_id]->verbose == 1)
-		print_hex_dump(KERN_DEBUG, "Packet: ", DUMP_PREFIX_NONE, 16, 1,
-			       payload, SASSY_PAYLOAD_BYTES, 0);
+	// if (score->sdevices[sassy_id]->verbose == 1)
+	// 	print_hex_dump(KERN_DEBUG, "Packet: ", DUMP_PREFIX_NONE, 16, 1,
+	// 		       payload, SASSY_PAYLOAD_BYTES, 0);
 
     if(sdev->ts_state == SASSY_TS_RUNNING)
         sassy_write_timestamp(sdev, 2, rdtsc(), sassy_id);

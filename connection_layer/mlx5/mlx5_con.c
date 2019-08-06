@@ -46,7 +46,7 @@ EXPORT_SYMBOL(sassy_mlx5_con_register_device);
 
 int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts)
 {
-	if (sassy_id < 0)
+	if (unlikely(sassy_id < 0))
 		return 0;
 
 	sassy_post_ts(sassy_id, cycle_ts);
@@ -61,7 +61,7 @@ int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
 	u8 *payload = (u8 *)va;
 
 	/* Check if sassy_id is valid */
-	if (sassy_id < 0)
+	if (unlikely(sassy_id < 0))
 		return 0;
 
 	sassy_post_payload(sassy_id, payload + headroom + 6,

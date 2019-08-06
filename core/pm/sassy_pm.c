@@ -167,6 +167,7 @@ int sassy_heart(void *data)
 		}
 
 		for (i = 0; i < spminfo->num_of_targets; i++) {
+			
 			// Always update payload to avoid jitter!
 			hb_active_ix =
 			     spminfo->pm_targets[i].pkt_data.hb_active_ix;
