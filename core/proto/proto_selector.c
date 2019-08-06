@@ -78,7 +78,7 @@ static ssize_t proto_selector_write(struct file *file,
 	}
 
 	if(sdev->proto){
-		sassy_debug("Cleaning up Old Protocol\n");
+		sassy_dbg("Cleaning up Old Protocol\n");
 		sdev->proto->ctrl_ops.clean(sdev);
 	}
 
