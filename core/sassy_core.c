@@ -35,7 +35,7 @@ struct sassy_device *get_sdev(int devid)
 		return NULL;
 	}
 
-	return score->sdevices[sassy_id]
+	return score->sdevices[devid]
 }
 EXPORT_SYMBOL(get_sdev);
 
