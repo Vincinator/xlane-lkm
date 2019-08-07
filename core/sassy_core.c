@@ -37,7 +37,7 @@ struct sassy_device *get_sdev(int devid)
 
 	return score->sdevices[sassy_id]
 }
-EXPORT_SYMBOL(sdev);
+EXPORT_SYMBOL(get_sdev);
 
 
 struct sassy_core *sassy_core(void)
@@ -62,7 +62,7 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 
 void sassy_post_ts(int sassy_id, uint64_t cycles)
 {
-	struct sassy_device *sdev = sdev(sassy_id);
+	struct sassy_device *sdev = get_sdev(sassy_id);
 
 	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
 		return;
@@ -76,7 +76,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 {
 	u8 *payload_raw_ptr = (u8 *)payload;
 	u8 protocol_id = *payload_raw_ptr;
-	struct sassy_device *sdev = sdev(sassy_id);
+	struct sassy_device *sdev = get_sdev(sassy_id);
 	struct sassy_protocol *sproto = NULL;
 
 	if (unlikely(!sdev)) {
@@ -130,7 +130,7 @@ void sassy_reset_remote_host_counter(int sassy_id)
 {
 	int i;
 	struct sassy_rx_table *rxt;
-	struct sassy_device *sdev = sdev(sassy_id);
+	struct sassy_device *sdev = get_sdev(sassy_id);
 	struct sassy_pm_target_info *pmtarget;
 
 	rxt = score->rx_tables[sassy_id];
@@ -286,7 +286,7 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac,
 				    int protocol_id)
 {
 	struct sassy_rx_table *rxt;
-	struct sassy_device *sdev = sdev(sassy_id);
+	struct sassy_device *sdev = get_sdev(sassy_id);
 	struct sassy_pm_target_info *pmtarget;
 	int ifindex;
 	struct sassy_protocol *sproto;
