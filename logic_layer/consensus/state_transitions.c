@@ -14,7 +14,7 @@ char *node_state_name(enum node_state state)
 
 int node_transition(int sassy_id, enum node_state state) 
 {
-	struct sassy_device *sdev = sdev(sassy_id);
+	struct sassy_device *sdev = get_sdev(sassy_id);
 	struct sassy_protocol *sproto = sdev->proto;
 	struct sassy_consensus_priv *priv = (struct sassy_consensus_priv *)sproto->priv;
 	int err;

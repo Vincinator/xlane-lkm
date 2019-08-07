@@ -23,7 +23,7 @@ static struct sassy_core *score;
 
 static int device_counter = 0;
 
-struct sassy_device *sdev(int devid) 
+struct sassy_device *get_sdev(int devid) 
 {
 	if (unlikely(devid < 0 || devid > MAX_NIC_DEVICES)){
 		sassy_error(" invalid sassy device id\n");
