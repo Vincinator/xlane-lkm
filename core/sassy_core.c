@@ -23,6 +23,23 @@ static struct sassy_core *score;
 
 static int device_counter = 0;
 
+struct sassy_device *sdev(int devid) 
+{
+	if (unlikely(devid < 0 || devid > MAX_NIC_DEVICES)){
+		sassy_error(" invalid sassy device id\n");
+		return NULL;
+	}
+
+	if(unlikely(!score)){
+		sassy_error(" sassy core is not initialized\n");
+		return NULL;
+	}
+
+	return score->sdevices[sassy_id]
+}
+EXPORT_SYMBOL(sdev);
+
+
 struct sassy_core *sassy_core(void)
 {
 	return score;
@@ -45,15 +62,13 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 
 void sassy_post_ts(int sassy_id, uint64_t cycles)
 {
-	if (unlikely(!score->sdevices[sassy_id] ||
-	    score->sdevices[sassy_id]->rx_state == SASSY_RX_DISABLED))
+	struct sassy_device *sdev = sdev(sassy_id);
+
+	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
 		return;
 
-	// if (score->sdevices[sassy_id]->verbose == 1)
-	// 	sassy_dbg("ts %llu", cycles);
-
-    if(score->sdevices[sassy_id]->ts_state == SASSY_TS_RUNNING)
-        sassy_write_timestamp(score->sdevices[sassy_id], 1, cycles, sassy_id);
+    if(sdev->ts_state == SASSY_TS_RUNNING)
+        sassy_write_timestamp(sdev, 1, cycles, sassy_id);
 }
 EXPORT_SYMBOL(sassy_post_ts);
 
@@ -61,10 +76,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 {
 	u8 *payload_raw_ptr = (u8 *)payload;
 	u8 protocol_id = *payload_raw_ptr;
-	struct sassy_device *sdev;
+	struct sassy_device *sdev = sdev(sassy_id);
 	struct sassy_protocol *sproto = NULL;
-
-	sdev = score->sdevices[sassy_id];
 
 	if (unlikely(!sdev)) {
 		sassy_error("sdev is NULL\n");
@@ -117,16 +130,12 @@ void sassy_reset_remote_host_counter(int sassy_id)
 {
 	int i;
 	struct sassy_rx_table *rxt;
-	struct sassy_device *sdev;
+	struct sassy_device *sdev = sdev(sassy_id);
 	struct sassy_pm_target_info *pmtarget;
 
-	if (sassy_validate_sassy_device(sassy_id))
-		return;
-
 	rxt = score->rx_tables[sassy_id];
-	sdev = score->sdevices[sassy_id];
 
-	if (!rxt || !sdev)
+	if (!rxt)
 		return;
 
 	/* Free Memory of all  */
@@ -277,25 +286,13 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac,
 				    int protocol_id)
 {
 	struct sassy_rx_table *rxt;
-	struct sassy_device *sdev;
+	struct sassy_device *sdev = sdev(sassy_id);
 	struct sassy_pm_target_info *pmtarget;
 	int ifindex;
 	struct sassy_protocol *sproto;
 
 	if (!mac) {
 		sassy_error("input mac is NULL!\n");
-		return -1;
-	}
-
-	if (sassy_validate_sassy_device(sassy_id)) {
-		sassy_error(" Invalid sassy_id/n");
-		return -1;
-	}
-
-	sdev = score->sdevices[sassy_id];
-
-	if (!sdev) {
-		sassy_error("sdev is NULL \n");
 		return -1;
 	}
 

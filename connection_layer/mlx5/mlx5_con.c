@@ -60,9 +60,7 @@ int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
 {
 	u8 *payload = (u8 *)va;
 
-	/* Check if sassy_id is valid */
-	if (unlikely(sassy_id < 0))
-		return 0;
+	
 
 	sassy_post_payload(sassy_id, payload + headroom + 6,
 			   payload + headroom + 6 + 6 + 14 + 4 + 8 + 4);

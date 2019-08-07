@@ -312,4 +312,6 @@ const char *ts_state_string(enum sassy_ts_state state);
 int init_timestamping(struct sassy_device *sdev);
 void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev);
 
+struct sassy_device *sdev(int devid);
+
 #endif /* _SASSY_H_ */

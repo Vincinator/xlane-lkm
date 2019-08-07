@@ -13,6 +13,6 @@ clean:
 else
 EXTRA_CFLAGS+=-I$(src)/../../common/
 
-obj-y := sassy_app_consensus.o
+obj-y := sassy_app_consensus.o sassy_consensus_ops.o state_transitions.o leader.o follower.o candidate.o
 
 endif

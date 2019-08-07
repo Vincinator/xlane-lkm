@@ -148,8 +148,7 @@ int sassy_heart(void *data)
 	while (sassy_pacemaker_is_alive(spminfo)) {
 		cur_time = rdtsc();
 
-		/* Loop until pacemaker can fire*/
-		if (!can_fire(prev_time, cur_time))
+	  	if (!can_fire(prev_time, cur_time))
 			continue;
 
 		prev_time = cur_time;
