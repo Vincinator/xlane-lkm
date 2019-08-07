@@ -16,7 +16,7 @@ int node_transition(int sassy_id, enum node_state state)
 {
 	struct sassy_device *sdev = get_sdev(sassy_id);
 	struct sassy_protocol *sproto = sdev->proto;
-	struct sassy_consensus_priv *priv = (struct sassy_consensus_priv *)sproto->priv;
+	struct consensus_priv *priv = (struct consensus_priv *)sproto->priv;
 	int err;
 	
 	sassy_dbg(" node transition from %s to %s\n" node_state_name(priv->nstate), node_state_name(state));

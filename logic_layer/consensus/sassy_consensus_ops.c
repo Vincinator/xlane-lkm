@@ -2,6 +2,9 @@
 #include <sassy/sassy.h>
 
 #include "include/sassy_consensus_ops.h"
+#include "include/candidate.h"
+#include "include/follower.h"
+#include "include/leader.h"
 
 
 int consensus_init(struct sassy_device *sdev)
@@ -51,9 +54,28 @@ int consensus_us_update(struct sassy_device *sdev, void *payload)
 int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		    void *payload)
 {
+	struct sassy_protocol *sproto = sdev->proto;
+	struct consensus_priv *priv = (struct consensus_priv *)sproto->priv;
 
 	if (sdev->verbose)
 		sassy_dbg("consensus payload received\n");
+
+	switch(priv->nstate) {
+		case FOLLOWER:
+			follower_process_pkt(sdev, payload);
+			break;
+		case CANDIDATE:
+			candidate_process_pkt(sdev, payload);
+			break;
+		case LEADER:
+			leader_process_pkt(sdev, payload);
+			break;
+		default:
+			sassy_error("Unknown state - BUG\n");
+			break;
+	}
+
+
 }
 
 int consensus_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,

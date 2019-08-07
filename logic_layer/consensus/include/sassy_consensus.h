@@ -23,3 +23,8 @@ enum node_state {
 	CANDIDATE = 1,
 	LEADER = 2,
 };
+
+
+struct consensus_priv {
+	enum node_state nstate;
+};
