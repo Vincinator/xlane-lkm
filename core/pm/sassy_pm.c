@@ -204,7 +204,7 @@ int sassy_pm_loop(void *data)
 	uint64_t prev_time, cur_time;
 	unsigned long flags;
 	struct sassy_device *sdev = (struct sassy_device *) data;
-	struct sassy_pacemaker_info *spminfo = sdev->pminfo;
+	struct sassy_pacemaker_info *spminfo = &sdev->pminfo;
 
 	void *pkt_payload;
 	int i;
