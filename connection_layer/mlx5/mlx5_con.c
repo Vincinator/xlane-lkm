@@ -103,9 +103,8 @@ EXPORT_SYMBOL(sassy_mlx5_get_channel);
 
 int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn, void *c)
 {
-	if (sassy_validate_sassy_device(sassy_id)) {
+	if (sassy_validate_sassy_device(sassy_id))
 		return -1;
-	}
 
 	if (sassy_id < 0 || sassy_id >= SASSY_MLX5_DEVICES_LIMIT) {
 		sassy_error("sassy_id was %d in %s\n", sassy_id, __func__);
@@ -139,9 +138,8 @@ static void __exit sassy_mlx5_con_exit(void)
 
 	sassy_dbg("exiting..\n");
 
-	for (i = 0; i < mlx5_devices; i++) {
+	for (i = 0; i < mlx5_devices; i++)
 		kfree(infos[i]);
-	}
 
 	kfree(infos);
 	sassy_dbg("exited\n");

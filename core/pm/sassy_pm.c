@@ -26,9 +26,6 @@
 
 struct task_struct *heartbeat_task;
 
-#define NSEC_PER_MSEC   1000000L
-
-
 static inline bool
 sassy_pacemaker_is_alive(const struct sassy_pacemaker_info *spminfo)
 {
