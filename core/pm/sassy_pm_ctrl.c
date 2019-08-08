@@ -45,7 +45,7 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_hb_state);
 
 	if (err) {
-		sassy_error(" Error converting input%s\n", __func_);
+		sassy_error(" Error converting input%s\n", __FUNCTION__);
 		goto error;
 	}
 
