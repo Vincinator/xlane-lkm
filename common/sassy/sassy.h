@@ -238,15 +238,15 @@ struct sassy_protocol {
 	void *priv;
 };
 
-struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_inf *spminfo,
+struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info*spminfo,
 				      int host_number);
 //void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo);
-void pm_state_transition_to(struct sassy_pacemaker_inf *spminfo,
+void pm_state_transition_to(struct sassy_pacemaker_info*spminfo,
 			    enum sassy_pacemaker_state state);
 const char *pm_state_string(sassy_pacemaker_state_t state);
 
-int sassy_pm_reset(struct sassy_pacemaker_inf *spminfo);
-int sassy_pm_stop(struct sassy_pacemaker_inf *spminfo);
+int sassy_pm_reset(struct sassy_pacemaker_info*spminfo);
+int sassy_pm_stop(struct sassy_pacemaker_info*spminfo);
 int sassy_pm_start_loop(void *data);
 int sassy_pm_start_timer(void *data);
 
@@ -266,7 +266,7 @@ int sassy_ip_convert(const char *str);
 unsigned char *sassy_convert_mac(const char *str);
 
 struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
-				      struct sassy_pacemaker_inf *spminfo,
+				      struct sassy_pacemaker_info*spminfo,
 				      int host_number);
 
 struct net_device *sassy_get_netdevice(int ifindex);

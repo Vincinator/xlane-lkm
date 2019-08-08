@@ -12,7 +12,7 @@ char *node_state_name(enum node_state state)
 	}
 }
 
-int node_transition(const struct sassy_device *sdev, enum node_state state) 
+int node_transition(struct sassy_device *sdev, enum node_state state) 
 {
 	const struct sassy_protocol *sproto = sdev->proto;
 	const struct consensus_priv *priv =

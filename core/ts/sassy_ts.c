@@ -26,7 +26,7 @@ const char *ts_state_string(enum sassy_ts_state state)
 	}
 }
 
-void ts_state_transition_to(const struct sassy_device *sdev,
+void ts_state_transition_to(struct sassy_device *sdev,
 			    enum sassy_ts_state state)
 {
 	sassy_dbg("State Transition from %s to %s\n",
@@ -75,7 +75,7 @@ static const struct file_operations sassy_procfs_ops = {
 };
 
 /* Get the corresponding array for type and calls write_to_logmem. */
-int sassy_write_timestamp(const struct sassy_device *sdev,
+int sassy_write_timestamp(struct sassy_device *sdev,
 			  int logid, uint64_t cycles,
 			  int target_id)
 {
@@ -102,7 +102,7 @@ int sassy_write_timestamp(const struct sassy_device *sdev,
 }
 EXPORT_SYMBOL(sassy_write_timestamp);
 
-int sassy_ts_stop(const struct sassy_device *sdev)
+int sassy_ts_stop(struct sassy_device *sdev)
 {
 	if (sdev->ts_state != SASSY_TS_RUNNING)
 		return -EPERM;
@@ -111,7 +111,7 @@ int sassy_ts_stop(const struct sassy_device *sdev)
 	return 0;
 }
 
-int sassy_ts_start(const struct sassy_device *sdev)
+int sassy_ts_start(struct sassy_device *sdev)
 {
 
 	if (sdev->ts_state != SASSY_TS_READY) {
@@ -126,7 +126,7 @@ error:
 	return -EPERM;
 }
 
-int sassy_reset_stats(const struct sassy_device *sdev)
+int sassy_reset_stats(struct sassy_device *sdev)
 {
 	int err;
 	int i;
@@ -157,7 +157,7 @@ error:
 	return err;
 }
 
-int sassy_clean_timestamping(const struct sassy_device *sdev)
+int sassy_clean_timestamping(struct sassy_device *sdev)
 {
 	int err;
 	int i;
@@ -208,7 +208,7 @@ error:
 }
 
 
-int init_log_ctrl(const struct sassy_device *sdev, int logid)
+int init_log_ctrl(struct sassy_device *sdev, int logid)
 {
 	int err;
 	char name_buf[MAX_SASSY_PROC_NAME];
@@ -247,7 +247,7 @@ error:
 }
 
 
-int init_timestamping(const struct sassy_device *sdev)
+int init_timestamping(struct sassy_device *sdev)
 {
 	int err;
 	int log_types = SASSY_NUM_TS_LOG_TYPES;

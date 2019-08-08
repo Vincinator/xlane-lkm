@@ -29,4 +29,4 @@ struct consensus_priv {
 	enum node_state nstate;
 };
 
-int node_transition(const struct sassy_device *sdev, enum node_state state);
+int node_transition(struct sassy_device *sdev, enum node_state state);

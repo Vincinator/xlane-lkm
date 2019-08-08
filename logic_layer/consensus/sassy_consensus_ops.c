@@ -7,7 +7,7 @@
 #include "include/leader.h"
 
 
-int consensus_init(const struct sassy_device *sdev)
+int consensus_init(struct sassy_device *sdev)
 {
 	int err;
 
@@ -30,32 +30,32 @@ int consensus_init_payload(void *payload)
 	return 0;
 }
 
-int consensus_start(const struct sassy_device *sdev)
+int consensus_start(struct sassy_device *sdev)
 {
 	sassy_dbg("consensus start\n");
 	return 0;
 }
 
-int consensus_stop(const struct sassy_device *sdev)
+int consensus_stop(struct sassy_device *sdev)
 {
 	sassy_dbg("consensus stop\n");
 	return 0;
 }
 
-int consensus_clean(const struct sassy_device *sdev)
+int consensus_clean(struct sassy_device *sdev)
 {
 	sassy_dbg("consensus clean\n");
 	return 0;
 }
 
-int consensus_info(const struct sassy_device *sdev)
+int consensus_info(struct sassy_device *sdev)
 {
 	sassy_dbg("consensus info\n");
 	return 0;
 }
 
 
-int consensus_us_update(const struct sassy_device *sdev, void *payload)
+int consensus_us_update(struct sassy_device *sdev, void *payload)
 {
 	sassy_dbg("consensus update\n");
 
@@ -63,7 +63,7 @@ int consensus_us_update(const struct sassy_device *sdev, void *payload)
 	return 0;
 }
 
-int consensus_post_payload(const struct sassy_device *sdev, unsigned char *remote_mac,
+int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		    void *payload)
 {
 	struct sassy_protocol *sproto = sdev->proto;
@@ -89,7 +89,7 @@ int consensus_post_payload(const struct sassy_device *sdev, unsigned char *remot
 	}
 }
 
-int consensus_post_ts(const struct sassy_device *sdev, unsigned char *remote_mac,
+int consensus_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 	       uint64_t ts)
 {
 	if (sdev->verbose)

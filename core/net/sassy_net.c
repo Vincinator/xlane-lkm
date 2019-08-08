@@ -189,7 +189,7 @@ inline void add_payload(struct sk_buff *skb, void *payload)
 }
 
 struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
-				      struct sassy_pacemaker_inf *spminfo,
+				      struct sassy_pacemaker_info*spminfo,
 				      int host_number)
 {
 	struct sk_buff *hb_pkt = NULL;

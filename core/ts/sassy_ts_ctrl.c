@@ -12,8 +12,8 @@ static ssize_t sassy_ts_ctrl_write(struct file *file,
 				   loff_t *data)
 {
 	int err;
-	const struct sassy_device *sdev =
-		(const struct sassy_device *)PDE_DATA(file_inode(file));
+	struct sassy_device *sdev =
+		(struct sassy_device *)PDE_DATA(file_inode(file));
 	char kernel_buffer[SASSY_NUMBUF];
 	int timestamping_state = -1;
 	size_t size;
@@ -63,8 +63,8 @@ error:
 
 static int sassy_ts_ctrl_show(struct seq_file *m, void *v)
 {
-	const struct sassy_device *sdev =
-		(const struct sassy_device *)m->private;
+	struct sassy_device *sdev =
+		(struct sassy_device *)m->private;
 
 	if (!sdev)
 		return -ENODEV;
