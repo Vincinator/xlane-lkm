@@ -5,7 +5,7 @@
 #include "include/sassy_fdtx.h"
 
 
-int fd_init(const struct sassy_device *sdev)
+int fd_init(struct sassy_device *sdev)
 {
 	int err = 0;
 	struct sassy_protocol *sproto;
@@ -51,19 +51,19 @@ int fd_init_payload(void *payload)
 	return 0;
 }
 
-int fd_start(const struct sassy_device *sdev)
+int fd_start(struct sassy_device *sdev)
 {
 	sassy_dbg("fd start\n");
 	return 0;
 }
 
-int fd_stop(const struct sassy_device *sdev)
+int fd_stop(struct sassy_device *sdev)
 {
 	sassy_dbg("fd stop\n");
 	return 0;
 }
 
-int fd_clean(const struct sassy_device *sdev)
+int fd_clean(struct sassy_device *sdev)
 {
 	sassy_clean_class();
 	// TODO: destroy the char devices
@@ -72,7 +72,7 @@ int fd_clean(const struct sassy_device *sdev)
 	return 0;
 }
 
-int fd_info(const struct sassy_device *sdev)
+int fd_info(struct sassy_device *sdev)
 {
 	sassy_dbg("fd info\n");
 	return 0;
@@ -82,7 +82,7 @@ int fd_info(const struct sassy_device *sdev)
  * If aliveness counter of US application did not update,
  * then mark corresponding state as down in HB packet of FD protocol
  */
-int fd_us_update(const struct sassy_device *sdev, void *payload)
+int fd_us_update(struct sassy_device *sdev, void *payload)
 {
 	int i;
 	struct sassy_protocol *sproto = sdev->proto;
