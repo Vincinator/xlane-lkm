@@ -204,7 +204,7 @@ int sassy_pm_loop(void *data)
 	uint64_t prev_time, cur_time;
 	unsigned long flags;
 	struct sassy_device *sdev = (struct sassy_device *) data;
-	struct sassy_pacemaker_info *spminfo = sdev->spminfo;
+	struct sassy_pacemaker_info *spminfo = sdev->pminfo;
 
 	void *pkt_payload;
 	int i;
@@ -212,7 +212,7 @@ int sassy_pm_loop(void *data)
 	int hb_active_ix;
   	ktime_t currtime , interval;
 	int err;
-	
+
   	currtime  = ktime_get();
   	interval = ktime_set(0, 100000000); 
   	hrtimer_forward(timer, currtime , interval);
