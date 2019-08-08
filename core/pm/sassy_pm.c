@@ -328,7 +328,9 @@ int sassy_pm_start_loop(void *data)
 	const struct sassy_pacemaker_info *spminfo =
 		(const struct sassy_pacemaker_info *) data;
 	struct cpumask mask;
-	const struct sassy_device *sdev;
+	const struct sassy_device *sdev =
+		container_of(spminfo, struct sassy_device, pminfo);
+
 	ktime_t interval;
 	int err;
 
