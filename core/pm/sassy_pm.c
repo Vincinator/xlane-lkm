@@ -124,9 +124,6 @@ static inline int _emit_pkts(struct sassy_device *sdev, struct sassy_pacemaker_i
 	/* If netdev is offline, then stop pacemaker */
 	if (unlikely(!netif_running(ndev) ||
 		     !netif_carrier_ok(ndev))) {
-		sassy_pm_stop(spminfo);
-		local_bh_enable();
-		local_irq_restore(flags);
 		return -1;
 	}
 
@@ -238,8 +235,12 @@ int sassy_pm_loop(void *data)
 
 		err = _emit_pkts(sdev, spminfo);
 
-		if(err)
+		if(err){
+			sassy_pm_stop(spminfo);
+			local_bh_enable();
+			local_irq_restore(flags);
 			return err;
+		}
 
 		local_bh_enable();
 		local_irq_restore(flags);
