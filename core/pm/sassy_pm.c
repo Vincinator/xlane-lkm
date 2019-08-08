@@ -355,14 +355,16 @@ int sassy_pm_start_loop(void *data)
 	return 0;
 }
 
-int sassy_pm_stop(struct sassy_pacemaker_info*spminfo)
+int sassy_pm_stop(struct sassy_pacemaker_info *spminfo)
 {
 	pm_state_transition_to(spminfo, SASSY_PM_READY);
-	hrtimer_cancel(&spminfo->pm_timer);
+
+	if (spminfo->pm_timer)
+		hrtimer_cancel(&spminfo->pm_timer);
 	return 0;
 }
 
-int sassy_pm_reset(struct sassy_pacemaker_info*spminfo)
+int sassy_pm_reset(struct sassy_pacemaker_info *spminfo)
 {
 	struct sassy_device *sdev;
 
