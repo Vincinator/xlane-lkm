@@ -291,7 +291,7 @@ struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info*si,
 
 	sassy_dbg("Composing skb.\n");
 
-	return compose_heartbeat_skb(sdev->ndev, spminfo, host_number);
+	return compose_heartbeat_skb(sdev->ndev, si, host_number);
 }
 
 int sassy_pm_start_timer(void *data)
