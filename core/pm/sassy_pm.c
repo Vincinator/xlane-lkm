@@ -132,7 +132,7 @@ enum hrtimer_restart sassy_heart(struct hrtimer *timer)
   	ktime_t currtime , interval;
 
   	currtime  = ktime_get();
-  	interval = ktime_set(0, 100000); 
+  	interval = ktime_set(0, 100000000); 
   	hrtimer_forward(timer, currtime , interval);
 
 	sassy_dbg("Enter %s", __FUNCTION__);
@@ -270,7 +270,7 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
 	sassy_dbg("num of hb targets: %d", spminfo->num_of_targets);
 
 
-	interval = ktime_set(0, 100000);
+	interval = ktime_set(0, 100000000);
 
 	hrtimer_init( &spminfo->pm_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	spminfo->pm_timer.function = &sassy_heart;
