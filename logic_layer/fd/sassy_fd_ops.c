@@ -34,7 +34,7 @@ error:
 
 int fd_init_payload(void *payload)
 {
-	const struct fd_payload *fd_p = (struct fd_payload *)payload;
+	struct fd_payload *fd_p = (struct fd_payload *)payload;
 	int i;
 
 	sassy_dbg("initializing FD payload\n");
