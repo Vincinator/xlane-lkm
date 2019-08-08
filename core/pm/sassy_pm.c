@@ -157,8 +157,6 @@ static inline int _emit_pkts(struct sassy_device *sdev, struct sassy_pacemaker_i
         }
 
 	}
-	local_bh_enable();
-	local_irq_restore(flags);
 	return 0;
 }
 
