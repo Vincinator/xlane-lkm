@@ -267,9 +267,9 @@ int sassy_pm_start(void *data)
 
 	interval = ktime_set(0, 100000000);
 
-	hrtimer_init( &spminfo->pm_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+	hrtimer_init( &spminfo->pm_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
 	spminfo->pm_timer.function = &sassy_heart;
- 	hrtimer_start( &spminfo->pm_timer, interval, HRTIMER_MODE_REL);
+ 	hrtimer_start( &spminfo->pm_timer, interval, HRTIMER_MODE_REL_PINNED);
 
 
 
