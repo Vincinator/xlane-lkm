@@ -324,7 +324,6 @@ int sassy_pm_start_loop(void *data)
 {
 	struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info *) data;
 	struct cpumask mask;
-	int active_cpu;
 	struct sassy_device *sdev;
 	ktime_t interval;
 	int err;
@@ -338,7 +337,7 @@ int sassy_pm_start_loop(void *data)
 
 	heartbeat_task = kthread_create(&sassy_pm_loop, sdev, "sassy pm loop");
 
-	kthread_bind(heartbeat_task, active_cpu);
+	kthread_bind(heartbeat_task, spminfo->active_cpu);
 
 	if (IS_ERR(heartbeat_task)) {
 		sassy_error(" Task Error. %s\n", __FUNCTION__);
