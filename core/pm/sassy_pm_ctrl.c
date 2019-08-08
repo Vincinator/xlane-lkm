@@ -5,6 +5,9 @@
 #include <linux/module.h>
 #include <linux/init.h>
 
+#include <linux/kthread.h>
+#include <linux/sched.h>
+
 #include <linux/kernel.h>
 
 #include <sassy/sassy.h>
@@ -53,7 +56,7 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 		break;
 	case 1:
 		sassy_dbg(" Start Heartbeat thread\n");
-		
+
 		if (spminfo->active_cpu > MAX_CPU_NUMBER || spminfo->active_cpu < 0) {
 			sassy_error(" Invalid CPU Number.\n");
 			err = -EINVAL;
