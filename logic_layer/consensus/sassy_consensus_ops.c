@@ -9,12 +9,25 @@
 
 int consensus_init(struct sassy_device *sdev)
 {
+	int err;
+
 	// Transition to Follower State
+	err = node_transition(sdev, FOLLOWER);
+
+	if(err)
+		goto error;
+
+	return 0;
+
+error:
+	sassy_error(" %s failed\n", __FUNCTION__);
+	return err;
 }
 
 int consensus_init_payload(void *payload)
 {
 	
+
 	return 0;
 }
 
