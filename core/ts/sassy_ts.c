@@ -49,8 +49,8 @@ static ssize_t sassy_proc_write(struct file *file, const char __user *buffer,
 static int sassy_proc_show(struct seq_file *m, void *v)
 {
 	int i;
-	const struct sassy_timestamp_logs *logs =
-		(const struct sassy_timestamp_logs *)m->private;
+	struct sassy_timestamp_logs *logs =
+		(struct sassy_timestamp_logs *)m->private;
 
 	BUG_ON(!logs);
 
@@ -79,7 +79,7 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 			  int logid, uint64_t cycles,
 			  int target_id)
 {
-	const struct sassy_timestamp_logs *logs;
+	struct sassy_timestamp_logs *logs;
 
 
 	logs = sdev->stats->timestamp_logs[logid];
@@ -274,7 +274,7 @@ int init_timestamping(struct sassy_device *sdev)
 
 	sdev->stats->timestamp_logs =
 		kmalloc_array(log_types,
-			      sizeof(const struct sassy_timestamp_logs *),
+			      sizeof(struct sassy_timestamp_logs *),
 			      GFP_ATOMIC);
 	if (!sdev->stats->timestamp_logs) {
 		err = -ENOMEM;
@@ -289,7 +289,7 @@ int init_timestamping(struct sassy_device *sdev)
 
 	for (i = 0; i < log_types; i++) {
 		sdev->stats->timestamp_logs[i] = kmalloc(
-			sizeof(const struct sassy_timestamp_logs), GFP_ATOMIC);
+			sizeof(struct sassy_timestamp_logs), GFP_ATOMIC);
 
 		if (!sdev->stats->timestamp_logs[i]) {
 			err = -ENOMEM;
