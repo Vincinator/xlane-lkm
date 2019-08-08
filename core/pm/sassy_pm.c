@@ -211,7 +211,8 @@ int sassy_pm_loop(void *data)
 	int ret;
 	int hb_active_ix;
   	ktime_t currtime , interval;
-
+	int err;
+	
   	currtime  = ktime_get();
   	interval = ktime_set(0, 100000000); 
   	hrtimer_forward(timer, currtime , interval);
