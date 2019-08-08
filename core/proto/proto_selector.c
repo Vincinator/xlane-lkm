@@ -31,8 +31,8 @@ static ssize_t proto_selector_write(struct file *file,
 {
 	int err;
 	char kernel_buffer[count + 1];
-	const struct sassy_device *sdev =
-		(const struct sassy_device *)PDE_DATA(file_inode(file));
+	struct sassy_device *sdev =
+		(struct sassy_device *)PDE_DATA(file_inode(file));
 	struct sassy_protocol *sproto = NULL;
 	long new_protocol = -1;
 
@@ -91,8 +91,8 @@ static ssize_t proto_selector_write(struct file *file,
 
 static int proto_selector_show(struct seq_file *m, void *v)
 {
-	const struct sassy_device *sdev =
-		(const struct sassy_device *)m->private;
+	struct sassy_device *sdev =
+		(struct sassy_device *)m->private;
 
 	if (!sdev) {
 		sassy_error(" sdev is NULL %s!\n", __func__);

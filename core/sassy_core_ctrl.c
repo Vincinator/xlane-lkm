@@ -160,7 +160,6 @@ static const struct file_operations sassy_verbose_ctrl_ops = {
 void init_sassy_ctrl_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
-	
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/rx_ctrl", sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL,
