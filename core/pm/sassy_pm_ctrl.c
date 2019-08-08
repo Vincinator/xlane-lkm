@@ -303,7 +303,7 @@ static ssize_t sassy_target_write(struct file *file,
 	struct sassy_device *sdev;
 	size_t size = min(sizeof(kernel_buffer) - 1, count);
 	char *input_str;
-	const char delimiters[] = " ,;()";
+	static const char delimiters[] = " ,;()";
 	int i = 0;
 	int state = 0; /* first element of tuple is ip address, second is mac */
 	int current_ip;
@@ -334,7 +334,7 @@ static ssize_t sassy_target_write(struct file *file,
 		sassy_error(" num_of_targets is invalid!\n");
 		return -EINVAL;
 	}
-	
+
 	i = 0;
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
