@@ -47,7 +47,7 @@ static ssize_t proto_selector_write(struct file *file,
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __func__);
+		sassy_error("Copy from user failed%s\n", __FUNCTION__);
 		return err;
 	}
 
@@ -56,7 +56,7 @@ static ssize_t proto_selector_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_protocol);
 
 	if (err) {
-		sassy_error(" Error converting input%s\n", __func__);
+		sassy_error(" Error converting input%s\n", __FUNCTION__);
 		return err;
 	}
 
@@ -95,7 +95,7 @@ static int proto_selector_show(struct seq_file *m, void *v)
 		(struct sassy_device *)m->private;
 
 	if (!sdev) {
-		sassy_error(" sdev is NULL %s!\n", __func__);
+		sassy_error(" sdev is NULL %s!\n", __FUNCTION__);
 		return -EINVAL;
 	}
 	if (!sdev->proto) {

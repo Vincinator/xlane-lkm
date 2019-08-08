@@ -30,7 +30,7 @@ static ssize_t sassy_fdus_reg_write(struct file *file,
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __func__);
+		sassy_error("Copy from user failed%s\n", __FUNCTION__);
 		return err;
 	}
 
@@ -39,7 +39,7 @@ static ssize_t sassy_fdus_reg_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_state);
 
 	if (err) {
-		sassy_error(" Error converting input%s\n", __func__);
+		sassy_error(" Error converting input%s\n", __FUNCTION__);
 		return err;
 	}
 

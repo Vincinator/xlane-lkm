@@ -20,12 +20,12 @@ static ssize_t sassy_ts_ctrl_write(struct file *file,
 
 	size = min(sizeof(kernel_buffer) - 1, count);
 
-	sassy_error("[SASSY] Write init count=%lu %s\n", count, __func__);
+	sassy_error("[SASSY] Write init count=%lu %s\n", count, __FUNCTION__);
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		sassy_error("[SASSY] Copy from user failed%s\n", __func__);
+		sassy_error("[SASSY] Copy from user failed%s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -49,15 +49,15 @@ static ssize_t sassy_ts_ctrl_write(struct file *file,
 		break;
 	default:
 		sassy_error("[SASSY] Invalid input: %d - %s\n",
-			    timestamping_state, __func__);
+			    timestamping_state, __FUNCTION__);
 		err = -EINVAL;
 		goto error;
 	}
 	sassy_dbg("[SASSY] Timestamping state changed successfully.%s\n",
-		  __func__);
+		  __FUNCTION__);
 	return count;
 error:
-	sassy_error("[SASSY] Timestamping control failed.%s\n", __func__);
+	sassy_error("[SASSY] Timestamping control failed.%s\n", __FUNCTION__);
 	return err;
 }
 

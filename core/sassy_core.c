@@ -151,7 +151,7 @@ int sassy_generate_next_id(void)
 
 int sassy_core_write_packet(int sassy_id, int remote_id)
 {
-	sassy_dbg("Not implemented: %s\n", __func__);
+	sassy_dbg("Not implemented: %s\n", __FUNCTION__);
 	return 0;
 }
 

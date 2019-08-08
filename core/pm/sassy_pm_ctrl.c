@@ -36,7 +36,7 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 	err = copy_from_user(kernel_buffer, buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __func__);
+		sassy_error("Copy from user failed%s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -73,12 +73,12 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 		kthread_bind(heartbeat_task, spminfo->active_cpu);
 
 		if (IS_ERR(heartbeat_task)) {
-			sassy_error(" Task Error. %s\n", __func__);
+			sassy_error(" Task Error. %s\n", __FUNCTION__);
 			err = -EINVAL;
 			break;
 		}
 
-		sassy_dbg(" Start Thread now: %s\n", __func__);
+		sassy_dbg(" Start Thread now: %s\n", __FUNCTION__);
 		wake_up_process(heartbeat_task);
 
 		//sassy_pm_start(spminfo);
@@ -97,10 +97,10 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 		break;
 	}
 
-	sassy_dbg("Heartbeat state changed successfully.%s\n", __func__);
+	sassy_dbg("Heartbeat state changed successfully.%s\n", __FUNCTION__);
 	return count;
 error:
-	sassy_error("Heartbeat control failed.%s\n", __func__);
+	sassy_error("Heartbeat control failed.%s\n", __FUNCTION__);
 	return err;
 }
 
@@ -144,12 +144,12 @@ static ssize_t sassy_cpumgmt_write(struct file *file,
 
 	size = min(sizeof(kernel_buffer) - 1, count);
 
-	sassy_dbg("Write init count=%lu %s\n", count, __func__);
+	sassy_dbg("Write init count=%lu %s\n", count, __FUNCTION__);
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		sassy_error(" Copy from user failed%s\n", __func__);
+		sassy_error(" Copy from user failed%s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -170,7 +170,7 @@ static ssize_t sassy_cpumgmt_write(struct file *file,
 
 	return count;
 error:
-	sassy_error("Could not set cpu.%s\n", __func__);
+	sassy_error("Could not set cpu.%s\n", __FUNCTION__);
 	return err;
 }
 
@@ -217,7 +217,7 @@ static ssize_t sassy_payload_write(struct file *file,
 
 	ret = copy_from_user(kernel_buffer, user_buffer, count);
 	if (ret) {
-		sassy_error(" Copy from user failed%s\n", __func__);
+		sassy_error(" Copy from user failed%s\n", __FUNCTION__);
 		goto out;
 	}
 
@@ -324,7 +324,7 @@ static ssize_t sassy_target_write(struct file *file,
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		sassy_error(" Copy from user failed%s\n", __func__);
+		sassy_error(" Copy from user failed%s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -350,7 +350,7 @@ static ssize_t sassy_target_write(struct file *file,
 			current_ip = sassy_ip_convert(input_str);
 			if (current_ip == -EINVAL) {
 				sassy_error(" Error formating IP address. %s\n",
-					    __func__);
+					    __FUNCTION__);
 				return -EINVAL;
 			}
 			sassy_dbg(" ip: %s\n", input_str);
@@ -390,7 +390,7 @@ static ssize_t sassy_target_write(struct file *file,
 
 	return count;
 error:
-	sassy_error(" Error during parsing of input.%s\n", __func__);
+	sassy_error(" Error during parsing of input.%s\n", __FUNCTION__);
 	return err;
 }
 
@@ -446,7 +446,7 @@ static ssize_t sassy_test_ctrl_write(struct file *file,
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __func__);
+		sassy_error("Copy from user failed%s\n", __FUNCTION__);
 		return err;
 	}
 
@@ -455,7 +455,7 @@ static ssize_t sassy_test_ctrl_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_active_processes);
 
 	if (err) {
-		sassy_error(" Error converting input%s\n", __func__);
+		sassy_error(" Error converting input%s\n", __FUNCTION__);
 		return err;
 	}
 

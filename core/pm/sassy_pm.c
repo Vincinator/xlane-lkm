@@ -159,7 +159,7 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 static inline _validate_pm(struct sassy_device *sdev, struct sassy_pacemaker_info *spminfo)
 {
 	if (!spminfo) {
-		sassy_error("No Device. %s\n", __func__);
+		sassy_error("No Device. %s\n", __FUNCTION__);
 		return -ENODEV;
 	}
 
@@ -346,7 +346,7 @@ int sassy_pm_start_loop(void *data)
 	kthread_bind(heartbeat_task, spminfo->active_cpu);
 
 	if (IS_ERR(heartbeat_task)) {
-		sassy_error("Task Error. %s\n", __func__);
+		sassy_error("Task Error. %s\n", __FUNCTION__);
 		return -EINVAL;
 	}
 
@@ -369,7 +369,7 @@ int sassy_pm_reset(struct sassy_pacemaker_info*spminfo)
 	sassy_dbg("Reset Pacemaker Configuration\n");
 
 	if (!spminfo) {
-		sassy_error("No Device. %s\n", __func__);
+		sassy_error("No Device. %s\n", __FUNCTION__);
 		return -ENODEV;
 	}
 

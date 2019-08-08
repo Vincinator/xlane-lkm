@@ -20,7 +20,7 @@ int consensus_init(struct sassy_device *sdev)
 	return 0;
 
 error:
-	sassy_error(" %s failed\n", __func__);
+	sassy_error(" %s failed\n", __FUNCTION__);
 	return err;
 }
 

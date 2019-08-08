@@ -87,7 +87,7 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 	if (unlikely(logs->current_timestamps > TIMESTAMP_ARRAY_LIMIT)) {
 
 		sassy_dbg("Logs are full! Stopped tracking.%s\n",
-		       __func__);
+		       __FUNCTION__);
 
 		sassy_ts_stop(sdev);
 
@@ -115,7 +115,7 @@ int sassy_ts_start(struct sassy_device *sdev)
 {
 
 	if (sdev->ts_state != SASSY_TS_READY) {
-		sassy_error(" sassy is not in ready state. %s\n", __func__);
+		sassy_error(" sassy is not in ready state. %s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -134,7 +134,7 @@ int sassy_reset_stats(struct sassy_device *sdev)
 	if (sdev->ts_state == SASSY_TS_RUNNING) {
 		sassy_error(
 			" can not clear stats when timestamping is active.%s\n",
-			__func__);
+			__FUNCTION__);
 		err = -EPERM;
 		goto error;
 	}
@@ -142,7 +142,7 @@ int sassy_reset_stats(struct sassy_device *sdev)
 	if (sdev->ts_state != SASSY_TS_READY) {
 		sassy_error(
 			"can not clear stats, sassy timestamping is in an undefined state.%s\n",
-			__func__);
+			__FUNCTION__);
 		err = -EPERM;
 		goto error;
 	}
@@ -153,7 +153,7 @@ int sassy_reset_stats(struct sassy_device *sdev)
 
 	return 0;
 error:
-	sassy_error(" error code: %d for %s\n", err, __func__);
+	sassy_error(" error code: %d for %s\n", err, __FUNCTION__);
 	return err;
 }
 
@@ -167,7 +167,7 @@ int sassy_clean_timestamping(struct sassy_device *sdev)
 	if (!sdev->stats) {
 		err = -EINVAL;
 		sassy_error(" stats for active device is not valid %s\n",
-			    __func__);
+			    __FUNCTION__);
 		goto error;
 	}
 
@@ -200,10 +200,10 @@ int sassy_clean_timestamping(struct sassy_device *sdev)
 	kfree(sdev->stats);
 
 	ts_state_transition_to(sdev, SASSY_TS_UNINIT);
-	sassy_dbg(" cleanup done%s\n", __func__);
+	sassy_dbg(" cleanup done%s\n", __FUNCTION__);
 	return 0;
 error:
-	sassy_error(" error code: %d for %s\n", err, __func__);
+	sassy_error(" error code: %d for %s\n", err, __FUNCTION__);
 	return err;
 }
 
@@ -218,7 +218,7 @@ int init_log_ctrl(struct sassy_device *sdev, int logid)
 
 	if (!sdev->stats) {
 		err = -ENOMEM;
-		sassy_error(" Stats is not initialized!%s\n", __func__);
+		sassy_error(" Stats is not initialized!%s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -235,14 +235,14 @@ int init_log_ctrl(struct sassy_device *sdev, int logid)
 		err = -ENOMEM;
 		sassy_error(
 			" Could not create timestamps  procfs data entry%s\n",
-			__func__);
+			__FUNCTION__);
 		goto error;
 	}
-	sassy_dbg(" Created %d procfs %s\n",  logid, __func__);
+	sassy_dbg(" Created %d procfs %s\n",  logid, __FUNCTION__);
 	return 0;
 
 error:
-	sassy_error(" error code: %d for %s\n", err, __func__);
+	sassy_error(" error code: %d for %s\n", err, __FUNCTION__);
 	return err;
 }
 
@@ -256,11 +256,11 @@ int init_timestamping(struct sassy_device *sdev)
 
 
 	if (sdev->verbose)
-		sassy_dbg(" sassy device setup started %s\n", __func__);
+		sassy_dbg(" sassy device setup started %s\n", __FUNCTION__);
 
 	if (!sdev) {
 		err = -EINVAL;
-		sassy_error(" sassy device is NULL %s\n", __func__);
+		sassy_error(" sassy device is NULL %s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -268,7 +268,7 @@ int init_timestamping(struct sassy_device *sdev)
 	if (!sdev->stats) {
 		err = -ENOMEM;
 		sassy_error(" Could not allocate memory for stats.%s\n",
-			    __func__);
+			    __FUNCTION__);
 		goto error;
 	}
 
@@ -280,7 +280,7 @@ int init_timestamping(struct sassy_device *sdev)
 		err = -ENOMEM;
 		sassy_error(
 			" Could not allocate memory for timestamp_logs pointer.%s\n",
-			__func__);
+			__FUNCTION__);
 		goto error;
 	}
 
@@ -324,7 +324,7 @@ int init_timestamping(struct sassy_device *sdev)
 	return 0;
 
 error:
-	sassy_error(" Error code: %d for %s\n", err, __func__);
+	sassy_error(" Error code: %d for %s\n", err, __FUNCTION__);
 	if (sdev && sdev->stats) {
 		kfree(sdev->stats);
 		for (i = 0; i < log_types; i++) {
