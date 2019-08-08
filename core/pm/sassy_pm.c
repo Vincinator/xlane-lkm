@@ -243,7 +243,7 @@ int sassy_pm_loop(void *data)
 enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 {
 	unsigned long flags;
-	struct sassy_pacemaker_info*spminfo =
+	struct sassy_pacemaker_info *spminfo =
 			container_of(timer, struct sassy_pacemaker_info, pm_timer);
 
 	struct sassy_device *sdev =
@@ -255,13 +255,14 @@ enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	int hb_active_ix;
 	ktime_t currtime, interval;
 
+	if (!sassy_pacemaker_is_alive(spminfo))
+		return HRTIMER_NORESTART;
+
 	currtime  = ktime_get();
 	interval = ktime_set(0, 100000000);
 	hrtimer_forward(timer, currtime, interval);
 
 	sassy_setup_skbs(spminfo);
-
-	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
 	get_cpu(); /* disable preemption */
 
@@ -277,7 +278,7 @@ enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	return HRTIMER_RESTART;
 }
 
-struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info*si,
+struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *si,
 				 int host_number)
 {
 	struct sassy_device *sdev =
@@ -296,8 +297,8 @@ struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info*si,
 
 int sassy_pm_start_timer(void *data)
 {
-	struct sassy_pacemaker_info*spminfo =
-		(struct sassy_pacemaker_info*) data;
+	struct sassy_pacemaker_info *spminfo =
+		(struct sassy_pacemaker_info *) data;
 	struct cpumask mask;
 	int active_cpu;
 	struct sassy_device *sdev;
@@ -308,6 +309,8 @@ int sassy_pm_start_timer(void *data)
 
 	if (err)
 		return err;
+
+	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
 	interval = ktime_set(0, 100000000);
 
@@ -325,8 +328,8 @@ int sassy_pm_start_timer(void *data)
 
 int sassy_pm_start_loop(void *data)
 {
-	struct sassy_pacemaker_info*spminfo =
-		(struct sassy_pacemaker_info*) data;
+	struct sassy_pacemaker_info *spminfo =
+		(struct sassy_pacemaker_info *) data;
 	struct cpumask mask;
 	struct sassy_device *sdev =
 		container_of(spminfo, struct sassy_device, pminfo);
@@ -358,9 +361,6 @@ int sassy_pm_start_loop(void *data)
 int sassy_pm_stop(struct sassy_pacemaker_info *spminfo)
 {
 	pm_state_transition_to(spminfo, SASSY_PM_READY);
-
-	if (spminfo->pm_timer)
-		hrtimer_cancel(&spminfo->pm_timer);
 	return 0;
 }
 
