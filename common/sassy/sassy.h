@@ -5,6 +5,9 @@
 #include <linux/spinlock_types.h>
 
 #include <sassy/sassy_ts.h>
+#include <linux/hrtimer.h>
+#include <linux/ktime.h>
+#include <linux/time.h>
 
 #define MAX_SASSY_PROC_NAME 256
 
