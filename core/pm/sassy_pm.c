@@ -196,8 +196,11 @@ enum hrtimer_restart sassy_heart(struct hrtimer *timer)
         
 		sassy_send_hb(ndev, spminfo->pm_targets[i].skb);
 
-        if(ts_state == SASSY_TS_RUNNING)
+        if(ts_state == SASSY_TS_RUNNING){
             sassy_write_timestamp(sdev, 0, rdtsc(), i);
+            sassy_write_timestamp(sdev, 4, ktime_get(), i);
+
+        }
 
 	}
 	local_bh_enable();
