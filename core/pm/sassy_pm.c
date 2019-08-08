@@ -209,7 +209,7 @@ enum hrtimer_restart sassy_heart(struct hrtimer *timer)
 
 	put_cpu();
 	sassy_dbg(" leaving heart..\n");
-	return HRTIMER_RESTART;
+	return HRTIMER_NORESTART;
 }
 
 struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo,
