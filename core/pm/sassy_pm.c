@@ -208,10 +208,6 @@ int sassy_pm_loop(void *data)
   	ktime_t currtime , interval;
 	int err;
 
-  	currtime  = ktime_get();
-  	interval = ktime_set(0, 100000000); 
-  	hrtimer_forward(spminfo->pm_timer, currtime , interval);
-
 	sassy_setup_skbs(spminfo);
 
 	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
