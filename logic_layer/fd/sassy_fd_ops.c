@@ -90,7 +90,7 @@ int fd_us_update(struct sassy_device *sdev, void *payload)
 	const struct fd_payload *cur_p = (struct fd_payload *)payload;
 	const struct fd_aliveness_counters *last_counters =
 		&priv->last_counter_values;
-	const struct sassy_pacemaker_info *spminfo;
+	struct sassy_pacemaker_inf *spminfo;
 
 	const struct fd_aliveness_counters *us_counters =
 		(const struct fd_aliveness_counters *)priv->tx_buf;

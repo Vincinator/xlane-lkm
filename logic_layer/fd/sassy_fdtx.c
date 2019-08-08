@@ -66,7 +66,7 @@ void sassy_free_mmap_buffer(void *page)
 
 int sassy_bypass_open(struct inode *inode, struct file *filp)
 {
-	const struct sassy_fd_priv *sdev = inode_sassy_fd_priv(inode);
+	struct sassy_fd_priv *sdev = inode_sassy_fd_priv(inode);
 
 	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
@@ -84,7 +84,7 @@ int sassy_bypass_release(struct inode *inode, struct file *filp)
 ssize_t sassy_bypass_read(struct file *filp, char *buf, size_t count,
 			  loff_t *f_pos)
 {
-	const struct sassy_fd_priv *priv = (const struct sassy_fd_priv *)filp->private_data;
+	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
 	ssize_t ret = 0;
 
 	sassy_dbg("[SASSY] Enter: %s\n", __func__);
@@ -122,7 +122,7 @@ out:
 ssize_t sassy_bypass_write(struct file *filp, const char *buf, size_t count,
 			   loff_t *f_pos)
 {
-	const struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
+	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
 	ssize_t ret = 0;
 
 	sassy_dbg("[SASSY] Enter: %s\n", __func__);
@@ -168,11 +168,11 @@ void bypass_vma_close(struct vm_area_struct *vma)
 vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 {
 	struct page *page;
-	const struct sassy_fd_priv *priv;
+	struct sassy_fd_priv *priv;
 
 	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
-	priv = (const struct sassy_fd_priv *)vmf->vma->vm_private_data;
+	priv = (struct sassy_fd_priv *)vmf->vma->vm_private_data;
 	if (priv->tx_buf) {
 		page = virt_to_page(priv->tx_buf);
 		get_page(page);
@@ -189,7 +189,7 @@ static struct vm_operations_struct bypass_vm_ops = {
 
 static int sassy_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 {
-	const struct sassy_fd_priv *priv = filp->private_data;
+	struct sassy_fd_priv *priv = filp->private_data;
 	int ret;
 
 	sassy_dbg("[SASSY] Enter: %s\n", __func__);
@@ -232,7 +232,7 @@ int sassy_setup_chardev(struct sassy_device *sdev)
 	dev_t devno;
 
 	struct sassy_protocol *proto = sdev->proto;
-	const struct sassy_fd_priv *priv = (struct sassy_fd_priv *)proto->priv;
+	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)proto->priv;
 
 	BUG_ON(sdev == NULL || sassy_bypass_class == NULL);
 	sassy_dbg("[SASSY] Enter: %s\n", __func__);

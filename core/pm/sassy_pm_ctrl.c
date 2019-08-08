@@ -19,11 +19,11 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 {
 	int err;
 	char kernel_buffer[count + 1];
-	const struct sassy_pacemaker_info *spminfo =
-		(const struct sassy_pacemaker_info *)PDE_DATA(file_inode(file));
+	struct sassy_pacemaker_inf *spminfo =
+		(struct sassy_pacemaker_inf *)PDE_DATA(file_inode(file));
 	long new_hb_state = -1;
-	const struct task_struct *heartbeat_task;
-	const struct cpumask mask;
+	struct task_struct *heartbeat_task;
+	struct cpumask mask;
 
 	if (!spminfo)
 		return -ENODEV;
@@ -106,8 +106,8 @@ error:
 
 static int sassy_hb_ctrl_proc_show(struct seq_file *m, void *v)
 {
-	const struct sassy_pacemaker_info *spminfo =
-		(const struct sassy_pacemaker_info *)m->private;
+	struct sassy_pacemaker_inf *spminfo =
+		(struct sassy_pacemaker_inf *)m->private;
 
 	if (!spminfo)
 		return -ENODEV;
@@ -135,8 +135,8 @@ static ssize_t sassy_cpumgmt_write(struct file *file,
 	int err;
 	char kernel_buffer[SASSY_NUMBUF];
 	int tocpu = -1;
-	const struct sassy_pacemaker_info *spminfo =
-		(const struct sassy_pacemaker_info *)PDE_DATA(file_inode(file));
+	struct sassy_pacemaker_inf *spminfo =
+		(struct sassy_pacemaker_inf *)PDE_DATA(file_inode(file));
 	size_t size;
 
 	if (!spminfo)
