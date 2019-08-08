@@ -19,11 +19,11 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
-static const struct sassy_core *score;
+static struct sassy_core *score;
 
 static int device_counter;
 
-const struct sassy_device *get_sdev(int devid)
+struct sassy_device *get_sdev(int devid)
 {
 	if (unlikely(devid < 0 || devid > MAX_NIC_DEVICES)) {
 		sassy_error(" invalid sassy device id\n");
@@ -40,7 +40,7 @@ const struct sassy_device *get_sdev(int devid)
 EXPORT_SYMBOL(get_sdev);
 
 
-const struct sassy_core *sassy_core(void)
+struct sassy_core *sassy_core(void)
 {
 	return score;
 }
@@ -62,7 +62,7 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 
 void sassy_post_ts(int sassy_id, uint64_t cycles)
 {
-	const struct sassy_device *sdev = get_sdev(sassy_id);
+	struct sassy_device *sdev = get_sdev(sassy_id);
 
 	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
 		return;
@@ -76,7 +76,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 {
 	u8 *payload_raw_ptr = (u8 *)payload;
 	u8 protocol_id = *payload_raw_ptr;
-	const struct sassy_device *sdev = get_sdev(sassy_id);
+	struct sassy_device *sdev = get_sdev(sassy_id);
 	struct sassy_protocol *sproto = NULL;
 
 	if (unlikely(!sdev)) {
@@ -112,9 +112,9 @@ EXPORT_SYMBOL(sassy_post_payload);
 void sassy_reset_remote_host_counter(int sassy_id)
 {
 	int i;
-	const struct sassy_rx_table *rxt;
-	const struct sassy_device *sdev = get_sdev(sassy_id);
-	const struct sassy_pm_target_info *pmtarget;
+	struct sassy_rx_table *rxt;
+	struct sassy_device *sdev = get_sdev(sassy_id);
+	struct sassy_pm_target_info *pmtarget;
 
 	rxt = score->rx_tables[sassy_id];
 
@@ -170,22 +170,22 @@ int sassy_core_register_nic(int ifindex)
 		return -1;
 
 	score->rx_tables[sassy_id] =
-		kmalloc(sizeof(const struct sassy_rx_table), GFP_KERNEL);
+		kmalloc(sizeof(struct sassy_rx_table), GFP_KERNEL);
 	score->rx_tables[sassy_id]->rhost_buffers =
 		kmalloc_array(MAX_REMOTE_SOURCES,
-			      sizeof(const struct sassy_rx_buffer *),
+			      sizeof(struct sassy_rx_buffer *),
 						GFP_KERNEL);
 
 	/* Allocate each rhost ring buffer*/
 
 	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
 		score->rx_tables[sassy_id]->rhost_buffers[i] =
-			kmalloc(sizeof(const struct sassy_rx_buffer),
+			kmalloc(sizeof(struct sassy_rx_buffer),
 				GFP_KERNEL);
 	}
 
 	score->sdevices[sassy_id] =
-		kmalloc(sizeof(const struct sassy_device), GFP_KERNEL);
+		kmalloc(sizeof(struct sassy_device), GFP_KERNEL);
 	score->sdevices[sassy_id]->ifindex = ifindex;
 	score->sdevices[sassy_id]->sassy_id = sassy_id;
 	score->sdevices[sassy_id]->ndev = sassy_get_netdevice(ifindex);
@@ -268,9 +268,9 @@ EXPORT_SYMBOL(sassy_validate_sassy_device);
 int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac,
 				    int protocol_id)
 {
-	const struct sassy_rx_table *rxt;
+	struct sassy_rx_table *rxt;
 	struct sassy_device *sdev = get_sdev(sassy_id);
-	const struct sassy_pm_target_info *pmtarget;
+	struct sassy_pm_target_info *pmtarget;
 	int ifindex;
 	struct sassy_protocol *sproto;
 
