@@ -210,7 +210,7 @@ int sassy_pm_loop(void *data)
 
   	currtime  = ktime_get();
   	interval = ktime_set(0, 100000000); 
-  	hrtimer_forward(timer, currtime , interval);
+  	hrtimer_forward(spminfo->pm_timer, currtime , interval);
 
 	sassy_setup_skbs(spminfo);
 
