@@ -15,12 +15,21 @@
 #include <linux/slab.h>
 #include <linux/inetdevice.h>
 
+#include <linux/hrtimer.h>
+#include <linux/ktime.h>
+#include <linux/time.h>
+
 #include <sassy/sassy.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PACEMAKER]"
 
 struct task_struct *heartbeat_task;
+
+#define NSEC_PER_MSEC   1000000L
+
+static struct hrtimer hr_timer;
+
 
 static inline bool
 sassy_pacemaker_is_alive(struct sassy_pacemaker_info *spminfo)
@@ -105,7 +114,7 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 	memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
 }
 
-int sassy_heart(void *data)
+enum hrtimer_restart sassy_heart(struct hrtimer *timer_for_restart)
 {
 	uint64_t prev_time, cur_time;
 	unsigned long flags;
@@ -117,24 +126,29 @@ int sassy_heart(void *data)
 	int ret;
 	int hb_active_ix;
 	enum sassy_ts_state ts_state = sdev->ts_state;
+  	ktime_t currtime , interval;
+
+  	currtime  = ktime_get();
+  	interval = ktime_set(0, 100000); 
+  	hrtimer_forward(timer_for_restart, currtime , interval);
 
 	sassy_dbg("Enter %s", __FUNCTION__);
 
 	if (!sdev || !sdev->ndev) {
 		sassy_error("netdevice is NULL\n");
-		return -EINVAL;
+		return HRTIMER_NORESTART;
 	}
 
 	spminfo = &(sdev->pminfo);
 
 	if (!spminfo) {
 		sassy_error("spminfo is NULL\n");
-		return -EINVAL;
+		return HRTIMER_NORESTART;
 	}
 
 	if (spminfo->num_of_targets <= 0) {
 		sassy_error("num_of_targets is invalid\n");
-		return -EINVAL;
+		return HRTIMER_NORESTART;
 	}
 
 	sassy_setup_skbs(spminfo);
@@ -143,63 +157,53 @@ int sassy_heart(void *data)
 
 	get_cpu(); /* disable preemption */
 
-	prev_time = rdtsc();
+	local_irq_save(flags);
+	local_bh_disable();
 
-	while (sassy_pacemaker_is_alive(spminfo)) {
-		cur_time = rdtsc();
-
-	  	if (!can_fire(prev_time, cur_time))
-			continue;
-
-		prev_time = cur_time;
-
-		local_irq_save(flags);
-		local_bh_disable();
-
-		/* If netdev is offline, then stop pacemaker */
-		if (unlikely(!netif_running(ndev) ||
-			     !netif_carrier_ok(ndev))) {
-			sassy_pm_stop(spminfo);
-			local_bh_enable();
-			local_irq_restore(flags);
-			continue;
-		}
-
-		for (i = 0; i < spminfo->num_of_targets; i++) {
-			
-			// Always update payload to avoid jitter!
-			hb_active_ix =
-			     spminfo->pm_targets[i].pkt_data.hb_active_ix;
-			pkt_payload =
-			     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
-
-			//Direct Updates - No double buffer
-            if (sdev->proto->ctrl_ops.us_update != NULL)
-			 sdev->proto->ctrl_ops.us_update(sdev,
-			 					pkt_payload);
-
-			sassy_update_skb_payload(spminfo->pm_targets[i].skb,
-						 pkt_payload);
-
-			if (sdev->verbose)
-			     print_hex_dump(KERN_DEBUG,
-			 	       "Payload: ", DUMP_PREFIX_NONE,
-			 		       16, 1, pkt_payload,
-			 		       SASSY_PAYLOAD_BYTES, 0);
-            
-			sassy_send_hb(ndev, spminfo->pm_targets[i].skb);
-
-            if(ts_state == SASSY_TS_RUNNING)
-                sassy_write_timestamp(sdev, 0, rdtsc(), i);
-
-		}
+	/* If netdev is offline, then stop pacemaker */
+	if (unlikely(!netif_running(ndev) ||
+		     !netif_carrier_ok(ndev))) {
+		sassy_pm_stop(spminfo);
 		local_bh_enable();
 		local_irq_restore(flags);
+		return HRTIMER_NORESTART;
 	}
+
+	for (i = 0; i < spminfo->num_of_targets; i++) {
+		
+		// Always update payload to avoid jitter!
+		hb_active_ix =
+		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
+		pkt_payload =
+		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
+
+		//Direct Updates - No double buffer
+        if (sdev->proto->ctrl_ops.us_update != NULL)
+		 sdev->proto->ctrl_ops.us_update(sdev,
+		 					pkt_payload);
+
+		sassy_update_skb_payload(spminfo->pm_targets[i].skb,
+					 pkt_payload);
+
+		if (sdev->verbose)
+		     print_hex_dump(KERN_DEBUG,
+		 	       "Payload: ", DUMP_PREFIX_NONE,
+		 		       16, 1, pkt_payload,
+		 		       SASSY_PAYLOAD_BYTES, 0);
+        
+		sassy_send_hb(ndev, spminfo->pm_targets[i].skb);
+
+        if(ts_state == SASSY_TS_RUNNING)
+            sassy_write_timestamp(sdev, 0, rdtsc(), i);
+
+	}
+	local_bh_enable();
+	local_irq_restore(flags);
+	//}
 
 	put_cpu();
 	sassy_dbg(" leaving heart..\n");
-	return 0;
+	return HRTIMER_RESTART;
 }
 
 struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo,
@@ -224,6 +228,7 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
 	struct cpumask mask;
 	int active_cpu;
 	struct sassy_device *sdev;
+	ktime_t interval;
 
 	sassy_dbg(" Start Heartbeat thread, %s\n", __FUNCTION__);
 
@@ -258,7 +263,16 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
 	active_cpu = spminfo->active_cpu;
 	sassy_dbg("num of hb targets: %d", spminfo->num_of_targets);
 
-	cpumask_clear(&mask);
+
+	interval = ktime_set(0, 100000);
+
+	hrtimer_init( &hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+	hr_timer.function = &sassy_heart;
+ 	hrtimer_start( &hr_timer, interval, HRTIMER_MODE_REL);
+
+
+
+	/* cpumask_clear(&mask);
 	heartbeat_task =
 		kthread_create(&sassy_heart, sdev, "sassy Heartbeat thread");
 	kthread_bind(heartbeat_task, active_cpu);
@@ -269,12 +283,16 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
 	}
 	sassy_dbg(" Start Thread now: %s\n", __FUNCTION__);
 	wake_up_process(heartbeat_task);
+	*/
+
+
 	return 0;
 }
 
 int sassy_pm_stop(struct sassy_pacemaker_info *spminfo)
 {
 	pm_state_transition_to(spminfo, SASSY_PM_READY);
+ 	hrtimer_cancel(&hr_timer);
 	return 0;
 }
 
