@@ -43,7 +43,7 @@ struct net_device *sassy_get_netdevice(int ifindex)
 		ndev = next_net_device(ndev);
 	}
 
-	sassy_error("Netdevice is NULL %s\n", __FUNCTION__);
+	sassy_error("Netdevice is NULL %s\n", __func__);
 	return NULL;
 }
 EXPORT_SYMBOL(sassy_get_netdevice);
@@ -118,7 +118,7 @@ inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
 	eth = (struct ethhdr *)skb_put(skb, ETH_HLEN);
 	if (!eth) {
 		sassy_error("Could not get ethhdr from skb (%s)\n",
-			    __FUNCTION__);
+			    __func__);
 		return;
 	}
 
@@ -137,7 +137,7 @@ inline void add_L3_header(struct sk_buff *skb, uint32_t src_ip, uint32_t dst_ip)
 
 	if (!ipv4) {
 		sassy_error("Could not get ipv4 Header from skb (%s)\n",
-			    __FUNCTION__);
+			    __func__);
 		return;
 	}
 
@@ -178,7 +178,7 @@ inline void add_payload(struct sk_buff *skb, void *payload)
 
 	if (!data) {
 		sassy_error("Could not get data ptr to skb data\n (%s)",
-			    __FUNCTION__);
+			    __func__);
 		return;
 	}
 
@@ -188,8 +188,8 @@ inline void add_payload(struct sk_buff *skb, void *payload)
 		       SASSY_PAYLOAD_BYTES, 0);
 }
 
-struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
-				      struct sassy_pacemaker_info *spminfo,
+struct sk_buff *compose_heartbeat_skb(const struct net_device *dev,
+				      const struct sassy_pacemaker_info *spminfo,
 				      int host_number)
 {
 	struct sk_buff *hb_pkt = NULL;
@@ -198,7 +198,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 	uint32_t src_ip;
 
 	if (!spminfo) {
-		sassy_error(" spminfo is invalid \n");
+		sassy_error(" spminfo is invalid\n");
 		return;
 	}
 
@@ -208,7 +208,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 
 	if (!hb_pkt) {
 		sassy_error("Could not create heartbeat packet (%s)\n",
-			    __FUNCTION__);
+			    __func__);
 		return;
 	}
 

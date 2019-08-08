@@ -26,7 +26,7 @@ int sassy_ulib_setup(int ifindex) {
 
         printf(" System page size: %zu bytes\n", pagesize);
 
-        snprintf(name_buf,  sizeof name_buf, "/dev/%s%d", DEVNAME, ifindex);
+        snprintf(name_buf,  sizeof(name_buf), "/dev/%s%d", DEVNAME, ifindex);
 
         fd = open(name_buf, O_RDWR);
         if (fd < 0) {
@@ -38,13 +38,13 @@ int sassy_ulib_setup(int ifindex) {
         size = 512;
         printf(" status %d, size %d\n", status, pagesize);
 
-        if(status < 0){
+        if (status < 0){
                 printf(" fstat failed for file %s", name_buf);
                 return -1;
         }
 
         shared_mem_page = mmap(0, pagesize, PROT_READ | PROT_WRITE , MAP_SHARED, fd, 0);
-        if(shared_mem_page == MAP_FAILED) {
+        if (shared_mem_page == MAP_FAILED) {
                 printf(" mmap failed for %s", name_buf);
                 return -1;
         }
@@ -75,9 +75,9 @@ int main(int argc, char **argv)
 	int procid, devid;
 	int counter;
     
-    printf("Started Demo! Application. \n");
+    printf("Started Demo! Application.\n");
 
-    if(argc != 3){
+    if (argc != 3){
     	printf("sudo ./fd_app <procid> <devid>\n");
     	return -1;
     }
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
 
     while(running){
 
-	    if(counter >= 255)
+	    if (counter >= 255)
 	    	counter = 0;
 
 	    sassy_update_status(procid, counter);
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 	    counter++;
     }
   
-    printf("Stopped Demo Application. \n");
+    printf("Stopped Demo Application.\n");
   
     return 0;
 }

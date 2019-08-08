@@ -5,7 +5,7 @@
 #include "include/leader.h"
 
 
-int leader_process_pkt(struct sassy_device *sdev, void* pkt)
+int leader_process_pkt(const struct sassy_device *sdev, void* pkt)
 {
 
 	return 0;

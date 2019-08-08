@@ -18,7 +18,7 @@ struct timer_list ftimer;
 
 void _handle_follower_timeout(unsigned long data)
 {
-	sassy_dbg(" Follower Timeout occured! \n");
+	sassy_dbg(" Follower Timeout occured!\n");
 }
 
 int follower_process_pkt(struct sassy_device *sdev, void* pkt)
@@ -69,7 +69,7 @@ int start_follower(int sassy_id)
 
 	err = reset_timeout(sassy_id);		
 
-	if(err)
+	if (err)
 		goto error;
 
 	sassy_dbg(" node become a follower\n");

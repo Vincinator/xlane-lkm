@@ -41,7 +41,7 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	struct sassy_core *score = sassy_core();
+	const struct sassy_core *score = sassy_core();
 
 	if (!proto) {
 		sassy_error("Protocol is NULL\n");
@@ -55,7 +55,7 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 
 	/* Add protocol ptr to score array */
 	if (proto->proto_type < 0 || proto->proto_type > MAX_PROTOCOLS) {
-		sassy_error("Protocol ID is faulty \n");
+		sassy_error("Protocol ID is faulty\n");
 		return -EINVAL;
 	}
 

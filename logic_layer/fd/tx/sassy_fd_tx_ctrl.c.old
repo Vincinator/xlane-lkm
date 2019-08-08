@@ -52,7 +52,7 @@ static ssize_t sassy_fd_tx_procfile_write(struct file *file,
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		sassy_error("Copy from user failed%s\n", __func__);
 		return err;
 	}
 
@@ -61,7 +61,7 @@ static ssize_t sassy_fd_tx_procfile_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &state);
 
 	if (err) {
-		sassy_error(" Error converting input%s\n", __FUNCTION__);
+		sassy_error(" Error converting input%s\n", __func__);
 		return err;
 	}
 
@@ -113,11 +113,11 @@ void sassy_fd_tx_create_test_procfile(
 		container_of(spminfo, struct sassy_device, pminfo);
 
 	if (!sdev) {
-		sassy_error(" Can not find sdev \n");
+		sassy_error(" Can not find sdev\n");
 		return;
 	}
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test/%d",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/test/%d",
 		 sdev->ifindex, container->procid);
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL,
 			 &sassy_fd_tx_procfile_ops, container);
@@ -144,7 +144,7 @@ void sassy_fd_tx_remove_procfile(struct sassy_pacemaker_info *spminfo,
 		return;
 	}
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/test/%d",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/test/%d",
 		 sdev->ifindex, procid);
 	remove_proc_entry(name_buf, NULL);
 }

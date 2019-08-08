@@ -12,30 +12,32 @@ char *node_state_name(enum node_state state)
 	}
 }
 
-int node_transition(struct sassy_device *sdev, enum node_state state) 
+int node_transition(const struct sassy_device *sdev, enum node_state state) 
 {
-	struct sassy_protocol *sproto = sdev->proto;
-	struct consensus_priv *priv = (struct consensus_priv *)sproto->priv;
+	const struct sassy_protocol *sproto = sdev->proto;
+	const struct consensus_priv *priv =
+		(const struct consensus_priv *)sproto->priv;
 	int err;
-	
-	sassy_dbg(" node transition from %s to %s\n" node_state_name(priv->nstate), node_state_name(state));
 
-	switch(state) {
-		case FOLLOWER:
-			err = start_follower();
-			break;
-		case CANDIDATE:
-			err = start_candidate();
-			break;
-		case LEADER:
-			err = start_leader();
-			break;
-		case default:
-			sassy_error("Unknown node state %d\n - abort", state);
-			err = -EINVAL;
+	sassy_dbg("node transition from %s to %s\n",
+		node_state_name(priv->nstate), node_state_name(state));
+
+	switch (state) {
+	case FOLLOWER:
+		err = start_follower();
+		break;
+	case CANDIDATE:
+		err = start_candidate();
+		break;
+	case LEADER:
+		err = start_leader();
+		break;
+	case default:
+		sassy_error("Unknown node state %d\n - abort", state);
+		err = -EINVAL;
 	}
 
-	if(err)
+	if (err)
 		goto error;
 
 	priv->nstate = state;
@@ -43,6 +45,6 @@ int node_transition(struct sassy_device *sdev, enum node_state state)
 	return 0;
 
 error:
-	sassy_error(" node transition failed \n");
+	sassy_error(" node transition failed\n");
 	return err;
 }

@@ -5,7 +5,7 @@
 #include "include/sassy_fdtx.h"
 
 
-int fd_init(struct sassy_device *sdev)
+int fd_init(const struct sassy_device *sdev)
 {
 	int err = 0;
 	struct sassy_protocol *sproto;
@@ -34,7 +34,7 @@ error:
 
 int fd_init_payload(void *payload)
 {
-	struct fd_payload *fd_p = (struct fd_payload *)payload;
+	const struct fd_payload *fd_p = (struct fd_payload *)payload;
 	int i;
 
 	sassy_dbg("initializing FD payload\n");
@@ -51,19 +51,19 @@ int fd_init_payload(void *payload)
 	return 0;
 }
 
-int fd_start(struct sassy_device *sdev)
+int fd_start(const struct sassy_device *sdev)
 {
 	sassy_dbg("fd start\n");
 	return 0;
 }
 
-int fd_stop(struct sassy_device *sdev)
+int fd_stop(const struct sassy_device *sdev)
 {
 	sassy_dbg("fd stop\n");
 	return 0;
 }
 
-int fd_clean(struct sassy_device *sdev)
+int fd_clean(const struct sassy_device *sdev)
 {
 	sassy_clean_class();
 	// TODO: destroy the char devices
@@ -72,34 +72,34 @@ int fd_clean(struct sassy_device *sdev)
 	return 0;
 }
 
-int fd_info(struct sassy_device *sdev)
+int fd_info(const struct sassy_device *sdev)
 {
 	sassy_dbg("fd info\n");
 	return 0;
 }
 
-/* Check if User Space Applications are still alive. 
+/* Check if User Space Applications are still alive.
  * If aliveness counter of US application did not update,
  * then mark corresponding state as down in HB packet of FD protocol
  */
-int fd_us_update(struct sassy_device *sdev, void *payload)
+int fd_us_update(const struct sassy_device *sdev, void *payload)
 {
 	int i;
 	struct sassy_protocol *sproto = sdev->proto;
-	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)sproto->priv;
-	struct fd_payload *cur_p = (struct fd_payload *)payload;
-	struct fd_aliveness_counters *last_counters =
+	const struct sassy_fd_priv *priv = (struct sassy_fd_priv *)sproto->priv;
+	const struct fd_payload *cur_p = (struct fd_payload *)payload;
+	const struct fd_aliveness_counters *last_counters =
 		&priv->last_counter_values;
-	struct sassy_pacemaker_info *spminfo;
+	const struct sassy_pacemaker_info *spminfo;
 
-	struct fd_aliveness_counters *us_counters =
-		(struct fd_aliveness_counters *)priv->tx_buf;
+	const struct fd_aliveness_counters *us_counters =
+		(const struct fd_aliveness_counters *)priv->tx_buf;
 
 	if (sdev->verbose)
 		sassy_dbg("fd us update\n");
 
 	if (!us_counters) {
-		sassy_error("aliveness counter buffer is uninitialized. \n");
+		sassy_error("aliveness counter buffer is uninitialized.\n");
 		return -ENODEV;
 	}
 
@@ -142,6 +142,6 @@ int fd_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 {
 	if (sdev->verbose) {
 		//sassy_dbg("SRC MAC=%pM", remote_mac);
-		sassy_dbg("fd optimistical timestamp received. \n");
+		sassy_dbg("fd optimistical timestamp received.\n");
 	}
 }

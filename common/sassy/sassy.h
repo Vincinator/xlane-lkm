@@ -202,27 +202,27 @@ struct sassy_protocol_ctrl_ops {
 	int (*init_ctrl)(void);
 
 	/* Initializes data and user space interfaces */
-	int (*init)(struct sassy_device *);
+	int (*init)(const struct sassy_device *);
 
 	int (*init_payload)(void *data);
 
-	int (*start)(struct sassy_device *);
+	int (*start)(const struct sassy_device *);
 
-	int (*stop)(struct sassy_device *);
+	int (*stop)(const struct sassy_device *);
 
-	int (*us_update)(struct sassy_device *, void *payload);
+	int (*us_update)(const struct sassy_device *, void *payload);
 
 	/* free memory of app and remove user space interfaces */
-	int (*clean)(struct sassy_device *);
+	int (*clean)(const struct sassy_device *);
 
-	int (*post_payload)(struct sassy_device *, unsigned char *remote_mac,
+	int (*post_payload)(const struct sassy_device *, unsigned char *remote_mac,
 			    void *payload);
 
-	int (*post_ts)(struct sassy_device *, unsigned char *remote_mac,
+	int (*post_ts)(const struct sassy_device *, unsigned char *remote_mac,
 		       uint64_t ts);
 
 	/* Write statistics to debug console  */
-	int (*info)(struct sassy_device *);
+	int (*info)(const struct sassy_device *);
 };
 
 struct sassy_protocol {
@@ -238,20 +238,20 @@ struct sassy_protocol {
 	void *priv;
 };
 
-struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo,
+struct sk_buff *sassy_setup_hb_packet(const struct sassy_pacemaker_info *spminfo,
 				      int host_number);
 //void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo);
-void pm_state_transition_to(struct sassy_pacemaker_info *spminfo,
+void pm_state_transition_to(const struct sassy_pacemaker_info *spminfo,
 			    enum sassy_pacemaker_state state);
 const char *pm_state_string(sassy_pacemaker_state_t state);
 
-int sassy_pm_reset(struct sassy_pacemaker_info *spminfo);
-int sassy_pm_stop(struct sassy_pacemaker_info *spminfo);
+int sassy_pm_reset(const struct sassy_pacemaker_info *spminfo);
+int sassy_pm_stop(const struct sassy_pacemaker_info *spminfo);
 int sassy_pm_start_loop(void *data);
 int sassy_pm_start_timer(void *data);
 
-void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);
-void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);
+void init_sassy_pm_ctrl_interfaces(const struct sassy_device *sdev);
+void clean_sassy_pm_ctrl_interfaces(const struct sassy_device *sdev);
 
 void sassy_hex_to_ip(char *retval, int dst_ip);
 
@@ -265,8 +265,8 @@ int sassy_ip_convert(const char *str);
  */
 unsigned char *sassy_convert_mac(const char *str);
 
-struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
-				      struct sassy_pacemaker_info *spminfo,
+struct sk_buff *compose_heartbeat_skb(const struct net_device *dev,
+				      const struct sassy_pacemaker_info *spminfo,
 				      int host_number);
 
 struct net_device *sassy_get_netdevice(int ifindex);
@@ -297,27 +297,27 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type);
 
 struct sassy_protocol *sassy_find_protocol_by_id(u8 protocol_id);
 
-void clean_sassy_ctrl_interfaces(struct sassy_device *sdev);
-void init_sassy_ctrl_interfaces(struct sassy_device *sdev);
+void clean_sassy_ctrl_interfaces(const struct sassy_device *sdev);
+void init_sassy_ctrl_interfaces(const struct sassy_device *sdev);
 
 void sassy_post_ts(int sassy_id, uint64_t cycles);
 
 void *sassy_mlx5_get_channel(int sassy_id);
 
 
-void ts_state_transition_to(struct sassy_device *sdev,
+void ts_state_transition_to(const struct sassy_device *sdev,
 			    enum sassy_ts_state state);
 
-int sassy_ts_stop(struct sassy_device *sdev);
-int sassy_ts_start(struct sassy_device *sdev);
-int sassy_reset_stats(struct sassy_device *sdev);
+int sassy_ts_stop(const struct sassy_device *sdev);
+int sassy_ts_start(const struct sassy_device *sdev);
+int sassy_reset_stats(const struct sassy_device *sdev);
 
-int sassy_write_timestamp(struct sassy_device *sdev,
+int sassy_write_timestamp(const struct sassy_device *sdev,
 				int logid, uint64_t cycles, int target_id);
 
 const char *ts_state_string(enum sassy_ts_state state);
-int init_timestamping(struct sassy_device *sdev);
-void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev);
+int init_timestamping(const struct sassy_device *sdev);
+void init_sassy_ts_ctrl_interfaces(const struct sassy_device *sdev);
 
 struct sassy_device *get_sdev(int devid);
 

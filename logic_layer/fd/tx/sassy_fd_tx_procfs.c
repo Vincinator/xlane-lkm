@@ -30,7 +30,7 @@ static ssize_t sassy_fdus_reg_write(struct file *file,
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		sassy_error("Copy from user failed%s\n", __func__);
 		return err;
 	}
 
@@ -39,7 +39,7 @@ static ssize_t sassy_fdus_reg_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_state);
 
 	if (err) {
-		sassy_error(" Error converting input%s\n", __FUNCTION__);
+		sassy_error(" Error converting input%s\n", __func__);
 		return err;
 	}
 
@@ -91,10 +91,10 @@ void init_sassy_fdus_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd", sdev->ifindex);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/fd", sdev->ifindex);
 	proc_mkdir(name_buf, NULL);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd/register_proc",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/fd/register_proc",
 		 sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_fdus_reg_ops,
 			 sdev);
@@ -105,11 +105,11 @@ void clean_sassy_fdus_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd/register_proc",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/fd/register_proc",
 		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/fd", sdev->ifindex);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/fd", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 }
 EXPORT_SYMBOL(clean_sassy_fdus_interfaces);

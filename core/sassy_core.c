@@ -19,18 +19,18 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
-static struct sassy_core *score;
+static const struct sassy_core *score;
 
-static int device_counter = 0;
+static int device_counter;
 
-struct sassy_device *get_sdev(int devid) 
+const struct sassy_device *get_sdev(int devid)
 {
-	if (unlikely(devid < 0 || devid > MAX_NIC_DEVICES)){
+	if (unlikely(devid < 0 || devid > MAX_NIC_DEVICES)) {
 		sassy_error(" invalid sassy device id\n");
 		return NULL;
 	}
 
-	if(unlikely(!score)){
+	if (unlikely(!score)) {
 		sassy_error(" sassy core is not initialized\n");
 		return NULL;
 	}
@@ -40,7 +40,7 @@ struct sassy_device *get_sdev(int devid)
 EXPORT_SYMBOL(get_sdev);
 
 
-struct sassy_core *sassy_core(void)
+const struct sassy_core *sassy_core(void)
 {
 	return score;
 }
@@ -62,13 +62,13 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 
 void sassy_post_ts(int sassy_id, uint64_t cycles)
 {
-	struct sassy_device *sdev = get_sdev(sassy_id);
+	const struct sassy_device *sdev = get_sdev(sassy_id);
 
 	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
 		return;
 
-    if(sdev->ts_state == SASSY_TS_RUNNING)
-        sassy_write_timestamp(sdev, 1, cycles, sassy_id);
+	if (sdev->ts_state == SASSY_TS_RUNNING)
+		sassy_write_timestamp(sdev, 1, cycles, sassy_id);
 }
 EXPORT_SYMBOL(sassy_post_ts);
 
@@ -76,7 +76,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 {
 	u8 *payload_raw_ptr = (u8 *)payload;
 	u8 protocol_id = *payload_raw_ptr;
-	struct sassy_device *sdev = get_sdev(sassy_id);
+	const struct sassy_device *sdev = get_sdev(sassy_id);
 	struct sassy_protocol *sproto = NULL;
 
 	if (unlikely(!sdev)) {
@@ -84,20 +84,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		return;
 	}
 
-	// optimize for enabled case        
-	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED)) {
+	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
 		return;
-	}
-
-	// if (!remote_mac) {
-	// 	sassy_error("remote mac is NULL \n");
-	// 	return;
-	// }
-
-	// if (!payload) {
-	// 	sassy_error("payload is NULL \n");
-	// 	return;
-	// }
 
 	if (unlikely(protocol_id < 0 || protocol_id > MAX_PROTOCOLS)) {
 		sassy_error("Protocol ID is faulty %d\n", protocol_id);
@@ -111,27 +99,22 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		return;
 	}
 
-	// if (score->sdevices[sassy_id]->verbose == 1)
-	// 	print_hex_dump(KERN_DEBUG, "Packet: ", DUMP_PREFIX_NONE, 16, 1,
-	// 		       payload, SASSY_PAYLOAD_BYTES, 0);
-
-    if(sdev->ts_state == SASSY_TS_RUNNING)
-        sassy_write_timestamp(sdev, 2, rdtsc(), sassy_id);
+    if (sdev->ts_state == SASSY_TS_RUNNING)
+		sassy_write_timestamp(sdev, 2, rdtsc(), sassy_id);
 
 	sproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
 
-    if(sdev->ts_state == SASSY_TS_RUNNING)
-        sassy_write_timestamp(sdev, 3, rdtsc(), sassy_id);
+	if (sdev->ts_state == SASSY_TS_RUNNING)
+		sassy_write_timestamp(sdev, 3, rdtsc(), sassy_id);
 }
-
 EXPORT_SYMBOL(sassy_post_payload);
 
 void sassy_reset_remote_host_counter(int sassy_id)
 {
 	int i;
-	struct sassy_rx_table *rxt;
-	struct sassy_device *sdev = get_sdev(sassy_id);
-	struct sassy_pm_target_info *pmtarget;
+	const struct sassy_rx_table *rxt;
+	const struct sassy_device *sdev = get_sdev(sassy_id);
+	const struct sassy_pm_target_info *pmtarget;
 
 	rxt = score->rx_tables[sassy_id];
 
@@ -168,7 +151,7 @@ int sassy_generate_next_id(void)
 
 int sassy_core_write_packet(int sassy_id, int remote_id)
 {
-	sassy_dbg("Not implemented: %s\n", __FUNCTION__);
+	sassy_dbg("Not implemented: %s\n", __func__);
 	return 0;
 }
 
@@ -187,20 +170,22 @@ int sassy_core_register_nic(int ifindex)
 		return -1;
 
 	score->rx_tables[sassy_id] =
-		kmalloc(sizeof(struct sassy_rx_table), GFP_KERNEL);
+		kmalloc(sizeof(const struct sassy_rx_table), GFP_KERNEL);
 	score->rx_tables[sassy_id]->rhost_buffers =
 		kmalloc_array(MAX_REMOTE_SOURCES,
-			      sizeof(struct sassy_rx_buffer *), GFP_KERNEL);
+			      sizeof(const struct sassy_rx_buffer *),
+						GFP_KERNEL);
 
 	/* Allocate each rhost ring buffer*/
 
 	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
 		score->rx_tables[sassy_id]->rhost_buffers[i] =
-			kmalloc(sizeof(struct sassy_rx_buffer), GFP_KERNEL);
+			kmalloc(sizeof(const struct sassy_rx_buffer),
+				GFP_KERNEL);
 	}
 
 	score->sdevices[sassy_id] =
-		kmalloc(sizeof(struct sassy_device), GFP_KERNEL);
+		kmalloc(sizeof(const struct sassy_device), GFP_KERNEL);
 	score->sdevices[sassy_id]->ifindex = ifindex;
 	score->sdevices[sassy_id]->sassy_id = sassy_id;
 	score->sdevices[sassy_id]->ndev = sassy_get_netdevice(ifindex);
@@ -209,13 +194,13 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->verbose = 0;
 	score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d", ifindex);
-    proc_mkdir(name_buf, NULL);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d", ifindex);
+	proc_mkdir(name_buf, NULL);
 
 
     /* Initialize Timestamping Interfaces for NIC */
-    init_sassy_ts_ctrl_interfaces(score->sdevices[sassy_id]);
-    init_timestamping(score->sdevices[sassy_id]);
+	init_sassy_ts_ctrl_interfaces(score->sdevices[sassy_id]);
+	init_timestamping(score->sdevices[sassy_id]);
 
 
 	/* Initialize Control Interfaces for NIC */
@@ -236,9 +221,8 @@ int sassy_core_remove_nic(int sassy_id)
 	int i;
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	if (sassy_validate_sassy_device(sassy_id)) {
+	if (sassy_validate_sassy_device(sassy_id))
 		return -1;
-	}
 
 	/* Remove Ctrl Interfaces for NIC */
 	clean_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
@@ -246,15 +230,14 @@ int sassy_core_remove_nic(int sassy_id)
 
 	remove_proto_selector(score->sdevices[sassy_id]);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d",
 		 score->sdevices[sassy_id]->ifindex);
 	proc_mkdir(name_buf, NULL);
 
 	/* Free Memory used for this NIC */
-
-	for (i = 0; i < MAX_PROCESSES_PER_HOST; i++) {
+	for (i = 0; i < MAX_PROCESSES_PER_HOST; i++)
 		kfree(score->rx_tables[sassy_id]->rhost_buffers[i]);
-	}
+
 	kfree(score->rx_tables[sassy_id]);
 	kfree(score->sdevices[sassy_id]);
 }
@@ -285,9 +268,9 @@ EXPORT_SYMBOL(sassy_validate_sassy_device);
 int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac,
 				    int protocol_id)
 {
-	struct sassy_rx_table *rxt;
-	struct sassy_device *sdev = get_sdev(sassy_id);
-	struct sassy_pm_target_info *pmtarget;
+	const struct sassy_rx_table *rxt;
+	const struct sassy_device *sdev = get_sdev(sassy_id);
+	const struct sassy_pm_target_info *pmtarget;
 	int ifindex;
 	struct sassy_protocol *sproto;
 
@@ -312,15 +295,15 @@ int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac,
 	}
 
 	if (sdev->pminfo.num_of_targets >= MAX_REMOTE_SOURCES) {
-		sassy_error("Reached Limit of remote hosts. \n");
-		sassy_error("Limit is=%d \n", MAX_REMOTE_SOURCES);
+		sassy_error("Reached Limit of remote hosts.\n");
+		sassy_error("Limit is=%d\n", MAX_REMOTE_SOURCES);
 		return -1;
 	}
 
 	rxt = score->rx_tables[sassy_id];
 
 	if (!rxt) {
-		sassy_error("rxt is NULL \n");
+		sassy_error("rxt is NULL\n");
 		return -1;
 	}
 

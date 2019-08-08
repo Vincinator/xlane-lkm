@@ -31,8 +31,8 @@ static ssize_t proto_selector_write(struct file *file,
 {
 	int err;
 	char kernel_buffer[count + 1];
-	struct sassy_device *sdev =
-		(struct sassy_device *)PDE_DATA(file_inode(file));
+	const struct sassy_device *sdev =
+		(const struct sassy_device *)PDE_DATA(file_inode(file));
 	struct sassy_protocol *sproto = NULL;
 	long new_protocol = -1;
 
@@ -47,7 +47,7 @@ static ssize_t proto_selector_write(struct file *file,
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		sassy_error("Copy from user failed%s\n", __func__);
 		return err;
 	}
 
@@ -56,28 +56,28 @@ static ssize_t proto_selector_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_protocol);
 
 	if (err) {
-		sassy_error(" Error converting input%s\n", __FUNCTION__);
+		sassy_error(" Error converting input%s\n", __func__);
 		return err;
 	}
 
 	sproto = sassy_find_protocol_by_id((new_protocol & 0xFF));
-	
-	if(!sproto){
+
+	if (!sproto) {
 		sassy_error("Could not find protocol\n");
 		return count;
 	}
 
-	if(sproto == sdev->proto){
+	if (sproto == sdev->proto) {
 		sassy_error("Protocol already enabled.\n");
 		return count;
 	}
-	
-	if(sdev->pminfo.state == SASSY_PM_EMITTING){
+
+	if (sdev->pminfo.state == SASSY_PM_EMITTING) {
 		sassy_error("Stop pacemaker first!\n");
 		return count;
 	}
 
-	if(sdev->proto){
+	if (sdev->proto) {
 		sassy_dbg("Cleaning up Old Protocol\n");
 		sdev->proto->ctrl_ops.clean(sdev);
 	}
@@ -91,14 +91,15 @@ static ssize_t proto_selector_write(struct file *file,
 
 static int proto_selector_show(struct seq_file *m, void *v)
 {
-	struct sassy_device *sdev = (struct sassy_device *)m->private;
+	const struct sassy_device *sdev =
+		(const struct sassy_device *)m->private;
 
 	if (!sdev) {
-		sassy_error(" sdev is NULL %s!\n", __FUNCTION__);
+		sassy_error(" sdev is NULL %s!\n", __func__);
 		return -EINVAL;
 	}
 	if (!sdev->proto) {
-		seq_printf(m, "sdev does not use a protocol yet\n");
+		seq_puts(m, "sdev does not use a protocol yet\n");
 		return -1;
 	}
 
@@ -128,8 +129,10 @@ void init_proto_selector(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/protocol", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &proto_selector_ops,
+	snprintf(name_buf, sizeof(name_buf),
+		"sassy/%d/protocol", sdev->ifindex);
+
+	proc_create_data(name_buf, 0707, NULL, &proto_selector_ops,
 			 sdev);
 
 	sassy_dbg(" added proto selector\n");
@@ -139,6 +142,8 @@ void remove_proto_selector(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/protocol", sdev->ifindex);
+	snprintf(name_buf, sizeof(name_buf),
+			"sassy/%d/protocol", sdev->ifindex);
+
 	remove_proc_entry(name_buf, NULL);
 }

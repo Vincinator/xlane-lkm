@@ -19,11 +19,11 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 {
 	int err;
 	char kernel_buffer[count + 1];
-	struct sassy_pacemaker_info *spminfo =
-		(struct sassy_pacemaker_info *)PDE_DATA(file_inode(file));
+	const struct sassy_pacemaker_info *spminfo =
+		(const struct sassy_pacemaker_info *)PDE_DATA(file_inode(file));
 	long new_hb_state = -1;
-	struct task_struct *heartbeat_task;
-	struct cpumask mask;
+	const struct task_struct *heartbeat_task;
+	const struct cpumask mask;
 
 	if (!spminfo)
 		return -ENODEV;
@@ -36,7 +36,7 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 	err = copy_from_user(kernel_buffer, buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		sassy_error("Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
@@ -45,7 +45,7 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_hb_state);
 
 	if (err) {
-		sassy_error(" Error converting input%s\n", __FUNCTION__);
+		sassy_error(" Error converting input%s\n", __func_);
 		goto error;
 	}
 
@@ -57,26 +57,28 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 	case 1:
 		sassy_dbg(" Start PM as hrtimer event\n");
 
-		if (spminfo->active_cpu > MAX_CPU_NUMBER || spminfo->active_cpu < 0) {
+		if (spminfo->active_cpu > MAX_CPU_NUMBER ||
+							spminfo->active_cpu < 0) {
 			sassy_error(" Invalid CPU Number.\n");
 			err = -EINVAL;
 			break;
 		}
 
 		cpumask_clear(&mask);
-		
+
 		heartbeat_task =
-			kthread_create(&sassy_pm_start_timer, spminfo, "sassy start heart thread");
-		
+			kthread_create(&sassy_pm_start_timer, spminfo,
+				"sassy start heart thread");
+
 		kthread_bind(heartbeat_task, spminfo->active_cpu);
 
 		if (IS_ERR(heartbeat_task)) {
-			sassy_error(" Task Error. %s\n", __FUNCTION__);
+			sassy_error(" Task Error. %s\n", __func__);
 			err = -EINVAL;
 			break;
 		}
 
-		sassy_dbg(" Start Thread now: %s\n", __FUNCTION__);
+		sassy_dbg(" Start Thread now: %s\n", __func__);
 		wake_up_process(heartbeat_task);
 
 		//sassy_pm_start(spminfo);
@@ -95,17 +97,17 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 		break;
 	}
 
-	sassy_dbg(" Heartbeat state changed successfully.%s\n", __FUNCTION__);
+	sassy_dbg("Heartbeat state changed successfully.%s\n", __func__);
 	return count;
 error:
-	sassy_error(" Heartbeat control failed.%s\n", __FUNCTION__);
+	sassy_error("Heartbeat control failed.%s\n", __func__);
 	return err;
 }
 
 static int sassy_hb_ctrl_proc_show(struct seq_file *m, void *v)
 {
-	struct sassy_pacemaker_info *spminfo =
-		(struct sassy_pacemaker_info *)m->private;
+	const struct sassy_pacemaker_info *spminfo =
+		(const struct sassy_pacemaker_info *)m->private;
 
 	if (!spminfo)
 		return -ENODEV;
@@ -133,8 +135,8 @@ static ssize_t sassy_cpumgmt_write(struct file *file,
 	int err;
 	char kernel_buffer[SASSY_NUMBUF];
 	int tocpu = -1;
-	struct sassy_pacemaker_info *spminfo =
-		(struct sassy_pacemaker_info *)PDE_DATA(file_inode(file));
+	const struct sassy_pacemaker_info *spminfo =
+		(const struct sassy_pacemaker_info *)PDE_DATA(file_inode(file));
 	size_t size;
 
 	if (!spminfo)
@@ -142,12 +144,12 @@ static ssize_t sassy_cpumgmt_write(struct file *file,
 
 	size = min(sizeof(kernel_buffer) - 1, count);
 
-	sassy_dbg(" Write init count=%lu %s\n", count, __FUNCTION__);
+	sassy_dbg("Write init count=%lu %s\n", count, __func__);
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		sassy_error(" Copy from user failed%s\n", __FUNCTION__);
+		sassy_error(" Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
@@ -155,7 +157,7 @@ static ssize_t sassy_cpumgmt_write(struct file *file,
 	err = kstrtoint(kernel_buffer, 10, &tocpu);
 	if (err) {
 		sassy_error(
-			" Error converting input buffer: %s, tocpu: 0x%x \n",
+			"Error converting input buffer: %s, tocpu: 0x%x\n",
 			kernel_buffer, tocpu);
 		goto error;
 	}
@@ -168,7 +170,7 @@ static ssize_t sassy_cpumgmt_write(struct file *file,
 
 	return count;
 error:
-	sassy_error(" Could not set cpu.%s\n", __FUNCTION__);
+	sassy_error("Could not set cpu.%s\n", __func__);
 	return err;
 }
 
@@ -215,7 +217,7 @@ static ssize_t sassy_payload_write(struct file *file,
 
 	ret = copy_from_user(kernel_buffer, user_buffer, count);
 	if (ret) {
-		sassy_error(" Copy from user failed%s\n", __FUNCTION__);
+		sassy_error(" Copy from user failed%s\n", __func__);
 		goto out;
 	}
 
@@ -230,7 +232,7 @@ static ssize_t sassy_payload_write(struct file *file,
 
 		if (i >= MAX_REMOTE_SOURCES) {
 			sassy_error(
-				" exceeded max of remote targets %d >= %d \n",
+				" exceeded max of remote targets %d >= %d\n",
 				i, MAX_REMOTE_SOURCES);
 			break;
 		}
@@ -270,7 +272,7 @@ static int sassy_payload_show(struct seq_file *m, void *v)
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 		sassy_hex_to_ip(current_ip,
 				spminfo->pm_targets[i].pkt_data.dst_ip);
-		seq_printf(m, "%s: \n", current_ip);
+		seq_printf(m, "%s:\n", current_ip);
 		seq_hex_dump(m, "	", DUMP_PREFIX_OFFSET, 32, 1,
 			     spminfo->pm_targets[i].pkt_data.pkt_payload,
 			     SASSY_PAYLOAD_BYTES, false);
@@ -322,14 +324,14 @@ static ssize_t sassy_target_write(struct file *file,
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		sassy_error(" Copy from user failed%s\n", __FUNCTION__);
+		sassy_error(" Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
 	kernel_buffer[size] = '\0';
 	if (spminfo->num_of_targets < 0 ||
 	    spminfo->num_of_targets > SASSY_TARGETS_BUF) {
-		sassy_error(" num_of_targets is invalid! \n");
+		sassy_error(" num_of_targets is invalid!\n");
 		return -EINVAL;
 	}
 	
@@ -348,7 +350,7 @@ static ssize_t sassy_target_write(struct file *file,
 			current_ip = sassy_ip_convert(input_str);
 			if (current_ip == -EINVAL) {
 				sassy_error(" Error formating IP address. %s\n",
-					    __FUNCTION__);
+					    __func__);
 				return -EINVAL;
 			}
 			sassy_dbg(" ip: %s\n", input_str);
@@ -388,7 +390,7 @@ static ssize_t sassy_target_write(struct file *file,
 
 	return count;
 error:
-	sassy_error(" Error during parsing of input.%s\n", __FUNCTION__);
+	sassy_error(" Error during parsing of input.%s\n", __func__);
 	return err;
 }
 
@@ -444,7 +446,7 @@ static ssize_t sassy_test_ctrl_write(struct file *file,
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		sassy_error("Copy from user failed%s\n", __func__);
 		return err;
 	}
 
@@ -453,7 +455,7 @@ static ssize_t sassy_test_ctrl_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_active_processes);
 
 	if (err) {
-		sassy_error(" Error converting input%s\n", __FUNCTION__);
+		sassy_error(" Error converting input%s\n", __func__);
 		return err;
 	}
 
@@ -534,26 +536,26 @@ void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 	char name_buf[MAX_SASSY_PROC_NAME];
 
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker",
 		 sdev->ifindex);
 	proc_mkdir(name_buf, NULL);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/payload",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/payload",
 		 sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_payload_ops,
 			 &sdev->pminfo);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/ctrl",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/ctrl",
 		 sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_hb_ctrl_ops,
 			 &sdev->pminfo);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/targets",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/targets",
 		 sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_target_ops,
 			 &sdev->pminfo);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/cpu",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/cpu",
 		 sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_cpumgmt_ops,
 			 &sdev->pminfo);
@@ -567,23 +569,23 @@ void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/payload",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/payload",
 		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/cpu",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/cpu",
 		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/ctrl",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/ctrl",
 		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker/targets",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/targets",
 		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof name_buf, "sassy/%d/pacemaker",
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker",
 		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 }

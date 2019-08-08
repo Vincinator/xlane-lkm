@@ -43,7 +43,7 @@ char *sassy_alloc_mmap_buffer(void)
 {
 	char *page = (char *)get_zeroed_page(GFP_KERNEL);
 
-	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
+	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
 	if (!page)
 		goto error;
@@ -52,13 +52,13 @@ char *sassy_alloc_mmap_buffer(void)
 
 	return page;
 error:
-	sassy_error("[SASSY] Failed in %s\n", __FUNCTION__);
+	sassy_error("[SASSY] Failed in %s\n", __func__);
 	return page;
 }
 
 void sassy_free_mmap_buffer(void *page)
 {
-	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
+	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
 	ClearPageReserved(virt_to_page(page));
 	free_page((unsigned long)page);
@@ -66,9 +66,9 @@ void sassy_free_mmap_buffer(void *page)
 
 int sassy_bypass_open(struct inode *inode, struct file *filp)
 {
-	struct sassy_fd_priv *sdev = inode_sassy_fd_priv(inode);
+	const struct sassy_fd_priv *sdev = inode_sassy_fd_priv(inode);
 
-	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
+	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
 	filp->private_data = sdev;
 
@@ -77,17 +77,17 @@ int sassy_bypass_open(struct inode *inode, struct file *filp)
 
 int sassy_bypass_release(struct inode *inode, struct file *filp)
 {
-	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
+	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 	return 0;
 }
 
 ssize_t sassy_bypass_read(struct file *filp, char *buf, size_t count,
 			  loff_t *f_pos)
 {
-	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
+	const struct sassy_fd_priv *priv = (const struct sassy_fd_priv *)filp->private_data;
 	ssize_t ret = 0;
 
-	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
+	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
 	BUG_ON(priv == NULL);
 
@@ -122,10 +122,10 @@ out:
 ssize_t sassy_bypass_write(struct file *filp, const char *buf, size_t count,
 			   loff_t *f_pos)
 {
-	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
+	const struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
 	ssize_t ret = 0;
 
-	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
+	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
 	if (mutex_lock_killable(&priv->tx_mutex))
 		return -EINTR;
@@ -168,11 +168,11 @@ void bypass_vma_close(struct vm_area_struct *vma)
 vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 {
 	struct page *page;
-	struct sassy_fd_priv *priv;
+	const struct sassy_fd_priv *priv;
 
-	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
+	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
-	priv = (struct sassy_fd_priv *)vmf->vma->vm_private_data;
+	priv = (const struct sassy_fd_priv *)vmf->vma->vm_private_data;
 	if (priv->tx_buf) {
 		page = virt_to_page(priv->tx_buf);
 		get_page(page);
@@ -189,10 +189,10 @@ static struct vm_operations_struct bypass_vm_ops = {
 
 static int sassy_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 {
-	struct sassy_fd_priv *priv = filp->private_data;
+	const struct sassy_fd_priv *priv = filp->private_data;
 	int ret;
 
-	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
+	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
 	if (!priv) {
 		sassy_error(
@@ -232,10 +232,10 @@ int sassy_setup_chardev(struct sassy_device *sdev)
 	dev_t devno;
 
 	struct sassy_protocol *proto = sdev->proto;
-	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)proto->priv;
+	const struct sassy_fd_priv *priv = (struct sassy_fd_priv *)proto->priv;
 
 	BUG_ON(sdev == NULL || sassy_bypass_class == NULL);
-	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
+	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
 	devno = MKDEV(sassy_bypass_major, sdev->ifindex);
 
@@ -293,12 +293,12 @@ int sassy_bypass_init_class(void)
 	int err = 0;
 	dev_t dev = 0;
 
-	sassy_dbg("[SASSY] Enter: %s \n", __FUNCTION__);
+	sassy_dbg("[SASSY] Enter: %s\n", __func__);
 
 	err = alloc_chrdev_region(&dev, 0, SASSY_MAX_DEVICES, DEVNAME);
 	if (err < 0) {
 		sassy_error("[SASSY] alloc_chrdev_region() failed in %s\n",
-			    __FUNCTION__);
+			    __func__);
 		return err;
 	}
 
@@ -311,7 +311,7 @@ int sassy_bypass_init_class(void)
 
 	return 0;
 error:
-	sassy_error("[SASSY] Error in %s, cleaning up now \n", __FUNCTION__);
+	sassy_error("[SASSY] Error in %s, cleaning up now\n", __func__);
 	sassy_clean_class();
 	return err;
 }
