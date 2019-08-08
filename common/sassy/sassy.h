@@ -169,7 +169,7 @@ struct sassy_pacemaker_info {
 	/* Test Data */
 	struct sassy_pacemaker_test_data tdata;
 
-	static struct hrtimer pm_timer;
+	struct hrtimer pm_timer;
 
 };
 
