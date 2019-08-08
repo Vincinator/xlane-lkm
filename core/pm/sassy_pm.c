@@ -229,8 +229,9 @@ struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *spminfo,
 	return compose_heartbeat_skb(sdev->ndev, spminfo, host_number);
 }
 
-int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
+int sassy_pm_start(void *data)
 {
+	struct sassy_pacemaker_info *spminfo = (struct sassy_pacemaker_info *) data;
 	struct cpumask mask;
 	int active_cpu;
 	struct sassy_device *sdev;
