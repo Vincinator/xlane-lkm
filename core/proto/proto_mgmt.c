@@ -41,7 +41,7 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	const struct sassy_core *score = sassy_core();
+	struct sassy_core *score = sassy_core();
 
 	if (!proto) {
 		sassy_error("Protocol is NULL\n");
