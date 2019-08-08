@@ -247,7 +247,9 @@ const char *pm_state_string(sassy_pacemaker_state_t state);
 
 int sassy_pm_reset(struct sassy_pacemaker_info *spminfo);
 int sassy_pm_stop(struct sassy_pacemaker_info *spminfo);
-int sassy_pm_start(void *data);
+
+int sassy_pm_start_loop(void *data);
+int sassy_pm_start_timer(void *data);
 
 void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);
 void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);

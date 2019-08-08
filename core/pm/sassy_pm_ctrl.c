@@ -55,7 +55,7 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 		sassy_pm_stop(spminfo);
 		break;
 	case 1:
-		sassy_dbg(" Start Heartbeat thread\n");
+		sassy_dbg(" Start PM as hrtimer event\n");
 
 		if (spminfo->active_cpu > MAX_CPU_NUMBER || spminfo->active_cpu < 0) {
 			sassy_error(" Invalid CPU Number.\n");
@@ -81,7 +81,12 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 
 		//sassy_pm_start(spminfo);
 		break;
-	case 2:
+	case 3:
+		sassy_dbg(" Start PM as busy loop\n");
+
+		sassy_pm_start_loop(spminfo);
+
+	case 4:
 		sassy_dbg(" Reset Kernel Configuration\n");
 		sassy_pm_reset(spminfo);
 		break;
