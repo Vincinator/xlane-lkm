@@ -19,6 +19,8 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 	struct sassy_pacemaker_info *spminfo =
 		(struct sassy_pacemaker_info *)PDE_DATA(file_inode(file));
 	long new_hb_state = -1;
+	struct task_struct *heartbeat_task;
+	struct cpumask mask;
 
 	if (!spminfo)
 		return -ENODEV;
@@ -51,7 +53,30 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 		break;
 	case 1:
 		sassy_dbg(" Start Heartbeat thread\n");
-		sassy_pm_start(spminfo);
+		
+		if (spminfo->active_cpu > MAX_CPU_NUMBER || spminfo->active_cpu < 0) {
+			sassy_error(" Invalid CPU Number.\n");
+			err = -EINVAL;
+			break;
+		}
+
+		cpumask_clear(&mask);
+		
+		heartbeat_task =
+			kthread_create(&sassy_pm_start, spminfo, "sassy start heart thread");
+		
+		kthread_bind(heartbeat_task, spminfo->active_cpu);
+
+		if (IS_ERR(heartbeat_task)) {
+			sassy_error(" Task Error. %s\n", __FUNCTION__);
+			err = -EINVAL;
+			break;
+		}
+
+		sassy_dbg(" Start Thread now: %s\n", __FUNCTION__);
+		wake_up_process(heartbeat_task);
+
+		//sassy_pm_start(spminfo);
 		break;
 	case 2:
 		sassy_dbg(" Reset Kernel Configuration\n");

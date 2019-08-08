@@ -260,13 +260,7 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
 		return -EPERM;
 	}
 
-	if (spminfo->active_cpu > MAX_CPU_NUMBER || spminfo->active_cpu < 0) {
-		sassy_error(
-			" Invalid CPU Number. set via /proc/sassy/<devid>/active_cpu.\n");
-		return -EINVAL;
-	}
-
-	active_cpu = spminfo->active_cpu;
+	
 	sassy_dbg("num of hb targets: %d", spminfo->num_of_targets);
 
 
