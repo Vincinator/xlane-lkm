@@ -309,7 +309,7 @@ int sassy_pm_start_timer(void *data)
 	ktime_t interval;
 	int err;
 
-	err = _validate_pm(sdev, spminfo))
+	err = _validate_pm(sdev, spminfo);
 	
 	if(err)
 		return err;
@@ -333,7 +333,7 @@ int sassy_pm_start_loop(void *data)
 	ktime_t interval;
 	int err;
 
-	err = _validate_pm(sdev, spminfo))
+	err = _validate_pm(sdev, spminfo);
 	
 	if(err)
 		return err;
