@@ -28,8 +28,6 @@ struct task_struct *heartbeat_task;
 
 #define NSEC_PER_MSEC   1000000L
 
-static struct hrtimer hr_timer;
-
 
 static inline bool
 sassy_pacemaker_is_alive(struct sassy_pacemaker_info *spminfo)
@@ -114,12 +112,17 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 	memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
 }
 
-enum hrtimer_restart sassy_heart(struct hrtimer *timer_for_restart)
+enum hrtimer_restart sassy_heart(struct hrtimer *timer)
 {
 	uint64_t prev_time, cur_time;
 	unsigned long flags;
-	struct sassy_pacemaker_info *spminfo;
-	struct sassy_device *sdev = (struct sassy_device *)data;
+
+	struct sassy_pacemaker_info *spminfo = 
+					container_of(timer, struct sassy_pacemaker_info, pm_timer);
+
+	struct sassy_device *sdev =
+					container_of(spminfo, struct sassy_device, pminfo);	
+
     struct net_device *ndev = sdev->ndev;
 	void *pkt_payload;
 	int i;
@@ -130,7 +133,7 @@ enum hrtimer_restart sassy_heart(struct hrtimer *timer_for_restart)
 
   	currtime  = ktime_get();
   	interval = ktime_set(0, 100000); 
-  	hrtimer_forward(timer_for_restart, currtime , interval);
+  	hrtimer_forward(timer, currtime , interval);
 
 	sassy_dbg("Enter %s", __FUNCTION__);
 
@@ -266,9 +269,9 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
 
 	interval = ktime_set(0, 100000);
 
-	hrtimer_init( &hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	hr_timer.function = &sassy_heart;
- 	hrtimer_start( &hr_timer, interval, HRTIMER_MODE_REL);
+	hrtimer_init( &spminfo->pm_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+	spminfo->pm_timer.function = &sassy_heart;
+ 	hrtimer_start( &spminfo->pm_timer, interval, HRTIMER_MODE_REL);
 
 
 
@@ -292,7 +295,7 @@ int sassy_pm_start(struct sassy_pacemaker_info *spminfo)
 int sassy_pm_stop(struct sassy_pacemaker_info *spminfo)
 {
 	pm_state_transition_to(spminfo, SASSY_PM_READY);
- 	hrtimer_cancel(&hr_timer);
+ 	hrtimer_cancel(&spminfo->pm_timer);
 	return 0;
 }
 
