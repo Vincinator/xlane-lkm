@@ -16,8 +16,8 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][CON][MLX5]"
 
 /* Initialized in sassy_mlx5_con_init*/
-struct sassy_mlx5_con_info **infos;
-static int mlx5_devices = 0;
+static struct sassy_mlx5_con_info **infos;
+static int mlx5_devices;
 
 int sassy_mlx5_con_register_device(int ifindex)
 {

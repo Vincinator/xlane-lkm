@@ -136,7 +136,7 @@ void sassy_reset_remote_host_counter(int sassy_id)
 }
 EXPORT_SYMBOL(sassy_reset_remote_host_counter);
 
-int sassy_generate_next_id(void)
+static int sassy_generate_next_id(void)
 {
 	if (device_counter >= SASSY_MLX5_DEVICES_LIMIT) {
 		sassy_error(
