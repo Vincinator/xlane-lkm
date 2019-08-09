@@ -250,7 +250,7 @@ int sassy_pm_start_timer(void *data);
 void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);
 void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);
 
-void sassy_hex_to_ip(char *retval, int dst_ip);
+void sassy_hex_to_ip(char *retval, __be32 dst_ip);
 
 /*
  * Converts an IP address from dotted numbers string to hex.
@@ -279,7 +279,7 @@ int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts);
 int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
 			    u32 cqe_bcnt);
 
-int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac,
+int sassy_core_register_remote_host(int sassy_id, __be32 ip, char *mac,
 				    int protocol_id);
 
 int sassy_validate_sassy_device(int sassy_id);
