@@ -18,7 +18,7 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 					loff_t *data)
 {
 	int err;
-	char kernel_buffer[count + 1];
+	char kernel_buffer[MAX_PROCFS_BUF];
 	struct pminfo *spminfo =
 		(struct pminfo *)PDE_DATA(file_inode(file));
 	long new_hb_state = -1;
@@ -430,7 +430,7 @@ static ssize_t sassy_test_ctrl_write(struct file *file,
 				     size_t count, loff_t *data)
 {
 	int err;
-	char kernel_buffer[count + 1];
+	char kernel_buffer[MAX_PROCFS_BUF];
 	struct pminfo *spminfo =
 		(struct pminfo *)PDE_DATA(file_inode(file));
 	long new_active_processes = -1;
