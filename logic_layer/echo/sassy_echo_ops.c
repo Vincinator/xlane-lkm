@@ -70,3 +70,4 @@ static int echo_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 	sassy_dbg("echo post optimistical ts");
 	return 0;
 }
+

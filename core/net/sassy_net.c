@@ -195,7 +195,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 	struct sk_buff *hb_pkt = NULL;
 	struct sassy_packet_data *hparams;
 
-	uint32_t src_ip;
+	u32 src_ip;
 
 	if (!spminfo) {
 		sassy_error(" spminfo is invalid\n");

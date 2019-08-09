@@ -98,7 +98,7 @@ static ssize_t sassy_bypass_read(struct file *filp, char *buf, size_t count,
 	if (count > SASSY_MEMBLOCK_SIZE)
 		count = SASSY_MEMBLOCK_SIZE;
 
-	if (copy_to_user((void *)buf, &(priv->tx_buf[*f_pos]), count) != 0) {
+	if (copy_to_user((void __user *)buf, &(priv->tx_buf[*f_pos]), count) != 0) {
 		ret = -EFAULT;
 		goto out;
 	}
@@ -136,7 +136,7 @@ static ssize_t sassy_bypass_write(struct file *filp, const char *buf,
 	if (count > SASSY_MEMBLOCK_SIZE)
 		count = SASSY_MEMBLOCK_SIZE;
 
-	if (copy_from_user(&(priv->tx_buf[*f_pos]), (void *) buf, count) != 0) {
+	if (copy_from_user(&(priv->tx_buf[*f_pos]), (void  __user*) buf, count) != 0) {
 		ret = -EFAULT;
 		goto out;
 	}
