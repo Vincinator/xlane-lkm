@@ -73,7 +73,6 @@ int sassy_register_protocol(struct sassy_protocol *proto)
 
 	return 0;
 }
-
 EXPORT_SYMBOL(sassy_register_protocol);
 
 int sassy_remove_protocol(struct sassy_protocol *proto)

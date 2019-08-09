@@ -114,3 +114,4 @@ void clean_sassy_fdus_interfaces(struct sassy_device *sdev)
 	remove_proc_entry(name_buf, NULL);
 }
 EXPORT_SYMBOL(clean_sassy_fdus_interfaces);
+
