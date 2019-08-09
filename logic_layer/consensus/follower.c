@@ -17,7 +17,11 @@ static struct hrtimer ftimer;
 
 enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
-	sassy_dbg(" Follower Timeout occured!\n");
+	sassy_dbg("Follower Timeout occured!\n");
+
+	// TODO: Start Candidature now!
+
+	return HRTIMER_NORESTART;
 }
 
 int follower_process_pkt(struct sassy_device *sdev, void *pkt)
