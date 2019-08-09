@@ -28,15 +28,9 @@
  * Used for minor device number generation
  */
 #define SASSY_MAX_DEVICES 16
-static unsigned int sassy_bypass_major = 0;
-static struct class *sassy_bypass_class = NULL;
+static unsigned int sassy_bypass_major;
+static struct class *sassy_bypass_class;
 
-struct sassy_fd_priv *inode_sassy_fd_priv(struct inode *inode)
-{
-	struct cdev *cdev = inode->i_cdev;
-
-	return container_of(cdev, struct sassy_fd_priv, cdev_tx);
-}
 
 /* Allocates pages and sets the PG_reserved bit for each allocated page*/
 char *sassy_alloc_mmap_buffer(void)
@@ -66,7 +60,8 @@ static void sassy_free_mmap_buffer(void *page)
 
 static int sassy_bypass_open(struct inode *inode, struct file *filp)
 {
-	struct sassy_fd_priv *sdev = inode_sassy_fd_priv(inode);
+	struct sassy_fd_priv *sdev =
+		container_of(inode->i_cdev, struct sassy_fd_priv, cdev_tx);
 
 	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
 
