@@ -14,6 +14,7 @@
 #include <linux/err.h>
 
 #include "avail_protos_info_ops.h"
+#include "avail_protos_mgmt.h"
 
 static const struct file_operations sassy_proto_info_ops = {
 	.owner = THIS_MODULE,

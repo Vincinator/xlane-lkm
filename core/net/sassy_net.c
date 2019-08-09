@@ -199,7 +199,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 
 	if (!spminfo) {
 		sassy_error(" spminfo is invalid\n");
-		return;
+		return NULL;
 	}
 
 	hparams = &spminfo->pm_targets[host_number].pkt_data;
@@ -209,7 +209,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 	if (!hb_pkt) {
 		sassy_error("Could not create heartbeat packet (%s)\n",
 			    __FUNCTION__);
-		return;
+		return NULL;
 	}
 
 	src_ip = dev->ip_ptr->ifa_list->ifa_address;

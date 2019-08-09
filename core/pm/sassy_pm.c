@@ -191,7 +191,7 @@ static inline int _validate_pm(struct sassy_device *sdev,
 
 	return 0;
 }
-int sassy_pm_loop(void *data)
+static int sassy_pm_loop(void *data)
 {
 	uint64_t prev_time, cur_time;
 	unsigned long flags;
