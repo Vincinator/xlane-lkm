@@ -10,6 +10,7 @@
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
 
+#include "../include/sassy_fd_tx_procfs.h"
 
 static ssize_t sassy_fdus_reg_write(struct file *file,
 				    const char __user *user_buffer,
