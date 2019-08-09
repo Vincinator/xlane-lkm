@@ -10,10 +10,10 @@
 
 static u32 follower_timeout_ms;
 
-#define MIN_FOLLOWER_TIMEOUT_MS 150
-#define MAX_FOLLOWER_TIMEOUT_MS 300
+#define MIN_FTIMEOUT_NS 150000000
+#define MAX_FTIMEOUT_NS 300000000
 
-struct timer_list ftimer;
+static struct hrtimer ftimer;
 
 
 void _handle_follower_timeout(unsigned long data)
@@ -21,56 +21,61 @@ void _handle_follower_timeout(unsigned long data)
 	sassy_dbg(" Follower Timeout occured!\n");
 }
 
-int follower_process_pkt(struct sassy_device *sdev, void* pkt)
+int follower_process_pkt(struct sassy_device *sdev, void *pkt)
 {
 
 	// Check if pkt is from leader
-	reset_timeout(0);
-
+	reset_timeout();
+	sassy_dbg("Timeout reset!\n");
 	return 0;
 }
 
-
-/*
- * Resets the current ftimer to start (again) with a new random timeout in 
- * the intervall of [MIN_FOLLOWER_TIMEOUT_MS, MAX_FOLLOWER_TIMEOUT_MS]
- */
-int reset_timeout(int sassy_id)
+void init_timeout(void)
 {
-	follower_timeout_ms = MIN_FOLLOWER_TIMEOUT_MS + 
-						prandom_u32_max(MAX_FOLLOWER_TIMEOUT_MS -
-				   				   		MIN_FOLLOWER_TIMEOUT_MS);
+	int ftime_ns;
+	ktime_t timeout;
 
-    sassy_dbg(" set follower timeout to %d", follower_timeout_ms);
+	timeout = get_rnd_timeout();
 
-    mod_timer(&ftimer, jiffies + msecs_to_jiffies(follower_timeout_ms));
+	hrtimer_init(&ftimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
+
+	ftimer.function = &_handle_follower_timeout;
+
+	hrtimer_start(&ftimer, timeout, HRTIMER_MODE_REL_PINNED);
+}
+
+ktime_t get_rnd_timeout(void)
+{
+	return ktime_set(0, MIN_FTIMEOUT_NS +
+			prandom_u32_max(MAX_FTIMEOUT_NS - MIN_FTIMEOUT_NS));
+}
 
 
-	return 0;
+void reset_timeout(void)
+{
+	ktime_t now;
+	ktime_t timeout;
+
+	now = ktime_get();
+	timeout = get_rnd_timeout();
+
+	hrtimer_forward(&ftimer, now, timeout);
+
+	sassy_dbg("set follower timeout to %dns\n", timeout);
 }
 
 int stop_follower(int sassy_id)
 {
-	del_timer(&ftimer);
-
-	sassy_dbg(" node stopped beeing a follower\n");
+	hrtimer_try_to_cancel(&ftimer);
 	return 0;
 }
 
-
-/*
- * ftimer gets initialized and is valid as long as this node is a follower
- */
 int start_follower(int sassy_id)
 {
 	int err;
 
-	setup_timer(&ftimer, _handle_follower_timeout, 0);
+	init_timeout();
 
-	err = reset_timeout(sassy_id);		
-
-	if (err)
-		goto error;
 
 	sassy_dbg(" node become a follower\n");
 
