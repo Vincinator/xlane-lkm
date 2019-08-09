@@ -56,7 +56,7 @@ error:
 	return page;
 }
 
-void sassy_free_mmap_buffer(void *page)
+static void sassy_free_mmap_buffer(void *page)
 {
 	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
 
@@ -64,7 +64,7 @@ void sassy_free_mmap_buffer(void *page)
 	free_page((unsigned long)page);
 }
 
-int sassy_bypass_open(struct inode *inode, struct file *filp)
+static int sassy_bypass_open(struct inode *inode, struct file *filp)
 {
 	struct sassy_fd_priv *sdev = inode_sassy_fd_priv(inode);
 
@@ -75,13 +75,13 @@ int sassy_bypass_open(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-int sassy_bypass_release(struct inode *inode, struct file *filp)
+static int sassy_bypass_release(struct inode *inode, struct file *filp)
 {
 	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
 	return 0;
 }
 
-ssize_t sassy_bypass_read(struct file *filp, char *buf, size_t count,
+static ssize_t sassy_bypass_read(struct file *filp, char *buf, size_t count,
 			  loff_t *f_pos)
 {
 	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
@@ -154,18 +154,18 @@ out:
 	return ret;
 }
 
-void bypass_vma_open(struct vm_area_struct *vma)
+static void bypass_vma_open(struct vm_area_struct *vma)
 {
 	sassy_dbg("[SASSY] Bypass VMA open, virt %lx, phys %lx\n",
 		  vma->vm_start, vma->vm_pgoff << PAGE_SHIFT);
 }
 
-void bypass_vma_close(struct vm_area_struct *vma)
+static void bypass_vma_close(struct vm_area_struct *vma)
 {
 	sassy_dbg("[SASSY] Simple VMA close.\n");
 }
 
-vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
+static vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 {
 	struct page *page;
 	struct sassy_fd_priv *priv;
