@@ -32,7 +32,7 @@ int node_transition(struct sassy_device *sdev, enum node_state state)
 	case LEADER:
 		err = start_leader();
 		break;
-	case default:
+	default:
 		sassy_error("Unknown node state %d\n - abort", state);
 		err = -EINVAL;
 	}

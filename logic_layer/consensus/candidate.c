@@ -11,7 +11,7 @@ int candidate_process_pkt(struct sassy_device *sdev, void* pkt)
 }
 
 
-int start_candidate(int sassy_id)
+int start_candidate(void)
 {
 
 	return 0;
