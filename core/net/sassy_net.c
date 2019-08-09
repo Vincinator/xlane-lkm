@@ -212,7 +212,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 		return NULL;
 	}
 
-	src_ip = le32_to_cpu(dev->ip_ptr->ifa_list->ifa_address);
+	src_ip = be32_to_cpu(dev->ip_ptr->ifa_list->ifa_address);
 
 	if (!src_ip) {
 		sassy_error("No source IP for netdevice condfigured");
