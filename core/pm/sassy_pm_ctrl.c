@@ -304,7 +304,7 @@ static ssize_t sassy_target_write(struct file *file,
 	static const char delimiters[] = " ,;()";
 	int i = 0;
 	int state = 0; /* first element of tuple is ip address, second is mac */
-	int current_ip;
+	u32 current_ip;
 	unsigned char *current_mac;
 	int current_protocol;
 
@@ -375,7 +375,7 @@ static ssize_t sassy_target_write(struct file *file,
 			sassy_dbg("protocol: %d\n", current_protocol);
 
 			sassy_core_register_remote_host(sdev->sassy_id,
-							htonl(current_ip), current_mac,
+							current_ip, current_mac,
 							current_protocol);
 
 			i++;

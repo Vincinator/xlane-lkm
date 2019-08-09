@@ -52,7 +52,7 @@ EXPORT_SYMBOL(sassy_get_netdevice);
 /*
  * Converts an IP address from dotted numbers string to hex.
  */
-int sassy_ip_convert(const char *str)
+u32 sassy_ip_convert(const char *str)
 {
 	unsigned int byte0;
 	unsigned int byte1;
@@ -129,7 +129,7 @@ inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
 	memcpy(eth->h_dest, dst_mac, ETH_ALEN);
 }
 
-inline void add_L3_header(struct sk_buff *skb, __be32 *src_ip, __be32 dst_ip)
+inline void add_L3_header(struct sk_buff *skb, u32 src_ip, u32 dst_ip)
 {
 	struct iphdr *ipv4 = NULL;
 
@@ -150,8 +150,8 @@ inline void add_L3_header(struct sk_buff *skb, __be32 *src_ip, __be32 dst_ip)
 	ipv4->ttl = 0x40;
 	ipv4->frag_off = 0;
 	ipv4->protocol = IPPROTO_UDP;
-	ipv4->saddr = *src_ip;
-	ipv4->daddr = dst_ip;
+	ipv4->saddr = htonl(src_ip);
+	ipv4->daddr = htonl(dst_ip);
 	ipv4->tot_len =
 		htons((u16)(SASSY_PAYLOAD_BYTES + IP_LENGTH + UDP_LENGTH));
 	ipv4->check = 0;
@@ -197,7 +197,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 	struct sk_buff *hb_pkt = NULL;
 	struct sassy_packet_data *hparams;
 
-	__be32 *src_ip;
+	u32 local_ipaddr;
 
 	if (!spminfo) {
 		sassy_error(" spminfo is invalid\n");
@@ -213,7 +213,8 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 			    __FUNCTION__);
 		return NULL;
 	}
-	src_ip = &dev->ip_ptr->ifa_list->ifa_address;
+
+	local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
 
 	if (!src_ip) {
 		sassy_error("No source IP for netdevice condfigured");
@@ -221,7 +222,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 	}
 
 	add_L2_header(hb_pkt, dev->dev_addr, hparams->dst_mac);
-	add_L3_header(hb_pkt, src_ip,
+	add_L3_header(hb_pkt, local_ipaddr,
 					hparams->dst_ip);
 	add_L4_header(hb_pkt);
 	add_payload(hb_pkt, hparams->pkt_payload[hparams->hb_active_ix]);

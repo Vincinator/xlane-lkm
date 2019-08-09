@@ -104,7 +104,7 @@ struct sassy_process_info {
 };
 
 struct sassy_packet_data {
-	__be32 dst_ip;
+	u32 dst_ip;
 	unsigned char dst_mac[6];
 
 	u8 protocol_id;
@@ -255,7 +255,7 @@ void sassy_hex_to_ip(char *retval, __be32 dst_ip);
 /*
  * Converts an IP address from dotted numbers string to hex.
  */
-int sassy_ip_convert(const char *str);
+u32 sassy_ip_convert(const char *str);
 
 /*
  * Converts an MAC address to hex char array
@@ -279,7 +279,7 @@ int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts);
 int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
 			    u32 cqe_bcnt);
 
-int sassy_core_register_remote_host(int sassy_id, __be32 ip, char *mac,
+int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 				    int protocol_id);
 
 int sassy_validate_sassy_device(int sassy_id);
