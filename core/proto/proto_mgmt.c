@@ -20,14 +20,16 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
-LIST_HEAD(available_protocols_l);
+static LIST_HEAD(available_protocols_l);
+
 
 struct sassy_protocol *sassy_find_protocol_by_id(u8 protocol_id)
 {
 	struct sassy_protocol *sproto, *tmp_proto;
 	sproto = NULL;
 
-	list_for_each_entry (tmp_proto, &available_protocols_l, listh) {
+
+	list_for_each_entry(tmp_proto, &available_protocols_l, listh) {
 		if (tmp_proto->proto_type == protocol_id) {
 			sproto = tmp_proto;
 			break;

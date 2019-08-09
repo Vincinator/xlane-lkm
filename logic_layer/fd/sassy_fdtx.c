@@ -76,7 +76,7 @@ static int sassy_bypass_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-ssize_t sassy_bypass_read(struct file *filp, char *buf, size_t count,
+static ssize_t sassy_bypass_read(struct file *filp, char *buf, size_t count,
 			  loff_t *f_pos)
 {
 	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
@@ -114,7 +114,7 @@ out:
 	return ret;
 }
 
-ssize_t sassy_bypass_write(struct file *filp, const char *buf,
+static ssize_t sassy_bypass_write(struct file *filp, const char *buf,
 				size_t count, loff_t *f_pos)
 {
 	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
@@ -136,7 +136,7 @@ ssize_t sassy_bypass_write(struct file *filp, const char *buf,
 	if (count > SASSY_MEMBLOCK_SIZE)
 		count = SASSY_MEMBLOCK_SIZE;
 
-	if (copy_from_user(&(priv->tx_buf[*f_pos]), (void  __user*) buf, count) != 0) {
+	if (copy_from_user(&(priv->tx_buf[*f_pos]), (void  __user *) buf, count) != 0) {
 		ret = -EFAULT;
 		goto out;
 	}
