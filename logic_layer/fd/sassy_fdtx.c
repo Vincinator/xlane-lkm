@@ -119,13 +119,13 @@ out:
 	return ret;
 }
 
-ssize_t sassy_bypass_write(struct file *filp, const char *buf, size_t count,
-			   loff_t *f_pos)
+static ssize_t sassy_bypass_write(struct file *filp, const char *buf,
+				size_t count, loff_t *f_pos)
 {
 	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
 	ssize_t ret = 0;
 
-	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
+	sassy_dbg("Enter: %s\n", __FUNCTION__);
 
 	if (mutex_lock_killable(&priv->tx_mutex))
 		return -EINTR;
