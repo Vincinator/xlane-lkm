@@ -3,42 +3,43 @@
 
 #include "include/sassy_echo.h"
 
-int echo_init(struct sassy_device *sdev)
+static int echo_init(struct sassy_device *sdev)
 {
 	sassy_dbg("echo init");
 	return 0;
 }
 
-int echo_start(struct sassy_device *sdev)
+static int echo_start(struct sassy_device *sdev)
 {
 	sassy_dbg("echo start");
 	return 0;
 }
 
-int echo_stop(struct sassy_device *sdev)
+static int echo_stop(struct sassy_device *sdev)
 {
 	sassy_dbg("echo stop");
 	return 0;
 }
 
-int echo_us_update(struct sassy_device *sdev)
+static int echo_us_update(struct sassy_device *sdev)
 {
 	sassy_dbg("echo us update");
 	return 0;
 }
-int echo_clean(struct sassy_device *sdev)
+
+static int echo_clean(struct sassy_device *sdev)
 {
 	sassy_dbg("echo clean");
 	return 0;
 }
 
-int echo_info(struct sassy_device *sdev)
+static int echo_info(struct sassy_device *sdev)
 {
 	sassy_dbg("echo info");
 	return 0;
 }
 
-int echo_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
+static int echo_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		      void *payload)
 {
 	// .. Test only ..
@@ -51,7 +52,7 @@ int echo_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	return 0;
 }
 
-int echo_init_payload(void *payload)
+static int echo_init_payload(void *payload)
 {
 	struct echo_payload *fd_p = (struct echo_payload *)payload;
 
@@ -62,7 +63,7 @@ int echo_init_payload(void *payload)
 	return 0;
 }
 
-int echo_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
+static int echo_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 		 uint64_t ts)
 {
 	sassy_dbg("SRC MAC=%pM", remote_mac);
