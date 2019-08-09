@@ -2,6 +2,9 @@
 #include <sassy/sassy.h>
 
 #include "include/sassy_consensus.h"
+#include "include/leader.h"
+#include "include/follower.h"
+#include "include/candidate.h"
 
 
 char *node_state_name(enum node_state state)
@@ -16,9 +19,9 @@ char *node_state_name(enum node_state state)
 
 int node_transition(struct sassy_device *sdev, enum node_state state)
 {
-	const struct sassy_protocol *sproto = sdev->proto;
-	const struct consensus_priv *priv =
-		(const struct consensus_priv *)sproto->priv;
+	struct sassy_protocol *sproto = sdev->proto;
+	struct consensus_priv *priv =
+		(struct consensus_priv *)sproto->priv;
 	int err;
 
 	sassy_dbg("node transition from %s to %s\n",
