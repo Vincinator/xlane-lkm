@@ -1,6 +1,8 @@
 #include <sassy/logger.h>
 #include <sassy/sassy.h>
 
+
+#include "include/sassy_consensus.h"
 #include "include/sassy_consensus_ops.h"
 #include "include/candidate.h"
 #include "include/follower.h"
