@@ -250,7 +250,7 @@ int sassy_pm_start_timer(void *data);
 void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);
 void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);
 
-void sassy_hex_to_ip(char *retval, __be32 dst_ip);
+void sassy_hex_to_ip(char *retval, u32 dst_ip);
 
 /*
  * Converts an IP address from dotted numbers string to hex.
