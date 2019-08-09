@@ -149,12 +149,6 @@ static int sassy_generate_next_id(void)
 	return device_counter++;
 }
 
-int sassy_core_write_packet(int sassy_id, int remote_id)
-{
-	sassy_dbg("Not implemented: %s\n", __FUNCTION__);
-	return 0;
-}
-
 /* Called by Connection Layer Glue (e.g. mlx5_con.c) */
 int sassy_core_register_nic(int ifindex)
 {
@@ -216,7 +210,7 @@ int sassy_core_register_nic(int ifindex)
 }
 EXPORT_SYMBOL(sassy_core_register_nic);
 
-int sassy_core_remove_nic(int sassy_id)
+static int sassy_core_remove_nic(int sassy_id)
 {
 	int i;
 	char name_buf[MAX_SASSY_PROC_NAME];
@@ -388,9 +382,8 @@ static void __exit sassy_connection_core_exit(void)
 
 	sassy_dbg("cleanup\n");
 
-	for (i = 0; i < device_counter; i++) {
+	for (i = 0; i < device_counter; i++)
 		sassy_core_remove_nic(i);
-	}
 
 	// TODO: free all sassy core components!
 

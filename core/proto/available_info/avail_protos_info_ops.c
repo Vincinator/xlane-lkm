@@ -13,6 +13,8 @@
 
 #include <linux/err.h>
 
+#include "avail_protos_info_ops.h"
+
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 

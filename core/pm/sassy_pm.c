@@ -156,7 +156,8 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 	return 0;
 }
 
-static inline _validate_pm(struct sassy_device *sdev, struct pminfo *spminfo)
+static inline int _validate_pm(struct sassy_device *sdev,
+							struct pminfo *spminfo)
 {
 	if (!spminfo) {
 		sassy_error("No Device. %s\n", __FUNCTION__);
