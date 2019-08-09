@@ -216,7 +216,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 
 	local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
 
-	if (!src_ip) {
+	if (!local_ipaddr) {
 		sassy_error("No source IP for netdevice condfigured");
 		return NULL;
 	}
