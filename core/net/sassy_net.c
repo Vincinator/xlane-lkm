@@ -214,11 +214,6 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 
 	local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
 
-	if (!local_ipaddr) {
-		sassy_error("No source IP for netdevice condfigured");
-		return NULL;
-	}
-
 	add_L2_header(hb_pkt, dev->dev_addr, hparams->dst_mac);
 	add_L3_header(hb_pkt, local_ipaddr,
 					hparams->dst_ip);
