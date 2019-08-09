@@ -36,10 +36,10 @@ static int __init sassy_consensus_init(void)
 {
 	sassy_dbg("init consensus protocol\n");
 
-	fd_protocol.proto_type = SASSY_PROTO_CONSENSUS;
-	fd_protocol.ctrl_ops = consensus_ops;
-	fd_protocol.name = "consensus";
-	fd_protocol.priv = (void *)&consensus_priv;
+	consensus_protocol.proto_type = SASSY_PROTO_CONSENSUS;
+	consensus_protocol.ctrl_ops = consensus_ops;
+	consensus_protocol.name = "consensus";
+	consensus_protocol.priv = (void *)&consensus_priv;
 
 	sassy_register_protocol(&consensus_protocol);
 	return 0;
