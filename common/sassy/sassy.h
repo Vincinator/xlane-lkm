@@ -103,10 +103,6 @@ struct sassy_process_info {
 	u8 ps; /* Status of remote process */
 };
 
-
-
-
-
 struct sassy_packet_data {
 	__be32 dst_ip;
 	unsigned char dst_mac[6];

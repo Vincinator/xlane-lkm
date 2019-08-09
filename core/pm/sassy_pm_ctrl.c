@@ -375,7 +375,7 @@ static ssize_t sassy_target_write(struct file *file,
 			sassy_dbg("protocol: %d\n", current_protocol);
 
 			sassy_core_register_remote_host(sdev->sassy_id,
-							current_ip, current_mac,
+							htonl(current_ip), current_mac,
 							current_protocol);
 
 			i++;

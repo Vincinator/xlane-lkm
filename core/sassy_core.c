@@ -259,7 +259,7 @@ int sassy_validate_sassy_device(int sassy_id)
 }
 EXPORT_SYMBOL(sassy_validate_sassy_device);
 
-int sassy_core_register_remote_host(int sassy_id, uint32_t ip, char *mac,
+int sassy_core_register_remote_host(int sassy_id, __be32 ip, char *mac,
 				    int protocol_id)
 {
 	struct sassy_rx_table *rxt;
