@@ -64,13 +64,13 @@ void reset_timeout(void)
 	sassy_dbg("set follower timeout to %dns\n", timeout);
 }
 
-int stop_follower(int sassy_id)
+int stop_follower(void)
 {
 	hrtimer_try_to_cancel(&ftimer);
 	return 0;
 }
 
-int start_follower(int sassy_id)
+int start_follower(void)
 {
 	int err;
 
