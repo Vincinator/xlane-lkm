@@ -24,7 +24,7 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PACEMAKER]"
 
-struct task_struct *heartbeat_task;
+static struct task_struct *heartbeat_task;
 
 static inline bool
 sassy_pacemaker_is_alive(struct pminfo *spminfo)
@@ -80,7 +80,7 @@ static inline void sassy_setup_skbs(struct pminfo *spminfo)
 static inline void sassy_send_hb(struct net_device *ndev, struct sk_buff *skb)
 {
 	int ret;
-	const struct netdev_queue *txq;
+	struct netdev_queue *txq;
 
 	txq = skb_get_tx_queue(ndev, skb);
 	skb_get(skb); /* keep this. otherwise this thread locks the system */
