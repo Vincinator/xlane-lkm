@@ -15,8 +15,7 @@ static u32 follower_timeout_ms;
 
 static struct hrtimer ftimer;
 
-
-void _handle_follower_timeout(unsigned long data)
+enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
 	sassy_dbg(" Follower Timeout occured!\n");
 }
