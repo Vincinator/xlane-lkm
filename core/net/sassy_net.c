@@ -129,7 +129,7 @@ inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
 	memcpy(eth->h_dest, dst_mac, ETH_ALEN);
 }
 
-inline void add_L3_header(struct sk_buff *skb, __be32 src_ip, __be32 dst_ip)
+inline void add_L3_header(struct sk_buff *skb, __be32 *src_ip, __be32 dst_ip)
 {
 	struct iphdr *ipv4 = NULL;
 
@@ -150,7 +150,7 @@ inline void add_L3_header(struct sk_buff *skb, __be32 src_ip, __be32 dst_ip)
 	ipv4->ttl = 0x40;
 	ipv4->frag_off = 0;
 	ipv4->protocol = IPPROTO_UDP;
-	ipv4->saddr = src_ip;
+	ipv4->saddr = *src_ip;
 	ipv4->daddr = dst_ip;
 	ipv4->tot_len =
 		htons((u16)(SASSY_PAYLOAD_BYTES + IP_LENGTH + UDP_LENGTH));
@@ -197,6 +197,8 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 	struct sk_buff *hb_pkt = NULL;
 	struct sassy_packet_data *hparams;
 
+	__be32 *src_ip;
+
 	if (!spminfo) {
 		sassy_error(" spminfo is invalid\n");
 		return NULL;
@@ -211,14 +213,15 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 			    __FUNCTION__);
 		return NULL;
 	}
+	src_ip = &dev->ip_ptr->ifa_list->ifa_address;
 
-	if (!dev->ip_ptr->ifa_list->ifa_address) {
+	if (!src_ip) {
 		sassy_error("No source IP for netdevice condfigured");
 		return NULL;
 	}
 
 	add_L2_header(hb_pkt, dev->dev_addr, hparams->dst_mac);
-	add_L3_header(hb_pkt, dev->ip_ptr->ifa_list->ifa_address,
+	add_L3_header(hb_pkt, src_ip,
 					hparams->dst_ip);
 	add_L4_header(hb_pkt);
 	add_payload(hb_pkt, hparams->pkt_payload[hparams->hb_active_ix]);
