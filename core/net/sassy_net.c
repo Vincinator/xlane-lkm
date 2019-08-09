@@ -23,7 +23,7 @@
 #define IP_HEADER_VERSION 4
 #define IP_HEADER_LENGTH 5
 
-void sassy_hex_to_ip(char *retval, __be32 ip)
+33void sassy_hex_to_ip(char *retval, __be32 ip)
 {
 	int dst_ip = ntohl(ip);
 
@@ -197,8 +197,6 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 	struct sk_buff *hb_pkt = NULL;
 	struct sassy_packet_data *hparams;
 
-	__be32 src_ip;
-
 	if (!spminfo) {
 		sassy_error(" spminfo is invalid\n");
 		return NULL;
@@ -214,15 +212,14 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 		return NULL;
 	}
 
-	src_ip = dev->ip_ptr->ifa_list->ifa_address;
-
-	if (!src_ip) {
+	if (!dev->ip_ptr->ifa_list->ifa_address) {
 		sassy_error("No source IP for netdevice condfigured");
 		return NULL;
 	}
 
 	add_L2_header(hb_pkt, dev->dev_addr, hparams->dst_mac);
-	add_L3_header(hb_pkt, src_ip, hparams->dst_ip);
+	add_L3_header(hb_pkt, dev->ip_ptr->ifa_list->ifa_address,
+					hparams->dst_ip);
 	add_L4_header(hb_pkt);
 	add_payload(hb_pkt, hparams->pkt_payload[hparams->hb_active_ix]);
 
