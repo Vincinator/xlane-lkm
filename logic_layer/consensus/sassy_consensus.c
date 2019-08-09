@@ -3,6 +3,10 @@
 #include <linux/kernel.h>
 #include <sassy/logger.h>
 
+#include "include/sassy_consensus_ops.h"
+#include "include/sassy_consensus.h"
+
+
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
 MODULE_DESCRIPTION("SASSY consensus");
