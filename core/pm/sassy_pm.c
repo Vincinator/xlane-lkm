@@ -241,7 +241,7 @@ int sassy_pm_loop(void *data)
 	return HRTIMER_RESTART;
 }
 
-enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
+static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 {
 	unsigned long flags;
 	struct pminfo *spminfo =
