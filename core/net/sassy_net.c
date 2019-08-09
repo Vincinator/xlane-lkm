@@ -23,7 +23,7 @@
 #define IP_HEADER_VERSION 4
 #define IP_HEADER_LENGTH 5
 
-33void sassy_hex_to_ip(char *retval, __be32 ip)
+void sassy_hex_to_ip(char *retval, __be32 ip)
 {
 	int dst_ip = ntohl(ip);
 
