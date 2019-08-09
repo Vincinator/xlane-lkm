@@ -27,7 +27,7 @@
 struct task_struct *heartbeat_task;
 
 static inline bool
-sassy_pacemaker_is_alive(struct sassy_pacemaker_info*spminfo)
+sassy_pacemaker_is_alive(struct pminfo *spminfo)
 {
 	return spminfo->state == SASSY_PM_EMITTING;
 }
@@ -38,7 +38,7 @@ static inline bool can_fire(uint64_t prev_time, uint64_t cur_time)
 	return (cur_time - prev_time) >= CYCLES_PER_100MS;
 }
 
-const char *pm_state_string(sassy_pacemaker_state_t state)
+const char *pm_state_string(pmstate_t state)
 {
 	switch (state) {
 	case SASSY_PM_UNINIT:
@@ -52,15 +52,15 @@ const char *pm_state_string(sassy_pacemaker_state_t state)
 	}
 }
 
-void pm_state_transition_to(struct sassy_pacemaker_info*spminfo,
-			    const enum sassy_pacemaker_state state)
+void pm_state_transition_to(struct pminfo *spminfo,
+			    const enum pmstate state)
 {
 	sassy_dbg("State Transition from %s to %s\n",
 		  pm_state_string(spminfo->state), pm_state_string(state));
 	spminfo->state = state;
 }
 
-static inline void sassy_setup_skbs(struct sassy_pacemaker_info*spminfo)
+static inline void sassy_setup_skbs(struct pminfo *spminfo)
 {
 	int i;
 	struct sassy_device *sdev =
@@ -110,14 +110,14 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 }
 
 static inline int _emit_pkts(struct sassy_device *sdev,
-		struct sassy_pacemaker_info*spminfo)
+		struct pminfo *spminfo)
 {
 	void *pkt_payload;
 	int i;
 	int ret;
 	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
-	enum sassy_ts_state ts_state = sdev->ts_state;
+	enum tsstate ts_state = sdev->ts_state;
 
 	/* If netdev is offline, then stop pacemaker */
 	if (unlikely(!netif_running(ndev) ||
@@ -156,7 +156,7 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 	return 0;
 }
 
-static inline _validate_pm(struct sassy_device *sdev, struct sassy_pacemaker_info *spminfo)
+static inline _validate_pm(struct sassy_device *sdev, struct pminfo *spminfo)
 {
 	if (!spminfo) {
 		sassy_error("No Device. %s\n", __FUNCTION__);
@@ -195,7 +195,7 @@ int sassy_pm_loop(void *data)
 	uint64_t prev_time, cur_time;
 	unsigned long flags;
 	struct sassy_device *sdev = (struct sassy_device *) data;
-	struct sassy_pacemaker_info*spminfo = &sdev->pminfo;
+	struct pminfo *spminfo = &sdev->pminfo;
 
 	void *pkt_payload;
 	int i;
@@ -243,8 +243,8 @@ int sassy_pm_loop(void *data)
 enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 {
 	unsigned long flags;
-	struct sassy_pacemaker_info *spminfo =
-			container_of(timer, struct sassy_pacemaker_info, pm_timer);
+	struct pminfo *spminfo =
+			container_of(timer, struct pminfo, pm_timer);
 
 	struct sassy_device *sdev =
 			container_of(spminfo, struct sassy_device, pminfo);
@@ -278,7 +278,7 @@ enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	return HRTIMER_RESTART;
 }
 
-struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *si,
+struct sk_buff *sassy_setup_hb_packet(struct pminfo *si,
 				 int host_number)
 {
 	struct sassy_device *sdev =
@@ -286,7 +286,7 @@ struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *si,
 
 	if (!si) {
 		sassy_error(
-			"Could not setup skb, sassy_pacemaker_info is NULL\n");
+			"Could not setup skb, pminfo is NULL\n");
 		return NULL;
 	}
 
@@ -297,12 +297,13 @@ struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info *si,
 
 int sassy_pm_start_timer(void *data)
 {
-	struct sassy_pacemaker_info *spminfo =
-		(struct sassy_pacemaker_info *) data;
+	struct pminfo *spminfo =
+		(struct pminfo *) data;
+	struct sassy_device *sdev =
+		container_of(spminfo, struct sassy_device, pminfo);
+	ktime_t interval;
 	struct cpumask mask;
 	int active_cpu;
-	struct sassy_device *sdev;
-	ktime_t interval;
 	int err;
 
 	err = _validate_pm(sdev, spminfo);
@@ -328,12 +329,11 @@ int sassy_pm_start_timer(void *data)
 
 int sassy_pm_start_loop(void *data)
 {
-	struct sassy_pacemaker_info *spminfo =
-		(struct sassy_pacemaker_info *) data;
-	struct cpumask mask;
+	struct pminfo *spminfo =
+		(struct pminfo *) data;
 	struct sassy_device *sdev =
 		container_of(spminfo, struct sassy_device, pminfo);
-
+	struct cpumask mask;
 	ktime_t interval;
 	int err;
 
@@ -358,13 +358,13 @@ int sassy_pm_start_loop(void *data)
 	return 0;
 }
 
-int sassy_pm_stop(struct sassy_pacemaker_info *spminfo)
+int sassy_pm_stop(struct pminfo *spminfo)
 {
 	pm_state_transition_to(spminfo, SASSY_PM_READY);
 	return 0;
 }
 
-int sassy_pm_reset(struct sassy_pacemaker_info *spminfo)
+int sassy_pm_reset(struct pminfo *spminfo)
 {
 	struct sassy_device *sdev;
 

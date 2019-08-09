@@ -18,7 +18,7 @@
 
 #include <sassy/sassy.h>
 
-void sassy_fd_tx_test_update_proc_state(struct sassy_pacemaker_info *spminfo,
+void sassy_fd_tx_test_update_proc_state(struct pminfo *spminfo,
 					int procid, int state)
 {
 	struct sassy_process_info *cur_pinfo = &spminfo->tdata.pinfos[procid];
@@ -38,7 +38,7 @@ static ssize_t sassy_fd_tx_procfile_write(struct file *file,
 	struct sassy_fd_tx_procfile_container *container =
 		(struct sassy_fd_tx_procfile_container *)PDE_DATA(
 			file_inode(file));
-	struct sassy_pacemaker_info *spminfo = container->spminfo;
+	struct pminfo *spminfo = container->spminfo;
 
 	long state = -1;
 
@@ -74,7 +74,7 @@ static int sassy_fd_tx_procfile_show(struct seq_file *m, void *v)
 {
 	struct sassy_fd_tx_procfile_container *container =
 		(struct sassy_fd_tx_procfile_container *)m->private;
-	struct sassy_pacemaker_info *spminfo = container->spminfo;
+	struct pminfo *spminfo = container->spminfo;
 	int procid = container->procid;
 	struct sassy_process_info *cur_pinfo = &spminfo->tdata.pinfos[procid];
 
@@ -107,7 +107,7 @@ void sassy_fd_tx_create_test_procfile(
 	struct sassy_fd_tx_procfile_container *container)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
-	struct sassy_pacemaker_info *spminfo = container->spminfo;
+	struct pminfo *spminfo = container->spminfo;
 
 	struct sassy_device *sdev =
 		container_of(spminfo, struct sassy_device, pminfo);
@@ -123,7 +123,7 @@ void sassy_fd_tx_create_test_procfile(
 			 &sassy_fd_tx_procfile_ops, container);
 }
 
-void sassy_fd_tx_create_test_data(struct sassy_pacemaker_info *spminfo,
+void sassy_fd_tx_create_test_data(struct pminfo *spminfo,
 				  int procid)
 {
 	struct sassy_process_info *cur_pinfo = &spminfo->tdata.pinfos[procid];
@@ -133,7 +133,7 @@ void sassy_fd_tx_create_test_data(struct sassy_pacemaker_info *spminfo,
 	cur_pinfo->ps = 1; /* Init proc as running */
 }
 
-void sassy_fd_tx_remove_procfile(struct sassy_pacemaker_info *spminfo,
+void sassy_fd_tx_remove_procfile(struct pminfo *spminfo,
 				 int procid)
 {
 	struct sassy_device *sdev =
@@ -149,7 +149,7 @@ void sassy_fd_tx_remove_procfile(struct sassy_pacemaker_info *spminfo,
 	remove_proc_entry(name_buf, NULL);
 }
 
-void sassy_fd_tx_test_clear_all_processes(struct sassy_pacemaker_info *spminfo)
+void sassy_fd_tx_test_clear_all_processes(struct pminfo *spminfo)
 {
 	int i;
 
@@ -167,7 +167,7 @@ EXPORT_SYMBOL(sassy_fd_tx_test_clear_all_processes);
  * if num_of_proc > 0: create dummy proc files
  * else: clear and remove exisiting dummy proc files
  */
-void sassy_fd_tx_test_create_processes(struct sassy_pacemaker_info *spminfo,
+void sassy_fd_tx_test_create_processes(struct pminfo *spminfo,
 				       int num_of_proc)
 {
 	struct sassy_fd_tx_procfile_container **containers;

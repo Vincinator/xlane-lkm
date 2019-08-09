@@ -42,7 +42,7 @@ int sassy_core_register_nic(int ifindex);
 #define TIMESTAMP_ARRAY_LIMIT 100000
 
 
-enum sassy_ts_state {
+enum tsstate {
     SASSY_TS_RUNNING,
     SASSY_TS_READY, 	/* Initialized but not active*/
     SASSY_TS_UNINIT,
@@ -89,13 +89,13 @@ enum sassy_pacemaker_test_state {
 	SASSY_PM_TEST_INIT = 1,
 };
 
-enum sassy_pacemaker_state {
+enum pmstate {
 	SASSY_PM_UNINIT = 0,
 	SASSY_PM_READY = 1,
 	SASSY_PM_EMITTING = 2,
 };
 
-typedef enum sassy_pacemaker_state sassy_pacemaker_state_t;
+typedef enum pmstate pmstate_t;
 
 struct sassy_process_info {
 	u8 pid; /* Process ID on remote host */
@@ -157,12 +157,12 @@ struct sassy_pm_target_info {
 };
 
 struct sassy_test_procfile_container {
-	struct sassy_pacemaker_info *spminfo;
+	struct pminfo *spminfo;
 	int procid;
 };
 
-struct sassy_pacemaker_info {
-	enum sassy_pacemaker_state state;
+struct pminfo {
+	enum pmstate state;
 
 	int active_cpu;
 
@@ -185,14 +185,14 @@ struct sassy_device {
 	int verbose; /* Prints more information when set to 1 during RX/TX to dmesg*/
 
 	enum sassy_rx_state rx_state;
-	enum sassy_ts_state ts_state; 
+	enum tsstate ts_state; 
 
 	struct sassy_stats *stats;
 
 	struct net_device *ndev;
 
 	/* SASSY CTRL Structures */
-	struct sassy_pacemaker_info pminfo;
+	struct pminfo pminfo;
 
 	/* Can only use one protocol at a time. */
 	struct sassy_protocol *proto;
@@ -238,15 +238,15 @@ struct sassy_protocol {
 	void *priv;
 };
 
-struct sk_buff *sassy_setup_hb_packet(struct sassy_pacemaker_info*spminfo,
+struct sk_buff *sassy_setup_hb_packet(struct pminfo *spminfo,
 				      int host_number);
-//void sassy_setup_skbs(struct sassy_pacemaker_info *spminfo);
-void pm_state_transition_to(struct sassy_pacemaker_info*spminfo,
-			    enum sassy_pacemaker_state state);
-const char *pm_state_string(sassy_pacemaker_state_t state);
+//void sassy_setup_skbs(struct pminfo *spminfo);
+void pm_state_transition_to(struct pminfo *spminfo,
+			    enum pmstate state);
+const char *pm_state_string(pmstate_t state);
 
-int sassy_pm_reset(struct sassy_pacemaker_info*spminfo);
-int sassy_pm_stop(struct sassy_pacemaker_info*spminfo);
+int sassy_pm_reset(struct pminfo *spminfo);
+int sassy_pm_stop(struct pminfo *spminfo);
 int sassy_pm_start_loop(void *data);
 int sassy_pm_start_timer(void *data);
 
@@ -266,7 +266,7 @@ int sassy_ip_convert(const char *str);
 unsigned char *sassy_convert_mac(const char *str);
 
 struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
-				      struct sassy_pacemaker_info*spminfo,
+				      struct pminfo *spminfo,
 				      int host_number);
 
 struct net_device *sassy_get_netdevice(int ifindex);
@@ -306,7 +306,7 @@ void *sassy_mlx5_get_channel(int sassy_id);
 
 
 void ts_state_transition_to(struct sassy_device *sdev,
-			    enum sassy_ts_state state);
+			    enum tsstate state);
 
 int sassy_ts_stop(struct sassy_device *sdev);
 int sassy_ts_start(struct sassy_device *sdev);
@@ -315,7 +315,7 @@ int sassy_reset_stats(struct sassy_device *sdev);
 int sassy_write_timestamp(struct sassy_device *sdev,
 				int logid, uint64_t cycles, int target_id);
 
-const char *ts_state_string(enum sassy_ts_state state);
+const char *ts_state_string(enum tsstate state);
 int init_timestamping(struct sassy_device *sdev);
 void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev);
 
