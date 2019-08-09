@@ -16,7 +16,7 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][CONSENSUS]"
 
 struct sassy_protocol consensus_protocol;
-static struct sassy_fd_priv consensus_priv;
+static struct consensus_priv priv;
 
 
 static const struct sassy_protocol_ctrl_ops consensus_ops = {
@@ -39,7 +39,7 @@ static int __init sassy_consensus_init(void)
 	consensus_protocol.proto_type = SASSY_PROTO_CONSENSUS;
 	consensus_protocol.ctrl_ops = consensus_ops;
 	consensus_protocol.name = "consensus";
-	consensus_protocol.priv = (void *)&consensus_priv;
+	consensus_protocol.priv = (void *)&priv;
 
 	sassy_register_protocol(&consensus_protocol);
 	return 0;
