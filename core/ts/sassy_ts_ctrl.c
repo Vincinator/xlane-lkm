@@ -109,3 +109,4 @@ void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev)
 		"[SASSY] Timestamping ctrl interfaces created for device (%d)\n",
 		sdev->ifindex);
 }
+
