@@ -32,7 +32,7 @@ static ssize_t proto_selector_write(struct file *file,
 				    size_t count, loff_t *data)
 {
 	int err;
-	char kernel_buffer[count + 1];
+	char kernel_buffer[MAX_PROCFS_BUF];
 	struct sassy_device *sdev =
 		(struct sassy_device *)PDE_DATA(file_inode(file));
 	struct sassy_protocol *sproto = NULL;
