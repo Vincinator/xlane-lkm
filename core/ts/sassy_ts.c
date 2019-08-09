@@ -34,11 +34,6 @@ void ts_state_transition_to(struct sassy_device *sdev,
 	sdev->ts_state = state;
 }
 
-int do_sassy_timestamping_clear_stats(void)
-{
-	return 0;
-}
-
 static ssize_t sassy_proc_write(struct file *file, const char __user *buffer,
 				size_t count, loff_t *data)
 {
@@ -208,7 +203,7 @@ error:
 }
 
 
-int init_log_ctrl(struct sassy_device *sdev, int logid)
+static int init_log_ctrl(struct sassy_device *sdev, int logid)
 {
 	int err;
 	char name_buf[MAX_SASSY_PROC_NAME];

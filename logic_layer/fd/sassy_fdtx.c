@@ -33,7 +33,7 @@ static struct class *sassy_bypass_class;
 
 
 /* Allocates pages and sets the PG_reserved bit for each allocated page*/
-char *sassy_alloc_mmap_buffer(void)
+static char *sassy_alloc_mmap_buffer(void)
 {
 	char *page = (char *)get_zeroed_page(GFP_KERNEL);
 

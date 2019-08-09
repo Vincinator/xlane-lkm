@@ -318,6 +318,8 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 const char *ts_state_string(enum tsstate state);
 int init_timestamping(struct sassy_device *sdev);
 void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev);
+int sassy_clean_timestamping(struct sassy_device *sdev);
+
 
 struct sassy_device *get_sdev(int devid);
 

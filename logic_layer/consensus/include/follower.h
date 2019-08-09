@@ -8,3 +8,4 @@ void reset_timeout(void);
 int stop_follower(void);
 int start_follower(void);
 ktime_t get_rnd_timeout(void);
+void init_timeout(void);

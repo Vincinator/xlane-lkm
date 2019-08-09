@@ -16,7 +16,7 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][PROTOCOL][FD]"
 
 static struct sassy_fd_priv fd_priv;
-struct sassy_protocol fd_protocol;
+static struct sassy_protocol fd_protocol;
 
 static const struct sassy_protocol_ctrl_ops fd_ops = {
 	.init = fd_init,
