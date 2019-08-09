@@ -12,12 +12,13 @@
 
 #include "sassy_fd_tx_procfs.h"
 
+
 static ssize_t sassy_fdus_reg_write(struct file *file,
 				    const char __user *user_buffer,
 				    size_t count, loff_t *data)
 {
 	int err;
-	char kernel_buffer[count + 1];
+	char kernel_buffer[MAX_PROCFS_BUF];
 	struct sassy_device *sdev =
 		(struct sassy_device *)PDE_DATA(file_inode(file));
 	long new_state = -1;

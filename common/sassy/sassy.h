@@ -11,6 +11,7 @@
 
 #define MAX_SASSY_PROC_NAME 256
 
+#define MAX_PROCFS_BUF 512
 
 
 #define SASSY_TARGETS_BUF 512

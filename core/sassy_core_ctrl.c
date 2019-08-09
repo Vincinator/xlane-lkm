@@ -15,7 +15,7 @@ static ssize_t sassy_rx_ctrl_write(struct file *file,
 				   loff_t *data)
 {
 	int err;
-	char kernel_buffer[count + 1];
+	char kernel_buffer[MAX_PROCFS_BUF];
 	struct sassy_device *sdev =
 		(struct sassy_device *)PDE_DATA(file_inode(file));
 	long new_state = -1;
@@ -91,7 +91,7 @@ static ssize_t sassy_verbose_ctrl_write(struct file *file,
 					size_t count, loff_t *data)
 {
 	int err;
-	char kernel_buffer[count + 1];
+	char kernel_buffer[MAX_PROCFS_BUF];
 	struct sassy_device *sdev =
 		(struct sassy_device *)PDE_DATA(file_inode(file));
 	long new_state = -1;
