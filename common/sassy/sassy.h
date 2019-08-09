@@ -108,7 +108,7 @@ struct sassy_process_info {
 
 
 struct sassy_packet_data {
-	uint32_t dst_ip;
+	__be32 dst_ip;
 	unsigned char dst_mac[6];
 
 	u8 protocol_id;
