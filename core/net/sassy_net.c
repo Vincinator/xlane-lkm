@@ -127,7 +127,7 @@ inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
 	memcpy(eth->h_dest, dst_mac, ETH_ALEN);
 }
 
-inline void add_L3_header(struct sk_buff *skb, uint32_t src_ip, uint32_t dst_ip)
+inline void add_L3_header(struct sk_buff *skb, __be32 src_ip, __be32 dst_ip)
 {
 	struct iphdr *ipv4 = NULL;
 
@@ -195,7 +195,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 	struct sk_buff *hb_pkt = NULL;
 	struct sassy_packet_data *hparams;
 
-	uint32_t src_ip;
+	__be32 src_ip;
 
 	if (!spminfo) {
 		sassy_error(" spminfo is invalid\n");
