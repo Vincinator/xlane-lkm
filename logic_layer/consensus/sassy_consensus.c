@@ -15,7 +15,7 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CONSENSUS]"
 
-struct sassy_protocol consensus_protocol;
+static struct sassy_protocol consensus_protocol;
 static struct consensus_priv priv;
 
 

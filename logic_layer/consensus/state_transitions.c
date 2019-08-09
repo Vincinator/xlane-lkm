@@ -7,7 +7,7 @@
 #include "include/candidate.h"
 
 
-char *node_state_name(enum node_state state)
+static char *node_state_name(enum node_state state)
 {
 	switch (state) {
 	case FOLLOWER: return "Follower";

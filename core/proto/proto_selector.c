@@ -18,6 +18,8 @@
 
 #include <linux/err.h>
 
+#include "../sassy_core.h"
+
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
