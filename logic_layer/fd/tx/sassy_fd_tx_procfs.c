@@ -101,7 +101,7 @@ void init_sassy_fdus_interfaces(struct sassy_device *sdev)
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_fdus_reg_ops,
 			 sdev);
 }
-EXPORT_SYMBOL(init_sassy_ctrl_interfaces);
+EXPORT_SYMBOL(init_sassy_fdus_interfaces);
 
 void clean_sassy_fdus_interfaces(struct sassy_device *sdev)
 {
