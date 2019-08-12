@@ -336,8 +336,8 @@ static ssize_t sassy_target_write(struct file *file,
 	i = 0;
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
-		sassy_dbg(" reading: %s", input_str);
-		if (strcmp(input_str, "") == 0 || strlen(input_str) <= 0)
+		sassy_dbg(" reading: '%s'", input_str);
+		if (strcmp(input_str, " ") == 0 || strlen(input_str) <= 0)
 			continue;
 		if (i > SASSY_TARGETS_BUF) {
 			sassy_error(
@@ -367,7 +367,7 @@ static ssize_t sassy_target_write(struct file *file,
 			err = kstrtoint(input_str, 10, &current_protocol);
 			if (err) {
 				sassy_error(
-					" Error converting input buffer: %s\n",
+					"Expected Porotocol Number. Error converting input buffer: %s\n",
 					input_str);
 				goto error;
 			}

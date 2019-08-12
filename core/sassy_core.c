@@ -127,7 +127,6 @@ void sassy_reset_remote_host_counter(int sassy_id)
 
 		kfree(pmtarget->pkt_data.pkt_payload[0]);
 		kfree(pmtarget->pkt_data.pkt_payload[1]);
-
 		kfree(rxt->rhost_buffers[i]);
 	}
 
