@@ -5,7 +5,7 @@
 #include "include/sassy_fdtx.h"
 
 
-static int fd_init(struct sassy_device *sdev)
+int fd_init(struct sassy_device *sdev)
 {
 	int err = 0;
 	struct sassy_protocol *sproto;
@@ -32,7 +32,7 @@ error:
 	return err;
 }
 
-static int fd_init_payload(void *payload)
+int fd_init_payload(void *payload)
 {
 	struct fd_payload *fd_p = (struct fd_payload *)payload;
 	int i;
@@ -51,19 +51,19 @@ static int fd_init_payload(void *payload)
 	return 0;
 }
 
-static int fd_start(struct sassy_device *sdev)
+int fd_start(struct sassy_device *sdev)
 {
 	sassy_dbg("fd start\n");
 	return 0;
 }
 
-static int fd_stop(struct sassy_device *sdev)
+int fd_stop(struct sassy_device *sdev)
 {
 	sassy_dbg("fd stop\n");
 	return 0;
 }
 
-static int fd_clean(struct sassy_device *sdev)
+int fd_clean(struct sassy_device *sdev)
 {
 	sassy_clean_class();
 	// TODO: destroy the char devices
@@ -72,7 +72,7 @@ static int fd_clean(struct sassy_device *sdev)
 	return 0;
 }
 
-static int fd_info(struct sassy_device *sdev)
+int fd_info(struct sassy_device *sdev)
 {
 	sassy_dbg("fd info\n");
 	return 0;
@@ -82,7 +82,7 @@ static int fd_info(struct sassy_device *sdev)
  * If aliveness counter of US application did not update,
  * then mark corresponding state as down in HB packet of FD protocol
  */
-static int fd_us_update(struct sassy_device *sdev, void *payload)
+int fd_us_update(struct sassy_device *sdev, void *payload)
 {
 	int i;
 	struct sassy_protocol *sproto = sdev->proto;
@@ -124,7 +124,7 @@ static int fd_us_update(struct sassy_device *sdev, void *payload)
 	return 0;
 }
 
-static int fd_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
+int fd_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		    void *payload)
 {
 	// .. Test only ..
@@ -137,7 +137,7 @@ static int fd_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		sassy_dbg("fd payload received\n");
 }
 
-static int fd_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
+int fd_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 	       uint64_t ts)
 {
 	if (sdev->verbose) {

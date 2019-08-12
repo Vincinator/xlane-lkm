@@ -1,3 +1,5 @@
+#pragma once
+
 #include <sassy/sassy.h>
 
 struct sassy_echo_priv {
