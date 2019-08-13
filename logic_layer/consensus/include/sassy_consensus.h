@@ -78,3 +78,4 @@ struct consensus_priv {
 int node_transition(enum node_state state);
 
 struct consensus_priv *con_priv(void);
+ktime_t get_rnd_timeout(void);
