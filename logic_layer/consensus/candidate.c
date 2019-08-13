@@ -11,9 +11,42 @@
 #include "include/sassy_consensus.h"
 
 
+
+static struct skb nom_broad_skbs[MAX_NODE_ID];
+
+
+struct nomination_pkt_data *setup_broadcast_payload(void) {
+	struct nomination_pkt_data *payload;
+	struct consensus_priv *priv = con_priv();
+
+	payload = (struct nomination_pkt_data *) kmalloc(sizeof(struct nomination_pkt_data),GFP_KERNEL);
+
+	payload.candidate_id = priv->node_id;
+	payload.term = priv->term;
+	payload.msg_type = NOMINATION;
+
+	return payload;
+}
+
 int broadcast_nomination(void)
 {
-	//compose_skb();
+	void *payload;
+	struct consensus_priv *priv = con_priv();
+
+	payload = (void *) setup_broadcast_payload(void);
+
+	for(i = 0, i < MAX_NODE_ID; i++) {
+		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
+		nom_broad_skbs[i] = compose_skb(priv->sdev, naddr, payload);
+	}
+
+	
+
+	// One Shot send skbs to all nodes in cluster
+
+	// set votes to 1 (selfvote)
+	// start timeout
+
 	return 0;
 }
 

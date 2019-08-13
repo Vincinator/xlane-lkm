@@ -12,6 +12,9 @@
 int consensus_init(struct sassy_device *sdev)
 {
 	int err;
+	struct consensus_priv *priv = con_priv();
+
+	priv->sdev = sdev;
 
 	// Transition to Follower State
 	err = node_transition(FOLLOWER);
