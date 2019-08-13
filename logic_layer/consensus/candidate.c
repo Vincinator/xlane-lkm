@@ -42,7 +42,7 @@ void init_ctimeout(void)
 	timeout = get_rnd_timeout();
 
 	hrtimer_init(&priv->ctimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
-
+	priv->ctimer_init = 1;
 	priv->ftimer.function = &_handle_candidate_timeout;
 
 	hrtimer_start(&priv->ctimer, timeout, HRTIMER_MODE_REL_PINNED);
@@ -84,8 +84,10 @@ int candidate_process_pkt(struct sassy_device *sdev, void* pkt)
 
 int stop_candidate(void)
 {
-
-	return 0;
+	if(priv->ctimer_init == 0)
+		return 0;
+	priv->ctimer_init = 0;
+	return hrtimer_try_to_cancel(&priv->ctimer);
 }
 
 int start_candidate(void)

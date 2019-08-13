@@ -8,8 +8,6 @@
 #include "include/follower.h"
 #include "include/sassy_consensus.h"
 
-static u32 follower_timeout_ms;
-
 
 static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
@@ -44,6 +42,7 @@ void init_timeout(void)
 	timeout = get_rnd_timeout();
 
 	hrtimer_init(&priv->ftimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
+	priv->ftimer_init = 1;
 
 	priv->ftimer.function = &_handle_follower_timeout;
 
@@ -67,7 +66,9 @@ void reset_ftimeout(void)
 int stop_follower(void)
 {
 	struct consensus_priv *priv = con_priv();
-
+	if(priv->ftimer_init == 0)
+		return 0;
+	priv->ftimer_init = 0;
 	return hrtimer_try_to_cancel(&priv->ftimer);
 }
 
