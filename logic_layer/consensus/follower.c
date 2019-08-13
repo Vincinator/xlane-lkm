@@ -13,8 +13,6 @@ static u32 follower_timeout_ms;
 #define MIN_FTIMEOUT_NS 150000000
 #define MAX_FTIMEOUT_NS 300000000
 
-static struct hrtimer ftimer;
-
 static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
 	sassy_dbg("Follower Timeout occured!\n");
@@ -37,14 +35,15 @@ void init_timeout(void)
 {
 	int ftime_ns;
 	ktime_t timeout;
+	struct consensus_priv *priv = con_priv();
 
 	timeout = get_rnd_timeout();
 
-	hrtimer_init(&ftimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
+	hrtimer_init(&priv->ftimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
 
-	ftimer.function = &_handle_follower_timeout;
+	priv->ftimer.function = &_handle_follower_timeout;
 
-	hrtimer_start(&ftimer, timeout, HRTIMER_MODE_REL_PINNED);
+	hrtimer_start(&priv->ftimer, timeout, HRTIMER_MODE_REL_PINNED);
 }
 
 ktime_t get_rnd_timeout(void)
@@ -58,18 +57,21 @@ void reset_timeout(void)
 {
 	ktime_t now;
 	ktime_t timeout;
+	struct consensus_priv *priv = con_priv();
 
 	now = ktime_get();
 	timeout = get_rnd_timeout();
 
-	hrtimer_forward(&ftimer, now, timeout);
+	hrtimer_forward(&priv->ftimer, now, timeout);
 
 	sassy_dbg("set follower timeout to %dns\n", timeout);
 }
 
 int stop_follower(void)
 {
-	hrtimer_try_to_cancel(&ftimer);
+	struct consensus_priv *priv = con_priv();
+
+	hrtimer_try_to_cancel(&priv->ftimer);
 	return 0;
 }
 

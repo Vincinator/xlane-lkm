@@ -26,8 +26,29 @@ enum node_state {
 
 
 struct consensus_priv {
+
 	enum node_state nstate;
+
+	int node_id;
+
+	/* index of array is node_id, 
+	 * value at index of array is index to pm_targets
+	 */
+	int cluster_mapping[MAX_NODE_ID];
+
+	int term;
+
+	/* True if this node has already voted in the current term*/
+	bool voted; 
+
+	/* follower timeout */
+	struct hrtimer ftimer;
+
+	/* candidate timeout */
+	struct hrtimer ctimer;
+
 };
 
 int node_transition(struct sassy_device *sdev, enum node_state state);
 
+static struct consensus_priv con_priv(void);

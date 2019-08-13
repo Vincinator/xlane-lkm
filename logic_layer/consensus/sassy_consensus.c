@@ -19,6 +19,12 @@ static struct sassy_protocol consensus_protocol;
 static struct consensus_priv priv;
 
 
+static struct consensus_priv *con_priv(void)
+{
+	return &priv;
+}
+
+
 static const struct sassy_protocol_ctrl_ops consensus_ops = {
 	.init = consensus_init,
 	.start = consensus_start,
