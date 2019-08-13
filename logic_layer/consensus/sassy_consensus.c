@@ -3,6 +3,9 @@
 #include <linux/kernel.h>
 #include <sassy/logger.h>
 
+#include <linux/random.h>
+#include <linux/timer.h>
+
 #include "include/sassy_consensus_ops.h"
 #include "include/sassy_consensus.h"
 
@@ -22,6 +25,12 @@ static struct consensus_priv priv;
 struct consensus_priv *con_priv(void)
 {
 	return &priv;
+}
+
+ktime_t get_rnd_timeout(void)
+{
+	return ktime_set(0, MIN_FTIMEOUT_NS +
+			prandom_u32_max(MAX_FTIMEOUT_NS - MIN_FTIMEOUT_NS));
 }
 
 

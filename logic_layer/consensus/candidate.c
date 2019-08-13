@@ -26,6 +26,30 @@ struct nomination_pkt_data *setup_broadcast_payload(void) {
 	return payload;
 }
 
+static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
+{
+	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
+	broadcast_nomination();
+	return HRTIMER_NORESTART;
+}
+
+void init_ctimeout(void)
+{
+	int ftime_ns;
+	ktime_t timeout;
+	struct consensus_priv *priv = con_priv();
+
+	timeout = get_rnd_timeout();
+
+	hrtimer_init(&priv->ctimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
+
+	priv->ftimer.function = &_handle_candidate_timeout;
+
+	hrtimer_start(&priv->ctimer, timeout, HRTIMER_MODE_REL_PINNED);
+}
+
+
+
 
 int broadcast_nomination(void)
 {
@@ -46,7 +70,7 @@ int broadcast_nomination(void)
 
 	priv->votes = 1; // selfvote
 
-	// start timeout
+	init_ctimeout();
 
 	return 0;
 }

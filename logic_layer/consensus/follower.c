@@ -53,14 +53,7 @@ void init_timeout(void)
 	hrtimer_start(&priv->ftimer, timeout, HRTIMER_MODE_REL_PINNED);
 }
 
-ktime_t get_rnd_timeout(void)
-{
-	return ktime_set(0, MIN_FTIMEOUT_NS +
-			prandom_u32_max(MAX_FTIMEOUT_NS - MIN_FTIMEOUT_NS));
-}
-
-
-void reset_timeout(void)
+void reset_ftimeout(void)
 {
 	ktime_t now;
 	ktime_t timeout;
