@@ -11,13 +11,13 @@
 #include "include/sassy_consensus.h"
 
 
-static struct sk_buff *nom_broad_skbs[MAX_NODE_ID];
+static struct sk_buff **nom_broad_skbs;
 
 struct nomination_pkt_data *setup_broadcast_payload(void) {
 	struct nomination_pkt_data *payload;
 	struct consensus_priv *priv = con_priv();
 
-	payload = (struct nomination_pkt_data *) kmalloc(sizeof(struct nomination_pkt_data),GFP_KERNEL);
+	payload = (struct nomination_pkt_data *) kzalloc(sizeof(struct nomination_pkt_data),GFP_KERNEL);
 
 	payload->candidate_id = priv->node_id;
 	payload->term = priv->term;
@@ -29,7 +29,7 @@ struct nomination_pkt_data *setup_broadcast_payload(void) {
 static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 {
 	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
-	broadcast_nomination();
+	//broadcast_nomination();
 	return HRTIMER_NORESTART;
 }
 
@@ -61,11 +61,13 @@ int broadcast_nomination(void)
 
 	payload = (void *) setup_broadcast_payload();
 
-	for(i = 0; i < MAX_NODE_ID; i++) {
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
-		nom_broad_skbs[i] = compose_skb(priv->sdev, naddr, payload);
+		nom_broad_skbs[i] = compose_skb(priv->sdev, naddr, payload);	
+		if(!nom_broad_skbs[i]) {
+			sassy_error("composing error detected\n");
+		}
 	}
-
 	send_pkts(priv->sdev, nom_broad_skbs, priv->sdev->pminfo.num_of_targets);
 
 	priv->votes = 1; // selfvote
@@ -95,6 +97,19 @@ int stop_candidate(void)
 int start_candidate(void)
 {
 	struct consensus_priv *priv = con_priv();
+
+	struct sk_buff **nom_broad_skbs
+
+	if(nom_broad_skbs)
+		for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
+			if(nom_broad_skbs[i])
+				kfree(nom_broad_skbs[i]);
+
+	nom_broad_skbs = kmalloc_array(priv->sdev->pminfo.num_of_targets,
+			      				   sizeof(struct sk_buff *), GFP_KERNEL);
+
+	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
+		nom_broad_skbs[i] = kmalloc(sizeof(struct sk_buff), GFP_KERNEL);
 
 	priv->nstate = CANDIDATE;
 	priv->term++;
