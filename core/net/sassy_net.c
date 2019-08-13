@@ -47,6 +47,7 @@ struct net_device *sassy_get_netdevice(int ifindex)
 	return NULL;
 }
 EXPORT_SYMBOL(sassy_get_netdevice);
+
 /*
  * Converts an IP address from dotted numbers string to hex.
  */

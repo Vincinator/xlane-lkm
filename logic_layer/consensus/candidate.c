@@ -11,7 +11,7 @@
 #include "include/sassy_consensus.h"
 
 
-int broadcast_nomination()
+int broadcast_nomination(void)
 {
 	//compose_skb();
 	return 0;
@@ -38,7 +38,7 @@ int start_candidate(void)
 	priv->term++;
 
 	// Broadcast nomination
-
+	broadcast_nomination();
 
 	
 	return 0;
