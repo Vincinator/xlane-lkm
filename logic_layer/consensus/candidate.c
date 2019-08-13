@@ -11,9 +11,7 @@
 #include "include/sassy_consensus.h"
 
 
-
 static struct sk_buff *nom_broad_skbs[MAX_NODE_ID];
-
 
 struct nomination_pkt_data *setup_broadcast_payload(void) {
 	struct nomination_pkt_data *payload;
@@ -27,6 +25,19 @@ struct nomination_pkt_data *setup_broadcast_payload(void) {
 
 	return payload;
 }
+
+
+
+
+
+
+int oneshot_send_pkts()
+{
+	send_pkt();
+
+	return 0;
+}
+
 
 int broadcast_nomination(void)
 {
@@ -43,10 +54,10 @@ int broadcast_nomination(void)
 		nom_broad_skbs[i] = compose_skb(priv->sdev, naddr, payload);
 	}
 
+	send_pkts(sdev,nom_broad_skbs, sdev->pminfo.num_of_targets);
 
-	// One Shot send skbs to all nodes in cluster
+	priv->votes = 1; // selfvote
 
-	// set votes to 1 (selfvote)
 	// start timeout
 
 	return 0;

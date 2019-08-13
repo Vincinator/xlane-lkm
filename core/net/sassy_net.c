@@ -227,3 +227,48 @@ struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 	return nomination_pkt;
 }
 EXPORT_SYMBOL(compose_skb);
+
+void send_pkt(struct net_device *ndev, struct sk_buff *skb)
+{
+	int ret;
+	struct netdev_queue *txq;
+
+	txq = skb_get_tx_queue(ndev, skb);
+	skb_get(skb); /* keep this. otherwise this thread locks the system */
+
+	HARD_TX_LOCK(ndev, txq, smp_processor_id());
+
+	if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
+		sassy_error("Device Busy unlocking.\n");
+		goto unlock;
+	}
+
+	ret = netdev_start_xmit(skb, ndev, txq, 0);
+unlock:
+	HARD_TX_UNLOCK(ndev, txq);
+}
+EXPORT_SYMBOL(send_pkt);
+
+
+int send_pkts(struct sassy_device *sdev, struct sk_buff **skbs, int num_pkts)
+{
+	int i;
+
+	/* If netdev is offline, then stop pacemaker */
+	if (unlikely(!netif_running(ndev) ||
+		     !netif_carrier_ok(ndev))) {
+		return -1;
+	}
+
+	for (i = 0; i < num_pkts; i++) {
+
+		if (sdev->verbose)
+			print_hex_dump(KERN_DEBUG,
+				"Payload: ", DUMP_PREFIX_NONE,
+				16, 1, pkt_payload, SASSY_PAYLOAD_BYTES, 0);
+
+		send_pkt(sdev->ndev, skbs[i]);
+
+	}
+	return 0;
+}

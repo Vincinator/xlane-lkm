@@ -63,6 +63,10 @@ struct consensus_priv {
 	/* candidate timeout */
 	struct hrtimer ctimer;
 
+	/* number of followers voted for this node */
+	int votes;
+
+
 };
 
 int node_transition(enum node_state state);

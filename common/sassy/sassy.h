@@ -325,4 +325,7 @@ int sassy_clean_timestamping(struct sassy_device *sdev);
 
 struct sassy_device *get_sdev(int devid);
 
+void send_pkt(struct net_device *ndev, struct sk_buff *skb);
+int send_pkts(struct sassy_device *sdev, struct sk_buff **skbs, int num_pkts);
+
 #endif /* _SASSY_H_ */
