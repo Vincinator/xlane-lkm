@@ -307,6 +307,7 @@ static ssize_t sassy_target_write(struct file *file,
 	u32 current_ip;
 	unsigned char *current_mac;
 	int current_protocol;
+	int cluster_id;
 
 	if (!spminfo)
 		return -ENODEV;
@@ -374,12 +375,25 @@ static ssize_t sassy_target_write(struct file *file,
 
 			sassy_dbg("protocol: %d\n", current_protocol);
 
-			sassy_core_register_remote_host(sdev->sassy_id,
-							current_ip, current_mac,
-							current_protocol);
+		
+			state = 3;
+		} else if (state == 3){
+			err = kstrtoint(input_str, 10, &cluster_id);
 
-			i++;
+			sassy_dbg("cluster id: %d\n", cluster_id);
+
+			if(is_ip_local(sdev->ndev, current_ip)){
+				sassy_dbg("got local ip: %d\n", current_ip);
+				sassy_dbg("cluster id of local is: %d\n", cluster_id);
+
+			} else {
+				sassy_core_register_remote_host(sdev->sassy_id,
+						current_ip, current_mac,
+						current_protocol, cluster_id);
+			}
+
 			state = 0;
+			i++;
 			kfree(current_mac);
 		}
 	}

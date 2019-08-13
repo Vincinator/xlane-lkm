@@ -191,6 +191,13 @@ inline void add_payload(struct sk_buff *skb, void *payload)
 		       SASSY_PAYLOAD_BYTES, 0);
 }
 
+int is_ip_local(struct net_device *dev,	u32 ip_addr)
+{
+	u32 local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
+	return local_ipaddr == ip_addr;
+}
+EXPORT_SYMBOL(is_ip_local);
+
 
 struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 							void *payload)

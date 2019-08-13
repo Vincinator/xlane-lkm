@@ -285,7 +285,7 @@ int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
 			    u32 cqe_bcnt);
 
 int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
-				    int protocol_id);
+				    int protocol_id, int cluster_id);
 
 int sassy_validate_sassy_device(int sassy_id);
 void sassy_reset_remote_host_counter(int sassy_id);
@@ -327,5 +327,7 @@ struct sassy_device *get_sdev(int devid);
 
 void send_pkt(struct net_device *ndev, struct sk_buff *skb);
 int send_pkts(struct sassy_device *sdev, struct sk_buff **skbs, int num_pkts);
+
+int is_ip_local(struct net_device *dev,	u32 ip_addr);
 
 #endif /* _SASSY_H_ */

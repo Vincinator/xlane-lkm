@@ -257,7 +257,7 @@ int sassy_validate_sassy_device(int sassy_id)
 EXPORT_SYMBOL(sassy_validate_sassy_device);
 
 int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
-				    int protocol_id)
+				    int protocol_id, int cluster_id)
 {
 	struct sassy_rx_table *rxt;
 	struct sassy_device *sdev = get_sdev(sassy_id);
@@ -308,6 +308,7 @@ int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 
 	pmtarget->pkt_data.hb_active_ix = 0;
 	pmtarget->pkt_data.naddr.dst_ip = ip;
+	pmtarget->pkt_data.naddr.cluster_id = cluster_id;
 	pmtarget->pkt_data.protocol_id = protocol_id;
 
 	pmtarget->pkt_data.pkt_payload[0] =
