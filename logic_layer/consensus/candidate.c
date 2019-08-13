@@ -3,6 +3,7 @@
 
 
 #include "include/candidate.h"
+#include "include/sassy_consensus.h"
 
 int candidate_process_pkt(struct sassy_device *sdev, void* pkt)
 {
