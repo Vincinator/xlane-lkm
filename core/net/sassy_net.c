@@ -245,9 +245,9 @@ struct sk_buff *compose_nomination_skb(struct sassy_device *sdev,
 
 	hparams = &spminfo->pm_targets[target_nid].pkt_data;
 
-	hb_pkt = prepare_heartbeat_skb(dev);
+	nomination_pkt = prepare_heartbeat_skb(dev);
 
-	if (!hb_pkt) {
+	if (!nomination_pkt) {
 		sassy_error("Could not create nomination packet (%s)\n",
 			    __FUNCTION__);
 		return NULL;
