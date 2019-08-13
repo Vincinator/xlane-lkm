@@ -13,11 +13,17 @@ static u32 follower_timeout_ms;
 #define MIN_FTIMEOUT_NS 150000000
 #define MAX_FTIMEOUT_NS 300000000
 
+
 static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
 	sassy_dbg("Follower Timeout occured!\n");
 
-	// TODO: Start Candidature now!
+	err = node_transition(CANDIDATE);
+
+	if (err){
+		sassy_dbg("Restarting follower timer, due to an error that occured during the transition to candidate role\n");
+		return HRTIMER_RESTART;
+	}
 
 	return HRTIMER_NORESTART;
 }
@@ -25,7 +31,6 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 int follower_process_pkt(struct sassy_device *sdev, void *pkt)
 {
 
-	// Check if pkt is from leader
 	reset_timeout();
 	sassy_dbg("Timeout reset!\n");
 	return 0;
@@ -71,8 +76,7 @@ int stop_follower(void)
 {
 	struct consensus_priv *priv = con_priv();
 
-	hrtimer_try_to_cancel(&priv->ftimer);
-	return 0;
+	return hrtimer_try_to_cancel(&priv->ftimer);
 }
 
 int start_follower(void)

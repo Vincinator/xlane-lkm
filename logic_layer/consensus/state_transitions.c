@@ -17,15 +17,32 @@ static char *node_state_name(enum node_state state)
 	}
 }
 
-int node_transition(struct sassy_device *sdev, enum node_state state)
+int node_transition(enum node_state state)
 {
-	struct sassy_protocol *sproto = sdev->proto;
-	struct consensus_priv *priv =
-		(struct consensus_priv *)sproto->priv;
-	int err;
+	struct consensus_priv *priv = con_priv();
+	int err = 0;
 
 	sassy_dbg("node transition from %s to %s\n",
 		node_state_name(priv->nstate), node_state_name(state));
+
+	switch(priv->state) {
+		case FOLLOWER:
+			err = stop_follower();
+			break;
+		case CANDIDATE:
+			err = stop_candidate();
+			break;
+		case LEADER:
+			err = stop_leader();
+			break;
+		default:
+			sassy_dbg("No previous state was defined\n");
+	}
+
+	if(err){
+		sassy_dbg("Failed to stop previous role\n");
+		goto error;
+	}
 
 	switch (state) {
 	case FOLLOWER:
@@ -42,8 +59,10 @@ int node_transition(struct sassy_device *sdev, enum node_state state)
 		err = -EINVAL;
 	}
 
-	if (err)
+	if (err){
+		sassy_dbg("Failed to start new role\n");
 		goto error;
+	}
 
 	priv->nstate = state;
 	sassy_dbg(" node transition was successfull ");

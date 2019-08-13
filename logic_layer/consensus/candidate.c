@@ -13,7 +13,11 @@ int candidate_process_pkt(struct sassy_device *sdev, void* pkt)
 
 int start_candidate(void)
 {
+	struct consensus_priv *priv = con_priv();
 
+	priv->nstate = CANDIDATE;
+	priv->term++;
+	
 	return 0;
 }
 EXPORT_SYMBOL(start_candidate);

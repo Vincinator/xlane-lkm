@@ -14,7 +14,7 @@ int consensus_init(struct sassy_device *sdev)
 	int err;
 
 	// Transition to Follower State
-	err = node_transition(sdev, FOLLOWER);
+	err = node_transition(FOLLOWER);
 
 	if (err)
 		goto error;

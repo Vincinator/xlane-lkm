@@ -19,7 +19,7 @@ static struct sassy_protocol consensus_protocol;
 static struct consensus_priv priv;
 
 
-static struct consensus_priv *con_priv(void)
+struct consensus_priv *con_priv(void)
 {
 	return &priv;
 }
