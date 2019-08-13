@@ -84,6 +84,8 @@ int candidate_process_pkt(struct sassy_device *sdev, void* pkt)
 
 int stop_candidate(void)
 {
+	struct consensus_priv *priv = con_priv();
+
 	if(priv->ctimer_init == 0)
 		return 0;
 	priv->ctimer_init = 0;
