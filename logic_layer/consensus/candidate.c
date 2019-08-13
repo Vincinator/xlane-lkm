@@ -54,7 +54,7 @@ int broadcast_nomination(void)
 		nom_broad_skbs[i] = compose_skb(priv->sdev, naddr, payload);
 	}
 
-	send_pkts(sdev,nom_broad_skbs, sdev->pminfo.num_of_targets);
+	send_pkts(priv->sdev, nom_broad_skbs, priv->sdev->pminfo.num_of_targets);
 
 	priv->votes = 1; // selfvote
 
