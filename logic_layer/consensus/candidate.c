@@ -27,18 +27,6 @@ struct nomination_pkt_data *setup_broadcast_payload(void) {
 }
 
 
-
-
-
-
-int oneshot_send_pkts()
-{
-	send_pkt();
-
-	return 0;
-}
-
-
 int broadcast_nomination(void)
 {
 	void *payload;
