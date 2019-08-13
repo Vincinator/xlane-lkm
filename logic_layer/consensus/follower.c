@@ -6,7 +6,7 @@
 
 
 #include "include/follower.h"
-
+#include "include/sassy_consensus.h"
 
 static u32 follower_timeout_ms;
 
