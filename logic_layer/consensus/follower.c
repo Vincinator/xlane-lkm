@@ -13,13 +13,18 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
 	int err;
 	
+	if(priv->ftimer_init = 0) {
+		sassy_dbg("ftimer was stopped before - quiting ftimer without restart now");
+		return HRTIMER_NORESTART;
+	}
+
 	sassy_dbg("Follower Timeout occured!\n");
 
 	err = node_transition(CANDIDATE);
 
 	if (err){
-		sassy_dbg("Restarting follower timer, due to an error that occured during the transition to candidate role\n");
-		return HRTIMER_RESTART;
+		sassy_dbg("Error occured during the transition to candidate role\n");
+		return HRTIMER_NORESTART;
 	}
 
 	return HRTIMER_NORESTART;
@@ -66,10 +71,12 @@ void reset_ftimeout(void)
 int stop_follower(void)
 {
 	struct consensus_priv *priv = con_priv();
+
 	if(priv->ftimer_init == 0)
 		return 0;
+
 	priv->ftimer_init = 0;
-	return hrtimer_try_to_cancel(&priv->ftimer);
+	return hrtimer_try_to_cancel(&priv->ftimer) != -1;
 }
 
 int start_follower(void)

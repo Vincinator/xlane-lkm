@@ -25,25 +25,6 @@ int node_transition(enum node_state state)
 	sassy_dbg("node transition from %s to %s\n",
 		node_state_name(priv->nstate), node_state_name(state));
 
-	switch(priv->nstate) {
-		case FOLLOWER:
-			err = stop_follower();
-			break;
-		case CANDIDATE:
-			err = stop_candidate();
-			break;
-		case LEADER:
-			err = stop_leader();
-			break;
-		default:
-			sassy_dbg("No previous state was defined\n");
-	}
-
-	if(err){
-		sassy_dbg("Failed to stop previous role\n");
-		goto error;
-	}
-
 	switch (state) {
 	case FOLLOWER:
 		err = start_follower();
@@ -60,7 +41,7 @@ int node_transition(enum node_state state)
 	}
 
 	if (err){
-		sassy_dbg("Failed to start new role\n");
+		sassy_error("Failed to start new role\n");
 		goto error;
 	}
 

@@ -89,7 +89,7 @@ int stop_candidate(void)
 	if(priv->ctimer_init == 0)
 		return 0;
 	priv->ctimer_init = 0;
-	return hrtimer_try_to_cancel(&priv->ctimer);
+	return hrtimer_try_to_cancel(&priv->ctimer)  = -1;
 }
 
 int start_candidate(void)
