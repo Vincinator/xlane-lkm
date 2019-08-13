@@ -49,7 +49,7 @@ void init_ctimeout(void)
 
 	hrtimer_init(&priv->ctimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
 	priv->ctimer_init = 1;
-	priv->ftimer.function = &_handle_candidate_timeout;
+	priv->ctimer.function = &_handle_candidate_timeout;
 
 	hrtimer_start(&priv->ctimer, timeout, HRTIMER_MODE_REL_PINNED);
 	sassy_dbg("candidate timeout initialized and started\n");
