@@ -21,9 +21,9 @@ struct nomination_pkt_data *setup_broadcast_payload(void) {
 
 	payload = (struct nomination_pkt_data *) kmalloc(sizeof(struct nomination_pkt_data),GFP_KERNEL);
 
-	payload.candidate_id = priv->node_id;
-	payload.term = priv->term;
-	payload.msg_type = NOMINATION;
+	payload->candidate_id = priv->node_id;
+	payload->term = priv->term;
+	payload->msg_type = NOMINATION;
 
 	return payload;
 }
