@@ -12,7 +12,7 @@
 
 
 
-static struct skb nom_broad_skbs[MAX_NODE_ID];
+static struct sk_buff nom_broad_skbs[MAX_NODE_ID];
 
 
 struct nomination_pkt_data *setup_broadcast_payload(void) {
