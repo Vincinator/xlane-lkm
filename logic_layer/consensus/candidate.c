@@ -32,7 +32,9 @@ int broadcast_nomination(void)
 {
 	void *payload;
 	struct consensus_priv *priv = con_priv();
-
+	struct node_addr *naddr;
+	int i;
+	
 	payload = (void *) setup_broadcast_payload(void);
 
 	for(i = 0, i < MAX_NODE_ID; i++) {
@@ -40,7 +42,7 @@ int broadcast_nomination(void)
 		nom_broad_skbs[i] = compose_skb(priv->sdev, naddr, payload);
 	}
 
-	
+
 
 	// One Shot send skbs to all nodes in cluster
 
