@@ -188,83 +188,41 @@ inline void add_payload(struct sk_buff *skb, void *payload)
 		       SASSY_PAYLOAD_BYTES, 0);
 }
 
-struct sk_buff *compose_heartbeat_skb(struct sassy_device *sdev, int target_nid)
-{
-	struct sk_buff *hb_pkt = NULL;
-	struct pminfo *spminfo = &sdev->pminfo;
-	struct net_device *dev = sdev->ndev;
-	struct sassy_packet_data *hparams;
 
-	u32 local_ipaddr;
-
-	if (!spminfo) {
-		sassy_error(" spminfo is invalid\n");
-		return NULL;
-	}
-
-	hparams = &spminfo->pm_targets[target_nid].pkt_data;
-
-	hb_pkt = prepare_heartbeat_skb(dev);
-
-	if (!hb_pkt) {
-		sassy_error("Could not create heartbeat packet (%s)\n",
-			    __FUNCTION__);
-		return NULL;
-	}
-
-	local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
-
-	add_L2_header(hb_pkt, dev->dev_addr, hparams->dst_mac);
-	add_L3_header(hb_pkt, local_ipaddr, hparams->dst_ip);
-	add_L4_header(hb_pkt);
-	add_payload(hb_pkt, hparams->pkt_payload[hparams->hb_active_ix]);
-
-	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
-		       hparams->pkt_payload[hparams->hb_active_ix],
-		       SASSY_PAYLOAD_BYTES, 0);
-
-	sassy_dbg("Composed Heartbeat\n");
-	return hb_pkt;
-}
-EXPORT_SYMBOL(compose_heartbeat_skb);
-
-struct sk_buff *compose_nomination_skb(struct sassy_device *sdev,
-				      int target_nid, void *nomination_payload)
+struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
+							void *payload)
 {
 	struct sk_buff *nomination_pkt = NULL;
 	struct pminfo *spminfo = &sdev->pminfo;
 	struct net_device *dev = sdev->ndev;
-	struct sassy_packet_data *hparams;
 
 	u32 local_ipaddr;
 
 	if (!spminfo) {
-		sassy_error(" spminfo is invalid\n");
+		sassy_error("spminfo is invalid\n");
 		return NULL;
 	}
-
-	hparams = &spminfo->pm_targets[target_nid].pkt_data;
 
 	nomination_pkt = prepare_heartbeat_skb(dev);
 
 	if (!nomination_pkt) {
-		sassy_error("Could not create nomination packet (%s)\n",
+		sassy_error("Could not compose packet (%s)\n",
 			    __FUNCTION__);
 		return NULL;
 	}
 
 	local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
 
-	add_L2_header(nomination_pkt, dev->dev_addr, hparams->dst_mac);
-	add_L3_header(nomination_pkt, local_ipaddr, hparams->dst_ip);
+	add_L2_header(nomination_pkt, dev->dev_addr, naddr->dst_mac);
+	add_L3_header(nomination_pkt, local_ipaddr, naddr->dst_ip);
 	add_L4_header(nomination_pkt);
-	add_payload(nomination_pkt, nomination_payload);
+	add_payload(nomination_pkt, payload);
 
 	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
-		       nomination_payload,
+		       payload,
 		       SASSY_PAYLOAD_BYTES, 0);
 
-	sassy_dbg("Composed nomination packet\n");
+	sassy_dbg("Composed packet\n");
 	return nomination_pkt;
 }
 EXPORT_SYMBOL(compose_nomination_skb);

@@ -307,7 +307,7 @@ int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 	}
 
 	pmtarget->pkt_data.hb_active_ix = 0;
-	pmtarget->pkt_data.dst_ip = ip;
+	pmtarget->pkt_data.naddr.dst_ip = ip;
 	pmtarget->pkt_data.protocol_id = protocol_id;
 
 	pmtarget->pkt_data.pkt_payload[0] =
@@ -318,7 +318,7 @@ int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 	sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload[0]);
 	sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload[1]);
 
-	memcpy(&pmtarget->pkt_data.dst_mac, mac, sizeof(unsigned char) * 6);
+	memcpy(&pmtarget->pkt_data.naddr.dst_mac, mac, sizeof(unsigned char) * 6);
 
 	sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 

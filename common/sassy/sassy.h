@@ -103,9 +103,14 @@ struct sassy_process_info {
 	u8 ps; /* Status of remote process */
 };
 
-struct sassy_packet_data {
+struct node_address {
+	int cluster_id;
 	u32 dst_ip;
 	unsigned char dst_mac[6];
+}; 
+
+struct sassy_packet_data {
+	struct node_addr naddr;
 
 	u8 protocol_id;
 
@@ -263,10 +268,8 @@ u32 sassy_ip_convert(const char *str);
  */
 unsigned char *sassy_convert_mac(const char *str);
 
-struct sk_buff *compose_heartbeat_skb(struct sassy_device *sdev, int host_number);
-
-struct sk_buff *compose_nomination_skb(struct sassy_device *sdev, int host_number,
-									void *nomination_payload);
+struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
+									void *payload);
 
 struct net_device *sassy_get_netdevice(int ifindex);
 
