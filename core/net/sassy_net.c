@@ -257,8 +257,8 @@ int send_pkts(struct sassy_device *sdev, struct sk_buff **skbs, int num_pkts)
 	int i;
 
 	/* If netdev is offline, then stop pacemaker */
-	if (unlikely(!netif_running(ndev) ||
-		     !netif_carrier_ok(ndev))) {
+	if (unlikely(!netif_running(sdev->ndev) ||
+		     !netif_carrier_ok(sdev->ndev))) {
 		return -1;
 	}
 
