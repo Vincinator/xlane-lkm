@@ -16,6 +16,8 @@ static u32 follower_timeout_ms;
 
 static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
+	int err;
+	
 	sassy_dbg("Follower Timeout occured!\n");
 
 	err = node_transition(CANDIDATE);
