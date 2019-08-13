@@ -13,11 +13,6 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
 	int err;
 	
-	if(priv->ftimer_init = 0) {
-		sassy_dbg("ftimer was stopped before - quiting ftimer without restart now");
-		return HRTIMER_NORESTART;
-	}
-
 	sassy_dbg("Follower Timeout occured!\n");
 
 	err = node_transition(CANDIDATE);
