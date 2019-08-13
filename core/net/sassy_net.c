@@ -263,6 +263,8 @@ int send_pkts(struct sassy_device *sdev, struct sk_buff **skbs, int num_pkts)
 	}
 
 	for (i = 0; i < num_pkts; i++) {
+		if(!skbs[i])
+			continue;
 		send_pkt(sdev->ndev, skbs[i]);
 	}
 	return 0;

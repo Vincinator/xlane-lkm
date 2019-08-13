@@ -337,7 +337,9 @@ static ssize_t sassy_target_write(struct file *file,
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
 		sassy_dbg(" reading: '%s'", input_str);
-		if (strcmp(input_str, " ") == 0 || strlen(input_str) <= 0 || strcmp(input_str,'\0') == 0)
+		if (!input_str || strcmp(input_str, " ") == 0 ||
+						  strlen(input_str) <= 0 ||
+						  strcmp(input_str,'\0') == 0)
 			continue;
 		if (i > SASSY_TARGETS_BUF) {
 			sassy_error(
@@ -351,7 +353,7 @@ static ssize_t sassy_target_write(struct file *file,
 					    __FUNCTION__);
 				return -EINVAL;
 			}
-			sassy_dbg(" ip: %s\n", input_str);
+			sassy_dbg("ip: %s\n", input_str);
 			state = 1;
 		} else if (state == 1) {
 			current_mac = sassy_convert_mac(input_str);
