@@ -60,17 +60,16 @@ void pm_state_transition_to(struct pminfo *spminfo,
 	spminfo->state = state;
 }
 
-static inline void sassy_setup_skbs(struct pminfo *spminfo)
+static inline void sassy_setup_skbs(struct sassy_device *sdev)
 {
 	int i;
-	struct sassy_device *sdev =
-		container_of(spminfo, struct sassy_device, pminfo);
+	struct pminfo *spminfo = &sdev->pminfo;
 
 	BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 		/* Setup SKB */
-		spminfo->pm_targets[i].skb = sassy_setup_hb_packet(spminfo, i);
+		spminfo->pm_targets[i].skb = compose_heartbeat_skb(sdev, i);
 		skb_set_queue_mapping(
 			spminfo->pm_targets[i].skb,
 			smp_processor_id());
@@ -191,6 +190,7 @@ static inline int _validate_pm(struct sassy_device *sdev,
 
 	return 0;
 }
+
 static int sassy_pm_loop(void *data)
 {
 	uint64_t prev_time, cur_time;
@@ -205,7 +205,7 @@ static int sassy_pm_loop(void *data)
 	ktime_t currtime, interval;
 	int err;
 
-	sassy_setup_skbs(spminfo);
+	sassy_setup_skbs(sdev);
 
 	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
@@ -263,7 +263,7 @@ static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	interval = ktime_set(0, 100000000);
 	hrtimer_forward(timer, currtime, interval);
 
-	sassy_setup_skbs(spminfo);
+	sassy_setup_skbs(sdev);
 
 	get_cpu(); /* disable preemption */
 
@@ -279,22 +279,6 @@ static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	return HRTIMER_RESTART;
 }
 
-struct sk_buff *sassy_setup_hb_packet(struct pminfo *si,
-				 int host_number)
-{
-	struct sassy_device *sdev =
-		container_of(si, struct sassy_device, pminfo);
-
-	if (!si) {
-		sassy_error(
-			"Could not setup skb, pminfo is NULL\n");
-		return NULL;
-	}
-
-	sassy_dbg("Composing skb.\n");
-
-	return compose_heartbeat_skb(sdev->ndev, si, host_number);
-}
 
 int sassy_pm_start_timer(void *data)
 {

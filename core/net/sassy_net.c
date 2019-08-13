@@ -188,11 +188,11 @@ inline void add_payload(struct sk_buff *skb, void *payload)
 		       SASSY_PAYLOAD_BYTES, 0);
 }
 
-struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
-				      struct pminfo *spminfo,
-				      int host_number)
+struct sk_buff *compose_heartbeat_skb(struct sassy_device *sdev, int target_node_id)
 {
 	struct sk_buff *hb_pkt = NULL;
+	struct pminfo *spminfo = &sdev->pminfo;
+	struct net_device *dev = sdev->ndev;
 	struct sassy_packet_data *hparams;
 
 	u32 local_ipaddr;
@@ -215,8 +215,7 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 	local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
 
 	add_L2_header(hb_pkt, dev->dev_addr, hparams->dst_mac);
-	add_L3_header(hb_pkt, local_ipaddr,
-					hparams->dst_ip);
+	add_L3_header(hb_pkt, local_ipaddr, hparams->dst_ip);
 	add_L4_header(hb_pkt);
 	add_payload(hb_pkt, hparams->pkt_payload[hparams->hb_active_ix]);
 
@@ -228,3 +227,44 @@ struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
 	return hb_pkt;
 }
 EXPORT_SYMBOL(compose_heartbeat_skb);
+
+struct sk_buff *compose_nomination_skb(struct sassy_device *sdev,
+				      int host_number, void *nomination_payload)
+{
+	struct sk_buff *nomination_pkt = NULL;
+	struct pminfo *spminfo = &sdev->pminfo;
+	struct net_device *dev = sdev->ndev;
+	struct sassy_packet_data *hparams;
+
+	u32 local_ipaddr;
+
+	if (!spminfo) {
+		sassy_error(" spminfo is invalid\n");
+		return NULL;
+	}
+
+	hparams = &spminfo->pm_targets[host_number].pkt_data;
+
+	hb_pkt = prepare_heartbeat_skb(dev);
+
+	if (!hb_pkt) {
+		sassy_error("Could not create nomination packet (%s)\n",
+			    __FUNCTION__);
+		return NULL;
+	}
+
+	local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
+
+	add_L2_header(nomination_pkt, dev->dev_addr, hparams->dst_mac);
+	add_L3_header(nomination_pkt, local_ipaddr, hparams->dst_ip);
+	add_L4_header(nomination_pkt);
+	add_payload(nomination_pkt, nomination_payload);
+
+	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
+		       nomination_payload,
+		       SASSY_PAYLOAD_BYTES, 0);
+
+	sassy_dbg("Composed nomination packet\n");
+	return nomination_pkt;
+}
+EXPORT_SYMBOL(compose_nomination_skb);

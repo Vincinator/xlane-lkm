@@ -164,7 +164,7 @@ struct pminfo {
 	int active_cpu;
 
 	int num_of_targets;
-	
+
 	struct sassy_pm_target_info pm_targets[MAX_REMOTE_SOURCES];
 
 	/* Test Data */
@@ -263,9 +263,10 @@ u32 sassy_ip_convert(const char *str);
  */
 unsigned char *sassy_convert_mac(const char *str);
 
-struct sk_buff *compose_heartbeat_skb(struct net_device *dev,
-				      struct pminfo *spminfo,
-				      int host_number);
+struct sk_buff *compose_heartbeat_skb(struct sassy_device *sdev, int host_number);
+
+struct sk_buff *compose_nomination_skb(struct sassy_device *sdev, int host_number,
+									void *nomination_payload);
 
 struct net_device *sassy_get_netdevice(int ifindex);
 
