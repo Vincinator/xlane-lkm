@@ -34,8 +34,8 @@ int broadcast_nomination(void)
 	struct consensus_priv *priv = con_priv();
 	struct node_addr *naddr;
 	int i;
-	
-	payload = (void *) setup_broadcast_payload(void);
+
+	payload = (void *) setup_broadcast_payload();
 
 	for(i = 0, i < MAX_NODE_ID; i++) {
 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
