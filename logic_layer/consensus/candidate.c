@@ -13,7 +13,7 @@
 
 int broadcast_nomination()
 {
-	compose_nomination_skb();
+	//compose_skb();
 	return 0;
 }
 
