@@ -225,4 +225,4 @@ struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 	sassy_dbg("Composed packet\n");
 	return nomination_pkt;
 }
-EXPORT_SYMBOL(compose_nomination_skb);
+EXPORT_SYMBOL(compose_skb);
