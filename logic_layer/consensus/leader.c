@@ -11,7 +11,11 @@ int leader_process_pkt(struct sassy_device *sdev, void* pkt)
 	return 0;
 }
 
+int stop_leader(void)
+{
 
+	return 0;
+}
 
 int start_leader(void)
 {

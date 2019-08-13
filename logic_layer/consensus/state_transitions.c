@@ -25,7 +25,7 @@ int node_transition(enum node_state state)
 	sassy_dbg("node transition from %s to %s\n",
 		node_state_name(priv->nstate), node_state_name(state));
 
-	switch(priv->state) {
+	switch(priv->nstate) {
 		case FOLLOWER:
 			err = stop_follower();
 			break;
