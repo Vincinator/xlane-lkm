@@ -4,6 +4,8 @@
 #include <sassy/sassy.h>
 
 
+#define MAX_NODE_ID 5
+
 /*
  * Every node starts as follower.
  *
