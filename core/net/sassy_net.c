@@ -188,7 +188,7 @@ inline void add_payload(struct sk_buff *skb, void *payload)
 		       SASSY_PAYLOAD_BYTES, 0);
 }
 
-struct sk_buff *compose_heartbeat_skb(struct sassy_device *sdev, int target_node_id)
+struct sk_buff *compose_heartbeat_skb(struct sassy_device *sdev, int target_nid)
 {
 	struct sk_buff *hb_pkt = NULL;
 	struct pminfo *spminfo = &sdev->pminfo;
@@ -202,7 +202,7 @@ struct sk_buff *compose_heartbeat_skb(struct sassy_device *sdev, int target_node
 		return NULL;
 	}
 
-	hparams = &spminfo->pm_targets[host_number].pkt_data;
+	hparams = &spminfo->pm_targets[target_nid].pkt_data;
 
 	hb_pkt = prepare_heartbeat_skb(dev);
 
@@ -229,7 +229,7 @@ struct sk_buff *compose_heartbeat_skb(struct sassy_device *sdev, int target_node
 EXPORT_SYMBOL(compose_heartbeat_skb);
 
 struct sk_buff *compose_nomination_skb(struct sassy_device *sdev,
-				      int host_number, void *nomination_payload)
+				      int target_nid, void *nomination_payload)
 {
 	struct sk_buff *nomination_pkt = NULL;
 	struct pminfo *spminfo = &sdev->pminfo;
@@ -243,7 +243,7 @@ struct sk_buff *compose_nomination_skb(struct sassy_device *sdev,
 		return NULL;
 	}
 
-	hparams = &spminfo->pm_targets[host_number].pkt_data;
+	hparams = &spminfo->pm_targets[target_nid].pkt_data;
 
 	hb_pkt = prepare_heartbeat_skb(dev);
 
