@@ -103,7 +103,7 @@ struct sassy_process_info {
 	u8 ps; /* Status of remote process */
 };
 
-struct node_address {
+struct node_addr {
 	int cluster_id;
 	u32 dst_ip;
 	unsigned char dst_mac[6];
