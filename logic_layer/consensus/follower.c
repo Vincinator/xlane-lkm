@@ -27,7 +27,6 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 
 int follower_process_pkt(struct sassy_device *sdev, void *pkt)
 {
-	struct 
 	reset_ftimeout();
 	sassy_dbg("Timeout reset!\n");
 	return 0;
