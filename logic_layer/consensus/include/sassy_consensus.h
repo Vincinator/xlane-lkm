@@ -6,6 +6,12 @@
 
 #define MAX_NODE_ID 5
 
+#define MIN_FTIMEOUT_NS 150000000
+#define MAX_FTIMEOUT_NS 300000000
+
+#define MIN_CTIMEOUT_NS 300000000
+#define MAX_CTIMEOUT_NS 600000000
+
 /*
  * Every node starts as follower.
  *

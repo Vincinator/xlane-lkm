@@ -10,9 +10,6 @@
 
 static u32 follower_timeout_ms;
 
-#define MIN_FTIMEOUT_NS 150000000
-#define MAX_FTIMEOUT_NS 300000000
-
 
 static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
@@ -33,7 +30,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 int follower_process_pkt(struct sassy_device *sdev, void *pkt)
 {
 
-	reset_timeout();
+	reset_ftimeout();
 	sassy_dbg("Timeout reset!\n");
 	return 0;
 }
