@@ -2,6 +2,8 @@
 
 #include <sassy/sassy.h>
 
+#include "sassy_consensus.h"
+
 struct nomination_pkt_data {
 	enum cmsg_type msg_type;
 	int candidate_id; 
