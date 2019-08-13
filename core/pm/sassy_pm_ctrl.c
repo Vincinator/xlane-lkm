@@ -405,7 +405,7 @@ static int sassy_target_show(struct seq_file *m, void *v)
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 		sassy_hex_to_ip(current_ip,
-				spminfo->pm_targets[i].pkt_data.dst_ip);
+				spminfo->pm_targets[i].pkt_data.naddr.dst_ip);
 		seq_printf(m, "(%s,", current_ip);
 		seq_printf(m, "%x:%x:%x:%x:%x:%x)\n",
 			   spminfo->pm_targets[i].pkt_data.naddr.dst_mac[0],
