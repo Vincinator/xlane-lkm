@@ -12,6 +12,8 @@
 
 #include <linux/kernel.h>
 
+#include <linux/compiler.h>
+
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
 
