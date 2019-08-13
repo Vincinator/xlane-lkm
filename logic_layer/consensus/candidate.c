@@ -97,7 +97,8 @@ int stop_candidate(void)
 int start_candidate(void)
 {
 	struct consensus_priv *priv = con_priv();
-
+	int i;
+	
 	if(nom_broad_skbs)
 		for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
 			if(nom_broad_skbs[i])
