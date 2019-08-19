@@ -91,6 +91,10 @@ static ssize_t proto_selector_write(struct file *file,
 	sdev->proto = sproto;
 	sdev->proto->ctrl_ops.init(sdev);
 
+	// Initialize leader election protocol implicitly
+	sdev->le_proto = get_consensus_proto();
+	sdev->le_proto->ctrl_ops.init(sdev);
+
 	return count;
 }
 
