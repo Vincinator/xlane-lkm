@@ -58,9 +58,9 @@ void init_ctimeout(void)
 
 void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, int p1, int p2)
 {
-	pkt_payload->le_payload.opcode = opcode;
-	pkt_payload->le_payload.param1 = p1;
-	pkt_payload->le_payload.param2 = p2;
+	pkt_payload->lep.opcode = opcode;
+	pkt_payload->lep.param1 = p1;
+	pkt_payload->lep.param2 = p2;
 }
 
 
