@@ -175,7 +175,7 @@ inline void add_L4_header(struct sk_buff *skb)
 	}
 }
 
-inline void add_payload(struct sk_buff *skb, void *payload)
+inline void add_payload(struct sk_buff *skb, struct sassy_payload *payload)
 {
 	void *data = (void *)skb_put(skb, SASSY_PAYLOAD_BYTES);
 
@@ -200,7 +200,7 @@ EXPORT_SYMBOL(is_ip_local);
 
 
 struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
-							void *payload)
+							struct sassy_payload *payload)
 {
 	struct sk_buff *nomination_pkt = NULL;
 	struct pminfo *spminfo = &sdev->pminfo;

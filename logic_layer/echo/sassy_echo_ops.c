@@ -54,11 +54,7 @@ int echo_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 
 int echo_init_payload(struct sassy_payload *payload)
 {
-	struct echo_payload *fd_p = (struct echo_payload *)payload;
 
-	fd_p->protocol_id = SASSY_PROTO_ECHO;
-	fd_p->message = 0;
-	fd_p->alive_rp = 0;
 
 	return 0;
 }

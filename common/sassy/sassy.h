@@ -279,7 +279,7 @@ u32 sassy_ip_convert(const char *str);
 unsigned char *sassy_convert_mac(const char *str);
 
 struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
-									void *payload);
+									struct sassy_payload *payload);
 
 struct net_device *sassy_get_netdevice(int ifindex);
 
