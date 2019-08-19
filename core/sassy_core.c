@@ -78,6 +78,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	u8 protocol_id = *payload_raw_ptr;
 	struct sassy_device *sdev = get_sdev(sassy_id);
 	struct sassy_protocol *sproto = NULL;
+	struct sassy_protocol *lesproto = NULL;
 
 	if (unlikely(!sdev)) {
 		sassy_error("sdev is NULL\n");
@@ -92,9 +93,10 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		return;
 	}
 
-	sproto = score->protocols[protocol_id];
+	sproto = sdev->proto;
+	lesproto = sdev->le_proto;
 
-	if (unlikely(!sproto)) {
+	if (unlikely(!sproto || !lesproto)) {
 		sassy_error("failed to get protocol handler\n");
 		return;
 	}
@@ -103,6 +105,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		sassy_write_timestamp(sdev, 2, rdtsc(), sassy_id);
 
 	sproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
+
+	lesproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
 
 	if (sdev->ts_state == SASSY_TS_RUNNING)
 		sassy_write_timestamp(sdev, 3, rdtsc(), sassy_id);
