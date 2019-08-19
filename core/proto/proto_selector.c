@@ -70,7 +70,10 @@ static ssize_t proto_selector_write(struct file *file,
 	}
 
 	if (sproto == sdev->proto) {
-		sassy_error("Protocol already enabled.\n");
+		sassy_error("Protocol already enabled. Clean and Stop Protocol\n");
+		sdev->proto->ctrl_ops.stop(sdev);
+		sdev->proto->ctrl_ops.clean(sdev);
+		sdev->proto->ctrl_ops.init(sdev);
 		return count;
 	}
 

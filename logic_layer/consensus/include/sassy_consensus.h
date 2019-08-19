@@ -32,6 +32,25 @@ enum node_state {
 	LEADER = 2,
 };
 
+/* 
+ * Each heartbeat contains one of the following operations 
+ *
+ * NOOP: 			This heartbeat does not contain an update
+ *					for the leader election
+ *
+ * NOMI(TERM): 		The sender of this message has nominated
+ *					itself to become the new leader of the cluster
+ *			   		for the given TERM (parameter1).
+ *
+ * VOTE(TERM,ID): 	The sender voted for the node with 
+ *					the given ID (parameter2) to become
+ *					the new leader in the TERM (parameter1).
+ */
+enum le_opcode {
+	NOOP = 0,
+	NOMI = 1,
+	VOTE = 2,
+};
 
 /* 
  * HB: message from leader
@@ -43,6 +62,7 @@ enum cmsg_type {
 	VOTE = 1,
 	NOMINATION = 2,
 };
+
 
 
 struct consensus_priv {

@@ -109,6 +109,18 @@ struct node_addr {
 	unsigned char dst_mac[6];
 }; 
 
+struct le_payload {
+	u8 opcode;
+	u32 param1;
+	u32 param2; 
+};
+
+struct sassy_payload {
+	struct le_payload lep;
+	char other_payload[64]; // TODO: size of payload..
+};
+
+
 struct sassy_packet_data {
 	struct node_addr naddr;
 
@@ -118,11 +130,8 @@ struct sassy_packet_data {
 	 * Thus, we need a copy of pkt_payload to continue the copy in the pacemaker
 	 * even when a new version is currently written.
 	 *
-	 * The hb_active_ix member of this struct tells which index can be used by the pacemaker.
-	 * 
-	 * Size of pkt_payload MUST be SASSY_PAYLOAD_BYTES 
-	 */
-	void *pkt_payload[2];
+	 * The hb_active_ix member of this struct tells which index can be used by the pacemaker */
+	struct sassy_payload *pkt_payload[2];
 
 	int hb_active_ix;
 

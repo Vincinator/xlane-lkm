@@ -11,12 +11,27 @@
 
 int consensus_init(struct sassy_device *sdev)
 {
-	int err;
+	
 	struct consensus_priv *priv = con_priv();
 
 	priv->sdev = sdev;
 	priv->ctimer_init = 0;
 	priv->ftimer_init = 0;
+
+	return 0;
+}
+
+int consensus_init_payload(void *payload)
+{
+
+	return 0;
+}
+
+int consensus_start(struct sassy_device *sdev)
+{
+	int err;
+
+	sassy_dbg("consensus start\n");
 
 	// Transition to Follower State
 	err = node_transition(FOLLOWER);
@@ -31,21 +46,24 @@ error:
 	return err;
 }
 
-int consensus_init_payload(void *payload)
-{
-
-	return 0;
-}
-
-int consensus_start(struct sassy_device *sdev)
-{
-	sassy_dbg("consensus start\n");
-	return 0;
-}
-
 int consensus_stop(struct sassy_device *sdev)
 {
+	struct consensus_priv *priv = con_priv();
+	
 	sassy_dbg("consensus stop\n");
+
+	switch(priv->nstate) {
+		case FOLLOWER:
+			stop_follower();
+			break;
+		case CANDIDATE:
+			stop_candidate();
+			break;
+		case LEADER:
+			stop_leader();
+			break;
+	}
+
 	return 0;
 }
 

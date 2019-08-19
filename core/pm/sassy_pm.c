@@ -65,7 +65,7 @@ static inline void sassy_setup_hb_skbs(struct sassy_device *sdev)
 	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
 	int hb_active_ix;
-	void *pkt_payload;
+	struct sassy_payload *pkt_payload;
 	struct node_addr *naddr;
 
 	BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
@@ -120,7 +120,7 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 static inline int _emit_pkts(struct sassy_device *sdev,
 		struct pminfo *spminfo)
 {
-	void *pkt_payload;
+	struct sassy_payload *pkt_payload;
 	int i;
 	int ret;
 	int hb_active_ix;
@@ -207,7 +207,7 @@ static int sassy_pm_loop(void *data)
 	struct sassy_device *sdev = (struct sassy_device *) data;
 	struct pminfo *spminfo = &sdev->pminfo;
 
-	void *pkt_payload;
+	struct sassy_payload *pkt_payload;
 	int i;
 	int ret;
 	int hb_active_ix;
@@ -259,7 +259,7 @@ static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	struct sassy_device *sdev =
 			container_of(spminfo, struct sassy_device, pminfo);
 
-	void *pkt_payload;
+	struct sassy_payload *pkt_payload;
 	int i;
 	int ret;
 	int hb_active_ix;
