@@ -21,7 +21,7 @@ int consensus_init(struct sassy_device *sdev)
 	return 0;
 }
 
-int consensus_init_payload(void *payload)
+int consensus_init_payload(struct sassy_payload *payload)
 {
 
 	return 0;

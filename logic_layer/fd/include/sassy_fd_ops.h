@@ -12,4 +12,4 @@ int fd_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 int fd_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 	       uint64_t ts);
 int fd_us_update(struct sassy_device *sdev, void *payload);
-int fd_init_payload(void *payload);
+int fd_init_payload(struct sassy_payload *payload);
