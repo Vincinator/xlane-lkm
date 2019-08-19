@@ -132,21 +132,23 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		     !netif_carrier_ok(ndev))) {
 		return -1;
 	}
+	
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
 		// Always update payload to avoid jitter!
 		hb_active_ix =
 		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
+
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
 		//Direct Updates - No double buffer
-		if (sdev->proto->ctrl_ops.us_update != NULL)
-			sdev->proto->ctrl_ops.us_update(sdev, pkt_payload);
+		//if (sdev->proto->ctrl_ops.us_update != NULL)
+		//	sdev->proto->ctrl_ops.us_update(sdev, pkt_payload);
 
-		sassy_update_skb_payload(spminfo->pm_targets[i].skb,
-					 pkt_payload);
+		//sassy_update_skb_payload(spminfo->pm_targets[i].skb,
+		//			 pkt_payload);
 
 		if (sdev->verbose)
 			print_hex_dump(KERN_DEBUG,
