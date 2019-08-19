@@ -40,3 +40,5 @@ struct fd_payload {
 	u8 alive_rp; /* Number of alive processes */
 	struct sassy_process_info pinfo[MAX_PROCESSES_PER_HOST];
 };
+
+

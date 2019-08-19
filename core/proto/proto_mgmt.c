@@ -25,16 +25,27 @@ static LIST_HEAD(available_protocols_l);
 
 struct sassy_protocol *sassy_find_protocol_by_id(u8 protocol_id)
 {
-	struct sassy_protocol *sproto, *tmp_proto;
+	struct sassy_protocol *sproto;
+	enum sassy_protocol_type proto_type = (enum sassy_protocol_type)protocol_id;
+
 	sproto = NULL;
 
-
-	list_for_each_entry(tmp_proto, &available_protocols_l, listh) {
-		if (tmp_proto->proto_type == protocol_id) {
-			sproto = tmp_proto;
+	switch(proto_type)
+	{
+		case SASSY_PROTO_CONSENSUS:
+			sproto = get_consensus_proto();
 			break;
-		}
+		case SASSY_PROTO_FD:
+			sproto = get_fd_proto();
+			break;
+		case SASSY_PROTO_ECHO:
+			sproto = get_echo_proto();
+			break;
+		default:
+			sassy_error("not a known protocol id\n");
+			break;
 	}
+
 	return sproto;
 }
 EXPORT_SYMBOL(sassy_find_protocol_by_id);

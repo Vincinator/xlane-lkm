@@ -33,18 +33,32 @@ static const struct sassy_protocol_ctrl_ops echo_ops = {
 static int __init sassy_app_echo_init(void)
 {
 	sassy_dbg("init\n");
-	echo_protocol.proto_type = SASSY_PROTO_ECHO;
-	echo_protocol.name = "echo";
-	echo_protocol.ctrl_ops = echo_ops;
-	echo_protocol.priv = (void *)&echo_priv;
-	sassy_register_protocol(&echo_protocol);
 	return 0;
 }
+
+struct sassy_protocol *get_echo_proto(void)
+{
+	struct sassy_protocol *proto;
+
+	proto = kmalloc(sizeof(sassy_protocol), GFP_KERNEL);
+
+	if(!proto)
+		goto error;
+
+	proto->proto_type = SASSY_PROTO_ECHO;
+	proto->ctrl_ops = echo_ops;
+	proto->name = "echo";
+	proto->priv = (void *)&echo_priv;
+	return proto;
+error:
+	sassy_dbg("Error in %s", __FUNCTION__);
+	return NULL;
+}
+EXPORT_SYMBOL(get_fd_proto);
 
 static void __exit sassy_app_echo_exit(void)
 {
 	sassy_dbg("exit\n");
-	sassy_remove_protocol(&echo_protocol);
 }
 
 module_init(sassy_app_echo_init);

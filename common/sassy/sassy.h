@@ -206,8 +206,9 @@ struct sassy_device {
 	/* SASSY CTRL Structures */
 	struct pminfo pminfo;
 
-	/* Can only use one protocol at a time. */
+	struct sassy_protocol *le_proto;
 	struct sassy_protocol *proto;
+
 };
 
 struct sassy_protocol_ctrl_ops {
@@ -338,5 +339,9 @@ void send_pkt(struct net_device *ndev, struct sk_buff *skb);
 int send_pkts(struct sassy_device *sdev, struct sk_buff **skbs, int num_pkts);
 
 int is_ip_local(struct net_device *dev,	u32 ip_addr);
+
+struct sassy_protocol *get_consensus_proto(void);
+struct sassy_protocol *get_fd_proto(void);
+struct sassy_protocol *get_echo_proto(void);
 
 #endif /* _SASSY_H_ */

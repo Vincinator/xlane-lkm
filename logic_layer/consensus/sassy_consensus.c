@@ -18,7 +18,6 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CONSENSUS]"
 
-static struct sassy_protocol consensus_protocol;
 static struct consensus_priv priv;
 
 
@@ -59,6 +58,27 @@ static int __init sassy_consensus_init(void)
 	sassy_register_protocol(&consensus_protocol);
 	return 0;
 }
+
+struct sassy_protocol *get_consensus_proto(void)
+{
+	struct sassy_protocol *proto;
+
+	proto = kmalloc(sizeof(sassy_protocol), GFP_KERNEL);
+
+	if(!proto)
+		goto error;
+
+	proto->proto_type = SASSY_PROTO_CONSENSUS;
+	proto->ctrl_ops = consensus_ops;
+	proto->name = "consensus";
+	proto->priv = (void *)&priv;
+
+	return proto;
+error:
+	sassy_dbg("Error in %s", __FUNCTION__);
+	return NULL;
+}
+EXPORT_SYMBOL(get_consensus_proto);
 
 static void __exit sassy_consensus_exit(void)
 {

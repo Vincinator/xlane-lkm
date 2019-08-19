@@ -16,7 +16,6 @@ MODULE_VERSION("0.01");
 #define LOG_PREFIX "[SASSY][PROTOCOL][FD]"
 
 static struct sassy_fd_priv fd_priv;
-static struct sassy_protocol fd_protocol;
 
 static const struct sassy_protocol_ctrl_ops fd_ops = {
 	.init = fd_init,
@@ -33,22 +32,33 @@ static const struct sassy_protocol_ctrl_ops fd_ops = {
 
 static int __init sassy_fd_init(void)
 {
-	sassy_dbg("init\n");
 
-	fd_protocol.proto_type = SASSY_PROTO_FD;
-	fd_protocol.ctrl_ops = fd_ops;
-	fd_protocol.name = "fd";
-	fd_protocol.priv = (void *)&fd_priv;
-
-	sassy_register_protocol(&fd_protocol);
 	return 0;
 }
+
+struct sassy_protocol *get_fd_proto(void)
+{
+	struct sassy_protocol *proto;
+
+	proto = kmalloc(sizeof(sassy_protocol), GFP_KERNEL);
+
+	if(!proto)
+		goto error;
+
+	proto->proto_type = SASSY_PROTO_FD;
+	proto->ctrl_ops = fd_ops;
+	proto->name = "fd";
+	proto->priv = (void *)&fd_priv;
+	return proto;
+error:
+	sassy_dbg("Error in %s", __FUNCTION__);
+	return NULL;
+}
+EXPORT_SYMBOL(get_fd_proto);
 
 static void __exit sassy_fd_exit(void)
 {
 	sassy_dbg("exit\n");
-
-	sassy_remove_protocol(&fd_protocol);
 }
 
 module_init(sassy_fd_init);
