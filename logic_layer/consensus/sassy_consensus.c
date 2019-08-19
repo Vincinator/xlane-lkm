@@ -36,7 +36,6 @@ ktime_t get_rnd_timeout(void)
 			prandom_u32_max(MAX_FTIMEOUT_NS - MIN_FTIMEOUT_NS));
 }
 
-
 static const struct sassy_protocol_ctrl_ops consensus_ops = {
 	.init = consensus_init,
 	.start = consensus_start,
@@ -53,13 +52,6 @@ static const struct sassy_protocol_ctrl_ops consensus_ops = {
 static int __init sassy_consensus_init(void)
 {
 	sassy_dbg("init consensus protocol\n");
-
-	consensus_protocol.proto_type = SASSY_PROTO_CONSENSUS;
-	consensus_protocol.ctrl_ops = consensus_ops;
-	consensus_protocol.name = "consensus";
-	consensus_protocol.priv = (void *)&priv;
-
-	sassy_register_protocol(&consensus_protocol);
 	return 0;
 }
 
