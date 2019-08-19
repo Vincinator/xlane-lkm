@@ -6,6 +6,10 @@
 #include <linux/random.h>
 #include <linux/timer.h>
 
+#include <sassy/sassy.h>
+#include <linux/slab.h>
+
+
 #include "include/sassy_consensus_ops.h"
 #include "include/sassy_consensus.h"
 
