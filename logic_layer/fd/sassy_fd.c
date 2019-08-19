@@ -40,7 +40,7 @@ struct sassy_protocol *get_fd_proto(void)
 {
 	struct sassy_protocol *proto;
 
-	proto = kmalloc(sizeof(sassy_protocol), GFP_KERNEL);
+	proto = kmalloc(sizeof(struct sassy_protocol), GFP_KERNEL);
 
 	if(!proto)
 		goto error;
