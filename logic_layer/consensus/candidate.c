@@ -10,26 +10,6 @@
 #include "include/candidate.h"
 #include "include/sassy_consensus.h"
 
-
-static struct sk_buff **nom_broad_skbs;
-
-struct nomination_pkt_data *setup_broadcast_payload(void) {
-	struct nomination_pkt_data *payload;
-	struct consensus_priv *priv = con_priv();
-
-	sassy_dbg("Composing Candidate Payload.\n");
-
-	payload = (struct nomination_pkt_data *) kzalloc(sizeof(struct nomination_pkt_data),GFP_KERNEL);
-
-	payload->candidate_id = priv->node_id;
-	payload->term = priv->term;
-	payload->msg_type = NOMINATION;
-
-	sassy_dbg("Candidate Payload Composed.\n");
-
-	return payload;
-}
-
 static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 {
 	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
