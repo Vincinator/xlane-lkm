@@ -270,21 +270,6 @@ int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 		return -1;
 	}
 
-	/* Check if Protocol ID is supported. */
-	if (protocol_id < 0 || protocol_id > MAX_PROTOCOLS) {
-		sassy_error("Protocol Number %d is invalid\n", protocol_id);
-		return -1;
-	}
-
-	sproto = score->protocols[protocol_id];
-
-	if (!sproto) {
-		sassy_error(
-			"Protocol id %d is valid, but protocol is not initialized. BUG.",
-			protocol_id);
-		return -1;
-	}
-
 	if (sdev->pminfo.num_of_targets >= MAX_REMOTE_SOURCES) {
 		sassy_error("Reached Limit of remote hosts.\n");
 		sassy_error("Limit is=%d\n", MAX_REMOTE_SOURCES);
@@ -315,9 +300,6 @@ int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 		kzalloc(sizeof(struct sassy_payload), GFP_KERNEL);
 	pmtarget->pkt_data.pkt_payload[1] =
 		kzalloc(sizeof(struct sassy_payload), GFP_KERNEL);
-
-	sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload[0]);
-	sproto->ctrl_ops.init_payload(pmtarget->pkt_data.pkt_payload[1]);
 
 	memcpy(&pmtarget->pkt_data.naddr.dst_mac, mac, sizeof(unsigned char) * 6);
 
