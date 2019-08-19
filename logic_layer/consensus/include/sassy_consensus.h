@@ -52,19 +52,6 @@ enum le_opcode {
 	VOTE = 2,
 };
 
-/* 
- * HB: message from leader
- * VOTE: message from follower to candidate
- * NOMINATION: message from candidate to all cluster nodes
- */
-enum cmsg_type {
-	HB = 0,
-	VOTE = 1,
-	NOMINATION = 2,
-};
-
-
-
 struct consensus_priv {
 
 	struct sassy_device *sdev;
