@@ -3,6 +3,7 @@
 #include <linux/kernel.h>
 #include <sassy/logger.h>
 #include <sassy/sassy.h>
+#include <linux/slab.h>
 
 #include "include/sassy_echo_ops.h"
 #include "include/sassy_echo.h"
