@@ -97,8 +97,23 @@ int broadcast_nomination(void)
 }
 
 
-int candidate_process_pkt(struct sassy_device *sdev, void* pkt)
+int candidate_process_pkt(struct sassy_device *sdev, struct sassy_payload * pkt)
 {
+
+	switch(pkt->lep.opcode){
+		case VOTE:
+			sassy_dbg("received vote! term=%d\n", pkt->lep.param1);
+			break;
+		case NOMI:
+			sassy_dbg("received nomination! term=%d\n", pkt->lep.param1);
+			break;		
+		case NOOP:
+			sassy_dbg("received NOOP! term=%d\n", pkt->lep.param1);
+			break;
+		default:
+			sassy_dbg("Unknown opcode received: %d\n", pkt->lep.opcode);
+	}
+
 	return 0;
 }
 
