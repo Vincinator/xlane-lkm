@@ -351,8 +351,8 @@ int sassy_pm_start_loop(void *data)
 	wake_up_process(heartbeat_task);
 
 	if(sdev->le_proto != NULL){
-		sdev->le_proto->ctrl_ops->init(sdev);
-		sdev->le_proto->ctrl_ops->start(sdev);
+		sdev->le_proto->ctrl_ops.init(sdev);
+		sdev->le_proto->ctrl_ops.start(sdev);
 	}
 
 
