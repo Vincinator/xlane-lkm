@@ -118,14 +118,9 @@ static ssize_t sassy_verbose_ctrl_write(struct file *file,
 		return err;
 	}
 
-	if (new_state == 0) {
-		sdev->verbose = 0;
-		sassy_dbg("verbose mode disabled\n");
+	sdev->verbose = new_state;
+	sassy_dbg("verbosity level set to %d\n", new_state);
 
-	} else {
-		sdev->verbose = 1;
-		sassy_dbg("verbose mode enabled\n");
-	}
 	return count;
 }
 
@@ -137,7 +132,7 @@ static int sassy_verbose_ctrl_show(struct seq_file *m, void *v)
 	if (!sdev)
 		return -ENODEV;
 
-	seq_printf(m, "sassy device verbosity: %d\n", sdev->verbose);
+	seq_printf(m, "sassy device verbosity level is set to %d\n", sdev->verbose);
 
 	return 0;
 }

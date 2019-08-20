@@ -10,6 +10,9 @@
 #include "include/candidate.h"
 #include "include/sassy_consensus.h"
 
+#undef LOG_PREFIX
+#define LOG_PREFIX "[SASSY][LE][CANDIDATE]"
+
 static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 {
 	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
@@ -77,6 +80,8 @@ int broadcast_nomination(struct sassy_device *sdev)
 
 int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
 {
+	if(sdev->verbose >= 2)
+		sassy_dbg("received packet to process\n");
 
 	switch(pkt->lep.opcode){
 	case VOTE:

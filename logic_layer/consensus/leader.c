@@ -5,6 +5,8 @@
 #include "include/leader.h"
 #include "include/sassy_consensus.h"
 
+#undef LOG_PREFIX
+#define LOG_PREFIX "[SASSY][LE][LEADER]"
 
 int leader_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
 {

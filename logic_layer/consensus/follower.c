@@ -8,6 +8,9 @@
 #include "include/follower.h"
 #include "include/sassy_consensus.h"
 
+#undef LOG_PREFIX
+#define LOG_PREFIX "[SASSY][LE][FOLLOWER]"
+
 
 static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
@@ -46,7 +49,7 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
      	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
 
 	set_le_opcode(pkt_payload, VOTE, param1, param2);
-	
+
 	if(sdev->verbose)
 		print_hex_dump(KERN_DEBUG, "VOTE payload: ", DUMP_PREFIX_NONE, 16, 1,
 	       pkt_payload,
@@ -58,6 +61,9 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
 
 int follower_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
 {
+	
+	if(sdev->verbose >= 2)
+		sassy_dbg("received packet to process\n");
 
 	switch(pkt->lep.opcode){
 	case VOTE:

@@ -113,11 +113,7 @@ int fd_us_update(struct sassy_device *sdev, void *payload)
 			if (us_counters->ac[i] != last_counters->ac[i])
 				sassy_dbg("proc: %d state alive!\n",
 					  cur_p->pinfo[i].pid);
-
-			sassy_dbg("us counter: %d last_counter: %d!\n",
-				  us_counters->ac[i], last_counters->ac[i]);
 		}
-
 		last_counters->ac[i] = us_counters->ac[i];
 	}
 

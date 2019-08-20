@@ -97,7 +97,7 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		(const struct consensus_priv *)sproto->priv;
 	int remote_lid;
 
-	if (sdev->verbose)
+	if (sdev->verbose >= 2)
 			sassy_dbg("consensus payload received\n");
 
 	remote_lid = get_ltarget_id(sdev, remote_mac);

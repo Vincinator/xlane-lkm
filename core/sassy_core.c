@@ -64,8 +64,8 @@ void sassy_post_ts(int sassy_id, uint64_t cycles)
 {
 	struct sassy_device *sdev = get_sdev(sassy_id);
 
-	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
-		return;
+//	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
+//		return;
 
 	if (sdev->ts_state == SASSY_TS_RUNNING)
 		sassy_write_timestamp(sdev, 1, cycles, sassy_id);
@@ -84,13 +84,17 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		sassy_error("sdev is NULL\n");
 		return;
 	}
-	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
-		return;
+
+//	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
+//		return;
 
 	if (unlikely(protocol_id < 0 || protocol_id > MAX_PROTOCOLS)) {
 		sassy_error("Protocol ID is faulty %d\n", protocol_id);
 		return;
 	}
+
+	if (sdev->verbose >= 2)
+		sassy_dbg("%s\n", __FUNCTION__);
 
 	sproto = sdev->proto;
 	lesproto = sdev->le_proto;
