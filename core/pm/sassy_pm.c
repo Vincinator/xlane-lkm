@@ -32,10 +32,9 @@ sassy_pacemaker_is_alive(struct pminfo *spminfo)
 	return spminfo->state == SASSY_PM_EMITTING;
 }
 
-
 static inline bool can_fire(uint64_t prev_time, uint64_t cur_time)
 {
-	return (cur_time - prev_time) >= CYCLES_PER_100MS;
+	return (cur_time - prev_time) >= CYCLES_PER_10MS;
 }
 
 const char *pm_state_string(pmstate_t state)

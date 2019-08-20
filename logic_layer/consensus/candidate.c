@@ -85,13 +85,13 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sass
 
 	switch(pkt->lep.opcode){
 	case VOTE:
-		sassy_dbg("received vote from host: %d - term=%d\n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received vote from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
 		break;
 	case NOMI:
-		sassy_dbg("received nomination from host: %d - term=%d\n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received nomination from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
 		break;		
 	case NOOP:
-		sassy_dbg("received NOOP from host: %d - term=%d\n", remote_lid, pkt->lep.param1);
+		sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
 		break;
 	default:
 		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);

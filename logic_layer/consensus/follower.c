@@ -61,21 +61,22 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
 
 int follower_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
 {
-	
+
 	if(sdev->verbose >= 2)
 		sassy_dbg("received packet to process\n");
 
 	switch(pkt->lep.opcode){
 	case VOTE:
-		sassy_dbg("received vote from host: %d - term=%d\n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received VOTE from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
+		reset_ftimeout(sdev);
 		break;
 	case NOMI:
-		sassy_dbg("received nomination from host: %d - term=%d\n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received NOMI from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
 		reply_vote(sdev, remote_lid, pkt->lep.param1, pkt->lep.param2);
 		reset_ftimeout(sdev);
 		break;		
 	case NOOP:
-		sassy_dbg("received NOOP from host: %d - term=%d\n", remote_lid, pkt->lep.param1);
+		sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
 		break;
 	default:
 		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);
