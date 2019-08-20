@@ -147,8 +147,8 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		if (sdev->proto->ctrl_ops.us_update != NULL)
 			sdev->proto->ctrl_ops.us_update(sdev, pkt_payload);
 
-		//sassy_update_skb_payload(spminfo->pm_targets[i].skb,
-		//			 pkt_payload);
+		sassy_update_skb_payload(spminfo->pm_targets[i].skb,
+					 pkt_payload);
 
 		if (sdev->verbose >= 2)
 			print_hex_dump(KERN_DEBUG,

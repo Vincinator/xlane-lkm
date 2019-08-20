@@ -16,7 +16,7 @@
 static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 {
 	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
-	//broadcast_nomination();
+	broadcast_nomination();
 	return HRTIMER_NORESTART;
 }
 
@@ -85,13 +85,13 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sass
 
 	switch(pkt->lep.opcode){
 	case VOTE:
-		sassy_dbg("received vote from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received VOTE from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
 		break;
 	case NOMI:
-		sassy_dbg("received nomination from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received NOMI from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
 		break;		
 	case NOOP:
-		if(sdev->verbose >= 3)
+		if(sdev->verbose >= 2)
 			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
 		break;
 	default:
