@@ -95,7 +95,7 @@ int fd_us_update(struct sassy_device *sdev, void *payload)
 	struct fd_aliveness_counters *us_counters =
 		(struct fd_aliveness_counters *)priv->tx_buf;
 
-	if (sdev->verbose)
+	if (sdev->verbose >= 3)
 		sassy_dbg("fd us update\n");
 
 	if (!us_counters) {
@@ -129,14 +129,14 @@ int fd_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 
 	//sassy_dbg("SRC MAC=%pM", remote_mac);
 
-	if (sdev->verbose)
+	if (sdev->verbose >= 3)
 		sassy_dbg("fd payload received\n");
 }
 
 int fd_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 	       uint64_t ts)
 {
-	if (sdev->verbose) {
+	if (sdev->verbose >= 3) {
 		//sassy_dbg("SRC MAC=%pM", remote_mac);
 		sassy_dbg("fd optimistical timestamp received.\n");
 	}

@@ -91,7 +91,8 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sass
 		sassy_dbg("received nomination from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
 		break;		
 	case NOOP:
-		sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
+		if(sdev->verbose >= 3)
+			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
 		break;
 	default:
 		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);
