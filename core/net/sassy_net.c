@@ -241,7 +241,7 @@ EXPORT_SYMBOL(compose_skb);
 int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
 {
 	int i;
-	struct pminfo *spminfo = sdev->pminfo;
+	struct pminfo *spminfo = &sdev->pminfo;
 	unsigned char *cur_mac = NULL;
 
 	if(!remote_mac){
