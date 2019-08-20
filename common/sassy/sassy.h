@@ -345,5 +345,5 @@ struct sassy_protocol *get_fd_proto(void);
 struct sassy_protocol *get_echo_proto(void);
 
 int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac);
-
+void set_le_noop(struct sassy_payload *pkt_payload);
 #endif /* _SASSY_H_ */
