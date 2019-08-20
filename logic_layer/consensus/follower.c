@@ -18,6 +18,9 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ftimer);
 	struct sassy_device *sdev = priv->sdev;
 
+	if(priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
+		return HRTIMER_NORESTART;
+
 	sassy_dbg("Follower Timeout occured!\n");
 
 	err = node_transition(sdev, CANDIDATE);
@@ -128,6 +131,7 @@ int stop_follower(struct sassy_device *sdev)
 		return 0;
 
 	priv->ftimer_init = 0;
+
 	return hrtimer_try_to_cancel(&priv->ftimer) != -1;
 }
 

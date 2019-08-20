@@ -18,6 +18,9 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ftimer);
 	struct sassy_device *sdev = priv->sdev;
 
+	if(priv->ctimer_init == 0 || priv->nstate != CANDIDATE)
+		return HRTIMER_NORESTART;
+
 	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
 	
 	broadcast_nomination(sdev);
@@ -47,10 +50,8 @@ void init_ctimeout(struct sassy_device *sdev)
 
 int broadcast_nomination(struct sassy_device *sdev)
 {
-	void *payload;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-	struct node_addr *naddr;
 	struct pminfo *spminfo = &priv->sdev->pminfo;
 	int i;
 	struct sassy_payload *pkt_payload;
@@ -81,12 +82,13 @@ int broadcast_nomination(struct sassy_device *sdev)
 
 	return 0;
 }
+
 void accept_vote(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt) 
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 	int err;
-	
+
 	priv->votes++;
 	sassy_dbg("Got Vote/n");
 
@@ -136,7 +138,9 @@ int stop_candidate(struct sassy_device *sdev)
 
 	if(priv->ctimer_init == 0)
 		return 0;
+
 	priv->ctimer_init = 0;
+
 	return hrtimer_try_to_cancel(&priv->ctimer) != -1;
 }
 
