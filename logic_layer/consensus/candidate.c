@@ -73,7 +73,7 @@ int broadcast_nomination(struct sassy_device *sdev)
 
 	priv->votes = 1; // selfvote
 
-	init_ctimeout();
+	init_ctimeout(sdev);
 
 	return 0;
 }
