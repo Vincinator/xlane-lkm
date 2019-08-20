@@ -93,7 +93,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		return;
 	}
 
-	if (sdev->verbose >= 2)
+	if (sdev->verbose >= 3)
 		sassy_dbg("%s\n", __FUNCTION__);
 
 	sproto = sdev->proto;

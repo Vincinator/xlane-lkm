@@ -97,13 +97,14 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		(const struct consensus_priv *)sproto->priv;
 	int remote_lid;
 
-	if (sdev->verbose >= 2)
+	if (sdev->verbose >= 3)
 			sassy_dbg("consensus payload received\n");
 
 	remote_lid = get_ltarget_id(sdev, remote_mac);
 
 	if(remote_lid == -1){
-		sassy_error("Unknown host! Abort processing of packet\n");
+		if(sdev->verbose >= 2)
+			sassy_error("Unknown host! Abort processing of packet\n");
 		return -1;
 	}
 
@@ -127,6 +128,6 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 int consensus_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 	       uint64_t ts)
 {
-	if (sdev->verbose)
+	if (sdev->verbose >= 3)
 		sassy_dbg("consensus optimistical timestamp received.\n");
 }

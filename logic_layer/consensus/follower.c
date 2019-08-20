@@ -62,7 +62,7 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
 int follower_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
 {
 
-	if(sdev->verbose >= 2)
+	if(sdev->verbose >= 3)
 		sassy_dbg("received packet to process\n");
 
 	switch(pkt->lep.opcode){
