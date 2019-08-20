@@ -249,7 +249,6 @@ int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
 		return;
 	}
 
-
 	for(i = 0; i < spminfo->num_of_targets; i++) {
 		cur_mac = spminfo->pm_targets[i].pkt_data.naddr.dst_mac;
 

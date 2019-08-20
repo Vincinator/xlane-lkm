@@ -61,7 +61,7 @@ int broadcast_nomination(struct sassy_device *sdev)
 		pkt_payload =
 	     	spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_ix];
 
-		set_le_opcode(pkt_payload, NOMI, priv->term, priv->node_id);
+		set_le_opcode(pkt_payload, NOMI, priv->term, sdev->cluster_id);
 		
 		if(sdev->verbose)
 			print_hex_dump(KERN_DEBUG, "NOMI payload: ", DUMP_PREFIX_NONE, 16, 1, 

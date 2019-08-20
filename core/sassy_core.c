@@ -100,7 +100,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	lesproto = sdev->le_proto;
 
 	if (unlikely(!sproto || !lesproto)) {
-		sassy_error("failed to get protocol handler\n");
+		//sassy_error("failed to get protocol handler\n");
 		return;
 	}
 

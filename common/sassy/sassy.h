@@ -193,6 +193,7 @@ struct sassy_protocol;
 struct sassy_device {
 	int ifindex; /* corresponds to ifindex of net_device */
 	int sassy_id;
+	u32 cluster_id;
 
 	int verbose; /* Prints more information when set to 1 during RX/TX to dmesg*/
 

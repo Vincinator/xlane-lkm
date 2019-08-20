@@ -385,7 +385,7 @@ static ssize_t sassy_target_write(struct file *file,
 			if(is_ip_local(sdev->ndev, current_ip)){
 				sassy_dbg("got local ip: %d\n", current_ip);
 				sassy_dbg("cluster id of local is: %d\n", cluster_id);
-
+				sdev->cluster_id = cluster_id;
 			} else {
 				sassy_core_register_remote_host(sdev->sassy_id,
 						current_ip, current_mac,

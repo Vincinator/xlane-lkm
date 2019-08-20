@@ -58,14 +58,14 @@ struct consensus_priv {
 
 	enum node_state nstate;
 
-	int node_id;
+	u32 node_id;
 
 	/* index of array is node_id, 
 	 * value at index of array is index to pm_targets
 	 */
 	int cluster_mapping[MAX_NODE_ID];
 
-	int term;
+	u32 term;
 
 	/* True if this node has already voted in the current term*/
 	bool voted; 
@@ -88,4 +88,4 @@ int node_transition(struct sassy_device *sdev, enum node_state state);
 
 struct consensus_priv *con_priv(void);
 ktime_t get_rnd_timeout(void);
-void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, int p1, int p2);
+void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, u32 p1, u32 p2);

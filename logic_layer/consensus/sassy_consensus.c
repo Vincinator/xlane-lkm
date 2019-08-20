@@ -32,7 +32,7 @@ void set_le_noop(struct sassy_payload *pkt_payload)
 	pkt_payload->lep.opcode = NOOP;
 }
 
-void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, int p1, int p2)
+void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, u32 p1, u32 p2)
 {
 	pkt_payload->lep.opcode = opcode;
 	pkt_payload->lep.param1 = p1;
