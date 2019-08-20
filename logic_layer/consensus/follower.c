@@ -27,21 +27,49 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
-int follower_process_pkt(struct sassy_device *sdev, struct sassy_payload * pkt)
+void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param2)
 {
-	sassy_dbg("%s",__FUNCTION__);
+	void *payload;
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
+	struct node_addr *naddr;
+	struct pminfo *spminfo = &priv->sdev->pminfo;
+	struct sassy_payload *pkt_payload;
+	int hb_passive_ix;
+
+	sassy_dbg("Preparing vote for next hb interval.\n");
+
+
+	hb_passive_ix =
+	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
+
+	pkt_payload =
+     	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
+
+	set_le_opcode(pkt_payload, VOTE, param1, param2);
+
+	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
+
+}
+
+int follower_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
+{
+
 	switch(pkt->lep.opcode){
-		case VOTE:
-			sassy_dbg("received vote! term=%d\n", pkt->lep.param1);
-			break;
-		case NOMI:
-			sassy_dbg("received nomination! term=%d\n", pkt->lep.param1);
-			break;		
-		case NOOP:
-			sassy_dbg("received NOOP! term=%d\n", pkt->lep.param1);
-			break;
-		default:
-			sassy_dbg("Unknown opcode received: %d\n", pkt->lep.opcode);
+	case VOTE:
+		sassy_dbg("received vote from host: %d - term=%d\n",remote_lid, pkt->lep.param1);
+		break;
+	case NOMI:
+		sassy_dbg("received nomination from host: %d - term=%d\n",remote_lid, pkt->lep.param1);
+		reply_vote(sdev, remote_lid, pkt->lep.param1, pkt->lep.param2);
+		reset_ftimeout(sdev);
+		break;		
+	case NOOP:
+		sassy_dbg("received NOOP from host: %d - term=%d\n", remote_lid, pkt->lep.param1);
+		break;
+	default:
+		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);
+
 	}
 
 	return 0;
@@ -53,7 +81,7 @@ void init_timeout(struct sassy_device *sdev)
 	ktime_t timeout;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-				
+
 	timeout = get_rnd_timeout();
 
 	hrtimer_init(&priv->ftimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);

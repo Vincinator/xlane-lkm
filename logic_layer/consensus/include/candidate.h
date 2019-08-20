@@ -4,7 +4,7 @@
 
 #include "sassy_consensus.h"
 
-int candidate_process_pkt(struct sassy_device *sdev, struct sassy_payload* pkt);
+int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload* pkt);
 int start_candidate(struct sassy_device *sdev);
 int stop_candidate(struct sassy_device *sdev);
 int broadcast_nomination(struct sassy_device *sdev);

@@ -95,21 +95,27 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	struct sassy_protocol *sproto = sdev->le_proto;
 	const struct consensus_priv *priv =
 		(const struct consensus_priv *)sproto->priv;
+	int remote_lid;
 
-	sassy_dbg("%s",__FUNCTION__);
-	
 	if (sdev->verbose)
-		sassy_dbg("consensus payload received\n");
+			sassy_dbg("consensus payload received\n");
+
+	remote_lid = get_ltarget_id(sdev, remote_mac);
+
+	if(remote_lid == -1){
+		sassy_error("Unknown host! Abort processing of packet\n");
+		return -1;
+	}
 
 	switch (priv->nstate) {
 	case FOLLOWER:
-		follower_process_pkt(sdev, (struct sassy_payload *) payload);
+		follower_process_pkt(sdev, remote_lid, (struct sassy_payload *) payload);
 		break;
 	case CANDIDATE:
-		candidate_process_pkt(sdev, (struct sassy_payload *) payload);
+		candidate_process_pkt(sdev, remote_lid, (struct sassy_payload *) payload);
 		break;
 	case LEADER:
-		leader_process_pkt(sdev, (struct sassy_payload *) payload);
+		leader_process_pkt(sdev, remote_lid, (struct sassy_payload *) payload);
 		break;
 	default:
 		sassy_error("Unknown state - BUG\n");

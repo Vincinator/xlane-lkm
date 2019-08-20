@@ -344,4 +344,6 @@ struct sassy_protocol *get_consensus_proto(void);
 struct sassy_protocol *get_fd_proto(void);
 struct sassy_protocol *get_echo_proto(void);
 
+int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac);
+
 #endif /* _SASSY_H_ */

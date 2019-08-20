@@ -117,6 +117,11 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 	memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
 }
 
+void set_le_noop(struct sassy_payload *pkt_payload)
+{
+	pkt_payload->lep.opcode = NOOP;
+}
+
 static inline int _emit_pkts(struct sassy_device *sdev,
 		struct pminfo *spminfo)
 {
@@ -161,6 +166,8 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 			sassy_write_timestamp(sdev, 4, ktime_get(), i);
 		}
 
+		// Set leader election OPCODE to noop
+		set_le_noop(pkt_payload);
 	}
 	return 0;
 }

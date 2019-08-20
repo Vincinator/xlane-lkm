@@ -28,6 +28,13 @@ ktime_t get_rnd_timeout(void)
 			prandom_u32_max(MAX_FTIMEOUT_NS - MIN_FTIMEOUT_NS));
 }
 
+void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, int p1, int p2)
+{
+	pkt_payload->lep.opcode = opcode;
+	pkt_payload->lep.param1 = p1;
+	pkt_payload->lep.param2 = p2;
+}
+
 static const struct sassy_protocol_ctrl_ops consensus_ops = {
 	.init = consensus_init,
 	.start = consensus_start,

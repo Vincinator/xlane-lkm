@@ -237,6 +237,34 @@ struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 }
 EXPORT_SYMBOL(compose_skb);
 
+
+int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
+{
+	int i;
+	struct pminfo *spminfo = sdev->pminfo;
+	unsigned char *cur_mac = NULL;
+
+	if(!remote_mac){
+		sassy_error("remote mac is NULL\n");
+		return;
+	}
+
+
+	for(i = 0; i < spminfo->num_of_targets; i++) {
+		cur_mac = spminfo->pm_targets[i].pkt_data.naddr.dst_mac;
+
+		if(memcmp(cur_mac, remote_mac, 6) == 0){
+			sassy_dbg("Found mac in remote host list\n");
+			return i;
+		}
+	}
+
+	sassy_error("Did not found mac in remote hosts list\n");
+	return -1;
+
+}
+
+
 void send_pkt(struct net_device *ndev, struct sk_buff *skb)
 {
 	int ret;

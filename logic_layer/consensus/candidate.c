@@ -37,14 +37,6 @@ void init_ctimeout(struct sassy_device *sdev)
 
 }
 
-void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, int p1, int p2)
-{
-	pkt_payload->lep.opcode = opcode;
-	pkt_payload->lep.param1 = p1;
-	pkt_payload->lep.param2 = p2;
-}
-
-
 int broadcast_nomination(struct sassy_device *sdev)
 {
 	void *payload;
@@ -79,21 +71,21 @@ int broadcast_nomination(struct sassy_device *sdev)
 }
 
 
-int candidate_process_pkt(struct sassy_device *sdev, struct sassy_payload * pkt)
+int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
 {
 
 	switch(pkt->lep.opcode){
-		case VOTE:
-			sassy_dbg("received vote! term=%d\n", pkt->lep.param1);
-			break;
-		case NOMI:
-			sassy_dbg("received nomination! term=%d\n", pkt->lep.param1);
-			break;		
-		case NOOP:
-			sassy_dbg("received NOOP! term=%d\n", pkt->lep.param1);
-			break;
-		default:
-			sassy_dbg("Unknown opcode received: %d\n", pkt->lep.opcode);
+	case VOTE:
+		sassy_dbg("received vote from host: %d - term=%d\n",remote_lid, pkt->lep.param1);
+		break;
+	case NOMI:
+		sassy_dbg("received nomination from host: %d - term=%d\n",remote_lid, pkt->lep.param1);
+		break;		
+	case NOOP:
+		sassy_dbg("received NOOP from host: %d - term=%d\n", remote_lid, pkt->lep.param1);
+		break;
+	default:
+		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);
 	}
 
 	return 0;
@@ -114,7 +106,6 @@ int start_candidate(struct sassy_device *sdev)
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-	int i;
 
 	priv->nstate = CANDIDATE;
 	priv->term++;
