@@ -134,6 +134,8 @@ int stop_follower(struct sassy_device *sdev)
 int start_follower(struct sassy_device *sdev)
 {
 	int err;
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
 
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;
