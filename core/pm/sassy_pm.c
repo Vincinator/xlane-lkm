@@ -21,6 +21,8 @@
 
 #include <sassy/sassy.h>
 
+#include "include/sassy_consensus.h"
+
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PACEMAKER]"
 
