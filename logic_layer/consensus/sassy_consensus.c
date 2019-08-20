@@ -13,7 +13,6 @@
 #include "include/sassy_consensus_ops.h"
 #include "include/sassy_consensus.h"
 
-
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
 MODULE_DESCRIPTION("SASSY consensus");
@@ -26,6 +25,11 @@ ktime_t get_rnd_timeout(void)
 {
 	return ktime_set(0, MIN_FTIMEOUT_NS +
 			prandom_u32_max(MAX_FTIMEOUT_NS - MIN_FTIMEOUT_NS));
+}
+
+void set_le_noop(struct sassy_payload *pkt_payload)
+{
+	pkt_payload->lep.opcode = NOOP;
 }
 
 void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, int p1, int p2)

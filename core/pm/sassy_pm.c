@@ -21,8 +21,6 @@
 
 #include <sassy/sassy.h>
 
-#include "include/sassy_consensus.h"
-
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PACEMAKER]"
 
@@ -119,10 +117,7 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 	memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
 }
 
-void set_le_noop(struct sassy_payload *pkt_payload)
-{
-	pkt_payload->lep.opcode = NOOP;
-}
+
 
 static inline int _emit_pkts(struct sassy_device *sdev,
 		struct pminfo *spminfo)
