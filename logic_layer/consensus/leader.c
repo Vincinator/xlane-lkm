@@ -26,13 +26,13 @@ int leader_process_pkt(struct sassy_device *sdev, struct sassy_payload * pkt)
 	return 0;
 }
 
-int stop_leader(void)
+int stop_leader(struct sassy_device *sdev)
 {
 
 	return 0;
 }
 
-int start_leader(void)
+int start_leader(struct sassy_device *sdev)
 {
 
 

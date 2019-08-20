@@ -17,11 +17,12 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
-void init_ctimeout(void)
+void init_ctimeout(struct sassy_device *sdev)
 {
 	int ftime_ns;
 	ktime_t timeout;
-	struct consensus_priv *priv = con_priv();
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
 	
 	sassy_dbg("Initializing candidate timeout \n");
 
@@ -44,10 +45,11 @@ void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, int
 }
 
 
-int broadcast_nomination(void)
+int broadcast_nomination(struct sassy_device *sdev)
 {
 	void *payload;
-	struct consensus_priv *priv = con_priv();
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
 	struct node_addr *naddr;
 	struct pminfo *spminfo = &priv->sdev->pminfo;
 	int i;
@@ -97,9 +99,10 @@ int candidate_process_pkt(struct sassy_device *sdev, struct sassy_payload * pkt)
 	return 0;
 }
 
-int stop_candidate(void)
+int stop_candidate(struct sassy_device *sdev)
 {
-	struct consensus_priv *priv = con_priv();
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
 
 	if(priv->ctimer_init == 0)
 		return 0;
@@ -107,9 +110,10 @@ int stop_candidate(void)
 	return hrtimer_try_to_cancel(&priv->ctimer) != -1;
 }
 
-int start_candidate(void)
+int start_candidate(struct sassy_device *sdev)
 {
-	struct consensus_priv *priv = con_priv();
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
 	int i;
 
 	priv->nstate = CANDIDATE;
@@ -117,7 +121,7 @@ int start_candidate(void)
 
 	sassy_dbg("Initialization finished.\n");
 
-	broadcast_nomination();
+	broadcast_nomination(sdev);
 
 	sassy_dbg("Candidate started.\n");
 

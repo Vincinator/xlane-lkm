@@ -22,14 +22,6 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CONSENSUS]"
 
-static struct consensus_priv priv;
-
-
-struct consensus_priv *con_priv(void)
-{
-	return &priv;
-}
-
 ktime_t get_rnd_timeout(void)
 {
 	return ktime_set(0, MIN_FTIMEOUT_NS +

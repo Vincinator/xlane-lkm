@@ -12,7 +12,8 @@
 int consensus_init(struct sassy_device *sdev)
 {
 	
-	struct consensus_priv *priv = con_priv();
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
 
 	priv->sdev = sdev;
 	priv->ctimer_init = 0;
@@ -34,7 +35,7 @@ int consensus_start(struct sassy_device *sdev)
 	sassy_dbg("consensus start\n");
 
 	// Transition to Follower State
-	err = node_transition(FOLLOWER);
+	err = node_transition(sdev, FOLLOWER);
 
 	if (err)
 		goto error;
@@ -48,19 +49,19 @@ error:
 
 int consensus_stop(struct sassy_device *sdev)
 {
-	struct consensus_priv *priv = con_priv();
-	
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;	
 	sassy_dbg("consensus stop\n");
 
 	switch(priv->nstate) {
 		case FOLLOWER:
-			stop_follower();
+			stop_follower(sdev);
 			break;
 		case CANDIDATE:
-			stop_candidate();
+			stop_candidate(sdev);
 			break;
 		case LEADER:
-			stop_leader();
+			stop_leader(sdev);
 			break;
 	}
 
@@ -91,10 +92,12 @@ int consensus_us_update(struct sassy_device *sdev, void *payload)
 int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		    void *payload)
 {
-	struct sassy_protocol *sproto = sdev->proto;
+	struct sassy_protocol *sproto = sdev->le_proto;
 	const struct consensus_priv *priv =
 		(const struct consensus_priv *)sproto->priv;
 
+	sassy_dbg("%s",__FUNCTION__);
+	
 	if (sdev->verbose)
 		sassy_dbg("consensus payload received\n");
 
@@ -112,6 +115,7 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		sassy_error("Unknown state - BUG\n");
 		break;
 	}
+	return 0;
 }
 
 int consensus_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,

@@ -12,10 +12,12 @@
 static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
 	int err;
-	
+	struct consensus_priv *priv = container_of(timer, struct hrtimer, ftimer);
+	struct sassy_device *sdev = priv->sdev;
+
 	sassy_dbg("Follower Timeout occured!\n");
 
-	err = node_transition(CANDIDATE);
+	err = node_transition(sdev, CANDIDATE);
 
 	if (err){
 		sassy_dbg("Error occured during the transition to candidate role\n");
@@ -27,7 +29,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 
 int follower_process_pkt(struct sassy_device *sdev, struct sassy_payload * pkt)
 {
-
+	sassy_dbg("%s",__FUNCTION__);
 	switch(pkt->lep.opcode){
 		case VOTE:
 			sassy_dbg("received vote! term=%d\n", pkt->lep.param1);
@@ -45,12 +47,13 @@ int follower_process_pkt(struct sassy_device *sdev, struct sassy_payload * pkt)
 	return 0;
 }
 
-void init_timeout(void)
+void init_timeout(struct sassy_device *sdev)
 {
 	int ftime_ns;
 	ktime_t timeout;
-	struct consensus_priv *priv = con_priv();
-
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
+				
 	timeout = get_rnd_timeout();
 
 	hrtimer_init(&priv->ftimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
@@ -61,11 +64,12 @@ void init_timeout(void)
 	hrtimer_start(&priv->ftimer, timeout, HRTIMER_MODE_REL_PINNED);
 }
 
-void reset_ftimeout(void)
+void reset_ftimeout(struct sassy_device *sdev)
 {
 	ktime_t now;
 	ktime_t timeout;
-	struct consensus_priv *priv = con_priv();
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
 
 	now = ktime_get();
 	timeout = get_rnd_timeout();
@@ -75,9 +79,10 @@ void reset_ftimeout(void)
 	sassy_dbg("set follower timeout to %dns\n", timeout);
 }
 
-int stop_follower(void)
+int stop_follower(struct sassy_device *sdev)
 {
-	struct consensus_priv *priv = con_priv();
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
 
 	if(priv->ftimer_init == 0)
 		return 0;
@@ -86,11 +91,11 @@ int stop_follower(void)
 	return hrtimer_try_to_cancel(&priv->ftimer) != -1;
 }
 
-int start_follower(void)
+int start_follower(struct sassy_device *sdev)
 {
 	int err;
 
-	init_timeout();
+	init_timeout(sdev);
 
 
 	sassy_dbg(" node become a follower\n");
