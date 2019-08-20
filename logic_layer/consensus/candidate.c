@@ -15,8 +15,13 @@
 
 static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 {
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
+
 	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
-	broadcast_nomination();
+	
+	broadcast_nomination(priv->sdev);
+
 	return HRTIMER_NORESTART;
 }
 
