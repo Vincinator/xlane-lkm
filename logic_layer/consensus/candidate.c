@@ -85,7 +85,8 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, struct sassy_payload
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-
+	int err;
+	
 	priv->votes++;
 	sassy_dbg("Got Vote/n");
 
