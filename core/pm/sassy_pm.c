@@ -74,6 +74,7 @@ static inline void sassy_setup_hb_skbs(struct sassy_device *sdev)
 		
 		hb_active_ix =
 		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
+
 		pkt_payload =
 	     	spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
@@ -118,7 +119,6 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 }
 
 
-
 static inline int _emit_pkts(struct sassy_device *sdev,
 		struct pminfo *spminfo)
 {
@@ -148,12 +148,12 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		if (sdev->proto->ctrl_ops.us_update != NULL)
 			sdev->proto->ctrl_ops.us_update(sdev, pkt_payload);
 
-		sassy_update_skb_payload(spminfo->pm_targets[i].skb,
-					 pkt_payload);
+		//sassy_update_skb_payload(spminfo->pm_targets[i].skb,
+		//			 pkt_payload);
 
 		if (sdev->verbose)
 			print_hex_dump(KERN_DEBUG,
-				"Payload: ", DUMP_PREFIX_NONE,
+				"TX Payload: ", DUMP_PREFIX_NONE,
 				16, 1, pkt_payload, SASSY_PAYLOAD_BYTES, 0);
 
 		sassy_send_hb(ndev, spminfo->pm_targets[i].skb);

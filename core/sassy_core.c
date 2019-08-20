@@ -84,8 +84,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		sassy_error("sdev is NULL\n");
 		return;
 	}
-	sassy_dbg("%s",__FUNCTION__);
-
 	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
 		return;
 

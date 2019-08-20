@@ -39,7 +39,6 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
 
 	sassy_dbg("Preparing vote for next hb interval.\n");
 
-
 	hb_passive_ix =
 	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
 
@@ -47,6 +46,11 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
      	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
 
 	set_le_opcode(pkt_payload, VOTE, param1, param2);
+	
+	if(sdev->verbose)
+		print_hex_dump(KERN_DEBUG, "VOTE payload: ", DUMP_PREFIX_NONE, 16, 1,
+	       pkt_payload,
+	       SASSY_PAYLOAD_BYTES, 0);
 
 	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
 
