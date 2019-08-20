@@ -81,6 +81,27 @@ int broadcast_nomination(struct sassy_device *sdev)
 
 	return 0;
 }
+void accept_vote(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt) 
+{
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
+
+	priv->votes++;
+	sassy_dbg("Got Vote/n");
+
+	if (priv->votes * 2 >= sdev->pminfo.num_of_targets){
+		
+		sassy_dbg("Got Majority of votes, transition to become the new leader/n");
+		
+		err = node_transition(sdev, LEADER);
+
+		if (err) {
+			sassy_dbg("Error occured during the transition to leader role\n");
+			return;
+		}
+	}
+
+}
 
 
 int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
@@ -90,14 +111,15 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sass
 
 	switch(pkt->lep.opcode){
 	case VOTE:
-		sassy_dbg("received VOTE from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received VOTE from host: %d - term=%u \n",remote_lid, pkt->lep.param1);
+		accept_vote(sdev, remote_lid, pkt);
 		break;
 	case NOMI:
-		sassy_dbg("received NOMI from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received NOMI from host: %d - term=%u \n",remote_lid, pkt->lep.param1);
 		break;		
 	case NOOP:
 		if(sdev->verbose >= 2)
-			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
+			sassy_dbg("received NOOP from host: %d - term=%u \n", remote_lid, pkt->lep.param1);
 		break;
 	default:
 		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);
@@ -122,6 +144,7 @@ int start_candidate(struct sassy_device *sdev)
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 
+	priv->votes = 0;
 	priv->nstate = CANDIDATE;
 	priv->term++;
 

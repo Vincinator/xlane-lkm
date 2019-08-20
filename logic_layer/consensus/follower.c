@@ -135,6 +135,9 @@ int start_follower(struct sassy_device *sdev)
 {
 	int err;
 
+	priv->votes = 0;
+	priv->nstate = FOLLOWER;
+
 	init_timeout(sdev);
 
 

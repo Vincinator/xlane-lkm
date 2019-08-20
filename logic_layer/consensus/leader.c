@@ -38,7 +38,7 @@ int stop_leader(struct sassy_device *sdev)
 
 int start_leader(struct sassy_device *sdev)
 {
-
+	priv->nstate = LEADER;
 
 	return 0;
 }

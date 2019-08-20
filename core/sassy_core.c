@@ -312,6 +312,7 @@ int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 
 	sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 
+
 	return 0;
 }
 EXPORT_SYMBOL(sassy_core_register_remote_host);
