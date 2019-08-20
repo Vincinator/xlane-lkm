@@ -59,7 +59,7 @@ struct sassy_protocol *get_consensus_proto(void)
 	proto->proto_type = SASSY_PROTO_CONSENSUS;
 	proto->ctrl_ops = consensus_ops;
 	proto->name = "consensus";
-	proto->priv = (void *)&priv;
+	proto->priv = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
 
 	return proto;
 error:
