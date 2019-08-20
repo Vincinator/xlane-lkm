@@ -38,6 +38,9 @@ int stop_leader(struct sassy_device *sdev)
 
 int start_leader(struct sassy_device *sdev)
 {
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
+
 	priv->nstate = LEADER;
 
 	return 0;
