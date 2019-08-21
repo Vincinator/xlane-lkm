@@ -4,6 +4,7 @@
 #include <linux/random.h>
 #include <linux/timer.h>
 
+#include <sassy/payload_helper.h>
 
 #include "include/follower.h"
 #include "include/sassy_consensus.h"
