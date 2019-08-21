@@ -134,7 +134,10 @@ int start_follower(struct sassy_device *sdev)
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 
-	setup_le_broadcast_msg(sdev, NOOP);
+	err = setup_le_broadcast_msg(sdev, NOOP);
+	
+	if(err)
+		goto error;
 
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;

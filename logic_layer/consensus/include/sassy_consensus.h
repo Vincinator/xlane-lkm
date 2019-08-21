@@ -100,3 +100,4 @@ void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2);
 void accept_leader(struct sassy_device *sdev, int remote_lid, u32 term);
 int setup_le_broadcast_msg(struct sassy_device *sdev, enum le_opcode opcode);
 int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term);
+int setup_nomination(struct sassy_device *sdev);
