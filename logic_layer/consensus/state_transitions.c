@@ -43,9 +43,10 @@ int setup_le_broadcast_msg(struct sassy_device *sdev, enum le_opcode opcode)
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
+	int i;
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
-		setup_le_msg(priv->sdev->pminfo, opcode, i, priv->term);
+		setup_le_msg(priv->sdev->pminfo, opcode, (u32) i, (u32) priv->term);
 
 	return 0;
 }
