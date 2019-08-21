@@ -131,7 +131,6 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sass
 		if(pkt->lep.param1 >= priv->term && pkt->lep.leader)
 			accept_leader(sdev, remote_lid, pkt);
 
-		}
 		break;
 	default:
 		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);
