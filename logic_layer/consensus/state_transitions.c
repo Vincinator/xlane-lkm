@@ -47,7 +47,6 @@ int setup_le_broadcast_msg(struct sassy_device *sdev, enum le_opcode opcode)
 	return 0;
 }
 
-
 void accept_leader(struct sassy_device *sdev, int remote_lid, u32 term)
 {
 	struct consensus_priv *priv = 

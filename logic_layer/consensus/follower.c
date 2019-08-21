@@ -40,7 +40,7 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
 				(struct consensus_priv *)sdev->le_proto->priv;
 
 	sassy_dbg("Preparing vote for next hb interval.\n");
-	setup_le_msg(&priv->sdev->pminfo,VOTE, param1, param2);
+	setup_le_msg(&priv->sdev->pminfo, VOTE, remote_lid, param1);
 }
 
 int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
