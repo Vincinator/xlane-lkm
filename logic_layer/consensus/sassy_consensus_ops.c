@@ -107,13 +107,13 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 
 	switch (priv->nstate) {
 	case FOLLOWER:
-		follower_process_pkt(sdev, remote_lid, (struct sassy_payload *) payload);
+		follower_process_pkt(sdev, remote_lid, payload);
 		break;
 	case CANDIDATE:
-		candidate_process_pkt(sdev, remote_lid, (struct sassy_payload *) payload);
+		candidate_process_pkt(sdev, remote_lid, payload);
 		break;
 	case LEADER:
-		leader_process_pkt(sdev, remote_lid, (struct sassy_payload *) payload);
+		leader_process_pkt(sdev, remote_lid, payload);
 		break;
 	default:
 		sassy_error("Unknown state - BUG\n");
