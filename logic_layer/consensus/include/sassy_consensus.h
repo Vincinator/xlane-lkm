@@ -55,7 +55,7 @@ enum le_opcode {
 	NOOP = 0,
 	NOMI = 1,
 	VOTE = 2,
-	LEAD = 3;
+	LEAD = 3,
 };
 
 struct consensus_priv {
