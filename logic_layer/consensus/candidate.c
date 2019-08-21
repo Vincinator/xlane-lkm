@@ -7,6 +7,8 @@
 #include <net/ip.h>
 #include <linux/netdevice.h>
 
+#include <sassy/payload_helper.h>
+
 #include "include/candidate.h"
 #include "include/sassy_consensus.h"
 
