@@ -85,7 +85,7 @@ int broadcast_nomination(struct sassy_device *sdev)
 	return 0;
 }
 
-void accept_vote(struct sassy_device *sdev, int remote_lid, struct sassy_payload *pkt) 
+void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt) 
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
