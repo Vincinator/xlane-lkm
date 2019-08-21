@@ -83,7 +83,7 @@ int broadcast_nomination(struct sassy_device *sdev)
 	return 0;
 }
 
-void accept_vote(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt) 
+void accept_vote(struct sassy_device *sdev, int remote_lid, struct sassy_payload *pkt) 
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
@@ -106,34 +106,37 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, struct sassy_payload
 
 }
 
-
-int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
+int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 
+	u8 opcode = GET_LE_PAYLOAD(pkt, opcode);
+	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
+	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
+
 	if(sdev->verbose >= 2)
 		sassy_dbg("received packet to process\n");
 
-	switch(pkt->lep.opcode){
+	switch(opcode){
 	case VOTE:
-		sassy_dbg("received VOTE from host: %d - term=%u \n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received VOTE from host: %d - term=%u \n",remote_lid, param1);
 		accept_vote(sdev, remote_lid, pkt);
 		break;
 	case NOMI:
-		sassy_dbg("received NOMI from host: %d - term=%u \n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received NOMI from host: %d - term=%u \n",remote_lid, param1);
 		break;		
 	case NOOP:
-
 		if(sdev->verbose >= 2)
-			sassy_dbg("received NOOP from host: %d - term=%u \n", remote_lid, pkt->lep.param1);
-		
-		if(pkt->lep.param1 >= priv->term && pkt->lep.leader)
-			accept_leader(sdev, remote_lid, pkt);
-
+			sassy_dbg("received NOOP from host: %d - term=%u \n", remote_lid, param1);
+	case LEAD:
+		if(param1 >= priv->term)
+			accept_leader(sdev, remote_lid, param1);
+		else
+			sassy_dbg("Received LEAD from leader with lower TERM\n");
 		break;
 	default:
-		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);
+		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, opcode);
 	}
 
 	return 0;

@@ -8,29 +8,35 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][LE][LEADER]"
 
-int leader_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
+int leader_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 {
 
 	struct consensus_priv *priv = 
 			(struct consensus_priv *)sdev->le_proto->priv;
 
-	switch(pkt->lep.opcode){
+	u8 opcode = GET_LE_PAYLOAD(pkt, opcode);
+	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
+	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
+
+
+	switch(opcode){
 	case VOTE:
-		sassy_dbg("received vote from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received vote from host: %d - term=%u\n",remote_lid, param1);
 		break;
 	case NOMI:
-		sassy_dbg("received nomination from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
+		sassy_dbg("received nomination from host: %d - term=%u\n",remote_lid, param1);
 		break;		
 	case NOOP:
-		if(sdev->verbose >= 3)
-			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
-		
-		if(pkt->lep.param1 >= priv->term && pkt->lep.leader)
-			accept_leader(sdev, remote_lid, pkt);
-
+		if(sdev->verbose >= 2)
+			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, param1);
+	case LEAD:
+		if(param1 >= priv->term)
+			accept_leader(sdev, remote_lid, , param1);
+		else
+			sassy_dbg("Received LEAD from leader with lower TERM\n");
 		break;
 	default:
-		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);
+		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, opcode);
 
 	}
 

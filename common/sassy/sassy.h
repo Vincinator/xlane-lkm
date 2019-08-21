@@ -37,8 +37,6 @@
 
 int sassy_core_register_nic(int ifindex);
 
-
-
 #define SASSY_NUM_TS_LOG_TYPES 8
 #define TIMESTAMP_ARRAY_LIMIT 100000
 
@@ -110,9 +108,8 @@ struct node_addr {
 }; 
 
 struct le_payload {
-	u8 opcode;
-	u32 leader;
-	u32 param1;
+	u16 opcode;
+ 	u32 param1;
 	u32 param2; 
 };
 

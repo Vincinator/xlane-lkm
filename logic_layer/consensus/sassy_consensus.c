@@ -9,6 +9,8 @@
 #include <sassy/sassy.h>
 #include <linux/slab.h>
 
+#include <sassy/payload_helper.h>
+
 
 #include "include/sassy_consensus_ops.h"
 #include "include/sassy_consensus.h"
@@ -27,21 +29,21 @@ ktime_t get_rnd_timeout(void)
 			prandom_u32_max(MAX_FTIMEOUT_NS - MIN_FTIMEOUT_NS));
 }
 
-void set_le_term(struct sassy_payload *pkt_payload, u32 term)
+void set_le_term(struct sassy_payload *pkt_payload, u32 p1)
 {
-	pkt_payload->lep.param1 = term;
+	SET_LE_PAYLOAD(pkt_payload->lep, param1, p1);
 }
 
 void set_le_noop(struct sassy_payload *pkt_payload)
 {
-	pkt_payload->lep.opcode = NOOP;
+	SET_LE_PAYLOAD(pkt_payload->lep, opcode, NOOP);
 }
 
 void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, u32 p1, u32 p2)
 {
-	pkt_payload->lep.opcode = opcode;
-	pkt_payload->lep.param1 = p1;
-	pkt_payload->lep.param2 = p2;
+	SET_LE_PAYLOAD(pkt_payload->lep, opcode, opcode);
+	SET_LE_PAYLOAD(pkt_payload->lep, param1, p1);
+	SET_LE_PAYLOAD(pkt_payload->lep, param2, p2);
 }
 
 static const struct sassy_protocol_ctrl_ops consensus_ops = {

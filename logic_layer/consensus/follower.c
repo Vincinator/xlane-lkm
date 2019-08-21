@@ -62,35 +62,39 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
 
 }
 
-int follower_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
+int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 {
 	struct consensus_priv *priv = 
 			(struct consensus_priv *)sdev->le_proto->priv;
 
+	u8 opcode = GET_LE_PAYLOAD(pkt, opcode);
+	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
+	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
+
 	if(sdev->verbose >= 3)
 		sassy_dbg("received packet to process\n");
 
-	switch(pkt->lep.opcode){
+	switch(opcode){
 	case VOTE:
-		sassy_dbg("received VOTE from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
+		sassy_dbg("received VOTE from host: %d - term=%u\n", remote_lid, param1);
 		reset_ftimeout(sdev);
 		break;
 	case NOMI:
-		sassy_dbg("received NOMI from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
-		reply_vote(sdev, remote_lid, pkt->lep.param1, pkt->lep.param2);
+		sassy_dbg("received NOMI from host: %d - term=%u\n", remote_lid, param1);
+		reply_vote(sdev, remote_lid, param1, param2);
 		reset_ftimeout(sdev);
 		break;		
 	case NOOP:
-		
 		if(sdev->verbose >= 2)
-			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
-		
-		if(pkt->lep.param1 >= priv->term && pkt->lep.leader)
-			accept_leader(sdev, remote_lid, pkt);
-		
+			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, param1);
+	case LEAD:
+		if(param1 >= priv->term)
+			accept_leader(sdev, remote_lid, pkt, param1);
+		else
+			sassy_dbg("Received LEAD from leader with lower TERM\n");
 		break;
 	default:
-		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);
+		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, opcode);
 
 	}
 

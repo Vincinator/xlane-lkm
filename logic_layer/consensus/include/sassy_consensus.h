@@ -45,11 +45,17 @@ enum node_state {
  * VOTE(TERM,ID): 	The sender voted for the node with 
  *					the given ID (parameter2) to become
  *					the new leader in the TERM (parameter1).
+ *
+ * LEAD(TERM):		The sender is the active leader of the cluster.
+ *					The receiver accepts the leader if the term is
+ *					greater or equal the receivers localy stored term
+ *					value.
  */
 enum le_opcode {
 	NOOP = 0,
 	NOMI = 1,
 	VOTE = 2,
+	LEAD = 3;
 };
 
 struct consensus_priv {
@@ -91,4 +97,4 @@ int node_transition(struct sassy_device *sdev, enum node_state state);
 struct consensus_priv *con_priv(void);
 ktime_t get_rnd_timeout(void);
 void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, u32 p1, u32 p2);
-void accept_leader(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt);
+void accept_leader(struct sassy_device *sdev, int remote_lid, u32 term);
