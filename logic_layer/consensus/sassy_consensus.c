@@ -32,7 +32,7 @@ void set_le_term(struct sassy_payload *pkt_payload, u32 term)
 	pkt_payload->lep.param1 = term;
 }
 
-void set_le_noop(struct sassy_payload *pkt_payload, struct consensus_priv *priv)
+void set_le_noop(struct sassy_payload *pkt_payload)
 {
 	pkt_payload->lep.opcode = NOOP;
 }
