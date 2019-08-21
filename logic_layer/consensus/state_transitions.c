@@ -20,7 +20,7 @@ static char *node_state_name(enum node_state state)
 int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term)
 {
 	struct sassy_payload *pkt_payload;
-	int i, hb_passive_ix;
+	int hb_passive_ix;
 
 	hb_passive_ix =
 	     !!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
