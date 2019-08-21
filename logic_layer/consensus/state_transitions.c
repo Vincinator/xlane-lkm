@@ -30,10 +30,6 @@ int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u
 
 	set_le_opcode((unsigned char*)pkt_payload, opcode, term, 0);
 	
-	if(sdev->verbose >= 4)
-		print_hex_dump(KERN_DEBUG, "le payload: ", DUMP_PREFIX_NONE, 16, 1, 
-			pkt_payload, sizeof(struct le_payload), 0);
-
 	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 
 	return 0;
