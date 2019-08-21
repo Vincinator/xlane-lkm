@@ -42,7 +42,7 @@ int setup_le_broadcast_msg(struct sassy_device *sdev, enum le_opcode opcode)
 	int i;
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
-		setup_le_msg(priv->sdev->pminfo, opcode, (u32) i, (u32) priv->term);
+		setup_le_msg(&priv->sdev->pminfo, opcode, (u32) i, (u32) priv->term);
 
 	return 0;
 }
