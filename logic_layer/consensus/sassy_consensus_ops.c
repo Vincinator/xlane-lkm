@@ -102,11 +102,8 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 
 	remote_lid = get_ltarget_id(sdev, remote_mac);
 
-	if(remote_lid == -1){
-		if(sdev->verbose >= 2)
-			sassy_error("Unknown host! Abort processing of packet\n");
+	if(remote_lid == -1)
 		return -1;
-	}
 
 	switch (priv->nstate) {
 	case FOLLOWER:

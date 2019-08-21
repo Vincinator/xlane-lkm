@@ -111,6 +111,7 @@ struct node_addr {
 
 struct le_payload {
 	u8 opcode;
+	u32 leader;
 	u32 param1;
 	u32 param2; 
 };
@@ -346,5 +347,7 @@ struct sassy_protocol *get_fd_proto(void);
 struct sassy_protocol *get_echo_proto(void);
 
 int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac);
-void set_le_noop(struct sassy_payload *pkt_payload);
+void set_le_noop(struct sassy_payload *pkt_payload, struct consensus_priv *priv);
+void set_le_term(struct sassy_payload *pkt_payload, u32 term);
+
 #endif /* _SASSY_H_ */

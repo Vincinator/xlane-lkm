@@ -109,6 +109,9 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, struct sassy_payload
 
 int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
 {
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
+
 	if(sdev->verbose >= 2)
 		sassy_dbg("received packet to process\n");
 
@@ -121,8 +124,14 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, struct sass
 		sassy_dbg("received NOMI from host: %d - term=%u \n",remote_lid, pkt->lep.param1);
 		break;		
 	case NOOP:
+
 		if(sdev->verbose >= 2)
 			sassy_dbg("received NOOP from host: %d - term=%u \n", remote_lid, pkt->lep.param1);
+		
+		if(pkt->lep.param1 >= priv->term && pkt->lep.leader)
+			accept_leader(sdev, remote_lid, pkt);
+
+		}
 		break;
 	default:
 		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);

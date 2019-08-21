@@ -17,6 +17,21 @@ static char *node_state_name(enum node_state state)
 	}
 }
 
+void accept_leader(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
+{
+	struct consensus_priv *priv = 
+			(struct consensus_priv *)sdev->le_proto->priv;
+	
+	if(sdev->verbose >= 2)
+		sassy_dbg("accepting new leader local_id: %d\n", remote_lid);
+
+	priv->term = pkt->lep.param1;
+	priv->leader_id = remote_lid;
+	node_transition(sdev, FOLLOWER);
+}
+
+
+
 int node_transition(struct sassy_device *sdev, enum node_state state)
 {
 	struct consensus_priv *priv = 

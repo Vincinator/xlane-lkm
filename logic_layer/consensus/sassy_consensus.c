@@ -27,7 +27,12 @@ ktime_t get_rnd_timeout(void)
 			prandom_u32_max(MAX_FTIMEOUT_NS - MIN_FTIMEOUT_NS));
 }
 
-void set_le_noop(struct sassy_payload *pkt_payload)
+void set_le_term(struct sassy_payload *pkt_payload, u32 term)
+{
+	pkt_payload->lep.param1 = term;
+}
+
+void set_le_noop(struct sassy_payload *pkt_payload, struct consensus_priv *priv)
 {
 	pkt_payload->lep.opcode = NOOP;
 }

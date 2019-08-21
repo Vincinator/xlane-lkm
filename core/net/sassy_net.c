@@ -238,6 +238,17 @@ struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 EXPORT_SYMBOL(compose_skb);
 
 
+int compare_mac(unsigned char *m1, nsigned char *m2)
+{
+	int i;
+
+	for(i = 0; i < 6; i ++)
+		if(m1[i] != m2[i])
+			return -1;
+	
+	return 0;
+}
+
 int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
 {
 	int i;
@@ -252,7 +263,7 @@ int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
 	for(i = 0; i < spminfo->num_of_targets; i++) {
 		cur_mac = spminfo->pm_targets[i].pkt_data.naddr.dst_mac;
 
-		if(memcmp(cur_mac, remote_mac, 6) == 0){
+		if(compare_mac(cur_mac, remote_mac) == 0){
 
 			if(sdev->verbose >= 3)
 				sassy_dbg("Found mac in remote host list\n");
@@ -261,9 +272,15 @@ int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
 		}
 	}
 
-	if(sdev->verbose >= 3)
-		sassy_error("Did not found mac in remote hosts list\n");
-
+	if(sdev->verbose >= 3){
+		sassy_error("MAC %x:%x:%x:%x:%x:%x is not registered!\n)\n",
+			   cur_mac[0],
+			   cur_mac[1],
+			   cur_mac[2],
+			   cur_mac[3],
+			   cur_mac[4],
+			   cur_mac[5]);
+	}
 	return -1;
 
 }

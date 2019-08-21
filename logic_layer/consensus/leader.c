@@ -11,6 +11,9 @@
 int leader_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_payload * pkt)
 {
 
+	struct consensus_priv *priv = 
+			(struct consensus_priv *)sdev->le_proto->priv;
+
 	switch(pkt->lep.opcode){
 	case VOTE:
 		sassy_dbg("received vote from host: %d - term=%u\n",remote_lid, pkt->lep.param1);
@@ -21,6 +24,10 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, struct sassy_p
 	case NOOP:
 		if(sdev->verbose >= 3)
 			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, pkt->lep.param1);
+		
+		if(pkt->lep.param1 >= priv->term && pkt->lep.leader)
+			accept_leader(sdev, remote_lid, pkt);
+
 		break;
 	default:
 		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, pkt->lep.opcode);
