@@ -131,6 +131,7 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned ch
 	case NOOP:
 		if(sdev->verbose >= 2)
 			sassy_dbg("received NOOP from host: %d - term=%u \n", remote_lid, param1);
+		break;
 	case LEAD:
 		if(param1 >= priv->term)
 			accept_leader(sdev, remote_lid, param1);

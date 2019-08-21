@@ -150,7 +150,7 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		sassy_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
 
-		if (sdev->verbose >= 2)
+		if (sdev->verbose >= 4)
 			print_hex_dump(KERN_DEBUG,
 				"TX Payload: ", DUMP_PREFIX_NONE,
 				16, 1, pkt_payload, SASSY_PAYLOAD_BYTES, 0);
