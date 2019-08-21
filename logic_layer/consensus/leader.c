@@ -31,7 +31,7 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char 
 			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, param1);
 	case LEAD:
 		if(param1 >= priv->term)
-			accept_leader(sdev, remote_lid, , param1);
+			accept_leader(sdev, remote_lid, param1);
 		else
 			sassy_dbg("Received LEAD from leader with lower TERM\n");
 		break;
