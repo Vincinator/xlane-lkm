@@ -96,5 +96,5 @@ int node_transition(struct sassy_device *sdev, enum node_state state);
 
 struct consensus_priv *con_priv(void);
 ktime_t get_rnd_timeout(void);
-void set_le_opcode(struct sassy_payload *pkt_payload, enum le_opcode opcode, u32 p1, u32 p2);
+void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2);
 void accept_leader(struct sassy_device *sdev, int remote_lid, u32 term);

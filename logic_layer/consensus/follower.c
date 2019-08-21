@@ -51,7 +51,7 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
 	pkt_payload =
      	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
 
-	set_le_opcode(pkt_payload, VOTE, param1, param2);
+	set_le_opcode((unsigned char*) pkt_payload, VOTE, param1, param2);
 
 	if(sdev->verbose)
 		print_hex_dump(KERN_DEBUG, "VOTE payload: ", DUMP_PREFIX_NONE, 16, 1,
