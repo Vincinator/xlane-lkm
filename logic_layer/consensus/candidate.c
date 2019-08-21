@@ -122,11 +122,11 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned ch
 
 	switch(opcode){
 	case VOTE:
-		sassy_dbg("received VOTE from host: %d - term=%u \n",remote_lid, param1);
+		sassy_dbg("received VOTE from host: %d - term=%u \n", remote_lid, param1);
 		accept_vote(sdev, remote_lid, pkt);
 		break;
 	case NOMI:
-		sassy_dbg("received NOMI from host: %d - term=%u \n",remote_lid, param1);
+		sassy_dbg("received NOMI from host: %d - term=%u \n", remote_lid, param1);
 		break;		
 	case NOOP:
 		if(sdev->verbose >= 2)
@@ -138,7 +138,7 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned ch
 			sassy_dbg("Received LEAD from leader with lower TERM\n");
 		break;
 	default:
-		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, opcode);
+		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n", remote_lid, opcode);
 	}
 
 	return 0;
