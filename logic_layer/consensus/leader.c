@@ -55,26 +55,9 @@ int start_leader(struct sassy_device *sdev)
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-	struct pminfo *spminfo = &priv->sdev->pminfo;
-	int hb_passive_ix;
-	struct sassy_payload *pkt_payload;
 
-	hb_passive_ix =
-	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
-
-	pkt_payload =
-     	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
-
-	set_le_opcode((unsigned char*) pkt_payload, LEAD, priv->term, priv->node_id);
-
-	if(sdev->verbose >= 1)
-		print_hex_dump(KERN_DEBUG, "LEAD payload: ", DUMP_PREFIX_NONE, 16, 1,
-	       pkt_payload,
-	       SASSY_PAYLOAD_BYTES, 0);
-
-	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
+	setup_le_broadcast_msg(sdev, LEAD);
 	priv->nstate = LEADER;
-
 	return 0;
 }
 EXPORT_SYMBOL(start_leader);

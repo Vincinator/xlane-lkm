@@ -17,6 +17,40 @@ static char *node_state_name(enum node_state state)
 	}
 }
 
+int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term)
+{
+	struct sassy_payload *pkt_payload;
+	int i, hb_passive_ix;
+
+	hb_passive_ix =
+	     !!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
+
+	pkt_payload =
+     	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
+
+	set_le_opcode((unsigned char*)pkt_payload, opcode, term, 0);
+	
+	if(sdev->verbose >= 4)
+		print_hex_dump(KERN_DEBUG, "le payload: ", DUMP_PREFIX_NONE, 16, 1, 
+			pkt_payload, sizeof(struct le_payload), 0);
+
+	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
+
+	return 0;
+}
+
+int setup_le_broadcast_msg(struct sassy_device *sdev, enum le_opcode opcode)
+{
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
+
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
+		setup_le_msg(priv->sdev->pminfo, opcode, i, priv->term);
+
+	return 0;
+}
+
+
 void accept_leader(struct sassy_device *sdev, int remote_lid, u32 term)
 {
 	struct consensus_priv *priv = 

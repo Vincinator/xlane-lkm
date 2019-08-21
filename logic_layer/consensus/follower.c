@@ -36,31 +36,11 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 
 void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param2)
 {
-	void *payload;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-	struct node_addr *naddr;
-	struct pminfo *spminfo = &priv->sdev->pminfo;
-	struct sassy_payload *pkt_payload;
-	int hb_passive_ix;
 
 	sassy_dbg("Preparing vote for next hb interval.\n");
-
-	hb_passive_ix =
-	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
-
-	pkt_payload =
-     	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
-
-	set_le_opcode((unsigned char*) pkt_payload, VOTE, param1, param2);
-
-	if(sdev->verbose)
-		print_hex_dump(KERN_DEBUG, "VOTE payload: ", DUMP_PREFIX_NONE, 16, 1,
-	       pkt_payload,
-	       SASSY_PAYLOAD_BYTES, 0);
-
-	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
-
+	setup_le_msg(&priv->sdev->pminfo,VOTE, param1, param2)
 }
 
 int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
@@ -153,17 +133,8 @@ int start_follower(struct sassy_device *sdev)
 	int err;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-	struct pminfo *spminfo = &priv->sdev->pminfo;
-	int hb_passive_ix;
-	struct sassy_payload *pkt_payload;
 
-	hb_passive_ix =
-	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
-
-	pkt_payload =
-     	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
-
-	set_le_opcode((unsigned char*) pkt_payload, NOOP, priv->term, priv->node_id);
+	setup_le_broadcast_msg(sdev, NOOP);
 
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;

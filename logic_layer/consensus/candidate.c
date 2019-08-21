@@ -25,7 +25,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 
 	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
 	
-	broadcast_nomination(sdev);
+	setup_nomination(sdev);
 
 	return HRTIMER_NORESTART;
 }
@@ -50,36 +50,14 @@ void init_ctimeout(struct sassy_device *sdev)
 
 }
 
-int broadcast_nomination(struct sassy_device *sdev)
+int setup_nomination(struct sassy_device *sdev)
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-	struct pminfo *spminfo = &priv->sdev->pminfo;
-	int i;
-	struct sassy_payload *pkt_payload;
-	int hb_passive_ix;
 
-	sassy_dbg("Preparing broadcast of nomination for next hb interval.\n");
-
-	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
-
-		hb_passive_ix =
-		     !!!spminfo->pm_targets[i].pkt_data.hb_active_ix;
-
-		pkt_payload =
-	     	spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_ix];
-
-		set_le_opcode((unsigned char*)pkt_payload, NOMI, priv->term, sdev->cluster_id);
-		
-		if(sdev->verbose)
-			print_hex_dump(KERN_DEBUG, "NOMI payload: ", DUMP_PREFIX_NONE, 16, 1, 
-				pkt_payload, SASSY_PAYLOAD_BYTES, 0);
-
-		spminfo->pm_targets[i].pkt_data.hb_active_ix = hb_passive_ix;
-	}
+	setup_le_broadcast_msg(sdev, NOMI);
 
 	priv->votes = 1; // selfvote
-
 	init_ctimeout(sdev);
 
 	return 0;
@@ -169,7 +147,7 @@ int start_candidate(struct sassy_device *sdev)
 
 	sassy_dbg("Initialization finished.\n");
 
-	broadcast_nomination(sdev);
+	setup_nomination(sdev);
 
 	sassy_dbg("Candidate started.\n");
 
