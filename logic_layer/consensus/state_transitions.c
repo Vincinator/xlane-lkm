@@ -25,7 +25,6 @@ void accept_leader(struct sassy_device *sdev, int remote_lid, u32 term)
 	if(sdev->verbose >= 2)
 		sassy_dbg("accepting new leader local_id: %d\n", remote_lid);
 
-	set_le_opcode();
 	priv->term = term;
 	priv->leader_id = remote_lid;
 	node_transition(sdev, FOLLOWER);

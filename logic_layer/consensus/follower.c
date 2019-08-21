@@ -153,6 +153,17 @@ int start_follower(struct sassy_device *sdev)
 	int err;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
+	struct pminfo *spminfo = &priv->sdev->pminfo;
+	int hb_passive_ix;
+	struct sassy_payload *pkt_payload;
+
+	hb_passive_ix =
+	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
+
+	pkt_payload =
+     	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
+
+	set_le_opcode((unsigned char*) pkt_payload, NOOP, priv->term, priv->node_id);
 
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;
