@@ -238,7 +238,7 @@ struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 EXPORT_SYMBOL(compose_skb);
 
 
-int compare_mac(unsigned char *m1, nsigned char *m2)
+int compare_mac(unsigned char *m1, unsigned char *m2)
 {
 	int i;
 
