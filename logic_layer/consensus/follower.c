@@ -44,6 +44,8 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
 		sassy_dbg("Preparing vote for next hb interval.\n");
 
 	setup_le_msg(&priv->sdev->pminfo, VOTE, remote_lid, param1);
+	priv->voted = true;
+
 }
 
 int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
@@ -60,17 +62,31 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned cha
 
 	switch(opcode){
 	case VOTE:
-		sassy_dbg("received VOTE from host: %d - term=%u\n", remote_lid, param1);
-		reset_ftimeout(sdev);
+
+		sassy_error("BUG! This node is a Follower," \
+				  "but it received a VOTE from host: %d - term=%u\n", remote_lid, param1);
+				
 		break;
 	case NOMI:
-		sassy_dbg("received NOMI from host: %d - term=%u\n", remote_lid, param1);
-		reply_vote(sdev, remote_lid, param1, param2);
-		reset_ftimeout(sdev);
+
+		if(sdev->verbose >= 1)
+			sassy_dbg("received NOMI from host: %d - term=%u\n", remote_lid, param1);
+		
+		if(priv->term > param1) {
+	 		if (priv->voted) {
+				sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
+			} else {
+				reply_vote(sdev, remote_lid, param1, param2);
+				reset_ftimeout(sdev);
+			}
+		}
+
 		break;		
 	case NOOP:
+		
 		if(sdev->verbose >= 1)
 			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, param1);
+		
 		break;
 	case LEAD:
 
