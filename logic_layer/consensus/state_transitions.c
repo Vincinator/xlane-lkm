@@ -47,13 +47,20 @@ int setup_le_broadcast_msg(struct sassy_device *sdev, enum le_opcode opcode)
 	return 0;
 }
 
-void accept_leader(struct sassy_device *sdev, int remote_lid, u32 term)
+void accept_leader(struct sassy_device *sdev, int remote_lid, int cluster_id, u32 term)
 {
 	struct consensus_priv *priv = 
 			(struct consensus_priv *)sdev->le_proto->priv;
 	
 	if(sdev->verbose >= 2)
 		sassy_dbg("accepting new leader local_id: %d\n", remote_lid);
+
+	sassy_log_le("%s, %llu, %d: accept cluster node %d with term %d as new leader \n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			priv->term,
+			cluster_id,
+			term);
 
 	priv->term = term;
 	priv->leader_id = remote_lid;
@@ -68,6 +75,8 @@ int node_transition(struct sassy_device *sdev, enum node_state state)
 				(struct consensus_priv *)sdev->le_proto->priv;
 	int err = 0;
 
+	priv->votes = 0; // start with 0 votes on every transition
+	
 	sassy_dbg("node transition from %s to %s\n",
 		node_state_name(priv->nstate), node_state_name(state));
 

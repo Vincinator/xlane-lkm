@@ -25,6 +25,11 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 
 	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
 	
+	sassy_log_le("%s, %llu, %d: Follower timeout occured - starting candidature\n",
+				nstate_string(priv->nstate),
+				rdtsc(),
+				priv->term);
+
 	setup_nomination(sdev);
 
 	return HRTIMER_NORESTART;
@@ -92,16 +97,26 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 	int err;
 
 	priv->votes++;
-	sassy_dbg("Got Vote/n");
+
+	sassy_log_le("%s, %llu, %d: received %d votes for this term\n",
+					nstate_string(priv->nstate),
+					rdtsc(),
+					priv->term,
+					priv->votes);
 
 	if (priv->votes * 2 >= sdev->pminfo.num_of_targets){
 		
-		sassy_dbg("Got Majority of votes, transition to become the new leader/n");
-		
+		sassy_log_le("%s, %llu, %d: got majority with %d from %d possible votes \n",
+				nstate_string(priv->nstate),
+				rdtsc(),
+				term,
+				priv->votes,
+				sdev->pminfo.num_of_targets);
+
 		err = node_transition(sdev, LEADER);
 
 		if (err) {
-			sassy_dbg("Error occured during the transition to leader role\n");
+			sassy_error("Error occured during the transition to leader role\n");
 			return;
 		}
 	}
@@ -116,7 +131,6 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 	u8 opcode = GET_LE_PAYLOAD(pkt, opcode);
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
 	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
-
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 
 	switch(opcode){
@@ -133,7 +147,7 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 			if(sdev->verbose >= 1)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 
-			accept_leader(sdev, remote_lid, param1);
+			accept_leader(sdev, remote_lid, rcluster_id, param1);
 
 		} else {
 

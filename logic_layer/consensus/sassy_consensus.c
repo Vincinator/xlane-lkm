@@ -58,7 +58,7 @@ void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum 
 	if((opcode == NOOP || opcode == LEAD) && verbose == 0)
 		return;
 
-	sassy_log_le("%s, %llu, %d: %s from %d with term %d",
+	sassy_log_le("%s, %llu, %d: %s from %d with term %d\n",
 					nstate_string(nstate),
 					ts,
 					term,

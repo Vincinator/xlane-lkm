@@ -37,7 +37,7 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_i
 			if(sdev->verbose >= 1)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 
-			accept_leader(sdev, remote_lid, param1);
+			accept_leader(sdev, remote_lid, rcluster_id, param1);
 
 		} else {
 

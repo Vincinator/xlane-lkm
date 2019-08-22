@@ -35,13 +35,17 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
-void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param2)
+void reply_vote(struct sassy_device *sdev, int remote_lid, int rcluster_id, int param1, int param2)
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 
-	if(sdev->verbose >= 1)
-		sassy_dbg("Preparing vote for next hb interval.\n");
+	sassy_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			priv->term,
+			rcluster_id,
+			param1);
 
 	setup_le_msg(&priv->sdev->pminfo, VOTE, remote_lid, param1);
 	priv->voted = param1;
@@ -67,7 +71,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 	 		if (priv->voted == param1) {
 				sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
 			} else {
-				reply_vote(sdev, remote_lid, param1, param2);
+				reply_vote(sdev, remote_lid, rcluster_id, param1, param2);
 				reset_ftimeout(sdev);
 			}
 		}
@@ -85,7 +89,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 			if(sdev->verbose >= 1)
 				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 
-			accept_leader(sdev, remote_lid, param1);
+			accept_leader(sdev, remote_lid, rcluster_id, param1);
 
 		} 
 
