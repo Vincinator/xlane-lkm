@@ -117,7 +117,7 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
 	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
 
-	log_le_rx(priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
+	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 
 	switch(opcode){
 	case VOTE:
