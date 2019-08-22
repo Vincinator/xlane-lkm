@@ -92,7 +92,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned cha
 		 * from a node that is currently not the follower (Ignore and let 
 		 * the timeout continue to go down).
 		 */
-		else if(param1 == priv->term)
+		else if(param1 == priv->term) {
 
 			if(priv->leader_id == remote_lid){
 
@@ -107,6 +107,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned cha
 
 				// Ignore this LEAD message, let the ftimer continue. 
 			}
+		}
 		/* Received a LEAD operation from a node with a lower term.
 		 * Ignoring this LEAD operation and let the countdown continue to go down.
 		 */
