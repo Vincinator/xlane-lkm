@@ -257,7 +257,7 @@ int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
 
 	if(!remote_mac){
 		sassy_error("remote mac is NULL\n");
-		return;
+		return -1;
 	}
 
 	for(i = 0; i < spminfo->num_of_targets; i++) {
@@ -293,7 +293,7 @@ int get_cluster_id(struct sassy_device *sdev, unsigned char *remote_mac)
 
 	if(!remote_mac){
 		sassy_error("remote mac is NULL\n");
-		return;
+		return -1;
 	}
 
 	for(i = 0; i < spminfo->num_of_targets; i++) {

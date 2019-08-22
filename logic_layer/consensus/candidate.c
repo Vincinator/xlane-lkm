@@ -120,7 +120,7 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 	if(sdev->verbose >= 4)
 		sassy_dbg("received packet to process\n");
 
-	log_le_rx(priv->nstate, rdtcs(), priv->term, opcode, rcluster_id, param1);
+	log_le_rx(priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 
 	switch(opcode){
 	case VOTE:
