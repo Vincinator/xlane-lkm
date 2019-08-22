@@ -75,8 +75,8 @@ struct consensus_priv {
 
 	u32 term;
 
-	/* True if this node has already voted in the current term*/
-	bool voted; 
+	/* last term this node has voted in. Initialized with -1*/
+	u32 voted; 
 
 	/* follower timeout */
 	struct hrtimer ftimer;

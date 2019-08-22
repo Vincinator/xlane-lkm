@@ -18,6 +18,8 @@ int consensus_init(struct sassy_device *sdev)
 	priv->sdev = sdev;
 	priv->ctimer_init = 0;
 	priv->ftimer_init = 0;
+	priv->voted = -1;
+	priv->term = 0;
 
 	return 0;
 }

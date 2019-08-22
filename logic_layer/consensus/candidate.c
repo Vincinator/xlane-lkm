@@ -45,7 +45,6 @@ void reset_ctimeout(struct sassy_device *sdev)
 	sassy_dbg("set candidate timeout to %dns\n", timeout);
 }
 
-
 void init_ctimeout(struct sassy_device *sdev)
 {
 	int ftime_ns;
