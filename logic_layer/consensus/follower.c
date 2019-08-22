@@ -40,7 +40,7 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
 				(struct consensus_priv *)sdev->le_proto->priv;
 
 	sassy_dbg("Preparing vote for next hb interval.\n");
-	setup_le_msg(&priv->sdev->pminfo, VOTE, remote_lid, param1);
+	setup_le_msg(&priv->sdev->pminfo, VOTE, remote_lid,);
 }
 
 int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
@@ -66,14 +66,54 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned cha
 		reset_ftimeout(sdev);
 		break;		
 	case NOOP:
-		if(sdev->verbose >= 2)
+		if(sdev->verbose >= 1)
 			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, param1);
 		break;
 	case LEAD:
-		if(param1 >= priv->term)
+
+		/* Received a LEAD operation from a node with a higher term, 
+		 * thus this node is accepting the node as new leader.
+		 */
+		if(param1 > priv->term){
+
+			if(sdev->verbose >= 1)
+				sassy_dbg("Received message from new leader with higher term=%u\n", param1);
+
 			accept_leader(sdev, remote_lid, param1);
-		else
-			sassy_dbg("Received LEAD from leader with lower TERM\n");
+
+		} 
+
+		/* Received a LEAD operation from a node with the same term,
+		 * thus, this node has to check whether it is already following 
+		 * that node (continue to follow), or if it is a LEAD operation 
+		 * from a node that is currently not the follower (Ignore and let 
+		 * the timeout continue to go down).
+		 */
+		else if(param1 == priv->term)
+
+			if(priv->leader_id == remote_lid){
+
+				if(sdev->verbose >= 1)
+					sassy_dbg("Received message from known leader term=%u\n", param1);
+
+				reset_ftimeout(sdev);
+
+			}else {
+				if(sdev->verbose >= 1)
+					sassy_dbg("Received message from new leader term=%u\n", param1);
+
+				// Ignore this LEAD message, let the ftimer continue. 
+			}
+		/* Received a LEAD operation from a node with a lower term.
+		 * Ignoring this LEAD operation and let the countdown continue to go down.
+		 */
+		else {
+
+			if(sdev->verbose >= 1)
+				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);
+
+			// Ignore this LEAD message, let the ftimer continue. 
+		}
 		break;
 	default:
 		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, opcode);

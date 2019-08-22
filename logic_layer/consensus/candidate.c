@@ -111,10 +111,23 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned ch
 			sassy_dbg("received NOOP from host: %d - term=%u \n", remote_lid, param1);
 		break;
 	case LEAD:
-		if(param1 >= priv->term)
+
+		if(param1 >= priv->term){
+
+			if(sdev->verbose >= 1)
+				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
+
 			accept_leader(sdev, remote_lid, param1);
-		else
-			sassy_dbg("Received LEAD from leader with lower TERM\n");
+
+		} else {
+
+			if(sdev->verbose >= 1)
+				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);
+	
+			// Ignore this LEAD message, continue to wait for votes 
+	
+		}
+	
 		break;
 	default:
 		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n", remote_lid, opcode);

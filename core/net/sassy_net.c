@@ -274,12 +274,12 @@ int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
 
 	if(sdev->verbose >= 3){
 		sassy_error("MAC %x:%x:%x:%x:%x:%x is not registered!\n)\n",
-			   cur_mac[0],
-			   cur_mac[1],
-			   cur_mac[2],
-			   cur_mac[3],
-			   cur_mac[4],
-			   cur_mac[5]);
+			   remote_mac[0],
+			   remote_mac[1],
+			   remote_mac[2],
+			   remote_mac[3],
+			   remote_mac[4],
+			   remote_mac[5]);
 	}
 	return -1;
 
