@@ -76,7 +76,6 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 {
 	struct sassy_timestamp_logs *logs;
 
-
 	logs = sdev->stats->timestamp_logs[logid];
 
 	if (unlikely(logs->current_timestamps > TIMESTAMP_ARRAY_LIMIT)) {

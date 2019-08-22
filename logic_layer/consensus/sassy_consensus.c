@@ -23,6 +23,47 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CONSENSUS]"
 
+const char *nstate_string(enum node_state state)
+{
+	switch (state) {
+	case FOLLOWER:
+		return "Follower";
+	case CANDIDATE:
+		return "Candidate";
+	case LEADER:
+		return "Leader";
+	default:
+		return "Unknown State ";
+	}
+}
+const char *opcode_string(enum le_opcode opcode)
+{
+	switch (opcode) {
+	case VOTE:
+		return "Vote";
+	case NOMI:
+		return "Nomination";
+	case NOOP:
+		return "Noop";
+	case LEAD:
+		return "Lead";
+	default:
+		return "Unknown State ";
+	}
+}
+
+void log_le_rx(enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm)
+{
+	sassy_log_le("%s, %llu, %d: %s from %d with term %d",
+					nstate_string(nstate),
+					ts,
+					term,
+					opcode_string(opcode),
+					rcluster_id,
+					rterm);
+}
+
+
 ktime_t get_rnd_timeout(void)
 {
 	return ktime_set(0, MIN_FTIMEOUT_NS +

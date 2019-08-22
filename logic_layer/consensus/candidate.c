@@ -108,7 +108,7 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 
 }
 
-int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
+int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
@@ -117,8 +117,10 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned ch
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
 	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
 
-	if(sdev->verbose >= 2)
+	if(sdev->verbose >= 4)
 		sassy_dbg("received packet to process\n");
+
+	log_le_rx(priv->nstate, rdtcs(), priv->term, opcode, rcluster_id, param1);
 
 	switch(opcode){
 	case VOTE:
@@ -129,7 +131,7 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned ch
 		sassy_dbg("received NOMI from host: %d - term=%u \n", remote_lid, param1);
 		break;		
 	case NOOP:
-		if(sdev->verbose >= 2)
+		if(sdev->verbose >= 4)
 			sassy_dbg("received NOOP from host: %d - term=%u \n", remote_lid, param1);
 		break;
 	case LEAD:

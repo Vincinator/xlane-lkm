@@ -97,25 +97,26 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	struct sassy_protocol *sproto = sdev->le_proto;
 	const struct consensus_priv *priv =
 		(const struct consensus_priv *)sproto->priv;
-	int remote_lid;
+	int remote_lid, rcluster_id;
 
 	if (sdev->verbose >= 3)
 			sassy_dbg("consensus payload received\n");
 
 	remote_lid = get_ltarget_id(sdev, remote_mac);
+	rcluster_id = get_cluster_id(sdev, remote_mac);
 
-	if(remote_lid == -1)
+	if(remote_lid == -1 || rcluster_id == -1)
 		return -1;
 
 	switch (priv->nstate) {
 	case FOLLOWER:
-		follower_process_pkt(sdev, remote_lid, payload);
+		follower_process_pkt(sdev, remote_lid, rcluster_id, payload);
 		break;
 	case CANDIDATE:
-		candidate_process_pkt(sdev, remote_lid, payload);
+		candidate_process_pkt(sdev, remote_lid, rcluster_id,  payload);
 		break;
 	case LEADER:
-		leader_process_pkt(sdev, remote_lid, payload);
+		leader_process_pkt(sdev, remote_lid, rcluster_id, payload);
 		break;
 	default:
 		sassy_error("Unknown state - BUG\n");

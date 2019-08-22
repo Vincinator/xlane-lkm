@@ -101,3 +101,4 @@ void accept_leader(struct sassy_device *sdev, int remote_lid, u32 term);
 int setup_le_broadcast_msg(struct sassy_device *sdev, enum le_opcode opcode);
 int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term);
 int setup_nomination(struct sassy_device *sdev);
+void log_le_rx(enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm);

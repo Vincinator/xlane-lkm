@@ -48,7 +48,7 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int param1, int param
 
 }
 
-int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
+int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
 	struct consensus_priv *priv = 
 			(struct consensus_priv *)sdev->le_proto->priv;
@@ -57,12 +57,11 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned cha
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
 	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
 
-	if(sdev->verbose >= 3)
+	if(sdev->verbose >= 4)
 		sassy_dbg("received packet to process\n");
 
 	switch(opcode){
 	case VOTE:
-
 		sassy_error("BUG! This node is a Follower," \
 				  "but it received a VOTE from host: %d - term=%u local term=%u\n", remote_lid, param1, priv->term);
 
@@ -84,7 +83,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned cha
 		break;	
 	case NOOP:
 		
-		if(sdev->verbose >= 1)
+		if(sdev->verbose >= 4)
 			sassy_dbg("received NOOP from host: %d - term=%u local term=%u\n", remote_lid, param1, priv->term);
 		
 		break;
@@ -178,7 +177,7 @@ void reset_ftimeout(struct sassy_device *sdev)
 	hrtimer_forward(&priv->ftimer, now, timeout);
 
 	if(sdev->verbose >= 1)
-		sassy_dbg("set candidate timeout to %dns\n", timeout);
+		sassy_dbg("set follower timeout to %dns\n", timeout);
 }
 
 int stop_follower(struct sassy_device *sdev)

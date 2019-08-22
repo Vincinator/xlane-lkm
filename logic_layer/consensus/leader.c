@@ -9,7 +9,7 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][LE][LEADER]"
 
-int leader_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
+int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
 
 	struct consensus_priv *priv = 
@@ -38,7 +38,7 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned char 
 	
 	case NOOP:
 	
-		if(sdev->verbose >= 1)
+		if(sdev->verbose >= 4)
 			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, param1);
 	
 		break;

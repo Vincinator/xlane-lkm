@@ -40,7 +40,6 @@ int sassy_core_register_nic(int ifindex);
 #define SASSY_NUM_TS_LOG_TYPES 8
 #define TIMESTAMP_ARRAY_LIMIT 100000
 
-
 enum tsstate {
     SASSY_TS_RUNNING,
     SASSY_TS_READY, 	/* Initialized but not active*/
