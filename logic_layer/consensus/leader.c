@@ -20,29 +20,16 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_i
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
 	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
 
+	log_le_rx(priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
+
 	switch(opcode){
 
 	case VOTE:
-
-		if(sdev->verbose >= 1)
-			sassy_dbg("received vote from host: %d - term=%u\n",remote_lid, param1);
-	
 		break;
-	
 	case NOMI:
-
-		if(sdev->verbose >= 1)
-			sassy_dbg("received nomination from host: %d - term=%u\n",remote_lid, param1);
-	
 		break;		
-	
 	case NOOP:
-	
-		if(sdev->verbose >= 4)
-			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, param1);
-	
 		break;
-	
 	case LEAD:
 
 		if(param1 > priv->term){

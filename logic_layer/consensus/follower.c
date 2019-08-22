@@ -57,20 +57,13 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
 	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
 
-	if(sdev->verbose >= 4)
-		sassy_dbg("received packet to process\n");
+	log_le_rx(priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
+
 
 	switch(opcode){
 	case VOTE:
-		sassy_error("BUG! This node is a Follower," \
-				  "but it received a VOTE from host: %d - term=%u local term=%u\n", remote_lid, param1, priv->term);
-
 		break;
-	case NOMI:
-
-		if(sdev->verbose >= 1)
-			sassy_dbg("received NOMI from host: %d - term=%u local term=%u\n", remote_lid, param1, priv->term);
-		
+	case NOMI:	
 		if(priv->term < param1) {
 	 		if (priv->voted == param1) {
 				sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
@@ -82,10 +75,6 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 
 		break;	
 	case NOOP:
-		
-		if(sdev->verbose >= 4)
-			sassy_dbg("received NOOP from host: %d - term=%u local term=%u\n", remote_lid, param1, priv->term);
-		
 		break;
 	case LEAD:
 
