@@ -109,7 +109,7 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 		sassy_log_le("%s, %llu, %d: got majority with %d from %d possible votes \n",
 				nstate_string(priv->nstate),
 				rdtsc(),
-				term,
+				priv->term,
 				priv->votes,
 				sdev->pminfo.num_of_targets);
 
