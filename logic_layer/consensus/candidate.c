@@ -75,9 +75,11 @@ int setup_nomination(struct sassy_device *sdev)
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 
+	priv->term++;
+	priv->votes = 1; // start with selfvote
+
 	setup_le_broadcast_msg(sdev, NOMI);
 
-	priv->votes = 1; // selfvote
 	init_ctimeout(sdev);
 
 	return 0;
@@ -176,7 +178,6 @@ int start_candidate(struct sassy_device *sdev)
 
 	priv->votes = 0;
 	priv->nstate = CANDIDATE;
-	priv->term++;
 
 	sassy_dbg("Initialization finished.\n");
 
