@@ -30,6 +30,22 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
+void reset_ctimeout(struct sassy_device *sdev)
+{
+	ktime_t now;
+	ktime_t timeout;
+	struct consensus_priv *priv = 
+				(struct consensus_priv *)sdev->le_proto->priv;
+
+	now = ktime_get();
+	timeout = get_rnd_timeout();
+
+	hrtimer_forward(&priv->ctimer, now, timeout);
+
+	sassy_dbg("set candidate timeout to %dns\n", timeout);
+}
+
+
 void init_ctimeout(struct sassy_device *sdev)
 {
 	int ftime_ns;
@@ -37,6 +53,11 @@ void init_ctimeout(struct sassy_device *sdev)
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 	
+	if(priv->ctimer_init == 1) {
+		reset_ctimeout(sdev);
+		return;
+	}
+
 	sassy_dbg("Initializing candidate timeout \n");
 
 	timeout = get_rnd_timeout();
