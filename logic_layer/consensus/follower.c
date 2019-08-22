@@ -64,15 +64,15 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned cha
 	case VOTE:
 
 		sassy_error("BUG! This node is a Follower," \
-				  "but it received a VOTE from host: %d - term=%u\n", remote_lid, param1);
+				  "but it received a VOTE from host: %d - term=%u local term=%u\n", remote_lid, param1, priv->term);
 
 		break;
 	case NOMI:
 
 		if(sdev->verbose >= 1)
-			sassy_dbg("received NOMI from host: %d - term=%u\n", remote_lid, param1);
+			sassy_dbg("received NOMI from host: %d - term=%u local term=%u\n", remote_lid, param1, priv->term);
 		
-		if(priv->term > param1) {
+		if(priv->term < param1) {
 	 		if (priv->voted == param1) {
 				sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
 			} else {
@@ -85,7 +85,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned cha
 	case NOOP:
 		
 		if(sdev->verbose >= 1)
-			sassy_dbg("received NOOP from host: %d - term=%u\n", remote_lid, param1);
+			sassy_dbg("received NOOP from host: %d - term=%u local term=%u\n", remote_lid, param1, priv->term);
 		
 		break;
 	case LEAD:
@@ -96,7 +96,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, unsigned cha
 		if(param1 > priv->term){
 
 			if(sdev->verbose >= 1)
-				sassy_dbg("Received message from new leader with higher term=%u\n", param1);
+				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 
 			accept_leader(sdev, remote_lid, param1);
 
