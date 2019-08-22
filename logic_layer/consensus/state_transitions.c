@@ -55,7 +55,7 @@ void accept_leader(struct sassy_device *sdev, int remote_lid, int cluster_id, u3
 	if(sdev->verbose >= 2)
 		sassy_dbg("accepting new leader local_id: %d\n", remote_lid);
 
-	sassy_log_le("%s, %llu, %d: accept cluster node %d with term %d as new leader \n",
+	sassy_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
