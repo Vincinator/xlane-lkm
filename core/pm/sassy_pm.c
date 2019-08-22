@@ -163,7 +163,8 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		}
 
 		// Set leader election OPCODE to noop
-		set_le_noop((unsigned char*) pkt_payload);
+		set_le_noop(sdev, (unsigned char*) pkt_payload);
+
 	}
 	return 0;
 }
