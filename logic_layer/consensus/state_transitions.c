@@ -73,6 +73,18 @@ int node_transition(struct sassy_device *sdev, enum node_state state)
 
 	priv->votes = 0; // start with 0 votes on every transition
 	
+	// Stop old timeouts 
+	switch(state){
+		case FOLLOWER:
+			stop_follower(sdev);
+			break;
+		case CANDIDATE:
+			stop_candidate(sdev);
+			break;
+		default:
+			break;
+	}
+
 	switch (state) {
 	case FOLLOWER:
 		err = start_follower(sdev);

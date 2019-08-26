@@ -53,6 +53,7 @@ int consensus_stop(struct sassy_device *sdev)
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;	
+
 	sassy_dbg("consensus stop\n");
 
 	switch(priv->nstate) {
