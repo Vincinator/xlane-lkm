@@ -46,12 +46,14 @@ void reset_ctimeout(struct sassy_device *sdev)
 	now = ktime_get();
 	timeout = get_rnd_timeout();
 
-	delta = ktime_to_us(timeout);
+	delta = ktime_to_ms(timeout);
 
 	hrtimer_forward(&priv->ctimer, now, timeout);
 
-	if(sdev->verbose >= 1)
-		sassy_dbg("set candidate timeout to %d microseconds\n", delta);
+	sassy_log_le("%s, %llu, %d: Set candidate timeout to %d ms\n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			delta);
 }
 
 void init_ctimeout(struct sassy_device *sdev)
@@ -183,7 +185,7 @@ int stop_candidate(struct sassy_device *sdev)
 
 	priv->ctimer_init = 0;
 
-	return hrtimer_try_to_cancel(&priv->ctimer) != -1;
+	return hrtimer_cancel(&priv->ctimer) == 1;
 }
 
 int start_candidate(struct sassy_device *sdev)

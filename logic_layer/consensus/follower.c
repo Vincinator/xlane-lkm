@@ -25,6 +25,11 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	if(sdev->verbose >= 1)
 		sassy_dbg("Follower Timeout occured!\n");
 
+	sassy_log_le("%s, %llu, %d: Follower timer timed out\n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			priv->term);
+
 	err = node_transition(sdev, CANDIDATE);
 
 	if (err){
@@ -168,12 +173,14 @@ void reset_ftimeout(struct sassy_device *sdev)
 	now = ktime_get();
 	timeout = get_rnd_timeout();
 
-	delta = ktime_to_us(timeout);
+	delta = ktime_to_ms(timeout);
 
 	hrtimer_forward(&priv->ftimer, now, timeout);
 
-	if(sdev->verbose >= 1)
-		sassy_dbg("set follower timeout to %d us\n", delta);
+	sassy_log_le("%s, %llu, %d: Set follower timeout to %d ms\n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			delta);
 }
 
 int stop_follower(struct sassy_device *sdev)
@@ -186,7 +193,7 @@ int stop_follower(struct sassy_device *sdev)
 
 	priv->ftimer_init = 0;
 
-	return hrtimer_try_to_cancel(&priv->ftimer) != -1;
+	return hrtimer_cancel(&priv->ftimer) == 1;
 }
 
 int start_follower(struct sassy_device *sdev)
