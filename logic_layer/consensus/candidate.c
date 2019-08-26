@@ -50,9 +50,10 @@ void reset_ctimeout(struct sassy_device *sdev)
 
 	hrtimer_forward(&priv->ctimer, now, timeout);
 
-	sassy_log_le("%s, %llu, %d: Set candidate timeout to %d ms\n",
+	sassy_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
+			priv->term,
 			delta);
 }
 

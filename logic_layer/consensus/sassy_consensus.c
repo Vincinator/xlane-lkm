@@ -143,6 +143,7 @@ EXPORT_SYMBOL(get_consensus_proto);
 
 static void __exit sassy_consensus_exit(void)
 {
+	
 	sassy_dbg("exit consensus protocol\n");
 }
 
