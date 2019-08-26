@@ -104,7 +104,7 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 					priv->term,
 					priv->votes);
 
-	if (priv->votes * 2 >= sdev->pminfo.num_of_targets){
+	if (priv->votes * 2 >= (sdev->pminfo.num_of_targets + 1)) {
 		
 		sassy_log_le("%s, %llu, %d: got majority with %d from %d possible votes \n",
 				nstate_string(priv->nstate),
