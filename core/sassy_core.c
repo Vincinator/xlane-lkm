@@ -394,7 +394,7 @@ static void __exit sassy_connection_core_exit(void)
 
 	// Stop running sassy processes
 	for(i = 0; i < device_counter; i++)
-		sassy_stop();
+		sassy_stop(i);
 	
 	for (i = 0; i < device_counter; i++)
 		sassy_core_remove_nic(i);
