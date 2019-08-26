@@ -51,9 +51,19 @@ error:
 
 int consensus_stop(struct sassy_device *sdev)
 {
-	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;	
+	struct consensus_priv *priv;	
 
+	if(!sdev)
+		return 0;
+
+	if(!sdev->le_proto)
+		return 0;
+
+	priv = (struct consensus_priv *)sdev->le_proto->priv
+
+	if(!priv)
+		return 0;
+	
 	sassy_dbg("consensus stop\n");
 
 	switch(priv->nstate) {

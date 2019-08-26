@@ -362,12 +362,40 @@ static int __init sassy_connection_core_init(void)
 	return 0;
 }
 
+
+void sassy_stop(int sassy_id)
+{
+	if (sassy_validate_sassy_device(sassy_id))
+		return -1;
+
+	/* Stop Pacemaker */
+	sassy_pm_stop(&score->sdevices[sassy_id]->pminfo);
+
+	/* Stop Timestamping */
+	sassy_ts_stop(score->sdevices[sassy_id]);
+
+	/* Stop Consensus Protocol */
+	if(score->sdevices[sassy_id]->le_proto && score->sdevices[sassy_id]->le_proto->stop)
+		score->sdevices[sassy_id]->le_proto->stop(score->sdevices[sassy_id]);
+
+	/* Stop Protocol */
+	if(score->sdevices[sassy_id]->proto && score->sdevices[sassy_id]->proto->stop)
+		score->sdevices[sassy_id]->proto->stop(score->sdevices[sassy_id]);
+
+}
+
+
+
 static void __exit sassy_connection_core_exit(void)
 {
 	int i;
 
 	sassy_dbg("cleanup\n");
 
+	// Stop running sassy processes
+	for(i = 0; i < device_counter; i++)
+		sassy_stop();
+	
 	for (i = 0; i < device_counter; i++)
 		sassy_core_remove_nic(i);
 
