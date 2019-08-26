@@ -335,6 +335,7 @@ static ssize_t sassy_target_write(struct file *file,
 	}
 
 	i = 0;
+	sdev->pminfo.num_of_targets = 0;
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
 		sassy_dbg(" reading: '%s'", input_str);

@@ -168,12 +168,12 @@ void reset_ftimeout(struct sassy_device *sdev)
 	now = ktime_get();
 	timeout = get_rnd_timeout();
 
-	delta = ktime_us_delta(timeout, now);
+	delta = ktime_to_us(timeout);
 
 	hrtimer_forward(&priv->ftimer, now, timeout);
 
 	if(sdev->verbose >= 1)
-		sassy_dbg("set follower timeout to %d microseconds\n", delta);
+		sassy_dbg("set follower timeout to %d us\n", delta);
 }
 
 int stop_follower(struct sassy_device *sdev)

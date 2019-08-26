@@ -46,7 +46,7 @@ void reset_ctimeout(struct sassy_device *sdev)
 	now = ktime_get();
 	timeout = get_rnd_timeout();
 
-	delta = ktime_us_delta(timeout, now);
+	delta = ktime_to_us(timeout);
 
 	hrtimer_forward(&priv->ctimer, now, timeout);
 
