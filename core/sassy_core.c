@@ -366,7 +366,7 @@ static int __init sassy_connection_core_init(void)
 void sassy_stop(int sassy_id)
 {
 	if (sassy_validate_sassy_device(sassy_id))
-		return -1;
+		return;
 
 	/* Stop Pacemaker */
 	sassy_pm_stop(&score->sdevices[sassy_id]->pminfo);
@@ -375,11 +375,11 @@ void sassy_stop(int sassy_id)
 	sassy_ts_stop(score->sdevices[sassy_id]);
 
 	/* Stop Consensus Protocol */
-	if(score->sdevices[sassy_id]->le_proto && score->sdevices[sassy_id]->le_proto->ctrl_ops->->stop)
+	if(score->sdevices[sassy_id]->le_proto && score->sdevices[sassy_id]->le_proto->ctrl_ops->stop)
 		score->sdevices[sassy_id]->le_proto->ctrl_ops->stop(score->sdevices[sassy_id]);
 
 	/* Stop Protocol */
-	if(score->sdevices[sassy_id]->proto && score->sdevices[sassy_id]->proto->ctrl_ops->->stop)
+	if(score->sdevices[sassy_id]->proto && score->sdevices[sassy_id]->proto->ctrl_ops->stop)
 		score->sdevices[sassy_id]->proto->ctrl_ops->stop(score->sdevices[sassy_id]);
 
 }
