@@ -375,12 +375,12 @@ void sassy_stop(int sassy_id)
 	sassy_ts_stop(score->sdevices[sassy_id]);
 
 	/* Stop Consensus Protocol */
-	if(score->sdevices[sassy_id]->le_proto && score->sdevices[sassy_id]->le_proto->stop)
-		score->sdevices[sassy_id]->le_proto->stop(score->sdevices[sassy_id]);
+	if(score->sdevices[sassy_id]->le_proto && score->sdevices[sassy_id]->le_proto->ctrl_ops->->stop)
+		score->sdevices[sassy_id]->le_proto->ctrl_ops->stop(score->sdevices[sassy_id]);
 
 	/* Stop Protocol */
-	if(score->sdevices[sassy_id]->proto && score->sdevices[sassy_id]->proto->stop)
-		score->sdevices[sassy_id]->proto->stop(score->sdevices[sassy_id]);
+	if(score->sdevices[sassy_id]->proto && score->sdevices[sassy_id]->proto->ctrl_ops->->stop)
+		score->sdevices[sassy_id]->proto->ctrl_ops->stop(score->sdevices[sassy_id]);
 
 }
 
