@@ -173,7 +173,7 @@ void reset_ftimeout(struct sassy_device *sdev)
 
 	delta = ktime_to_ms(timeout);
 
-	hrtimer_forward(&priv->ftimer, priv->ftimer->base->get_time(), timeout);
+	hrtimer_forward(&priv->ftimer, priv->ftimer.base.get_time(), timeout);
 
 	sassy_log_le("%s, %llu, %d: Set follower timeout to %lld ms\n",
 			nstate_string(priv->nstate),
