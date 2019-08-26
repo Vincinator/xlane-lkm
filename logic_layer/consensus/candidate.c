@@ -121,7 +121,7 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 			return;
 		}
 	}else {
-		reset_ctimeout();
+		reset_ctimeout(sdev);
 	}
 
 }
@@ -147,14 +147,14 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 	case LEAD:
 		if(param1 >= priv->term){
 
-			if(sdev->verbose >= 1)
+			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 
 			accept_leader(sdev, remote_lid, rcluster_id, param1);
 
 		} else {
 
-			if(sdev->verbose >= 1)
+			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);
 	
 			// Ignore this LEAD message, continue to wait for votes 

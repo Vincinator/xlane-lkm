@@ -86,7 +86,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 		 */
 		if(param1 > priv->term){
 
-			if(sdev->verbose >= 1)
+			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 
 			accept_leader(sdev, remote_lid, rcluster_id, param1);
@@ -104,13 +104,13 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 
 			if(priv->leader_id == remote_lid){
 
-				if(sdev->verbose >= 1)
+				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from known leader term=%u\n", param1);
 
 				reset_ftimeout(sdev);
 
 			}else {
-				if(sdev->verbose >= 1)
+				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from new leader term=%u\n", param1);
 
 				// Ignore this LEAD message, let the ftimer continue. 
@@ -121,7 +121,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 		 */
 		else {
 
-			if(sdev->verbose >= 1)
+			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);
 
 			// Ignore this LEAD message, let the ftimer continue. 
