@@ -172,7 +172,7 @@ void reset_ftimeout(struct sassy_device *sdev)
 
 	hrtimer_forward(&priv->ftimer, now, timeout);
 
-	if(sdev->verbose >= 2)
+	if(sdev->verbose >= 1)
 		sassy_dbg("set follower timeout to %d microseconds\n", delta);
 }
 

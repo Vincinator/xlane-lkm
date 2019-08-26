@@ -50,7 +50,7 @@ void reset_ctimeout(struct sassy_device *sdev)
 
 	hrtimer_forward(&priv->ctimer, now, timeout);
 
-	if(sdev->verbose >= 2)
+	if(sdev->verbose >= 1)
 		sassy_dbg("set candidate timeout to %d microseconds\n", delta);
 }
 
