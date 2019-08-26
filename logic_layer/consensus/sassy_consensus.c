@@ -55,7 +55,7 @@ const char *opcode_string(enum le_opcode opcode)
 void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm)
 {
 
-	if((opcode == NOOP || opcode == LEAD) && verbose == 0)
+	if((opcode == NOOP || opcode == LEAD))
 		return;
 
 	sassy_log_le("%s, %llu, %d: %s from %d with term %d\n",

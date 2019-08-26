@@ -98,11 +98,12 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 
 	priv->votes++;
 
-	sassy_log_le("%s, %llu, %d: received %d votes for this term\n",
+	sassy_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
 					nstate_string(priv->nstate),
 					rdtsc(),
 					priv->term,
-					priv->votes);
+					priv->votes,
+					sdev->pminfo.num_of_targets + 1);
 
 	if (priv->votes * 2 >= (sdev->pminfo.num_of_targets + 1)) {
 		
@@ -119,6 +120,8 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 			sassy_error("Error occured during the transition to leader role\n");
 			return;
 		}
+	}else {
+		reset_ctimeout();
 	}
 
 }

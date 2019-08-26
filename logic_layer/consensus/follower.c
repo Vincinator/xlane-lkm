@@ -90,6 +90,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 
 			accept_leader(sdev, remote_lid, rcluster_id, param1);
+			reset_ftimeout(sdev);
 
 		} 
 
