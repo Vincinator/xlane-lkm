@@ -39,15 +39,19 @@ void reset_ctimeout(struct sassy_device *sdev)
 {
 	ktime_t now;
 	ktime_t timeout;
+	s64 delta;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 
 	now = ktime_get();
 	timeout = get_rnd_timeout();
 
+	delta = ktime_us_delta(timeout, now);
+
 	hrtimer_forward(&priv->ctimer, now, timeout);
 
-	sassy_dbg("set candidate timeout to %dns\n", timeout);
+	if(sdev->verbose >= 2)
+		sassy_dbg("set candidate timeout to %d microseconds\n", delta);
 }
 
 void init_ctimeout(struct sassy_device *sdev)

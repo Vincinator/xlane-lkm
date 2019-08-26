@@ -163,14 +163,17 @@ void reset_ftimeout(struct sassy_device *sdev)
 	ktime_t timeout;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
+	s64 delta;
 
 	now = ktime_get();
 	timeout = get_rnd_timeout();
 
+	delta = ktime_us_delta(timeout, now);
+
 	hrtimer_forward(&priv->ftimer, now, timeout);
 
-	if(sdev->verbose >= 1)
-		sassy_dbg("set follower timeout to %dns\n", timeout);
+	if(sdev->verbose >= 2)
+		sassy_dbg("set follower timeout to %d microseconds\n", delta);
 }
 
 int stop_follower(struct sassy_device *sdev)
