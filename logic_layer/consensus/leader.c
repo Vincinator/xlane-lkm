@@ -31,7 +31,6 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_i
 	case NOOP:
 		break;
 	case LEAD:
-
 		if(param1 > priv->term){
 
 			if(sdev->verbose >= 1)

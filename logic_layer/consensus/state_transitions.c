@@ -52,9 +52,6 @@ void accept_leader(struct sassy_device *sdev, int remote_lid, int cluster_id, u3
 	struct consensus_priv *priv = 
 			(struct consensus_priv *)sdev->le_proto->priv;
 	
-	if(sdev->verbose >= 2)
-		sassy_dbg("accepting new leader local_id: %d\n", remote_lid);
-
 	sassy_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
@@ -68,7 +65,6 @@ void accept_leader(struct sassy_device *sdev, int remote_lid, int cluster_id, u3
 }
 
 
-
 int node_transition(struct sassy_device *sdev, enum node_state state)
 {
 	struct consensus_priv *priv = 
@@ -77,9 +73,6 @@ int node_transition(struct sassy_device *sdev, enum node_state state)
 
 	priv->votes = 0; // start with 0 votes on every transition
 	
-	sassy_dbg("node transition from %s to %s\n",
-		node_state_name(priv->nstate), node_state_name(state));
-
 	switch (state) {
 	case FOLLOWER:
 		err = start_follower(sdev);
@@ -95,13 +88,17 @@ int node_transition(struct sassy_device *sdev, enum node_state state)
 		err = -EINVAL;
 	}
 
-	if (err){
-		sassy_error("Failed to start new role\n");
+	if (err)
 		goto error;
-	}
 
+	sassy_log_le("%s, %llu, %d: transition to state %s\n",
+				nstate_string(priv->nstate),
+				rdtsc(),
+				priv->term,
+				nstate_string(state));
+	
 	priv->nstate = state;
-	sassy_dbg(" node transition was successfull ");
+
 	return 0;
 
 error:
