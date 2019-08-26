@@ -46,8 +46,9 @@ void reset_ctimeout(struct sassy_device *sdev)
 	timeout = get_rnd_timeout();
 	delta = ktime_to_ms(timeout);
 
-	hrtimer_forward(&priv->ctimer, priv->ctimer.base->get_time(), timeout);
-	hrtimer_restart(&priv->ctimer);
+	hrtimer_cancel(&priv->ctimer);
+	hrtimer_set_expires(&priv->ctimer, timeout);
+	hrtimer_start_expires(&priv->ctimer, HRTIMER_MODE_REL_PINNED);
 
 	sassy_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
 			nstate_string(priv->nstate),
