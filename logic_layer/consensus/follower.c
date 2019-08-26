@@ -164,18 +164,16 @@ void init_timeout(struct sassy_device *sdev)
 
 void reset_ftimeout(struct sassy_device *sdev)
 {
-	ktime_t now;
 	ktime_t timeout;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 	s64 delta;
 
-	now = ktime_get();
 	timeout = get_rnd_timeout();
 
 	delta = ktime_to_ms(timeout);
 
-	hrtimer_forward(&priv->ftimer, now, timeout);
+	hrtimer_forward(&priv->ftimer, priv->ftimer->base->get_time(), timeout);
 
 	sassy_log_le("%s, %llu, %d: Set follower timeout to %lld ms\n",
 			nstate_string(priv->nstate),
