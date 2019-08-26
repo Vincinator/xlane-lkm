@@ -59,7 +59,7 @@ int consensus_stop(struct sassy_device *sdev)
 	if(!sdev->le_proto)
 		return 0;
 
-	priv = (struct consensus_priv *)sdev->le_proto->priv
+	priv = (struct consensus_priv *)sdev->le_proto->priv;
 
 	if(!priv)
 		return 0;
