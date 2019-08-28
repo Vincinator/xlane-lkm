@@ -1,6 +1,8 @@
 #ifndef _SASSY_H_
 #define _SASSY_H_
 
+#define SASSY_DEBUG 1
+
 #include <linux/list.h>
 #include <linux/spinlock_types.h>
 
@@ -8,6 +10,7 @@
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
 #include <linux/time.h>
+
 
 #define MAX_SASSY_PROC_NAME 256
 
