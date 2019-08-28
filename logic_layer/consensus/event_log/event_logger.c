@@ -50,9 +50,9 @@ int write_le_log(struct sassy_device *sdev,
 		return -ENOMEM;
 	}
 
-	logs->events[logs->current_timestamps].timestamp_tcs = cycles;
-	logs->events[logs->current_timestamps].type = type;
-	logs->current_timestamps += 1;
+	logs->events[logs->current_entries].timestamp_tcs = tcs;
+	logs->events[logs->current_entries].type = type;
+	logs->current_entries += 1;
 
 	return 0;
 }
@@ -60,7 +60,7 @@ EXPORT_SYMBOL(sassy_write_timestamp);
 
 int sassy_le_log_stop(struct sassy_device *sdev)
 {
-	if (sdev->lel_state-> != LEL_RUNNING)
+	if (sdev->lel_state != LEL_RUNNING)
 		return -EPERM;
 
 	lel_state_transition_to(sdev, LEL_READY);
@@ -127,7 +127,7 @@ static int sassy_le_log_show(struct seq_file *m, void *v)
 
 	BUG_ON(!logs);
 
-	for (i = 0; i < logs->current_timestamps; i++)
+	for (i = 0; i < logs->current_entries; i++)
 		seq_printf(m, "%d, %llu\n", 
 							logs->events[i].type, 
 							logs->events[i].timestamp_tcs);
@@ -165,11 +165,11 @@ static int init_le_log_ctrl(struct sassy_device *sdev)
 	}
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/le_log",
-		 sdev->ifindex, logid);
+		 sdev->ifindex);
 
 	sdev->le_logs->proc_dir =
 		proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL,
-				 &sassy_procfs_ops,
+				 &sassy_le_log_ops,
 				 sdev->le_logs);
 
 	if (!sdev->le_logs->proc_dir) {
