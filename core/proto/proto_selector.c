@@ -69,22 +69,16 @@ static ssize_t proto_selector_write(struct file *file,
 		return count;
 	}
 
-	if (sproto == sdev->proto) {
-		sassy_error("Protocol already enabled. Clean and Stop Protocol\n");
-		sdev->proto->ctrl_ops.stop(sdev);
-		sdev->proto->ctrl_ops.clean(sdev);
-		sdev->proto->ctrl_ops.init(sdev);
-		return count;
-	}
-
 	if (sdev->pminfo.state == SASSY_PM_EMITTING) {
 		sassy_error("Stop pacemaker first!\n");
 		return count;
 	}
 
 	if (sdev->proto) {
-		sassy_dbg("Cleaning up Old Protocol\n");
+		sassy_error("Stop and Clean previous protocol\n");
+		sdev->proto->ctrl_ops.stop(sdev);
 		sdev->proto->ctrl_ops.clean(sdev);
+		kfree(sdev->proto); // free old protocol data
 	}
 
 	// switch to new protocol

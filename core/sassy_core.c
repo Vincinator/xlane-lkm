@@ -383,9 +383,13 @@ void sassy_stop(int sassy_id)
 	if(score->sdevices[sassy_id]->le_proto && score->sdevices[sassy_id]->le_proto->ctrl_ops.stop)
 		score->sdevices[sassy_id]->le_proto->ctrl_ops.stop(score->sdevices[sassy_id]);
 
-	/* Stop Protocol */
-	if(score->sdevices[sassy_id]->proto && score->sdevices[sassy_id]->proto->ctrl_ops.stop)
-		score->sdevices[sassy_id]->proto->ctrl_ops.stop(score->sdevices[sassy_id]);
+	/* Stop and Clean Protocol */
+	if(score->sdevices[sassy_id]->proto){
+		if(score->sdevices[sassy_id]->proto->ctrl_ops.stop)
+			score->sdevices[sassy_id]->proto->ctrl_ops.stop(score->sdevices[sassy_id]);
+		if(score->sdevices[sassy_id]->proto->ctrl_ops.clean)
+			score->sdevices[sassy_id]->proto->ctrl_ops.clean(score->sdevices[sassy_id]);
+	}
 
 }
 
