@@ -84,7 +84,7 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 		       __FUNCTION__);
 
 		sassy_ts_stop(sdev);
-
+		ts_state_transition_to(sdev, SASSY_TS_LOG_FULL);
 		return -ENOMEM;
 	}
 

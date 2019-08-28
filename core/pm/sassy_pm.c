@@ -293,7 +293,6 @@ static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	return HRTIMER_RESTART;
 }
 
-
 int sassy_pm_start_timer(void *data)
 {
 	struct pminfo *spminfo =

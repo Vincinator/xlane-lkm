@@ -193,6 +193,8 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->proto = NULL;
 	score->sdevices[sassy_id]->verbose = 0;
 	score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
+	score->sdevices[sassy_id]->ts_state = SASSY_TS_UNINIT;
+	score->sdevices[sassy_id]->lel_state = LEL_UNINIT;
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d", ifindex);
 	proc_mkdir(name_buf, NULL);
@@ -375,6 +377,8 @@ void sassy_stop(int sassy_id)
 	/* Stop Timestamping */
 	sassy_ts_stop(score->sdevices[sassy_id]);
 
+	/* Stop LE Logging */
+
 	/* Stop Consensus Protocol */
 	if(score->sdevices[sassy_id]->le_proto && score->sdevices[sassy_id]->le_proto->ctrl_ops.stop)
 		score->sdevices[sassy_id]->le_proto->ctrl_ops.stop(score->sdevices[sassy_id]);
@@ -384,8 +388,6 @@ void sassy_stop(int sassy_id)
 		score->sdevices[sassy_id]->proto->ctrl_ops.stop(score->sdevices[sassy_id]);
 
 }
-
-
 
 static void __exit sassy_connection_core_exit(void)
 {

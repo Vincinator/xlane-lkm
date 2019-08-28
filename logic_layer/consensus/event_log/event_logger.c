@@ -28,7 +28,7 @@ void lel_state_transition_to(struct sassy_device *sdev,
 			    enum le_logger_state state)
 {
 	sassy_dbg("State Transition from %s to %s\n",
-		  lel_state_string(sdev->ts_state), lel_state_string(state));
+		  lel_state_string(sdev->lel_state), lel_state_string(state));
 	sdev->lel_state = state;
 }
 
@@ -37,6 +37,9 @@ int write_le_log(struct sassy_device *sdev,
 			  enum le_event_type type, uint64_t tcs)
 {
 	struct le_event_logs *logs;
+	
+	if (sdev->lel_state != LEL_RUNNING)
+		return 0;
 
 	logs = sdev->le_logs;
 
@@ -46,7 +49,7 @@ int write_le_log(struct sassy_device *sdev,
 		       __FUNCTION__);
 
 		sassy_le_log_stop(sdev);
-
+		lel_state_transition_to(sdev, LEL_LOG_FULL);
 		return -ENOMEM;
 	}
 
@@ -225,6 +228,9 @@ int init_le_logging(struct sassy_device *sdev)
 	sdev->le_logs->current_entries = 0;
 
 	init_le_log_ctrl(sdev);
+
+	lel_state_transition_to(sdev, LEL_READY);
+
 
 
 error:

@@ -69,7 +69,7 @@ static int sassy_event_ctrl_show(struct seq_file *m, void *v)
 	if (!sdev)
 		return -ENODEV;
 
-	seq_printf(m, "%s\n", ts_state_string(sdev->ts_state));
+	seq_printf(m, "%s\n", lel_state_string(sdev->lel_state));
 
 	return 0;
 }
