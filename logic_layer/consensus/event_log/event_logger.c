@@ -7,7 +7,6 @@
 
 #include "event_logger.h"
 
-fs
 
 const char *lel_state_string(enum tsstate state)
 {
