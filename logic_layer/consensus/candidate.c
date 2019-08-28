@@ -23,6 +23,9 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	if(priv->ctimer_init == 0 || priv->nstate != CANDIDATE)
 		return HRTIMER_NORESTART;
 
+	write_le_log(sdev, CANDIDATE_TIMEOUT, rdtsc());
+
+
 	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
 	
 	sassy_log_le("%s, %llu, %d: Follower timeout occured - starting candidature\n",
@@ -122,6 +125,8 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 				sdev->pminfo.num_of_targets);
 
 		err = node_transition(sdev, LEADER);
+		write_le_log(sdev, CANDIDATE_BECOME_LEADER, rdtsc());
+
 
 		if (err) {
 			sassy_error("Error occured during the transition to leader role\n");
@@ -158,6 +163,8 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 
 			accept_leader(sdev, remote_lid, rcluster_id, param1);
+			write_le_log(sdev, CANDIDATE_ACCEPT_NEW_LEADER, rdtsc());
+
 
 		} else {
 
