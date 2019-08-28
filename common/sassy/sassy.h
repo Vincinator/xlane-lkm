@@ -70,6 +70,13 @@ struct sassy_stats {
 	int timestamp_amount; /* how many different timestamps types are tracked*/
 };
 
+enum le_logger_state {
+    LEL_RUNNING,
+    LEL_READY, 	/* Initialized but not active*/
+    LEL_UNINIT,
+    LEL_LOG_FULL,
+};
+
 enum le_event_type {
 
 	FOLLOWER_TIMEOUT,
@@ -88,10 +95,15 @@ struct le_event {
 	enum le_event_type type;
 };
 
+
+
+
 struct le_event_logs {
 
 	/* Size is defined by LE_EVENT_LOG_LIMIT */
 	struct le_event *events;
+
+
 
 	/* Last valid log entry in the le_event array */
 	int current_entries;
@@ -229,6 +241,7 @@ struct sassy_device {
 
 	enum sassy_rx_state rx_state;
 	enum tsstate ts_state; 
+	enum le_logger_state lel_state;
 
 	struct sassy_stats *stats;
 	struct le_event_logs *le_logs;
@@ -356,6 +369,10 @@ int sassy_ts_stop(struct sassy_device *sdev);
 int sassy_ts_start(struct sassy_device *sdev);
 int sassy_reset_stats(struct sassy_device *sdev);
 
+int sassy_le_log_stop(struct sassy_device *sdev);
+int sassy_le_log_start(struct sassy_device *sdev);
+int sassy_le_log_reset(struct sassy_device *sdev);
+
 int sassy_write_timestamp(struct sassy_device *sdev,
 				int logid, uint64_t cycles, int target_id);
 
@@ -366,6 +383,8 @@ void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev);
 void init_le_log_ctrl_interfaces(struct sassy_device *sdev);
 int sassy_clean_timestamping(struct sassy_device *sdev);
 
+int write_le_log(struct sassy_device *sdev,
+			  enum le_event_type type, uint64_t tcs);
 
 struct sassy_device *get_sdev(int devid);
 
