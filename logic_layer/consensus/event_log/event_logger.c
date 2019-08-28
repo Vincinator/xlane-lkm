@@ -70,7 +70,7 @@ int sassy_le_log_stop(struct sassy_device *sdev)
 int sassy_le_log_start(struct sassy_device *sdev)
 {
 
-	if (sdev->lel_state != SASSY_TS_READY) {
+	if (sdev->lel_state != LEL_READY) {
 		sassy_error("leader election logger is not in ready state. %s\n", __FUNCTION__);
 		goto error;
 	}
