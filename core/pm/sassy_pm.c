@@ -366,10 +366,6 @@ int sassy_pm_stop(struct pminfo *spminfo)
 {
 	pm_state_transition_to(spminfo, SASSY_PM_READY);
 
-	/* Stop Protocols */
-	sdev->proto->ctrl_ops.stop(sdev);
-	sdev->proto->ctrl_ops.clean(sdev);
-	sdev->proto->ctrl_ops.init(sdev);
 	return 0;
 }
 
