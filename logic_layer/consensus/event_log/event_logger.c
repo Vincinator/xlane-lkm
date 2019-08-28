@@ -8,7 +8,7 @@
 #include "event_logger.h"
 
 
-const char *lel_state_string(enum tsstate state)
+const char *lel_state_string(enum le_logger_state state)
 {
 	switch (state) {
 	case LEL_RUNNING:
