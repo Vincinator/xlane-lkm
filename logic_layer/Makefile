@@ -14,6 +14,6 @@ else
 obj-y := fd/
 obj-y += echo/
 obj-y += consensus/
-
+obj-y := consensus/event_log/
 
 endif
