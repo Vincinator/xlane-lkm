@@ -101,13 +101,15 @@ static ssize_t sassy_le_log_write(struct file *file, const char __user *buffer,
 static int sassy_le_log_show(struct seq_file *m, void *v)
 {
 	int i;
-	struct sassy_timestamp_logs *logs =
-		(struct sassy_timestamp_logs *)m->private;
+	struct le_event_logs *logs =
+		(struct le_event_logs *)m->private;
 
 	BUG_ON(!logs);
 
 	for (i = 0; i < logs->current_timestamps; i++)
-		seq_printf(m, "%llu\n", logs->timestamp_items[i].timestamp_tcs);
+		seq_printf(m, "%d, %llu\n", 
+							logs->events[i].type, 
+							logs->events[i].timestamp_tcs);
 
 	return 0;
 }
@@ -127,24 +129,51 @@ static const struct file_operations sassy_le_log_ops = {
 };
 
 
-void init_sassy_event_ctrl_interfaces(struct sassy_device *sdev)
+static int init_le_log_ctrl(struct sassy_device *sdev)
+{
+	int err;
+	char name_buf[MAX_SASSY_PROC_NAME];
+
+	if (sdev->verbose)
+		sassy_dbg("Init leader election event log\n");
+
+	if (!sdev->le_logs) {
+		err = -ENOMEM;
+		sassy_error("Leader Election logs are not initialized!\n");
+		goto error;
+	}
+
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/le_log",
+		 sdev->ifindex, logid);
+
+	sdev->le_logs->proc_dir =
+		proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL,
+				 &sassy_procfs_ops,
+				 sdev->le_logs);
+
+	if (!sdev->le_logs->proc_dir) {
+		err = -ENOMEM;
+		sassy_error(
+			" Could not create leader election log procfs data entry%s\n",
+			__FUNCTION__);
+		goto error;
+	}
+	return 0;
+
+error:
+	sassy_error(" error code: %d for %s\n", err, __FUNCTION__);
+	return err;
+}
+
+void init_le_log_ctrl_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log", sdev->ifindex);
 	proc_mkdir(name_buf, NULL);
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/le_log", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_le_log_ops,
-			 sdev);
-
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl", sdev->ifindex);
-
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops,
 			 sdev);
-
-	sassy_dbg(
-		"[SASSY] Log Event ctrl interfaces created for device (%d)\n",
-		sdev->ifindex);
 }
 

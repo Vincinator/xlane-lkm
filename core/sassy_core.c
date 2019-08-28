@@ -197,9 +197,13 @@ int sassy_core_register_nic(int ifindex)
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d", ifindex);
 	proc_mkdir(name_buf, NULL);
 
-    /* Initialize Timestamping Interfaces for NIC */
+    /* Initialize Timestamping for NIC */
 	init_sassy_ts_ctrl_interfaces(score->sdevices[sassy_id]);
 	init_timestamping(score->sdevices[sassy_id]);
+
+	/* Initialize Leader Election Logger for NIC */
+	init_le_log_ctrl_interfaces(score->sdevices[sassy_id]);
+	init_le_logging(score->sdevices[sassy_id]);
 
 	/* Initialize Control Interfaces for NIC */
 	init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
@@ -320,7 +324,6 @@ EXPORT_SYMBOL(sassy_core_register_remote_host);
 
 static int __init sassy_connection_core_init(void)
 {
-	sassy_dbg("init\n");
 
 	score = kmalloc(sizeof(struct sassy_core), GFP_KERNEL);
 
@@ -357,8 +360,6 @@ static int __init sassy_connection_core_init(void)
 
 	init_sassy_proto_info_interfaces();
 
-	sassy_dbg("init done\n");
-
 	return 0;
 }
 
@@ -390,8 +391,6 @@ static void __exit sassy_connection_core_exit(void)
 {
 	int i;
 
-	sassy_dbg("cleanup\n");
-
 	// Stop running sassy processes
 	for(i = 0; i < device_counter; i++)
 		sassy_stop(i);
@@ -405,7 +404,6 @@ static void __exit sassy_connection_core_exit(void)
 
 	clean_sassy_proto_info_interfaces();
 
-	sassy_dbg("cleanup done\n");
 }
 
 subsys_initcall(sassy_connection_core_init);

@@ -38,7 +38,8 @@
 int sassy_core_register_nic(int ifindex);
 
 #define SASSY_NUM_TS_LOG_TYPES 8
-#define TIMESTAMP_ARRAY_LIMIT 100000
+#define TIMESTAMP_ARRAY_LIMIT	100000
+#define LE_EVENT_LOG_LIMIT 		100000
 
 enum tsstate {
     SASSY_TS_RUNNING,
@@ -68,6 +69,38 @@ struct sassy_stats {
 	struct sassy_timestamp_logs **timestamp_logs;
 	int timestamp_amount; /* how many different timestamps types are tracked*/
 };
+
+enum le_event_type {
+
+	FOLLOWER_TIMEOUT,
+	CANDIDATE_TIMEOUT,
+
+	FOLLOWER_ACCEPT_NEW_LEADER,
+	CANDIDATE_ACCEPT_NEW_LEADER,
+	LEADER_ACCEPT_NEW_LEADER,
+	
+	FOLLOWER_BECOME_CANDIDATE,
+	CANDIDATE_BECOME_LEADER,
+};
+
+struct le_event {
+	uint64_t timestamp_tcs;
+	enum le_event_type type;
+};
+
+struct le_event_logs {
+
+	/* Size is defined by LE_EVENT_LOG_LIMIT */
+	struct le_event *events;
+
+	/* Last valid log entry in the le_event array */
+	int current_entries;
+	
+	struct proc_dir_entry	*proc_dir;	
+	char *name;
+
+};
+
 
 enum sassy_rx_state {
 	SASSY_RX_DISABLED = 0,
@@ -198,6 +231,7 @@ struct sassy_device {
 	enum tsstate ts_state; 
 
 	struct sassy_stats *stats;
+	struct le_event_logs *le_logs;
 
 	struct net_device *ndev;
 
@@ -327,7 +361,9 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 
 const char *ts_state_string(enum tsstate state);
 int init_timestamping(struct sassy_device *sdev);
+int init_le_logging(struct sassy_device *sdev);
 void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev);
+void init_le_log_ctrl_interfaces(struct sassy_device *sdev);
 int sassy_clean_timestamping(struct sassy_device *sdev);
 
 
@@ -342,8 +378,7 @@ struct sassy_protocol *get_consensus_proto(void);
 struct sassy_protocol *get_fd_proto(void);
 struct sassy_protocol *get_echo_proto(void);
 
-int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac);
-int get_cluster_id(struct sassy_device *sdev, unsigned char *remote_mac);
+void get_cluster_ids(struct sassy_device *sdev, unsigned char *remote_mac, int *lid, int *cid);
 void set_le_noop(struct sassy_device *sdev, unsigned char *pkt);
 void set_le_term(unsigned char *pkt, u32 term);
 int compare_mac(unsigned char *m1, unsigned char *m2);

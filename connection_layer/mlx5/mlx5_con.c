@@ -121,12 +121,10 @@ EXPORT_SYMBOL(sassy_mlx5_con_register_channel);
 
 static int __init sassy_mlx5_con_init(void)
 {
-	sassy_dbg("init\n");
 
 	infos = kmalloc_array(SASSY_MLX5_DEVICES_LIMIT,
 			      sizeof(struct sassy_mlx5_con_info *), GFP_KERNEL);
 
-	sassy_dbg("init done\n");
 	return 0;
 }
 
@@ -134,13 +132,10 @@ static void __exit sassy_mlx5_con_exit(void)
 {
 	int i;
 
-	sassy_dbg("exiting..\n");
-
 	for (i = 0; i < mlx5_devices; i++)
 		kfree(infos[i]);
 
 	kfree(infos);
-	sassy_dbg("exited\n");
 }
 
 subsys_initcall(sassy_mlx5_con_init);

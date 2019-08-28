@@ -11,11 +11,15 @@
 /* 
  * Prefixes NIC device ID and SASSY Context (e.g. [SASSY][NIC4][CONSENSUS])
  */
-#define sassy_dbg(format, arg...)						\
-({														\
-	if (1)												\
-		printk(KERN_DEBUG LOG_PREFIX format, ##arg);	\
-})
+#if SASSY_DEBUG
+	#define sassy_dbg(format, arg...)						\
+	({														\
+		if (1)												\
+			printk(KERN_DEBUG LOG_PREFIX format, ##arg);	\
+	})
+#else
+	#define sassy_dbg(format, arg...)
+#endif
 
 #define sassy_error(format, arg...)						\
 ({														\

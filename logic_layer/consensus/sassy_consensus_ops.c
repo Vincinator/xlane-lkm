@@ -113,8 +113,7 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	if (sdev->verbose >= 3)
 			sassy_dbg("consensus payload received\n");
 
-	remote_lid = get_ltarget_id(sdev, remote_mac);
-	rcluster_id = get_cluster_id(sdev, remote_mac);
+	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if(remote_lid == -1 || rcluster_id == -1)
 		return -1;

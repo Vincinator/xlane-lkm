@@ -228,11 +228,14 @@ struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 	add_L4_header(nomination_pkt);
 	add_payload(nomination_pkt, payload);
 
+#if SASSY_DEBUG
 	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
 		       payload,
 		       SASSY_PAYLOAD_BYTES, 0);
 
 	sassy_dbg("Composed packet\n");
+#endif 
+
 	return nomination_pkt;
 }
 EXPORT_SYMBOL(compose_skb);
@@ -249,11 +252,14 @@ int compare_mac(unsigned char *m1, unsigned char *m2)
 	return 0;
 }
 
-int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
+void get_cluster_ids(struct sassy_device *sdev, unsigned char *remote_mac, int *lid, int *cid)
 {
 	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
 	unsigned char *cur_mac = NULL;
+	
+	*lid = -1;
+	*cid = -1;
 
 	if(!remote_mac){
 		sassy_error("remote mac is NULL\n");
@@ -262,13 +268,10 @@ int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
 
 	for(i = 0; i < spminfo->num_of_targets; i++) {
 		cur_mac = spminfo->pm_targets[i].pkt_data.naddr.dst_mac;
-
 		if(compare_mac(cur_mac, remote_mac) == 0){
-
-			if(sdev->verbose >= 3)
-				sassy_dbg("Found mac in remote host list\n");
-
-			return i;
+			*cid = spminfo->pm_targets[i].pkt_data.naddr.cluster_id
+			*lid = i;
+			return;
 		}
 	}
 
@@ -281,46 +284,9 @@ int get_ltarget_id(struct sassy_device *sdev, unsigned char *remote_mac)
 			   remote_mac[4],
 			   remote_mac[5]);
 	}
-	return -1;
+	return;
 
 }
-
-int get_cluster_id(struct sassy_device *sdev, unsigned char *remote_mac)
-{
-	int i;
-	struct pminfo *spminfo = &sdev->pminfo;
-	unsigned char *cur_mac = NULL;
-
-	if(!remote_mac){
-		sassy_error("remote mac is NULL\n");
-		return -1;
-	}
-
-	for(i = 0; i < spminfo->num_of_targets; i++) {
-		cur_mac = spminfo->pm_targets[i].pkt_data.naddr.dst_mac;
-
-		if(compare_mac(cur_mac, remote_mac) == 0){
-
-			if(sdev->verbose >= 3)
-				sassy_dbg("Found mac in remote host list\n");
-
-			return spminfo->pm_targets[i].pkt_data.naddr.cluster_id;
-		}
-	}
-
-	if(sdev->verbose >= 3){
-		sassy_error("MAC %x:%x:%x:%x:%x:%x is not registered!\n)\n",
-			   remote_mac[0],
-			   remote_mac[1],
-			   remote_mac[2],
-			   remote_mac[3],
-			   remote_mac[4],
-			   remote_mac[5]);
-	}
-	return -1;
-
-}
-
 
 void send_pkt(struct net_device *ndev, struct sk_buff *skb)
 {
