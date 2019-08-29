@@ -172,7 +172,7 @@ void init_timeout(struct sassy_device *sdev)
 		priv->term,
 		delta);
 
-	hrtimer_start_range_ns(&priv->ftimer, timeout, HRTIMER_MODE_REL_PINNED, TOLERANCE_FTIMEOUT_NS);
+	hrtimer_start_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS, HRTIMER_MODE_REL_PINNED);
 }
 
 void reset_ftimeout(struct sassy_device *sdev)
@@ -187,7 +187,7 @@ void reset_ftimeout(struct sassy_device *sdev)
 	delta = ktime_to_ms(timeout);
 
 	hrtimer_cancel(&priv->ftimer);
-	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
+	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS, HRTIMER_MODE_REL_PINNED);
 	hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 
 	/*
@@ -229,12 +229,12 @@ int start_follower(struct sassy_device *sdev)
 
 	init_timeout(sdev);
 
-	sassy_dbg(" node become a follower\n");
+	sassy_dbg("Node became a follower\n");
 
 	return 0;
 
 error:
-	sassy_error("  failed to start as follower\n");
+	sassy_error("Failed to start as follower\n");
 	return err;
 }
 EXPORT_SYMBOL(start_follower);

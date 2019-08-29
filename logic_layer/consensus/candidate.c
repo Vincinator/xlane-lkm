@@ -26,17 +26,19 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 
 	write_le_log(sdev, CANDIDATE_TIMEOUT, rdtsc());
 	
-	sassy_log_le("%s, %llu, %d: Candidate timeout occured - restarting candidature\n",
-				nstate_string(priv->nstate),
-				rdtsc(),
-				priv->term);
-
 	setup_nomination(sdev);
 
 	timeout = get_rnd_timeout();
-	
-	hrtimer_forward_now(&priv->ctimer, timeout);
-	
+	delta = ktime_to_ms(timeout);
+
+	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
+
+	sassy_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			priv->term,
+			delta);
+
 	return HRTIMER_RESTART;
 }
 
@@ -211,7 +213,7 @@ int start_candidate(struct sassy_device *sdev)
 
 	setup_nomination(sdev);
 	init_ctimeout(sdev);
-	
+
 	sassy_dbg("Candidate started.\n");
 
 	return 0;
