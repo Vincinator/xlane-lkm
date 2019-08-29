@@ -96,7 +96,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	if (unlikely(!sproto || !lesproto))
 		return;
 
-    if (sdev->pminfo != SASSY_PM_EMITTING)
+    if (sdev->pminfo.state != SASSY_PM_EMITTING)
     	return;
 
 	if (sdev->ts_state == SASSY_TS_RUNNING)
