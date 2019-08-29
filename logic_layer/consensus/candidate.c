@@ -32,11 +32,9 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	
 	if(priv->c_retries >= CANDIDATURE_RETRY_LIMIT){
 
-		sassy_log_le("%s, %llu, %d: Tried nomination %d times, retry limit is %d\n",
+		sassy_log_le("%s, %llu, %d: reached maximum of candidature retries\n",
 			nstate_string(priv->nstate),
-			rdtsc(),
-			priv->c_retries,
-			CANDIDATURE_RETRY_LIMIT);
+			rdtsc());
 
 		// node_transition(sdev, FOLLOWER);
 
@@ -45,16 +43,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 
 	setup_nomination(sdev);
 
-	timeout = get_rnd_timeout();
-	delta = ktime_to_ms(timeout);
-
-	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
-
-	sassy_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
-		nstate_string(priv->nstate),
-		rdtsc(),
-		priv->term,
-		delta);
+	reset_ctimeout(sdev);
 
 	return HRTIMER_RESTART;
 	
