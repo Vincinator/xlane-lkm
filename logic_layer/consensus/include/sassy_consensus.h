@@ -88,6 +88,7 @@ struct consensus_priv {
 	/* candidate timeout */
 	struct hrtimer ctimer;
 	int ctimer_init;
+	int c_retries;
 
 	/* number of followers voted for this node */
 	int votes;

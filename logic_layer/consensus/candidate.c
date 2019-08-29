@@ -15,6 +15,8 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][LE][CANDIDATE]"
 
+#define CANDIDATURE_RETRY_LIMIT 10
+
 static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 {
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ctimer);
@@ -25,8 +27,22 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	if(priv->ctimer_init == 0 || priv->nstate != CANDIDATE)
 		return HRTIMER_NORESTART;
 
+	priv->c_retries++;
 	write_le_log(sdev, CANDIDATE_TIMEOUT, rdtsc());
 	
+	if(priv->c_retries >= CANDIDATURE_RETRY_LIMIT){
+
+		sassy_log_le("%s, %llu, %d: Tried nomination %d times, retry limit is %d\n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			priv->c_retries,
+			CANDIDATURE_RETRY_LIMIT);
+
+		// node_transition(sdev, FOLLOWER);
+
+		return HRTIMER_NORESTART;
+	}
+
 	setup_nomination(sdev);
 
 	timeout = get_rnd_timeout();
@@ -35,12 +51,13 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
 
 	sassy_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
-			nstate_string(priv->nstate),
-			rdtsc(),
-			priv->term,
-			delta);
+		nstate_string(priv->nstate),
+		rdtsc(),
+		priv->term,
+		delta);
 
 	return HRTIMER_RESTART;
+	
 }
 
 void reset_ctimeout(struct sassy_device *sdev)
@@ -50,6 +67,7 @@ void reset_ctimeout(struct sassy_device *sdev)
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 
+	priv->c_retries = 0;
 	timeout = get_rnd_timeout();
 	delta = ktime_to_ms(timeout);
 
@@ -77,6 +95,7 @@ void init_ctimeout(struct sassy_device *sdev)
 		return;
 	}
 
+	priv->c_retries = 0;
 	timeout = get_rnd_timeout();
 
 	hrtimer_init(&priv->ctimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
