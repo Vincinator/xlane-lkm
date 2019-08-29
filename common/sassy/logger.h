@@ -1,6 +1,8 @@
 #ifndef _SASSY_LOGGER_H_
 #define _SASSY_LOGGER_H_
 
+#define SASSY_DEBUG 1
+
 
 #ifndef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][UNKNOWN MODULE]"
