@@ -223,7 +223,12 @@ static int sassy_pm_loop(void *data)
 
 	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
-	get_cpu(); /* disable preemption */
+	if(sdev->le_proto != NULL){
+		sdev->le_proto->ctrl_ops.init(sdev);
+		sdev->le_proto->ctrl_ops.start(sdev); // start le after packets are composed!
+	}
+
+	get_cpu(); // disable preemption
 
 	prev_time = rdtsc();
 
@@ -251,8 +256,7 @@ static int sassy_pm_loop(void *data)
 		local_irq_restore(flags);
 	}
 	put_cpu();
-	sassy_dbg(" leaving heart..\n");
-	return HRTIMER_RESTART;
+	return 0;
 }
 
 static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
@@ -352,12 +356,6 @@ int sassy_pm_start_loop(void *data)
 	}
 
 	wake_up_process(heartbeat_task);
-
-	if(sdev->le_proto != NULL){
-		sdev->le_proto->ctrl_ops.init(sdev);
-		sdev->le_proto->ctrl_ops.start(sdev);
-	}
-
 
 	return 0;
 }
