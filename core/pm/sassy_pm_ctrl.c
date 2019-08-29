@@ -68,7 +68,7 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 
 		heartbeat_task =
 			kthread_create(&sassy_pm_start_timer, spminfo,
-				"sassy start heart thread");
+				"sassy heart starter");
 
 		kthread_bind(heartbeat_task, spminfo->active_cpu);
 

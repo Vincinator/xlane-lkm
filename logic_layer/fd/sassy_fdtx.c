@@ -37,7 +37,7 @@ static char *sassy_alloc_mmap_buffer(void)
 {
 	char *page = (char *)get_zeroed_page(GFP_KERNEL);
 
-	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
+	sassy_dbg("Enter: %s\n", __FUNCTION__);
 
 	if (!page)
 		goto error;
@@ -46,13 +46,13 @@ static char *sassy_alloc_mmap_buffer(void)
 
 	return page;
 error:
-	sassy_error("[SASSY] Failed in %s\n", __FUNCTION__);
+	sassy_error("Failed in %s\n", __FUNCTION__);
 	return page;
 }
 
 static void sassy_free_mmap_buffer(void *page)
 {
-	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
+	sassy_dbg("Enter: %s\n", __FUNCTION__);
 
 	ClearPageReserved(virt_to_page(page));
 	free_page((unsigned long)page);
@@ -63,7 +63,7 @@ static int sassy_bypass_open(struct inode *inode, struct file *filp)
 	struct sassy_fd_priv *sdev =
 		container_of(inode->i_cdev, struct sassy_fd_priv, cdev_tx);
 
-	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
+	sassy_dbg("Enter: %s\n", __FUNCTION__);
 
 	filp->private_data = sdev;
 
@@ -72,7 +72,7 @@ static int sassy_bypass_open(struct inode *inode, struct file *filp)
 
 static int sassy_bypass_release(struct inode *inode, struct file *filp)
 {
-	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
+	sassy_dbg("Enter: %s\n", __FUNCTION__);
 	return 0;
 }
 
@@ -82,7 +82,7 @@ static ssize_t sassy_bypass_read(struct file *filp, char __user *buf, size_t cou
 	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
 	ssize_t ret = 0;
 
-	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
+	sassy_dbg("Enter: %s\n", __FUNCTION__);
 
 	BUG_ON(priv == NULL);
 
@@ -151,13 +151,13 @@ out:
 
 static void bypass_vma_open(struct vm_area_struct *vma)
 {
-	sassy_dbg("[SASSY] Bypass VMA open, virt %lx, phys %lx\n",
+	sassy_dbg("Bypass VMA open, virt %lx, phys %lx\n",
 		  vma->vm_start, vma->vm_pgoff << PAGE_SHIFT);
 }
 
 static void bypass_vma_close(struct vm_area_struct *vma)
 {
-	sassy_dbg("[SASSY] Simple VMA close.\n");
+	sassy_dbg("Simple VMA close.\n");
 }
 
 static vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
@@ -165,7 +165,7 @@ static vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 	struct page *page;
 	struct sassy_fd_priv *priv;
 
-	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
+	sassy_dbg("Enter: %s\n", __FUNCTION__);
 
 	priv = (struct sassy_fd_priv *)vmf->vma->vm_private_data;
 	if (priv->tx_buf) {
@@ -187,11 +187,11 @@ static int sassy_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 	struct sassy_fd_priv *priv = filp->private_data;
 	int ret;
 
-	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
+	sassy_dbg("Enter: %s\n", __FUNCTION__);
 
 	if (!priv) {
 		sassy_error(
-			"[SASSY] Could not find sdev in private data of file struct\n");
+			"private data of file struct is faulty\n");
 		return -ENODEV;
 	}
 
@@ -201,7 +201,7 @@ static int sassy_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 			      vma->vm_end - vma->vm_start, vma->vm_page_prot);
 
 	if (ret < 0) {
-		sassy_error("[SASSY] Mapping of kernel memory failed\n");
+		sassy_error("Mapping of kernel memory failed\n");
 		return -EIO;
 	}
 	vma->vm_ops = &bypass_vm_ops;
@@ -230,7 +230,7 @@ int sassy_setup_chardev(struct sassy_device *sdev)
 	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)proto->priv;
 
 	BUG_ON(sdev == NULL || sassy_bypass_class == NULL);
-	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
+	sassy_dbg("Enter: %s\n", __FUNCTION__);
 
 	devno = MKDEV(sassy_bypass_major, sdev->ifindex);
 
@@ -241,7 +241,7 @@ int sassy_setup_chardev(struct sassy_device *sdev)
 
 	ret = cdev_add(&priv->cdev_tx, devno, 1);
 	if (ret) {
-		sassy_error("[SASSY] Failed to to add %s%d (error %d)\n",
+		sassy_error("Failed to to add %s%d (error %d)\n",
 			    DEVNAME, sdev->ifindex, ret);
 		goto cdev_error;
 	}
@@ -250,7 +250,7 @@ int sassy_setup_chardev(struct sassy_device *sdev)
 					DEVNAME "%d", sdev->ifindex);
 
 	if (IS_ERR(priv->tx_device)) {
-		sassy_error("[SASSY] Failed to create device %d\n",
+		sassy_error("Failed to create device %d\n",
 			    sdev->ifindex);
 		ret = PTR_ERR(priv->tx_device);
 		goto device_create_error;
@@ -259,7 +259,7 @@ int sassy_setup_chardev(struct sassy_device *sdev)
 	priv->tx_buf = sassy_alloc_mmap_buffer();
 
 	if (IS_ERR(priv->tx_buf)) {
-		sassy_error("[SASSY] Failed to allocate ubuf memory\n");
+		sassy_error("Failed to allocate ubuf memory\n");
 		ret = PTR_ERR(priv->tx_buf);
 		goto ubuf_error;
 	}
@@ -274,10 +274,11 @@ cdev_error:
 	return ret;
 }
 
-void sassy_clean_class(void)
+void sassy_clean_class(struct sassy_device *sdev)
 {
-	if (sassy_bypass_class)
-		class_destroy(sassy_bypass_class);
+	device_destroy(sassy_bypass_class, MKDEV(sassy_bypass_major, sdev->ifindex));
+
+	class_destroy(sassy_bypass_class);
 
 	unregister_chrdev_region(MKDEV(sassy_bypass_major, 0),
 				 SASSY_MAX_DEVICES);
@@ -288,11 +289,11 @@ int sassy_bypass_init_class(void)
 	int err = 0;
 	dev_t dev = 0;
 
-	sassy_dbg("[SASSY] Enter: %s\n", __FUNCTION__);
+	sassy_dbg("Enter: %s\n", __FUNCTION__);
 
 	err = alloc_chrdev_region(&dev, 0, SASSY_MAX_DEVICES, DEVNAME);
 	if (err < 0) {
-		sassy_error("[SASSY] alloc_chrdev_region() failed in %s\n",
+		sassy_error("alloc_chrdev_region() failed in %s\n",
 			    __FUNCTION__);
 		return err;
 	}
@@ -306,7 +307,7 @@ int sassy_bypass_init_class(void)
 
 	return 0;
 error:
-	sassy_error("[SASSY] Error in %s, cleaning up now\n", __FUNCTION__);
+	sassy_error("Error in %s, cleaning up now\n", __FUNCTION__);
 	sassy_clean_class();
 	return err;
 }

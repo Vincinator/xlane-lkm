@@ -65,8 +65,7 @@ int fd_stop(struct sassy_device *sdev)
 
 int fd_clean(struct sassy_device *sdev)
 {
-	sassy_clean_class();
-
+	sassy_clean_class(sdev);
 	sassy_dbg("fd clean\n");
 	return 0;
 }
