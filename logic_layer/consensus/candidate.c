@@ -20,6 +20,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ctimer);
 	struct sassy_device *sdev = priv->sdev;
 	ktime_t timeout;
+	s64 delta;
 
 	if(priv->ctimer_init == 0 || priv->nstate != CANDIDATE)
 		return HRTIMER_NORESTART;
