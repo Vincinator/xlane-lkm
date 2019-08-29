@@ -172,7 +172,7 @@ void init_timeout(struct sassy_device *sdev)
 		priv->term,
 		delta);
 
-	hrtimer_start(&priv->ftimer, timeout, HRTIMER_MODE_REL_PINNED);
+	hrtimer_start_range_ns(&priv->ftimer, timeout, HRTIMER_MODE_REL_PINNED, TOLERANCE_FTIMEOUT_NS);
 }
 
 void reset_ftimeout(struct sassy_device *sdev)
@@ -184,18 +184,19 @@ void reset_ftimeout(struct sassy_device *sdev)
 	u64 overruns;
 
 	timeout = get_rnd_timeout();
-
 	delta = ktime_to_ms(timeout);
 
 	hrtimer_cancel(&priv->ftimer);
-	hrtimer_set_expires(&priv->ftimer, timeout);
+	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 
+	/*
 	sassy_log_le("%s, %llu, %d: Set follower timeout to %lld ms.\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
 			delta);
+	*/
 }
 
 int stop_follower(struct sassy_device *sdev)

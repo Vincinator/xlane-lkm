@@ -19,28 +19,29 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 {
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ftimer);
 	struct sassy_device *sdev = priv->sdev;
+	ktime_t timeout;
 
 	if(priv->ctimer_init == 0 || priv->nstate != CANDIDATE)
 		return HRTIMER_NORESTART;
 
 	write_le_log(sdev, CANDIDATE_TIMEOUT, rdtsc());
-
-
-	sassy_dbg("Candidate Timeout occured - starting new nomination broadcast\n");
 	
-	sassy_log_le("%s, %llu, %d: Follower timeout occured - starting candidature\n",
+	sassy_log_le("%s, %llu, %d: Candidate timeout occured - restarting candidature\n",
 				nstate_string(priv->nstate),
 				rdtsc(),
 				priv->term);
 
 	setup_nomination(sdev);
 
-	return HRTIMER_NORESTART;
+	timeout = get_rnd_timeout();
+	
+	hrtimer_forward_now(&priv->ctimer, timeout);
+	
+	return HRTIMER_RESTART;
 }
 
 void reset_ctimeout(struct sassy_device *sdev)
 {
-	ktime_t now;
 	ktime_t timeout;
 	s64 delta;
 	struct consensus_priv *priv = 
@@ -50,7 +51,7 @@ void reset_ctimeout(struct sassy_device *sdev)
 	delta = ktime_to_ms(timeout);
 
 	hrtimer_cancel(&priv->ctimer);
-	hrtimer_set_expires(&priv->ctimer, timeout);
+	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ctimer, HRTIMER_MODE_REL_PINNED);
 
 	sassy_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
@@ -64,6 +65,7 @@ void init_ctimeout(struct sassy_device *sdev)
 {
 	int ftime_ns;
 	ktime_t timeout;
+	s64 delta;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 	
@@ -72,17 +74,22 @@ void init_ctimeout(struct sassy_device *sdev)
 		return;
 	}
 
-	sassy_dbg("Initializing candidate timeout \n");
-
 	timeout = get_rnd_timeout();
 
 	hrtimer_init(&priv->ctimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
 	priv->ctimer_init = 1;
+
 	priv->ctimer.function = &_handle_candidate_timeout;
 
-	hrtimer_start(&priv->ctimer, timeout, HRTIMER_MODE_REL_PINNED);
-	sassy_dbg("candidate timeout initialized and started\n");
+	delta = ktime_to_ms(timeout);
 
+	sassy_log_le("%s, %llu, %d: Init Candidate timeout to %lld ms.\n",
+		nstate_string(priv->nstate),
+		rdtsc(),
+		priv->term,
+		delta);
+
+	hrtimer_start_range_ns(&priv->ctimer, timeout, HRTIMER_MODE_REL_PINNED, TOLERANCE_CTIMEOUT_NS);
 }
 
 int setup_nomination(struct sassy_device *sdev)
@@ -94,9 +101,6 @@ int setup_nomination(struct sassy_device *sdev)
 	priv->votes = 1; // start with selfvote
 
 	setup_le_broadcast_msg(sdev, NOMI);
-
-	init_ctimeout(sdev);
-
 	return 0;
 }
 
@@ -126,7 +130,6 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 
 		err = node_transition(sdev, LEADER);
 		write_le_log(sdev, CANDIDATE_BECOME_LEADER, rdtsc());
-
 
 		if (err) {
 			sassy_error("Error occured during the transition to leader role\n");

@@ -59,6 +59,8 @@ EXPORT_SYMBOL(get_fd_proto);
 
 static void __exit sassy_fd_exit(void)
 {
+	
+	fd_stop();
 	sassy_dbg("exit\n");
 }
 
