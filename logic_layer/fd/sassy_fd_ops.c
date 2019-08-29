@@ -11,7 +11,7 @@ int fd_init(struct sassy_device *sdev)
 	struct sassy_protocol *sproto;
 	struct sassy_fd_priv *priv;
 
-	err = sassy_bypass_init_class();
+	err = sassy_bypass_init_class(sdev);
 
 	if (err)
 		goto error;

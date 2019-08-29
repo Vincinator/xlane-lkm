@@ -284,7 +284,7 @@ void sassy_clean_class(struct sassy_device *sdev)
 				 SASSY_MAX_DEVICES);
 }
 
-int sassy_bypass_init_class(void)
+int sassy_bypass_init_class(struct sassy_device *sdev)
 {
 	int err = 0;
 	dev_t dev = 0;
@@ -308,6 +308,6 @@ int sassy_bypass_init_class(void)
 	return 0;
 error:
 	sassy_error("Error in %s, cleaning up now\n", __FUNCTION__);
-	sassy_clean_class();
+	sassy_clean_class(sdev);
 	return err;
 }
