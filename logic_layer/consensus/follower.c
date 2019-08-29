@@ -187,7 +187,7 @@ void reset_ftimeout(struct sassy_device *sdev)
 	delta = ktime_to_ms(timeout);
 
 	hrtimer_cancel(&priv->ftimer);
-	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS, HRTIMER_MODE_REL_PINNED);
+	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 
 	/*
