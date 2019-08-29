@@ -17,7 +17,7 @@
 
 static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 {
-	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ftimer);
+	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ctimer);
 	struct sassy_device *sdev = priv->sdev;
 	ktime_t timeout;
 
@@ -210,7 +210,8 @@ int start_candidate(struct sassy_device *sdev)
 	sassy_dbg("Initialization finished.\n");
 
 	setup_nomination(sdev);
-
+	init_ctimeout(sdev);
+	
 	sassy_dbg("Candidate started.\n");
 
 	return 0;

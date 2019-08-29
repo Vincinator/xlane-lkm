@@ -64,9 +64,6 @@ void sassy_post_ts(int sassy_id, uint64_t cycles)
 {
 	struct sassy_device *sdev = get_sdev(sassy_id);
 
-//	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
-//		return;
-
 	if (sdev->ts_state == SASSY_TS_RUNNING)
 		sassy_write_timestamp(sdev, 1, cycles, sassy_id);
 }
@@ -85,9 +82,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 		return;
 	}
 
-//	if (unlikely(sdev->rx_state == SASSY_RX_DISABLED))
-//		return;
-
 	if (unlikely(protocol_id < 0 || protocol_id > MAX_PROTOCOLS)) {
 		sassy_error("Protocol ID is faulty %d\n", protocol_id);
 		return;
@@ -99,12 +93,13 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	sproto = sdev->proto;
 	lesproto = sdev->le_proto;
 
-	if (unlikely(!sproto || !lesproto)) {
-		//sassy_error("failed to get protocol handler\n");
+	if (unlikely(!sproto || !lesproto))
 		return;
-	}
 
-    if (sdev->ts_state == SASSY_TS_RUNNING)
+    if (sdev->pminfo != SASSY_PM_EMITTING)
+    	return;
+
+	if (sdev->ts_state == SASSY_TS_RUNNING)
 		sassy_write_timestamp(sdev, 2, rdtsc(), sassy_id);
 
 	sproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
@@ -128,7 +123,6 @@ void sassy_reset_remote_host_counter(int sassy_id)
 	if (!rxt)
 		return;
 
-	/* Free Memory of all  */
 	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
 		pmtarget = &sdev->pminfo.pm_targets[i];
 
@@ -138,7 +132,8 @@ void sassy_reset_remote_host_counter(int sassy_id)
 	}
 
 	sdev->pminfo.num_of_targets = 0;
-	sassy_dbg(" set num_of_targets to 0\n");
+
+	sassy_dbg("reset number of targets to 0\n");
 }
 EXPORT_SYMBOL(sassy_reset_remote_host_counter);
 
