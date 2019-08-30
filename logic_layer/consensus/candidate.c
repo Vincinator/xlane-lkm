@@ -133,6 +133,8 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 					priv->votes,
 					sdev->pminfo.num_of_targets + 1);
 
+	write_le_log(sdev, CANDIDATE_ACCEPT_VOTE, rdtsc());
+
 	if (priv->votes * 2 >= (sdev->pminfo.num_of_targets + 1)) {
 		
 		sassy_log_le("%s, %llu, %d: got majority with %d from %d possible votes \n",
@@ -170,6 +172,9 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 		accept_vote(sdev, remote_lid, pkt);
 		break;
 	case NOMI:
+
+		// Nomination with higher term?
+
 		break;		
 	case NOOP:
 		break;
@@ -181,7 +186,6 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 
 			accept_leader(sdev, remote_lid, rcluster_id, param1);
 			write_le_log(sdev, CANDIDATE_ACCEPT_NEW_LEADER, rdtsc());
-
 
 		} else {
 

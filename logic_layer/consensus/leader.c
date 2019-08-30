@@ -46,7 +46,11 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_i
 				sassy_dbg("Received LEAD from leader with lower or equal term=%u\n", param1);
 	
 			// Ignore this LEAD message, continue to send LEAD messages 
-	
+			sassy_log_le("%s, %llu, %d: Cluster node %d also claims to be leader in term %d.\n",
+				nstate_string(priv->nstate),
+				rdtsc(),
+				rcluster_id,
+				priv->term);
 		}
 	
 		break;
@@ -68,7 +72,6 @@ int start_leader(struct sassy_device *sdev)
 {
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-
 	
 	setup_le_broadcast_msg(sdev, LEAD);
 

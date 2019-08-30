@@ -58,6 +58,8 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int rcluster_id, int 
 	setup_le_msg(&priv->sdev->pminfo, VOTE, remote_lid, param1);
 	priv->voted = param1;
 
+	write_le_log(sdev, VOTE_FOR_CANDIDATE, rdtsc());
+
 }
 
 int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_id, unsigned char *pkt)

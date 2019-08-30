@@ -90,6 +90,11 @@ enum le_event_type {
 	
 	FOLLOWER_BECOME_CANDIDATE = 5,
 	CANDIDATE_BECOME_LEADER = 6,
+
+	START_CONSENSUS = 7,
+	VOTE_FOR_CANDIDATE = 8,
+	CANDIDATE_ACCEPT_VOTE = 9,
+
 };
 
 struct le_event {
