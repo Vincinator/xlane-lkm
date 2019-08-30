@@ -150,7 +150,6 @@ void init_timeout(struct sassy_device *sdev)
 	ktime_t timeout;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-	s64 delta;
 
 	if(priv->ftimer_init == 1) {
 		reset_ftimeout(sdev);
@@ -164,13 +163,11 @@ void init_timeout(struct sassy_device *sdev)
 
 	priv->ftimer.function = &_handle_follower_timeout;
 
-	delta = ktime_to_ms(timeout);
-
 	sassy_log_le("%s, %llu, %d: Init follower timeout to %lld ms. \n",
 		nstate_string(priv->nstate),
 		rdtsc(),
 		priv->term,
-		delta);
+		ktime_to_ms(timeout));
 
 	hrtimer_start_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS, HRTIMER_MODE_REL_PINNED);
 }
@@ -180,11 +177,8 @@ void reset_ftimeout(struct sassy_device *sdev)
 	ktime_t timeout;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
-	s64 delta;
-	u64 overruns;
 
 	timeout = get_rnd_timeout();
-	delta = ktime_to_ms(timeout);
 
 	hrtimer_cancel(&priv->ftimer);
 	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
@@ -195,7 +189,7 @@ void reset_ftimeout(struct sassy_device *sdev)
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
-			delta);
+			ktime_to_ms(timeout));
 	*/
 }
 

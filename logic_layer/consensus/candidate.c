@@ -22,7 +22,6 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ctimer);
 	struct sassy_device *sdev = priv->sdev;
 	ktime_t timeout;
-	s64 delta;
 
 	if(priv->ctimer_init == 0 || priv->nstate != CANDIDATE)
 		return HRTIMER_NORESTART;
@@ -43,7 +42,16 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 
 	setup_nomination(sdev);
 
-	reset_ctimeout(sdev);
+	timeout = get_rnd_timeout();
+
+	hrtimer_forward_now(timer, timeout);
+
+	sassy_log_le("%s, %llu, %d: Restart candidate timer with %lld ms timeout - Candidature retry %d.\n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			priv->term,
+			ktime_to_ms(timeout),
+			priv->c_retries);
 
 	return HRTIMER_RESTART;
 	
@@ -52,13 +60,11 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 void reset_ctimeout(struct sassy_device *sdev)
 {
 	ktime_t timeout;
-	s64 delta;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 
 	priv->c_retries = 0;
 	timeout = get_rnd_timeout();
-	delta = ktime_to_ms(timeout);
 
 	hrtimer_cancel(&priv->ctimer);
 	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
@@ -68,14 +74,13 @@ void reset_ctimeout(struct sassy_device *sdev)
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
-			delta);
+			ktime_to_ms(timeout));
 }
 
 void init_ctimeout(struct sassy_device *sdev)
 {
 	int ftime_ns;
 	ktime_t timeout;
-	s64 delta;
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 	
@@ -92,13 +97,11 @@ void init_ctimeout(struct sassy_device *sdev)
 
 	priv->ctimer.function = &_handle_candidate_timeout;
 
-	delta = ktime_to_ms(timeout);
-
 	sassy_log_le("%s, %llu, %d: Init Candidate timeout to %lld ms.\n",
 		nstate_string(priv->nstate),
 		rdtsc(),
 		priv->term,
-		delta);
+		 ktime_to_ms(timeout));
 
 	hrtimer_start_range_ns(&priv->ctimer, timeout, HRTIMER_MODE_REL_PINNED, TOLERANCE_CTIMEOUT_NS);
 }
