@@ -18,7 +18,9 @@
 #define CANDIDATURE_RETRY_LIMIT 100
 
 /* Factor the retry timeout grows after each retry
- * Factor grows until CANDIDATURE_RETRY_LIMIT*CANDIDATE_RETRY_TIMEOUT_GROWTH*/
+ * Factor grows until:
+ * CANDIDATURE_RETRY_LIMIT * CANDIDATE_RETRY_TIMEOUT_GROWTH
+ */
 #define CANDIDATE_RETRY_TIMEOUT_GROWTH 20
 
 static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)

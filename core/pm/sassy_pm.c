@@ -256,6 +256,12 @@ static int sassy_pm_loop(void *data)
 		local_irq_restore(flags);
 	}
 	put_cpu();
+
+	if(sdev->le_proto != NULL){
+		sdev->le_proto->ctrl_ops.stop(sdev);
+		sdev->le_proto->ctrl_ops.clean(sdev);
+	}
+
 	return 0;
 }
 
@@ -274,8 +280,13 @@ static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	int hb_active_ix;
 	ktime_t currtime, interval;
 
-	if (!sassy_pacemaker_is_alive(spminfo))
+	if (!sassy_pacemaker_is_alive(spminfo)){
+		if(sdev->le_proto != NULL){
+			sdev->le_proto->ctrl_ops.stop(sdev);
+			sdev->le_proto->ctrl_ops.clean(sdev);
+		}
 		return HRTIMER_NORESTART;
+	}
 
 	currtime  = ktime_get();
 	interval = ktime_set(0, 100000000);
@@ -321,6 +332,11 @@ int sassy_pm_start_timer(void *data)
 		HRTIMER_MODE_REL_PINNED);
 
 	spminfo->pm_timer.function = &sassy_pm_timer;
+
+	if(sdev->le_proto != NULL){
+		sdev->le_proto->ctrl_ops.init(sdev);
+		sdev->le_proto->ctrl_ops.start(sdev);
+	}
 
 	hrtimer_start(&spminfo->pm_timer, interval,
 		HRTIMER_MODE_REL_PINNED);
