@@ -70,6 +70,11 @@ void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum 
 					rterm);
 }
 
+ktime_t get_rnd_timeout_plus(int plus)
+{
+	return ktime_set(0, (plus + MIN_FTIMEOUT_NS) +
+			prandom_u32_max(MAX_FTIMEOUT_NS - (plus + MIN_FTIMEOUT_NS)));
+}
 
 ktime_t get_rnd_timeout(void)
 {

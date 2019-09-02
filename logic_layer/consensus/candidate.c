@@ -15,7 +15,11 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][LE][CANDIDATE]"
 
-#define CANDIDATURE_RETRY_LIMIT 10
+#define CANDIDATURE_RETRY_LIMIT 100
+
+/* Factor the retry timeout grows after each retry
+ * Factor grows until CANDIDATURE_RETRY_LIMIT*CANDIDATE_RETRY_TIMEOUT_GROWTH*/
+#define CANDIDATE_RETRY_TIMEOUT_GROWTH 20
 
 static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 {
@@ -29,20 +33,31 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	priv->c_retries++;
 	write_le_log(sdev, CANDIDATE_TIMEOUT, rdtsc());
 	
+	/* The candidate can not get a majority from the cluster.
+	 * Probably less than the required majority of nodes are alive. 
+	 * 
+	 * Option 1: start the process over and retry as follower
+	 * Option 2: become Leader without majority (interim Leader)
+	 *
+	 */
 	if(priv->c_retries >= CANDIDATURE_RETRY_LIMIT){
 
 		sassy_log_le("%s, %llu, %d: reached maximum of candidature retries\n",
 			nstate_string(priv->nstate),
 			rdtsc());
 
-		// node_transition(sdev, FOLLOWER);
+		// (Option 1)
+		node_transition(sdev, FOLLOWER);
+
+		// (Option 2)
+		// node_transition(sdev, LEADER);
 
 		return HRTIMER_NORESTART;
 	}
 
 	setup_nomination(sdev);
 
-	timeout = get_rnd_timeout();
+	timeout = get_rnd_timeout_plus(priv->c_retries * CANDIDATE_RETRY_TIMEOUT_GROWTH);
 
 	hrtimer_forward_now(timer, timeout);
 
