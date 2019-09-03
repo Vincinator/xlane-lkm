@@ -17,7 +17,7 @@ static ssize_t sassy_event_ctrl_write(struct file *file,
 	struct sassy_device *sdev =
 		(struct sassy_device *)PDE_DATA(file_inode(file));
 	char kernel_buffer[SASSY_NUMBUF];
-	int timestamping_state = -1;
+	int logging_state = -1;
 	size_t size;
 
 	size = min(sizeof(kernel_buffer) - 1, count);
@@ -32,14 +32,14 @@ static ssize_t sassy_event_ctrl_write(struct file *file,
 	}
 
 	kernel_buffer[size] = '\0';
-	err = kstrtoint(kernel_buffer, 10, &timestamping_state);
+	err = kstrtoint(kernel_buffer, 10, &logging_state);
 	if (err) {
 		sassy_dbg("Error converting input buffer: %s, todevid: 0x%x\n",
-		       kernel_buffer, timestamping_state);
+		       kernel_buffer, logging_state);
 		goto error;
 	}
 
-	switch (timestamping_state) {
+	switch (logging_state) {
 	case 0:
 		sassy_le_log_stop(sdev);
 		break;
@@ -51,7 +51,7 @@ static ssize_t sassy_event_ctrl_write(struct file *file,
 		break;
 	default:
 		sassy_error("Invalid input: %d - %s\n",
-			    timestamping_state, __FUNCTION__);
+			    logging_state, __FUNCTION__);
 		err = -EINVAL;
 		goto error;
 	}

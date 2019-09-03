@@ -330,7 +330,7 @@ static ssize_t sassy_target_write(struct file *file,
 	kernel_buffer[size] = '\0';
 	if (spminfo->num_of_targets < 0 ||
 	    spminfo->num_of_targets > SASSY_TARGETS_BUF) {
-		sassy_error("num_of_targets is invalid!\n");
+		sassy_error("num_of_targets is invalid! Have you set the target hosts?\n");
 		return -EINVAL;
 	}
 

@@ -198,7 +198,7 @@ static inline int _validate_pm(struct sassy_device *sdev,
 	}
 
 	if (spminfo->num_of_targets <= 0) {
-		sassy_error("num_of_targets is invalid\n");
+		sassy_error("num_of_targets is invalid! Have you set the target hosts?\n");
 		return -EINVAL;
 	}
 

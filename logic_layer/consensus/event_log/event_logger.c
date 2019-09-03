@@ -63,7 +63,7 @@ EXPORT_SYMBOL(sassy_write_timestamp);
 
 int sassy_le_log_stop(struct sassy_device *sdev)
 {
-	if (sdev->lel_state != LEL_RUNNING)
+	if (sdev->lel_state == LEL_UNINIT)
 		return -EPERM;
 
 	lel_state_transition_to(sdev, LEL_READY);
@@ -230,8 +230,6 @@ int init_le_logging(struct sassy_device *sdev)
 	init_le_log_ctrl(sdev);
 
 	lel_state_transition_to(sdev, LEL_READY);
-
-
 
 error:
 	return err;
