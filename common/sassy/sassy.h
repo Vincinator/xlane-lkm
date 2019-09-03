@@ -103,14 +103,10 @@ struct le_event {
 };
 
 
-
-
 struct le_event_logs {
 
 	/* Size is defined by LE_EVENT_LOG_LIMIT */
 	struct le_event *events;
-
-
 
 	/* Last valid log entry in the le_event array */
 	int current_entries;
