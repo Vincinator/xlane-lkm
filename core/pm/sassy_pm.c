@@ -326,7 +326,6 @@ int sassy_pm_start_timer(void *data)
 	struct sassy_device *sdev =
 		container_of(spminfo, struct sassy_device, pminfo);
 	ktime_t interval;
-	struct cpumask mask;
 	int active_cpu;
 	int err;
 
@@ -363,7 +362,6 @@ int sassy_pm_start_loop(void *data)
 	struct sassy_device *sdev =
 		container_of(spminfo, struct sassy_device, pminfo);
 	struct cpumask mask;
-	ktime_t interval;
 	int err;
 
 	err = _validate_pm(sdev, spminfo);
