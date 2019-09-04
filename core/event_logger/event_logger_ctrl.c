@@ -90,6 +90,27 @@ static const struct file_operations sassy_event_ctrl_ops = {
 	.release = single_release,
 };
 
+void init_log_ctrl
+
+
+static void init_logger_ctrl(struct logger *slog)
+{
+	char name_buf[MAX_SASSY_PROC_NAME];
+
+	if (!slog->logs) {
+		sassy_error("Logs are not initialized!\n");
+		return -ENOMEM;
+	}
+
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl_%s",
+		 slog->ifindex, slog->name);
+
+	proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL, &sassy_event_ctrl_ops, slog->logs);
+
+	return 0;
+}
+EXPORT_SYMBOL(init_logger_ctrl);
+
 void init_log_ctrl_base(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];

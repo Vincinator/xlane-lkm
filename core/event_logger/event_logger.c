@@ -148,7 +148,7 @@ static const struct file_operations sassy_log_ops = {
 };
 
 
-static int init_logger_ctrl(struct logger *slog)
+static int init_logger_out(struct logger *slog)
 {
 	int err;
 	char name_buf[MAX_SASSY_PROC_NAME];
@@ -216,6 +216,7 @@ int init_logger(struct logger *slog)
 
 	slog->logs->current_entries = 0;
 
+	init_logger_out(slog);
 	init_logger_ctrl(slog);
 
 	logger_state_transition_to(slog, LOGGER_READY);
