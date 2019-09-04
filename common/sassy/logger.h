@@ -81,7 +81,7 @@ struct logger {
 };
 
 int init_logger(struct logger *slog);
-void init_log_ctrl_base(struct logger *slog);
+void init_log_ctrl_base(struct sassy_device *sdev);
 
 
 

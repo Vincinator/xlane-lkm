@@ -90,11 +90,11 @@ static const struct file_operations sassy_event_ctrl_ops = {
 	.release = single_release,
 };
 
-void init_log_ctrl_base(struct logger *slog)
+void init_log_ctrl_base(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log", slog->ifindex);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log", sdev->ifindex);
 	proc_mkdir(name_buf, NULL);
 
 }
