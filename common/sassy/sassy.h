@@ -49,7 +49,7 @@ enum hb_interval {
 	CYC_5MS = 2,
 	CYC_10MS = 3,
 	CYC_100MS = 4,
-}
+};
 
 enum tsstate {
     SASSY_TS_RUNNING,
