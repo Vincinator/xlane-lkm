@@ -193,7 +193,7 @@ int sassy_core_register_nic(int ifindex)
 
 	/* set default heartbeat interval */
 	//sdev->pminfo.hbi = DEFAULT_HB_INTERVAL;
-	sdev->pminfo.hbi = CYCLES_PER_1MS;
+	score->sdevices[sassy_id]->pminfo.hbi = CYCLES_PER_1MS;
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d", ifindex);
 	proc_mkdir(name_buf, NULL);
