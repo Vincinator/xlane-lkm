@@ -413,4 +413,6 @@ int compare_mac(unsigned char *m1, unsigned char *m2);
 
 void init_log_ctrl_base(struct sassy_device *sdev);
 
+int setup_echo_msg(struct pminfo *spminfo, u32 target_id, uint64_t ts, enum echo_opcode opcode);
+
 #endif /* _SASSY_H_ */

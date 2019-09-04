@@ -28,6 +28,3 @@ struct echo_payload {
   *((u32*)(((unsigned char *)p) + offsetof(struct echo_payload, fld))) = v; \
 } while (0)
 
-
-int setup_echo_msg(struct pminfo *spminfo, u32 target_id, uint64_t ts, enum echo_opcode opcode);
-
