@@ -115,15 +115,15 @@ static int sassy_log_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-static int sassy_le_log_open(struct inode *inode, struct file *file)
+static int sassy_log_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, sassy_le_log_show, PDE_DATA(inode));
 }
 
-static const struct file_operations sassy_le_log_ops = {
+static const struct file_operations sassy_log_ops = {
 	.owner = THIS_MODULE,
-	.open = sassy_le_log_open,
-	.write = sassy_le_log_write,
+	.open = sassy_log_open,
+	.write = sassy_log_write,
 	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
