@@ -388,7 +388,7 @@ static ssize_t sassy_target_write(struct file *file,
 	int i = 0;
 	int state = 0; /* first element of tuple is ip address, second is mac */
 	u32 current_ip;
-	unsigned char *current_mac;
+	unsigned char *current_mac = NULL;
 	int current_protocol;
 	int cluster_id;
 
