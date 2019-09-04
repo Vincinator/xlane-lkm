@@ -34,7 +34,7 @@ int consensus_start(struct sassy_device *sdev)
 {
 	int err;
 
-	write_le_log(sdev, START_CONSENSUS, rdtsc());
+	write_log(&sdev->le_logger, START_CONSENSUS, rdtsc());
 
 	// Transition to Follower State
 	err = node_transition(sdev, FOLLOWER);

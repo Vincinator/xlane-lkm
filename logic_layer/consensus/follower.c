@@ -22,7 +22,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	if(priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
 		return HRTIMER_NORESTART;
 
-	write_le_log(sdev, FOLLOWER_TIMEOUT, rdtsc());
+	write_log(&sdev->le_logger, FOLLOWER_TIMEOUT, rdtsc());
 
 	if(sdev->verbose >= 1)
 		sassy_dbg("Follower Timeout occured!\n");
@@ -33,7 +33,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 			priv->term);
 
 	err = node_transition(sdev, CANDIDATE);
-	write_le_log(sdev, FOLLOWER_BECOME_CANDIDATE, rdtsc());
+	write_log(&sdev->le_logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
 
 	if (err){
 		sassy_dbg("Error occured during the transition to candidate role\n");
@@ -58,7 +58,7 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int rcluster_id, int 
 	setup_le_msg(&priv->sdev->pminfo, VOTE, remote_lid, param1);
 	priv->voted = param1;
 
-	write_le_log(sdev, VOTE_FOR_CANDIDATE, rdtsc());
+	write_log(&sdev->le_logger, VOTE_FOR_CANDIDATE, rdtsc());
 
 }
 
@@ -100,7 +100,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 
 			accept_leader(sdev, remote_lid, rcluster_id, param1);
-			write_le_log(sdev, FOLLOWER_ACCEPT_NEW_LEADER, rdtsc());
+			write_log(&sdev->le_logger, FOLLOWER_ACCEPT_NEW_LEADER, rdtsc());
 			reset_ftimeout(sdev);
 
 		} 
