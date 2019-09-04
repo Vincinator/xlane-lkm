@@ -124,7 +124,6 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 {
 	struct sassy_payload *pkt_payload;
 	int i;
-	int ret;
 	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
 	enum tsstate ts_state = sdev->ts_state;

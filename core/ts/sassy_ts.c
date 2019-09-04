@@ -246,8 +246,6 @@ int init_timestamping(struct sassy_device *sdev)
 	int err;
 	int log_types = SASSY_NUM_TS_LOG_TYPES;
 	int i;
-	char name_buf[MAX_SASSY_PROC_NAME];
-
 
 	if (sdev->verbose)
 		sassy_dbg(" sassy device setup started %s\n", __FUNCTION__);

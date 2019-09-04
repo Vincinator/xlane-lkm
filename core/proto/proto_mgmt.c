@@ -52,8 +52,6 @@ EXPORT_SYMBOL(sassy_find_protocol_by_id);
 
 int sassy_register_protocol(struct sassy_protocol *proto)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
-
 	struct sassy_core *score = sassy_core();
 
 	if (!proto) {

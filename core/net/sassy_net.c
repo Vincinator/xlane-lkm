@@ -263,7 +263,7 @@ void get_cluster_ids(struct sassy_device *sdev, unsigned char *remote_mac, int *
 
 	if(!remote_mac){
 		sassy_error("remote mac is NULL\n");
-		return -1;
+		return;
 	}
 
 	for(i = 0; i < spminfo->num_of_targets; i++) {

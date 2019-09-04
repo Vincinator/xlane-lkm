@@ -477,7 +477,8 @@ static ssize_t sassy_target_write(struct file *file,
 				i++;
 			}
 			state = 0;
-			kfree(current_mac);
+			if(current_mac)
+				kfree(current_mac);
 		}
 	}
 	spminfo->num_of_targets = i;
