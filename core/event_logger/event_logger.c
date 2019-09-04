@@ -43,7 +43,7 @@ int sassy_log_stop(struct logger *slog)
 	if (slog->state == LOGGER_UNINIT)
 		return -EPERM;
 
-	logger_state_transition_to(sdev, LOGGER_READY);
+	logger_state_transition_to(slog, LOGGER_READY);
 	return 0;
 }
 
@@ -55,7 +55,7 @@ int sassy_log_start(struct logger *slog)
 		goto error;
 	}
 
-	logger_state_transition_to(sdev, LOGGER_RUNNING);
+	logger_state_transition_to(slog, LOGGER_RUNNING);
 	return 0;
 
 error:
@@ -200,7 +200,7 @@ int init_logger(struct logger *slog)
 
 	init_logger_ctrl(slog);
 
-	logger_state_transition_to(sdev, LOGGER_READY);
+	logger_state_transition_to(slog, LOGGER_READY);
 
 error:
 	return err;
