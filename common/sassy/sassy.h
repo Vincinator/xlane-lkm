@@ -393,7 +393,7 @@ void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev);
 void init_log_ctrl_interfaces(struct sassy_device *sdev);
 int sassy_clean_timestamping(struct sassy_device *sdev);
 
-int write_log(struct logger *slog, int type, uint64_t tcs)
+int write_log(struct logger *slog, int type, uint64_t tcs);
 
 struct sassy_device *get_sdev(int devid);
 
