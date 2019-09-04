@@ -60,9 +60,8 @@ int echo_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 			setup_echo_msg(&sdev->pminfo, remote_lid, tx_ts, SASSY_PONG);
 			break;
 		case SASSY_PONG:
-			
 			break;
-		default
+		default:
 			sassy_error("Unknown echo opcode!");
 
 	}
