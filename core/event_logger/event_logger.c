@@ -144,7 +144,7 @@ static int init_logger_ctrl(struct logger *slog)
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/%s",
 		 slog->ifindex, slog->name);
 
-	sdev->le_logs->proc_dir =
+	slog->logs->proc_dir =
 		proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL,
 				 &sassy_log_ops,
 				 slog->logs);
@@ -178,7 +178,7 @@ int init_logger(struct logger *slog)
 
 	slog->logs = kmalloc(sizeof(struct event_logs), GFP_KERNEL);
 
-	if (!slog->le_logs) {
+	if (!slog->logs) {
 		err = -ENOMEM;
 		sassy_error(" Could not allocate memory for logs. %s\n",
 			    __FUNCTION__);
@@ -186,7 +186,7 @@ int init_logger(struct logger *slog)
 	}
 
 	slog->logs->events = kmalloc_array(LOGGER_EVENT_LIMIT,
-									sizeof(struct event),
+									sizeof(struct logger_event),
 									GFP_KERNEL);
 
 	if (!slog->logs->events) {

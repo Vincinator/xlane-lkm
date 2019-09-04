@@ -253,7 +253,6 @@ struct sassy_device {
 	enum tsstate ts_state; 
 
 	struct sassy_stats *stats;
-	struct le_event_logs *le_logs;
 
 	struct net_device *ndev;
 
