@@ -241,9 +241,9 @@ static ssize_t sassy_hbi_write(struct file *file,
 		spminfo->hbi = CYCLES_PER_100MS;
 		break;
 	default:
-		sassy_error("Unknown interval type. ")
+		sassy_error("Unknown interval type. ");
 		sassy_error("Supported Values: 1 (1ms), 2 (5ms), 3 (10ms), 4 (100ms)\n");
-		sassy_error("Did not change last set hbi value: %llu", spminfo->hbi)
+		sassy_error("Did not change last set hbi value: %llu", spminfo->hbi);
 		err = -EINVAL;
 		goto error;
 	}
