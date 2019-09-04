@@ -1,9 +1,14 @@
 #ifndef _SASSY_LOGGER_H_
 #define _SASSY_LOGGER_H_
 
+#include <linux/types.h>
+
+
 #define SASSY_DEBUG 1
 
-#include <linux/types.h>
+#define MAX_LOGGER_NAME 16
+#define LOGGER_EVENT_LIMIT 10000
+
 
 #ifndef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][UNKNOWN MODULE]"
@@ -38,8 +43,6 @@
 
 
 
-#define MAX_LOGGER_NAME 16
-#define LOGGER_EVENT_LIMIT 10000
 
 enum logger_state {
 	LOGGER_RUNNING,
@@ -82,8 +85,6 @@ struct logger {
 };
 
 int init_logger(struct logger *slog);
-
-
 
 int sassy_log_stop(struct logger *slog);
 int sassy_log_start(struct logger *slog);
