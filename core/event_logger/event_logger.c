@@ -25,7 +25,7 @@ int write_log(struct logger *slog,
 
 		sassy_dbg("Logs are full! Stopped event logging. %s\n", __FUNCTION__);
 
-		sassy_le_log_stop(sdev);
+		sassy_log_stop(slog);
 		logger_state_transition_to(sdev, LOGGER_LOG_FULL);
 		return -ENOMEM;
 	}
