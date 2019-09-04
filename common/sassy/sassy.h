@@ -43,6 +43,14 @@ int sassy_core_register_nic(int ifindex);
 #define TIMESTAMP_ARRAY_LIMIT	100000
 #define LE_EVENT_LOG_LIMIT 		100000
 
+#define DEFAULT_HB_INTERVAL CYC_1MS
+enum hb_interval {
+	CYC_1MS = 1,
+	CYC_5MS = 2,
+	CYC_10MS = 3,
+	CYC_100MS = 4,
+}
+
 enum tsstate {
     SASSY_TS_RUNNING,
     SASSY_TS_READY, 	/* Initialized but not active*/
@@ -223,6 +231,10 @@ struct pminfo {
 	int active_cpu;
 
 	int num_of_targets;
+
+	//enum hb_interval hbi;
+	uint64_t hbi;
+
 
 	struct sassy_pm_target_info pm_targets[MAX_REMOTE_SOURCES];
 

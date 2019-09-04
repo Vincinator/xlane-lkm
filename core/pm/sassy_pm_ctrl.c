@@ -191,6 +191,89 @@ static int sassy_cpumgmt_open(struct inode *inode, struct file *file)
 			   PDE_DATA(file_inode(file)));
 }
 
+static ssize_t sassy_hbi_write(struct file *file,
+					const char __user *buffer, size_t count,
+					loff_t *data)
+{
+	int err;
+	char kernel_buffer[MAX_PROCFS_BUF];
+	struct pminfo *spminfo =
+		(struct pminfo *)PDE_DATA(file_inode(file));
+	long new_hbi = -1;
+	struct task_struct *heartbeat_task;
+	struct cpumask mask;
+
+	if (!spminfo)
+		return -ENODEV;
+
+	if (count == 0) {
+		err = -EINVAL;
+		goto error;
+	}
+
+	err = copy_from_user(kernel_buffer, buffer, count);
+
+	if (err) {
+		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		goto error;
+	}
+
+	kernel_buffer[count] = '\0';
+
+	err = kstrtol(kernel_buffer, 0, &new_hbi);
+
+	if (err) {
+		sassy_error("Error converting input%s\n", __FUNCTION__);
+		goto error;
+	}
+
+	switch (new_hbi) {
+	case 1:
+		spminfo->hbi = CYCLES_PER_1MS;
+		break;
+	case 2:
+		spminfo->hbi = CYCLES_PER_5MS;
+		break;
+	case 3:
+		spminfo->hbi = CYCLES_PER_10MS;
+		break;
+	case 4:
+		spminfo->hbi = CYCLES_PER_100MS;
+		break;
+	default:
+		sassy_error("Unknown interval type. ")
+		sassy_error("Supported Values: 1 (1ms), 2 (5ms), 3 (10ms), 4 (100ms)\n");
+		sassy_error("Did not change last set hbi value: %llu", spminfo->hbi)
+		err = -EINVAL;
+		goto error;
+	}
+
+	sassy_dbg("Heartbeat state changed successfully.%s\n", __FUNCTION__);
+	return count;
+error:
+	sassy_error("Heartbeat control failed.%s\n", __FUNCTION__);
+	return err;
+}
+
+static int sassy_hbi_show(struct seq_file *m, void *v)
+{
+	struct pminfo *spminfo =
+		(struct pminfo *)m->private;
+
+	if (!spminfo)
+		return -ENODEV;
+
+	seq_printf(m, "%llu\n", spminfo->hbi);
+	return 0;
+}
+
+static int sassy_hbi_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, sassy_hbi_show,
+			   PDE_DATA(file_inode(file)));
+}
+
+
 static ssize_t sassy_payload_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
 				   loff_t *data)
@@ -525,6 +608,16 @@ static const struct file_operations sassy_cpumgmt_ops = {
 	.release = single_release,
 };
 
+static const struct file_operations sassy_hbi_ops = {
+	.owner = THIS_MODULE,
+	.open = sassy_hbi_open,
+	.write = sassy_hbi_write,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
+};
+
+
 static const struct file_operations sassy_payload_ops = {
 	.owner = THIS_MODULE,
 	.open = sassy_payload_open,
@@ -547,7 +640,6 @@ void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker",
 		 sdev->ifindex);
 	proc_mkdir(name_buf, NULL);
@@ -560,6 +652,11 @@ void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/ctrl",
 		 sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_hb_ctrl_ops,
+			 &sdev->pminfo);
+
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/hbi",
+		 sdev->ifindex);
+	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_hbi_ops,
 			 &sdev->pminfo);
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/targets",
@@ -590,6 +687,10 @@ void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev)
 	remove_proc_entry(name_buf, NULL);
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/ctrl",
+		 sdev->ifindex);
+	remove_proc_entry(name_buf, NULL);
+
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/pacemaker/hbi",
 		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 

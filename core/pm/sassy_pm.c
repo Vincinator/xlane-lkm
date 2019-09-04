@@ -32,10 +32,11 @@ sassy_pacemaker_is_alive(struct pminfo *spminfo)
 	return spminfo->state == SASSY_PM_EMITTING;
 }
 
-static inline bool can_fire(uint64_t prev_time, uint64_t cur_time)
+static inline bool can_fire(uint64_t prev_time, uint64_t cur_time, uint64_t interval)
 {
-	return (cur_time - prev_time) >= CYCLES_PER_1MS;
+	return (cur_time - prev_time) >= interval;
 }
+
 
 const char *pm_state_string(pmstate_t state)
 {
@@ -205,20 +206,9 @@ static inline int _validate_pm(struct sassy_device *sdev,
 	return 0;
 }
 
-static int sassy_pm_loop(void *data)
+
+static void __prepare_pm_loop(struct sassy_device *sdev, struct pminfo *spminfo)
 {
-	uint64_t prev_time, cur_time;
-	unsigned long flags;
-	struct sassy_device *sdev = (struct sassy_device *) data;
-	struct pminfo *spminfo = &sdev->pminfo;
-
-	struct sassy_payload *pkt_payload;
-	int i;
-	int ret;
-	int hb_active_ix;
-	ktime_t currtime, interval;
-	int err;
-
 	sassy_setup_hb_skbs(sdev);
 
 	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
@@ -230,16 +220,40 @@ static int sassy_pm_loop(void *data)
 
 	get_cpu(); // disable preemption
 
+}
+
+static void __postwork_pm_loop(struct sassy_device *sdev)
+{
+	put_cpu();
+
+	if(sdev->le_proto != NULL){
+		sdev->le_proto->ctrl_ops.stop(sdev);
+		sdev->le_proto->ctrl_ops.clean(sdev);
+	}
+}
+
+static int sassy_pm_loop(void *data)
+{
+	uint64_t prev_time, cur_time;
+	struct sassy_device *sdev = (struct sassy_device *) data;
+	struct pminfo *spminfo = &sdev->pminfo;
+	uint64_t interval = pminfo.hbi;
+	unsigned long flags;
+	int err;
+
+	__prepare_pm_loop(sdev, spminfo);
+	
 	prev_time = rdtsc();
 
 	while (sassy_pacemaker_is_alive(spminfo)) {
+
 		cur_time = rdtsc();
 
-		if (!can_fire(prev_time, cur_time))
+		if (!can_fire(prev_time, cur_time, interval))
 			continue;
 
 		prev_time = cur_time;
-
+		
 		local_irq_save(flags);
 		local_bh_disable();
 
@@ -254,13 +268,10 @@ static int sassy_pm_loop(void *data)
 
 		local_bh_enable();
 		local_irq_restore(flags);
-	}
-	put_cpu();
 
-	if(sdev->le_proto != NULL){
-		sdev->le_proto->ctrl_ops.stop(sdev);
-		sdev->le_proto->ctrl_ops.clean(sdev);
 	}
+
+	__postwork_pm_loop(sdev);
 
 	return 0;
 }
