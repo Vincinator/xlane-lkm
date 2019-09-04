@@ -90,8 +90,6 @@ static const struct file_operations sassy_event_ctrl_ops = {
 	.release = single_release,
 };
 
-void init_log_ctrl
-
 
 void init_logger_ctrl(struct logger *slog)
 {
