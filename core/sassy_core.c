@@ -208,7 +208,7 @@ int sassy_core_register_nic(int ifindex)
 	/* Initialize Leader Election Logger*/
     score->sdevices[sassy_id]->le_logger.name = "le";
     score->sdevices[sassy_id]->le_logger.ifindex = ifindex;
-    init_logger(score->sdevices[sassy_id]->le_logger);
+    init_logger(&score->sdevices[sassy_id]->le_logger);
     
 	/* Initialize Control Interfaces for NIC */
 	init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
