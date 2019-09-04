@@ -183,10 +183,9 @@ error:
 
 int init_logger(struct logger *slog) 
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
 	int err;
 	int i;
-	
+
 	err = 0;
 
 	if (!slog) {
