@@ -189,7 +189,6 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->verbose = 0;
 	score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
 	score->sdevices[sassy_id]->ts_state = SASSY_TS_UNINIT;
-	score->sdevices[sassy_id]->lel_state = LEL_UNINIT;
 
 	/* set default heartbeat interval */
 	//sdev->pminfo.hbi = DEFAULT_HB_INTERVAL;

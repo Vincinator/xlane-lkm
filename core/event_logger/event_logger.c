@@ -6,7 +6,7 @@
 #include <sassy/logger.h>
 
 void logger_state_transition_to(struct logger *slog,
-			    enum le_logger_state state)
+			    enum logger_state state)
 {
 	slog->state = state;
 }
@@ -26,7 +26,7 @@ int write_log(struct logger *slog,
 		sassy_dbg("Logs are full! Stopped event logging. %s\n", __FUNCTION__);
 
 		sassy_le_log_stop(sdev);
-		lel_state_transition_to(sdev, LOGGER_LOG_FULL);
+		logger_state_transition_to(sdev, LOGGER_LOG_FULL);
 		return -ENOMEM;
 	}
 
@@ -75,7 +75,7 @@ int sassy_log_reset(struct logger *slog)
 		goto error;
 	}
 
-	if (sdev->lel_state != LOGGER_READY) {
+	if (slog->state != LOGGER_READY) {
 		sassy_error(
 			"can not clear stats, logger is in an undefined state.%s\n",
 			__FUNCTION__);

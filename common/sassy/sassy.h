@@ -81,12 +81,6 @@ struct sassy_stats {
 	int timestamp_amount; /* how many different timestamps types are tracked*/
 };
 
-enum le_logger_state {
-    LEL_RUNNING,
-    LEL_READY, 	/* Initialized but not active*/
-    LEL_UNINIT,
-    LEL_LOG_FULL,
-};
 
 enum le_event_type {
 
@@ -257,7 +251,6 @@ struct sassy_device {
 
 	enum sassy_rx_state rx_state;
 	enum tsstate ts_state; 
-	enum le_logger_state lel_state;
 
 	struct sassy_stats *stats;
 	struct le_event_logs *le_logs;
