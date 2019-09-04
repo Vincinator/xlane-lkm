@@ -35,4 +35,56 @@
 		printk(KERN_ERR LOG_LE_PREFIX format, ##arg);	\
 })
 
+
+
+#define MAX_LOGGER_NAME 16
+#define LOGGER_EVENT_LIMIT 10000
+
+enum logger_state {
+  	LOGGER_RUNNING,
+    LOGGER_READY, 	/* Initialized but not active*/
+    LOGGER_UNINIT,
+    LOGGER_LOG_FULL,
+};
+
+struct logger_event {
+	uint64_t timestamp_tcs;
+	int type;
+};
+
+struct event_logs {
+
+	/* Size is defined by LOGGER_EVENT_LIMIT */
+	struct logger_event *events;
+
+	/* Last valid log entry in the le_event array */
+	int current_entries;
+	
+	struct proc_dir_entry	*proc_dir;	
+
+	char *name;
+
+};
+
+struct logger {
+
+	int ifindex; 
+
+	enum logger_state state;
+
+	char name[MAX_LOGGER_NAME];
+
+	struct event_logs *logs;
+
+	int current_entries;
+
+};
+
+int init_logger(struct logger *slog);
+void init_log_ctrl_base(struct logger *slog);
+
+
+
+
+
 #endif  /* _SASSY_LOGGER_H_ */

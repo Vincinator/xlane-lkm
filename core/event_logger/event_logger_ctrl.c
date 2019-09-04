@@ -7,15 +7,13 @@
 #include <sassy/logger.h>
 #include <sassy/sassy_ts.h>
 
-#include "event_logger.h"
-
 static ssize_t sassy_event_ctrl_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
 				   loff_t *data)
 {
 	int err;
-	struct sassy_device *sdev =
-		(struct sassy_device *)PDE_DATA(file_inode(file));
+	struct logger *slog =
+		(struct logger *)PDE_DATA(file_inode(file));
 	char kernel_buffer[SASSY_NUMBUF];
 	int logging_state = -1;
 	size_t size;
@@ -41,13 +39,13 @@ static ssize_t sassy_event_ctrl_write(struct file *file,
 
 	switch (logging_state) {
 	case 0:
-		sassy_le_log_stop(sdev);
+		sassy_log_stop(slog);
 		break;
 	case 1:
-		sassy_le_log_start(sdev);
+		sassy_log_start(slog);
 		break;
 	case 2:
-		sassy_le_log_reset(sdev);
+		sassy_log_reset(slog);
 		break;
 	default:
 		sassy_error("Invalid input: %d - %s\n",
@@ -65,13 +63,13 @@ error:
 
 static int sassy_event_ctrl_show(struct seq_file *m, void *v)
 {
-	struct sassy_device *sdev =
-		(struct sassy_device *)m->private;
+	struct logger *slog =
+		(struct logger *)m->private;
 
 	if (!sdev)
 		return -ENODEV;
 
-	seq_printf(m, "%s\n", lel_state_string(sdev->lel_state));
+	seq_printf(m, "%s\n", logger_state_string(slog->state));
 
 	return 0;
 }
@@ -92,15 +90,12 @@ static const struct file_operations sassy_event_ctrl_ops = {
 	.release = single_release,
 };
 
-void init_log_ctrl_interfaces(struct sassy_device *sdev)
+void init_log_ctrl_base(struct logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log", sdev->ifindex);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log", slog->ifindex);
 	proc_mkdir(name_buf, NULL);
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops,
-			 sdev);
 }
 

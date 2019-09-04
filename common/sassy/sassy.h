@@ -269,6 +269,8 @@ struct sassy_device {
 	struct sassy_protocol *le_proto;
 	struct sassy_protocol *proto;
 
+	struct logger le_logger;
+
 };
 
 struct sassy_protocol_ctrl_ops {
@@ -395,7 +397,7 @@ const char *ts_state_string(enum tsstate state);
 int init_timestamping(struct sassy_device *sdev);
 int init_le_logging(struct sassy_device *sdev);
 void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev);
-void init_le_log_ctrl_interfaces(struct sassy_device *sdev);
+void init_log_ctrl_interfaces(struct sassy_device *sdev);
 int sassy_clean_timestamping(struct sassy_device *sdev);
 
 int write_le_log(struct sassy_device *sdev,

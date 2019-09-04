@@ -42,19 +42,39 @@ int echo_info(struct sassy_device *sdev)
 int echo_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		      void *payload)
 {
-	// .. Test only ..
-	print_hex_dump(KERN_DEBUG, "Echo Packet: ", DUMP_PREFIX_NONE, 16, 1,
-		       payload, SASSY_PAYLOAD_BYTES, 0);
+	int remote_lid, rcluster_id;
+	uint64_t tx_ts;
+	enum echo_opcode opcode;
 
-	sassy_dbg("SRC MAC=%pM", remote_mac);
-	sassy_dbg("echo post payload");
+	tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
+	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
+	
+	switch(opcode){
+		case SASSY_PING:
+			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
+
+			sassy_dbg("echo ts: %llu", tx_ts);
+
+			// reply back to sender
+			setup_echo_msg(&sdev->pminfo, remote_lid, tx_ts, SASSY_PONG);
+			break;
+		case SASSY_PONG:
+			
+			break;
+		default
+			sassy_error("Unknown echo opcode!");
+
+	}
+
+
+
+
 
 	return 0;
 }
 
 int echo_init_payload(struct sassy_payload *payload)
 {
-
 
 	return 0;
 }

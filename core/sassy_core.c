@@ -202,10 +202,14 @@ int sassy_core_register_nic(int ifindex)
 	init_sassy_ts_ctrl_interfaces(score->sdevices[sassy_id]);
 	init_timestamping(score->sdevices[sassy_id]);
 
-	/* Initialize Leader Election Logger for NIC */
-	init_le_log_ctrl_interfaces(score->sdevices[sassy_id]);
-	init_le_logging(score->sdevices[sassy_id]);
+	/* Initialize logger base for NIC */
+	init_log_ctrl_base(score->sdevices[sassy_id]);
 
+	/* Initialize Leader Election Logger*/
+    score->sdevices[sassy_id]->le_logger.name = "le";
+    score->sdevices[sassy_id]->le_logger.ifindex = ifindex;
+    init_logger(score->sdevices[sassy_id]->le_logger);
+    
 	/* Initialize Control Interfaces for NIC */
 	init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
 	init_proto_selector(score->sdevices[sassy_id]);

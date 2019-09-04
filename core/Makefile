@@ -8,3 +8,5 @@ proto-objs := proto/proto_mgmt.o proto/proto_selector.o
 avail_proto-objs :=  proto/available_info/avail_protos_info_ops.o  proto/available_info/avail_protos_mgmt.o 
 
 obj-y += ts/
+
+obj-y += event_log/event_logger.o event_log/event_logger_ctrl.o
