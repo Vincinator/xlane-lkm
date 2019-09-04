@@ -25,12 +25,6 @@ void set_echo_tx_ts(unsigned char *pkt, uint64_t ts)
 	SET_ECHO_PAYLOAD(pkt, tx_ts, ts);
 }
 
-void set_echo_counter(unsigned char *pkt, uint64_t c)
-{
-	SET_ECHO_PAYLOAD(pkt, counter, c);
-}
-
-
 int setup_echo_msg(struct pminfo *spminfo, u32 target_id, uint64_t ts, enum echo_opcode opcode)
 {
 	struct sassy_payload *pkt_payload;
