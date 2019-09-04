@@ -2,6 +2,7 @@
 #include <sassy/sassy.h>
 
 #include "include/sassy_echo.h"
+#include "include/sassy_echo_ops.h"
 
 int echo_init(struct sassy_device *sdev)
 {

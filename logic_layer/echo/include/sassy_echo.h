@@ -2,6 +2,17 @@
 
 #include <sassy/sassy.h>
 
+#ifndef offsetof
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#endif
+
+#define GET_ECHO_PAYLOAD(p, fld) (*(u32*)((p+offsetof(struct echo_payload, fld))))
+
+#define SET_ECHO_PAYLOAD(p, fld, v) do { \
+  *((u32*)(((unsigned char *)p) + offsetof(struct echo_payload, fld))) = v; \
+} while (0)
+
+
 enum echo_opcode {
 	SASSY_PING = 0,
 	SASSY_PONG = 1,
@@ -18,3 +29,4 @@ struct echo_payload {
 
 
 int setup_echo_msg(struct pminfo *spminfo, u32 target_id, uint64_t ts, enum echo_opcode opcode);
+

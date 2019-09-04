@@ -11,16 +11,7 @@
 
 #include <sassy/payload_helper.h>
 
-
-#ifndef offsetof
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-#endif
-
-#define GET_ECHO_PAYLOAD(p, fld) (*(u32*)((p+offsetof(struct echo_payload, fld))))
-
-#define SET_ECHO_PAYLOAD(p, fld, v) do { \
-  *((u32*)(((unsigned char *)p) + offsetof(struct echo_payload, fld))) = v; \
-} while (0)
+#include "include/sassy_echo.h"
 
 
 void set_echo_opcode(unsigned char *pkt, enum echo_opcode opcode)
