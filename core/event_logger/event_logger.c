@@ -15,7 +15,7 @@ const char *logger_state_string(enum logger_state state)
 		return "LOGGER_READY";
 	case LOGGER_UNINIT:
 		return "LOGGER_UNINIT";
-	case LOGGER_UNINIT:
+	case LOGGER_LOG_FULL:
 		return "LOGGER_LOG_FULL";
 	default:
 		return "UNKNOWN STATE";
