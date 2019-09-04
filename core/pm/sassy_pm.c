@@ -237,7 +237,7 @@ static int sassy_pm_loop(void *data)
 	uint64_t prev_time, cur_time;
 	struct sassy_device *sdev = (struct sassy_device *) data;
 	struct pminfo *spminfo = &sdev->pminfo;
-	uint64_t interval = pminfo.hbi;
+	uint64_t interval = spminfo->hbi;	
 	unsigned long flags;
 	int err;
 
