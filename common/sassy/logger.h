@@ -42,10 +42,10 @@
 #define LOGGER_EVENT_LIMIT 10000
 
 enum logger_state {
-  	LOGGER_RUNNING,
-    LOGGER_READY, 	/* Initialized but not active*/
-    LOGGER_UNINIT,
-    LOGGER_LOG_FULL,
+	LOGGER_RUNNING,
+	LOGGER_READY, 	/* Initialized but not active*/
+	LOGGER_UNINIT,
+	LOGGER_LOG_FULL,
 };
 
 struct logger_event {
@@ -88,5 +88,7 @@ int init_logger(struct logger *slog);
 int sassy_log_stop(struct logger *slog);
 int sassy_log_start(struct logger *slog);
 int sassy_log_reset(struct logger *slog);
+
+const char *logger_state_string(enum logger_state state);
 
 #endif  /* _SASSY_LOGGER_H_ */

@@ -5,6 +5,24 @@
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
 
+
+const char *logger_state_string(enum logger_state state)
+{
+	switch (state) {
+	case LOGGER_RUNNING:
+		return "LOGGER_RUNNING";
+	case LOGGER_READY:
+		return "LOGGER_READY";
+	case LOGGER_UNINIT:
+		return "LOGGER_UNINIT";
+	case LOGGER_UNINIT:
+		return "LOGGER_LOG_FULL";
+	default:
+		return "UNKNOWN STATE";
+	}
+}
+
+
 void logger_state_transition_to(struct logger *slog,
 			    enum logger_state state)
 {
