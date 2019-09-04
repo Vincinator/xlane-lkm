@@ -117,7 +117,7 @@ static int sassy_log_show(struct seq_file *m, void *v)
 
 static int sassy_log_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, sassy_le_log_show, PDE_DATA(inode));
+	return single_open(file, sassy_log_show, PDE_DATA(inode));
 }
 
 static const struct file_operations sassy_log_ops = {
