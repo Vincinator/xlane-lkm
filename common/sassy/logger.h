@@ -3,6 +3,7 @@
 
 #define SASSY_DEBUG 1
 
+#include <linux/types.h>
 
 #ifndef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][UNKNOWN MODULE]"
