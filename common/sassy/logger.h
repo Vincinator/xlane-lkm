@@ -85,6 +85,8 @@ int init_logger(struct logger *slog);
 
 
 
-
+int sassy_log_stop(struct logger *slog);
+int sassy_log_start(struct logger *slog);
+int sassy_log_reset(struct logger *slog);
 
 #endif  /* _SASSY_LOGGER_H_ */
