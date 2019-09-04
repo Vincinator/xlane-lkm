@@ -285,10 +285,6 @@ static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	struct sassy_device *sdev =
 			container_of(spminfo, struct sassy_device, pminfo);
 
-	struct sassy_payload *pkt_payload;
-	int i;
-	int ret;
-	int hb_active_ix;
 	ktime_t currtime, interval;
 
 	if (!sassy_pacemaker_is_alive(spminfo)){
