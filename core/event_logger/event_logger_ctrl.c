@@ -93,7 +93,7 @@ static const struct file_operations sassy_event_ctrl_ops = {
 void init_log_ctrl
 
 
-static void init_logger_ctrl(struct logger *slog)
+void init_logger_ctrl(struct logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 

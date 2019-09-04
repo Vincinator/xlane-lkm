@@ -412,6 +412,8 @@ void set_le_term(unsigned char *pkt, u32 term);
 int compare_mac(unsigned char *m1, unsigned char *m2);
 
 void init_log_ctrl_base(struct sassy_device *sdev);
+void init_logger_ctrl(struct logger *slog);
+
 
 
 #endif /* _SASSY_H_ */
