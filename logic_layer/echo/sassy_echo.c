@@ -52,3 +52,4 @@ int setup_echo_msg(struct pminfo *spminfo, u32 target_id, uint64_t ts, enum echo
 
 	return 0;
 }
+EXPORT_SYMBOL(setup_echo_msg);

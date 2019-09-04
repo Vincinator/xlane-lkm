@@ -54,7 +54,7 @@ error:
 	sassy_dbg("Error in %s", __FUNCTION__);
 	return NULL;
 }
-EXPORT_SYMBOL(get_fd_proto);
+EXPORT_SYMBOL(get_echo_proto);
 
 static void __exit sassy_app_echo_exit(void)
 {

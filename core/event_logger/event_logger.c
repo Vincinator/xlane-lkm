@@ -54,7 +54,7 @@ int write_log(struct logger *slog,
 
 	return 0;
 }
-EXPORT_SYMBOL(sassy_write_timestamp);
+EXPORT_SYMBOL(write_log);
 
 int sassy_log_stop(struct logger *slog)
 {
