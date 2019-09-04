@@ -210,14 +210,12 @@ static int proto_le_selector_show(struct seq_file *m, void *v)
 		sassy_error(" sdev is NULL %s!\n", __FUNCTION__);
 		return -EINVAL;
 	}
-	if (!sdev->proto) {
+	if (!sdev->le_proto) {
 		seq_puts(m, "sdev does not use a protocol yet\n");
 		return -1;
 	}
 
-	seq_printf(m, "sdev uses protocol %s with id %d\n",
-		   sassy_get_protocol_name(sdev->proto->proto_type),
-		   sdev->proto->proto_type);
+	seq_printf(m, "leader election protocol is initialized\n");
 
 	return 0;
 }

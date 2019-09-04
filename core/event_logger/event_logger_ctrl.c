@@ -90,7 +90,6 @@ static const struct file_operations sassy_event_ctrl_ops = {
 	.release = single_release,
 };
 
-
 void init_logger_ctrl(struct logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
