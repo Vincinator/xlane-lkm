@@ -187,6 +187,7 @@ int init_logger(struct logger *slog)
 	int err;
 	int i;
 	
+	err = 0;
 
 	if (!slog) {
 		err = -EINVAL;

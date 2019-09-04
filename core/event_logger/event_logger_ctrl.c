@@ -66,7 +66,7 @@ static int sassy_event_ctrl_show(struct seq_file *m, void *v)
 	struct logger *slog =
 		(struct logger *)m->private;
 
-	if (!sdev)
+	if (!slog)
 		return -ENODEV;
 
 	seq_printf(m, "%s\n", logger_state_string(slog->state));
