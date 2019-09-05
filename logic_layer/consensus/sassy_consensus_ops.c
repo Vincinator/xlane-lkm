@@ -42,11 +42,6 @@ int consensus_start(struct sassy_device *sdev)
 		return 0;
 	}
 
-	write_log(&sdev->le_logger, START_CONSENSUS, rdtsc());
-
-	// Transition to Follower State
-	err = node_transition(sdev, FOLLOWER);
-
 	if (err)
 		goto error;
 
@@ -139,6 +134,7 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 
 	// Handle Warmup
 	if(priv->warmup_state == WARMING_UP){
+
 		if(spminfo->pm_targets[remote_lid].alive == 0){
 			spminfo->pm_targets[remote_lid].alive = 1;
 			priv->warms += 1;
@@ -149,6 +145,13 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 			return 0;
 
 		priv->warmup_state = WARMED_UP;
+		write_log(&sdev->le_logger, START_CONSENSUS, rdtsc());
+
+		// Transition to Follower State
+		err = node_transition(sdev, FOLLOWER);
+		
+		if(err)
+			return err;
 	}
 
 

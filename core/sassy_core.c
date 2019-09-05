@@ -75,7 +75,7 @@ void set_all_targets_dead(struct sassy_device *sdev)
 	int i;
 
 	for(i = 0; i < spminfo->num_of_targets; i++) {
-		spminfo->pm_targets[i].active = 0;
+		spminfo->pm_targets[i].alive = 0;
 	}
 }
 EXPORT_SYMBOL(set_all_targets_dead);
