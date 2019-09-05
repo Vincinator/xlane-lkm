@@ -119,7 +119,7 @@ static const struct file_operations sassy_le_config_ops = {
 	.release = single_release,
 };
 
-void init_le_config_ctrl_interfaces(struct sassy_device *sdev)
+void init_le_config_ctrl_interfaces(struct sassy_device *sdev, struct consensus_priv *priv)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
