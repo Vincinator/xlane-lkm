@@ -97,7 +97,7 @@ void init_logger_ctrl(struct sassy_logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	if (!slog->logs) {
+	if (!slog) {
 		sassy_error("Logs are not initialized!\n");
 		return -ENOMEM;
 	}
@@ -105,7 +105,7 @@ void init_logger_ctrl(struct sassy_logger *slog)
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl_%s",
 		 slog->ifindex, slog->name);
 
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog->logs);
+	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog);
 
 	return 0;
 }

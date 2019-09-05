@@ -3,7 +3,7 @@
 #include <sassy/sassy.h>
 
 struct sassy_echo_priv {
-	int test;
+	struct sassy_logger echo_logger;
 };
 
 int echo_init(struct sassy_device *);

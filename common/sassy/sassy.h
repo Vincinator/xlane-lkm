@@ -131,7 +131,17 @@ struct logger_event {
 	int type;
 };
 
-struct event_logs {
+
+
+struct sassy_logger {
+
+	int ifindex; 
+
+	enum logger_state state;
+
+	char name[MAX_LOGGER_NAME];
+
+	int current_entries;
 
 	/* Size is defined by LOGGER_EVENT_LIMIT */
 	struct logger_event *events;
@@ -142,20 +152,6 @@ struct event_logs {
 	struct proc_dir_entry	*proc_dir;	
 
 	char *name;
-
-};
-
-struct sassy_logger {
-
-	int ifindex; 
-
-	enum logger_state state;
-
-	char name[MAX_LOGGER_NAME];
-
-	struct event_logs *logs;
-
-	int current_entries;
 
 };
 

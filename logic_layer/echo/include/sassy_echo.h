@@ -8,6 +8,12 @@
 
 
 
+enum echo_logger_events {
+	LOG_ECHO_RX_PING = 0,
+	LOG_ECHO_RX_PONG = 1,
+	LOG_ECHO_PINGPONG_LATENCY = 2, // timestamp is delta of rx_pong and tx_ping
+};
+
 enum echo_opcode {
 	SASSY_PING = 0,
 	SASSY_PONG = 1,

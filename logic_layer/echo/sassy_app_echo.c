@@ -49,6 +49,11 @@ struct sassy_protocol *get_echo_proto(void)
 	proto->ctrl_ops = echo_ops;
 	proto->name = "echo";
 	proto->priv = (void *)&echo_priv;
+
+    strncpy(proto->priv->echo_logger.name, "echo", MAX_LOGGER_NAME);
+    proto->priv->echo_logger.ifindex = ifindex;
+    init_logger(&proto->priv->echo_logger);
+
 	return proto;
 error:
 	sassy_dbg("Error in %s", __FUNCTION__);

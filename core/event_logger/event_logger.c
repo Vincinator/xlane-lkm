@@ -32,14 +32,11 @@ void logger_state_transition_to(struct sassy_logger *slog,
 int write_log(struct sassy_logger *slog,
 			  int type, uint64_t tcs)
 {
-	struct event_logs *logs;
 	
 	if (slog->state != LOGGER_RUNNING)
 		return 0;
 
-	logs = slog->logs;
-
-	if (unlikely(logs->current_entries > LOGGER_EVENT_LIMIT)) {
+	if (unlikely(slog->current_entries > LOGGER_EVENT_LIMIT)) {
 
 		sassy_dbg("Logs are full! Stopped event logging. %s\n", __FUNCTION__);
 
@@ -48,9 +45,9 @@ int write_log(struct sassy_logger *slog,
 		return -ENOMEM;
 	}
 
-	logs->events[logs->current_entries].timestamp_tcs = tcs;
-	logs->events[logs->current_entries].type = type;
-	logs->current_entries += 1;
+	slog->events[slog->current_entries].timestamp_tcs = tcs;
+	slog->events[slog->current_entries].type = type;
+	slog->current_entries += 1;
 
 	return 0;
 }
@@ -105,7 +102,7 @@ int sassy_log_reset(struct sassy_logger *slog)
 	int err;
 	int i;
 
-	if(!slog || !slog->logs ) {
+	if(!slog) {
 		sassy_error("logger is not initialized properly! Can not clear logs.\n");
 		err = -EPERM;
 		goto error;
@@ -127,7 +124,7 @@ int sassy_log_reset(struct sassy_logger *slog)
 		goto error;
 	}
 
-	slog->logs->current_entries = 0;
+	slog->current_entries = 0;
 
 	return 0;
 error:
@@ -146,15 +143,15 @@ static ssize_t sassy_log_write(struct file *file, const char __user *buffer,
 static int sassy_log_show(struct seq_file *m, void *v)
 {
 	int i;
-	struct event_logs *logs =
-		(struct event_logs *)m->private;
+	struct sassy_logger *slog =
+		(struct sassy_logger *)m->private;
 
 	BUG_ON(!logs);
 
-	for (i = 0; i < logs->current_entries; i++)
+	for (i = 0; i < slog->current_entries; i++)
 		seq_printf(m, "%d, %llu\n", 
-							logs->events[i].type, 
-							logs->events[i].timestamp_tcs);
+							slog->events[i].type, 
+							slog->events[i].timestamp_tcs);
 
 	return 0;
 }
@@ -179,7 +176,7 @@ static int init_logger_out(struct sassy_logger *slog)
 	int err;
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	if (!slog->logs) {
+	if (!slog) {
 		err = -ENOMEM;
 		sassy_error("Logs are not initialized!\n");
 		goto error;
@@ -188,12 +185,12 @@ static int init_logger_out(struct sassy_logger *slog)
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/%s",
 		 slog->ifindex, slog->name);
 
-	slog->logs->proc_dir =
+	slog->proc_dir =
 		proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL,
 				 &sassy_log_ops,
-				 slog->logs);
+				 slog);
 
-	if (!slog->logs->proc_dir) {
+	if (!slog->proc_dir) {
 		err = -ENOMEM;
 		sassy_error(" Could not create leader election log procfs data entry%s\n",
 			__FUNCTION__);
@@ -220,27 +217,18 @@ int init_logger(struct sassy_logger *slog)
 		goto error;
 	}
 
-	slog->logs = kmalloc(sizeof(struct event_logs), GFP_KERNEL);
-
-	if (!slog->logs) {
-		err = -ENOMEM;
-		sassy_error(" Could not allocate memory for logs. %s\n",
-			    __FUNCTION__);
-		goto error;
-	}
-
-	slog->logs->events = kmalloc_array(LOGGER_EVENT_LIMIT,
+	slog->events = kmalloc_array(LOGGER_EVENT_LIMIT,
 									sizeof(struct logger_event),
 									GFP_KERNEL);
 
-	if (!slog->logs->events) {
+	if (!slog->events) {
 		err = -ENOMEM;
 		sassy_error(
 			"Could not allocate memory for leader election logs items\n");
 		goto error;
 	}
 
-	slog->logs->current_entries = 0;
+	slog->current_entries = 0;
 
 	init_logger_out(slog);
 	init_logger_ctrl(slog);

@@ -53,13 +53,16 @@ int echo_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	switch(opcode){
 		case SASSY_PING:
 			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
-
-			sassy_dbg("echo ts: %llu", tx_ts);
+			write_log(&echo_priv->echo_logger, LOG_ECHO_RX_PING, rdtsc());
 
 			// reply back to sender
 			setup_echo_msg(&sdev->pminfo, remote_lid, tx_ts, SASSY_PONG);
 			break;
 		case SASSY_PONG:
+			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
+
+			write_log(&echo_priv->echo_logger, LOG_ECHO_PINGPONG_LATENCY, rdtsc() - tx_ts);
+
 			break;
 		default:
 			sassy_error("Unknown echo opcode!");
