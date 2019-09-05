@@ -20,6 +20,8 @@ int consensus_init(struct sassy_device *sdev)
 	priv->ftimer_init = 0;
 	priv->voted = -1;
 	priv->term = 0;
+	priv->warms = 0;
+	priv->warmup_state = WARMING_UP;
 
 	return 0;
 }
@@ -85,6 +87,9 @@ int consensus_stop(struct sassy_device *sdev)
 	}
 
 	le_state_transition_to(sdev, LE_READY);
+	priv->warmup_state = WARMING_UP;
+	priv->warms = 0;
+	set_all_targets_dead(sdev);
 
 	return 0;
 }
@@ -123,6 +128,7 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	if(!consensus_is_alive(sdev))
 		return 0;
 
+
 	if (sdev->verbose >= 3)
 			sassy_dbg("consensus payload received\n");
 
@@ -130,6 +136,21 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 
 	if(remote_lid == -1 || rcluster_id == -1)
 		return -1;
+
+	// Handle Warmup
+	if(priv->warmup_state == WARMING_UP){
+		if(spminfo->pm_targets[remote_lid].alive == 0){
+			spminfo->pm_targets[remote_lid].alive = 1;
+			priv->warms += 1;
+		}
+
+		// Do not start Leader Election until all targets have send a message to this node.
+		if(priv->warms != spminfo->num_of_targets)
+			return 0;
+
+		priv->warmup_state = WARMED_UP;
+	}
+
 
 	switch (priv->nstate) {
 	case FOLLOWER:

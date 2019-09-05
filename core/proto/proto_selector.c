@@ -135,7 +135,6 @@ static void __clear_previous_le_proto(struct sassy_device *sdev)
 		sassy_dbg("Stop and Clean le protocol\n");
 		sdev->le_proto->ctrl_ops.stop(sdev);
 		sdev->le_proto->ctrl_ops.clean(sdev);
-		kfree(sdev->le_proto); // free old le protocol data
 	} else {
 		sassy_dbg("Leader election protocol was not loaded, or PM is emitting! \n");
 	}
@@ -183,31 +182,29 @@ static ssize_t proto_le_selector_write(struct file *file,
 
 	switch(new_protocol){
 		case 0: // Stop (if initialized)
-			if(!sdev->le_proto){
-				sassy_error("Leader Election Protocol is not initialized!\
-						write 2 in this file to initialize\n");
-				return -ENODEV;
+			if(!consensus_is_alive(sdev)){
+				sassy_dbg("Leader Election is not running\n");
+				return 0;
 			}
-			
 			sdev->le_proto->ctrl_ops.stop(sdev);
 
 			break;
 		case 1: // Start (if initialized)
-			if(!sdev->le_proto){
-				sassy_error("Leader Election Protocol is not initialized!\
-						write 2 in this file to initialize\n");
-				return -ENODEV;
+			if(consensus_is_alive(sdev)){
+				sassy_dbg("Leader Election is already running\n");
+				return 0;
 			}
 			
 			sdev->le_proto->ctrl_ops.start(sdev);
 			
 			break;
-		case 2: // Reset 
-			__clear_previous_le_proto(sdev); // clears only if it exits
-			// Initialize leader election protocol
-			sdev->le_proto = get_consensus_proto(sdev);
-			sdev->le_proto->ctrl_ops.init(sdev);
-			sdev->le_proto->ctrl_ops.stop(sdev);
+		case 2: // Reset data
+			if(consensus_is_alive(sdev)){
+				sdev->le_proto->ctrl_ops.stop(sdev);
+
+			}
+			sdev->le_proto->ctrl_ops.clean(sdev);
+
 			break;
 
 		default:

@@ -236,7 +236,7 @@ struct sassy_pacemaker_test_data {
 
 struct sassy_pm_target_info {
 	int target_id;
-	int active;
+	int alive;	// 0 if not alive
 
 	/* Params used to build the SKB for TX */
 	struct sassy_packet_data pkt_data;
@@ -454,6 +454,6 @@ int sassy_log_reset(struct sassy_logger *slog);
 const char *logger_state_string(enum logger_state state);
 int consensus_is_alive(struct sassy_device *sdev);
 char *le_state_name(struct sassy_device *sdev);
-
+void set_all_targets_dead(struct sassy_device *sdev);
 
 #endif /* _SASSY_H_ */

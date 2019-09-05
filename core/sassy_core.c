@@ -69,6 +69,18 @@ void sassy_post_ts(int sassy_id, uint64_t cycles)
 }
 EXPORT_SYMBOL(sassy_post_ts);
 
+void set_all_targets_dead(struct sassy_device *sdev)
+{
+	struct pminfo *spminfo = &sdev->pminfo;
+	int i;
+
+	for(i = 0; i < spminfo->num_of_targets; i++) {
+		spminfo->pm_targets[i].active = 0;
+	}
+}
+EXPORT_SYMBOL(set_all_targets_dead);
+
+
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 {
 	u8 *payload_raw_ptr = (u8 *)payload;
@@ -306,7 +318,7 @@ int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 		sassy_error("pmtarget is NULL\n");
 		return -1;
 	}
-
+	pmtarget->alive = 0;
 	pmtarget->pkt_data.hb_active_ix = 0;
 	pmtarget->pkt_data.naddr.dst_ip = ip;
 	pmtarget->pkt_data.naddr.cluster_id = cluster_id;
