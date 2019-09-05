@@ -217,15 +217,23 @@ int sassy_core_register_nic(int ifindex)
 	/* Initialize logger base for NIC */
 	init_log_ctrl_base(score->sdevices[sassy_id]);
 
+
+	/* Initialize Leader Election Protocol */
+	score->sdevices[sassy_id]->le_proto = get_consensus_proto(score->sdevices[sassy_id]);
+	score->sdevices[sassy_id]->le_proto->ctrl_ops.init(score->sdevices[sassy_id]);
+
 	/* Initialize Leader Election Logger*/
     strncpy(score->sdevices[sassy_id]->le_logger.name, "le", MAX_LOGGER_NAME);
     score->sdevices[sassy_id]->le_logger.ifindex = ifindex;
     init_logger(&score->sdevices[sassy_id]->le_logger);
+
     
 	/* Initialize Control Interfaces for NIC */
 	init_sassy_pm_ctrl_interfaces(score->sdevices[sassy_id]);
 	init_proto_selector(score->sdevices[sassy_id]);
 	init_sassy_ctrl_interfaces(score->sdevices[sassy_id]);
+
+
 
 	/* Initialize Component States*/
 	pm_state_transition_to(&score->sdevices[sassy_id]->pminfo,

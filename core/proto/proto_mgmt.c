@@ -32,9 +32,6 @@ struct sassy_protocol *generate_protocol(struct sassy_device *sdev, u8 protocol_
 
 	switch(proto_type)
 	{
-		case SASSY_PROTO_CONSENSUS:
-			sproto = get_consensus_proto(sdev);
-			break;
 		case SASSY_PROTO_FD:
 			sproto = get_fd_proto(sdev);
 			break;

@@ -22,7 +22,7 @@ int consensus_init(struct sassy_device *sdev)
 	priv->term = 0;
 	priv->warms = 0;
 	priv->warmup_state = WARMING_UP;
-
+	priv->state = LE_RUNNING;
 	return 0;
 }
 

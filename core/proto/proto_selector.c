@@ -85,10 +85,6 @@ static ssize_t proto_selector_write(struct file *file,
 	sdev->proto = sproto;
 	sdev->proto->ctrl_ops.init(sdev);
 
-	// Initialize leader election protocol implicitly
-	sdev->le_proto = get_consensus_proto(sdev);
-	sdev->le_proto->ctrl_ops.init(sdev);
-
 	return count;
 }
 
@@ -186,6 +182,7 @@ static ssize_t proto_le_selector_write(struct file *file,
 				sassy_dbg("Leader Election is not running\n");
 				break;
 			}
+
 			sdev->le_proto->ctrl_ops.stop(sdev);
 
 			break;
