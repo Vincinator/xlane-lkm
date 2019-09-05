@@ -158,7 +158,7 @@ void init_timeout(struct sassy_device *sdev)
 		return;
 	}
 
-	timeout = get_rnd_timeout();
+	timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
 
 	hrtimer_init(&priv->ftimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
 	priv->ftimer_init = 1;
@@ -180,7 +180,7 @@ void reset_ftimeout(struct sassy_device *sdev)
 	struct consensus_priv *priv = 
 				(struct consensus_priv *)sdev->le_proto->priv;
 
-	timeout = get_rnd_timeout();
+	timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
 
 	hrtimer_cancel(&priv->ftimer);
 	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);

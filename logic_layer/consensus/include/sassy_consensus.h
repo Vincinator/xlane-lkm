@@ -9,11 +9,6 @@
 #define TOLERANCE_FTIMEOUT_NS 500000
 #define TOLERANCE_CTIMEOUT_NS 500000
 
-#define MIN_FTIMEOUT_NS 10000000
-#define MAX_FTIMEOUT_NS 20000000
-
-#define MIN_CTIMEOUT_NS 20000000
-#define MAX_CTIMEOUT_NS 40000000
 
 
 
@@ -103,11 +98,17 @@ struct consensus_priv {
 	/* follower timeout */
 	struct hrtimer ftimer;
 	int ftimer_init;
+	int ft_max;
+	int ft_min;
 
 	/* candidate timeout */
 	struct hrtimer ctimer;
 	int ctimer_init;
 	int c_retries;
+
+	int ct_min;
+	int ct_max;
+
 
 	/* number of followers voted for this node */
 	int votes;
@@ -116,7 +117,7 @@ struct consensus_priv {
 int node_transition(struct sassy_device *sdev, enum node_state state);
 
 struct consensus_priv *con_priv(void);
-ktime_t get_rnd_timeout(void);
+ktime_t get_rnd_timeout(int min, int max);
 ktime_t get_rnd_timeout_candidate(void);
 ktime_t get_rnd_timeout_plus(int plus);
 ktime_t get_rnd_timeout_candidate_plus(int plus);

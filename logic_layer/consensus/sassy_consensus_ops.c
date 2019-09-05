@@ -8,6 +8,12 @@
 #include "include/follower.h"
 #include "include/leader.h"
 
+// Default Values for timeouts
+#define MIN_FTIMEOUT_NS 10000000
+#define MAX_FTIMEOUT_NS 20000000
+#define MIN_CTIMEOUT_NS 20000000
+#define MAX_CTIMEOUT_NS 40000000
+
 
 int consensus_init(struct sassy_device *sdev)
 {
@@ -23,6 +29,13 @@ int consensus_init(struct sassy_device *sdev)
 	priv->warms = 0;
 	priv->warmup_state = WARMING_UP;
 	priv->state = LE_RUNNING;
+	priv->ft_min = MIN_FTIMEOUT_NS;
+	priv->ft_max = MAX_FTIMEOUT_NS;
+	priv->ct_min = MIN_CTIMEOUT_NS;
+	priv->ct_min = MAX_CTIMEOUT_NS;
+
+	init_le_config_ctrl_interfaces(sdev);
+
 	return 0;
 }
 

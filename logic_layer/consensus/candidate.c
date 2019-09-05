@@ -65,7 +65,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 
 	setup_nomination(sdev);
 
-	timeout = get_rnd_timeout_candidate_plus(priv->c_retries * CANDIDATE_RETRY_TIMEOUT_GROWTH);
+	timeout = get_rnd_timeout(priv->c_retries * priv->ct_min, priv->c_retries * priv->ct_max);
 
 	hrtimer_forward_now(timer, timeout);
 
@@ -87,7 +87,7 @@ void reset_ctimeout(struct sassy_device *sdev)
 				(struct consensus_priv *)sdev->le_proto->priv;
 
 	priv->c_retries = 0;
-	timeout = get_rnd_timeout_candidate();
+	timeout = get_rnd_timeout(priv->ct_min, priv->ct_max);
 
 	hrtimer_cancel(&priv->ctimer);
 	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
@@ -113,7 +113,7 @@ void init_ctimeout(struct sassy_device *sdev)
 	}
 
 	priv->c_retries = 0;
-	timeout = get_rnd_timeout();
+	timeout = get_rnd_timeout(priv->ct_min, priv->ct_max);
 
 	hrtimer_init(&priv->ctimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
 	priv->ctimer_init = 1;

@@ -455,5 +455,6 @@ const char *logger_state_string(enum logger_state state);
 int consensus_is_alive(struct sassy_device *sdev);
 char *le_state_name(struct sassy_device *sdev);
 void set_all_targets_dead(struct sassy_device *sdev);
+void init_le_config_ctrl_interfaces(struct sassy_device *sdev);
 
 #endif /* _SASSY_H_ */

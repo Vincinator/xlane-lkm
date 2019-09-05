@@ -13,7 +13,7 @@ clean:
 else
 EXTRA_CFLAGS+=-I$(src)/../../common/
 
-obj-y := sassy_consensus.o sassy_consensus_ops.o state_transitions.o leader.o follower.o candidate.o
+obj-y := sassy_consensus.o sassy_consensus_ops.o state_transitions.o leader.o follower.o candidate.o sassy_consensus_config_ctrl.o
 #obj-y += event_log/event_logger.o event_log/event_logger_ctrl.o
 
 endif
