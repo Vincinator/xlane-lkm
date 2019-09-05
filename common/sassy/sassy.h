@@ -145,13 +145,8 @@ struct sassy_logger {
 
 	/* Size is defined by LOGGER_EVENT_LIMIT */
 	struct logger_event *events;
-
-	/* Last valid log entry in the le_event array */
-	int current_entries;
 	
 	struct proc_dir_entry	*proc_dir;	
-
-	char *name;
 
 };
 
