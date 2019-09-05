@@ -140,6 +140,7 @@ static int __init sassy_consensus_init(void)
 struct sassy_protocol *get_consensus_proto(struct sassy_device *sdev)
 {
 	struct sassy_protocol *proto;
+	struct consensus_priov *cpriv;
 
 	proto = kmalloc(sizeof(struct sassy_protocol), GFP_KERNEL);
 
@@ -150,8 +151,9 @@ struct sassy_protocol *get_consensus_proto(struct sassy_device *sdev)
 	proto->ctrl_ops = consensus_ops;
 	proto->name = "consensus";
 	proto->priv = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
-	proto->priv->state = LE_READY; 
-	
+	cpriv = (struct consensus_priv *)proto->priv;
+	cpriv->state = LE_READY; 
+
 	return proto;
 error:
 	sassy_dbg("Error in %s", __FUNCTION__);
