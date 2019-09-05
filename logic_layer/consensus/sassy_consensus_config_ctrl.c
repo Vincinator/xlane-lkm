@@ -66,7 +66,7 @@ static ssize_t sassy_le_config_write(struct file *file,
 			sassy_dbg("cmin: %d\n", tmp);
 			state = 3;
 		} else if (state == 3){
-			cmin_tmp = tmp;
+			cmax_tmp = tmp;
 			sassy_dbg("cmax: %d\n", tmp);
 			break;
 		}
