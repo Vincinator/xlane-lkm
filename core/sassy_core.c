@@ -104,7 +104,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 
 	sproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
 
-	if(lesproto != NULL)
+	if(consensus_is_alive(sdev))
 		lesproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
 
 	if (sdev->ts_state == SASSY_TS_RUNNING)

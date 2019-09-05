@@ -27,6 +27,7 @@
 static struct task_struct *heartbeat_task;
 
 static inline bool
+
 sassy_pacemaker_is_alive(struct pminfo *spminfo)
 {
 	return spminfo->state == SASSY_PM_EMITTING;
@@ -338,7 +339,7 @@ int sassy_pm_start_timer(void *data)
 
 	spminfo->pm_timer.function = &sassy_pm_timer;
 
-	if(sdev->le_proto != NULL){
+	if(consensus_is_alive(sdev)){
 		sdev->le_proto->ctrl_ops.init(sdev);
 		sdev->le_proto->ctrl_ops.start(sdev);
 	}

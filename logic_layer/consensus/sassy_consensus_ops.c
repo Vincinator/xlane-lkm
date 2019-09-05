@@ -35,7 +35,10 @@ int consensus_start(struct sassy_device *sdev)
 	int err;
 	struct consensus_priv *priv = (struct consensus_priv *) sdev->le_proto->priv;
 
-	priv->state = LE_RUNNING; 
+	if(consensus_is_alive(sdev)){
+		sassy_dbg("Consensus is already running!\n");
+		return 0;
+	}
 
 	write_log(&sdev->le_logger, START_CONSENSUS, rdtsc());
 
@@ -44,6 +47,8 @@ int consensus_start(struct sassy_device *sdev)
 
 	if (err)
 		goto error;
+
+	le_state_transition_to(sdev, LE_RUNNING);
 
 	return 0;
 
@@ -57,10 +62,7 @@ int consensus_stop(struct sassy_device *sdev)
 	struct consensus_priv *priv;	
 
 
-	if(!sdev)
-		return 0;
-
-	if(!sdev->le_proto)
+	if(!consensus_is_alive(sdev))
 		return 0;
 
 	priv = (struct consensus_priv *)sdev->le_proto->priv;
@@ -82,7 +84,7 @@ int consensus_stop(struct sassy_device *sdev)
 			break;
 	}
 
-	priv->state = LE_READY; 
+	le_state_transition_to(sdev, LE_READY);
 
 	return 0;
 }
@@ -90,6 +92,8 @@ int consensus_stop(struct sassy_device *sdev)
 int consensus_clean(struct sassy_device *sdev)
 {
 	sassy_dbg("consensus clean\n");
+	le_state_transition_to(sdev, LE_UNINIT);
+
 	return 0;
 }
 
@@ -116,7 +120,7 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		(const struct consensus_priv *)sproto->priv;
 	int remote_lid, rcluster_id;
 
-	if(priv->state != LE_RUNNING)
+	if(!consensus_is_alive(sdev))
 		return 0;
 
 	if (sdev->verbose >= 3)
@@ -147,6 +151,9 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 int consensus_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 	       uint64_t ts)
 {
+	if(consensus_is_alive(sdev))
+		return 0;
+
 	if (sdev->verbose >= 3)
 		sassy_dbg("consensus optimistical timestamp received.\n");
 }

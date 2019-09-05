@@ -40,6 +40,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	 * 
 	 * Option 1: start the process over and retry as follower
 	 * Option 2: become Leader without majority (interim Leader)
+	 * Option 3: Unreachable, retry only manually - shutdown leader election.
 	 *
 	 */
 	if(priv->c_retries >= CANDIDATURE_RETRY_LIMIT){
@@ -49,10 +50,14 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 			rdtsc());
 
 		// (Option 1)
-		node_transition(sdev, FOLLOWER);
+		//node_transition(sdev, FOLLOWER);
 
 		// (Option 2)
 		// node_transition(sdev, LEADER);
+
+		// (Option 3)
+		le_state_transition_to(sdev, LE_READY);
+
 
 		return HRTIMER_NORESTART;
 	}

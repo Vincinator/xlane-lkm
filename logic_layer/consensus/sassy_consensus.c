@@ -52,6 +52,22 @@ const char *opcode_string(enum le_opcode opcode)
 	}
 }
 
+int consensus_is_alive(struct sassy_device *sdev)
+{
+	struct consensus_priv *priv;
+
+	if(!sdev || !sdev->le_proto)
+		return 0;
+
+	priv = (struct consensus_priv *)sdev->le_proto->priv;
+
+	if(priv->state != LE_RUNNING)
+		return 0;
+
+	return 1;
+}
+EXPORT_SYMBOL(consensus_is_alive);
+
 void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm)
 {
 
