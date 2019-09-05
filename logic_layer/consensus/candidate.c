@@ -199,7 +199,6 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 		if(param1 > priv->term){
 			node_transition(sdev, FOLLOWER);
 			reply_vote(sdev, remote_lid, rcluster_id, param1, param2);
-			reset_ftimeout(sdev);
 		}
 
 		break;		
