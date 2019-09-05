@@ -47,13 +47,15 @@ int echo_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	uint64_t tx_ts;
 	enum echo_opcode opcode;
 
+	struct sassy_echo_priv *epriv = (struct sassy_echo_priv *)sdev->proto->priv;
+
 	tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 	
 	switch(opcode){
 		case SASSY_PING:
 			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
-			write_log(&echo_priv->echo_logger, LOG_ECHO_RX_PING, rdtsc());
+			write_log(&epriv->echo_logger, LOG_ECHO_RX_PING, rdtsc());
 
 			// reply back to sender
 			setup_echo_msg(&sdev->pminfo, remote_lid, tx_ts, SASSY_PONG);
@@ -61,7 +63,7 @@ int echo_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		case SASSY_PONG:
 			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
 
-			write_log(&echo_priv->echo_logger, LOG_ECHO_PINGPONG_LATENCY, rdtsc() - tx_ts);
+			write_log(&epriv->echo_logger, LOG_ECHO_PINGPONG_LATENCY, rdtsc() - tx_ts);
 
 			break;
 		default:
