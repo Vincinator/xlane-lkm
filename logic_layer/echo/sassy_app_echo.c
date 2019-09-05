@@ -46,7 +46,7 @@ struct sassy_protocol *get_echo_proto(struct sassy_device *sdev)
 	proto->proto_type = SASSY_PROTO_ECHO;
 	proto->ctrl_ops = echo_ops;
 	proto->name = "echo";
-	proto->priv = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
+	proto->priv = kmalloc(sizeof(struct sassy_echo_priv), GFP_KERNEL);
 
 	if(!proto->priv)
 		goto error;
