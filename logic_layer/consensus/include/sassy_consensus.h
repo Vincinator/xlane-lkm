@@ -84,6 +84,8 @@ struct consensus_priv {
 
 	enum w_state warmup_state;
 
+	int warms;
+
 	u32 leader_id;
 
 	u32 node_id;
