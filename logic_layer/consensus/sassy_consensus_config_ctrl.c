@@ -7,6 +7,8 @@
 #include <sassy/logger.h>
 #include <sassy/sassy_ts.h>
 
+#include "include/sassy_consensus.h"
+
 static ssize_t sassy_le_config_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
 				   loff_t *data)
