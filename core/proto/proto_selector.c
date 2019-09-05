@@ -184,7 +184,7 @@ static ssize_t proto_le_selector_write(struct file *file,
 		case 0: // Stop (if initialized)
 			if(!consensus_is_alive(sdev)){
 				sassy_dbg("Leader Election is not running\n");
-				return 0;
+				break;
 			}
 			sdev->le_proto->ctrl_ops.stop(sdev);
 
@@ -192,17 +192,16 @@ static ssize_t proto_le_selector_write(struct file *file,
 		case 1: // Start (if initialized)
 			if(consensus_is_alive(sdev)){
 				sassy_dbg("Leader Election is already running\n");
-				return 0;
+				break;
 			}
-			
+
 			sdev->le_proto->ctrl_ops.start(sdev);
 			
 			break;
 		case 2: // Reset data
-			if(consensus_is_alive(sdev)){
+			if(consensus_is_alive(sdev))
 				sdev->le_proto->ctrl_ops.stop(sdev);
-
-			}
+			
 			sdev->le_proto->ctrl_ops.clean(sdev);
 
 			break;
