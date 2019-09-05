@@ -234,7 +234,7 @@ static int proto_le_selector_show(struct seq_file *m, void *v)
 		return -1;
 	}
 
-	seq_printf(m, "State is %s\n", le_state_name());
+	seq_printf(m, "State is %s\n", le_state_name(sdev));
 
 	return 0;
 }
