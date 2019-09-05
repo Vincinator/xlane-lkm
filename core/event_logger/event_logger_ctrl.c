@@ -15,8 +15,8 @@ static ssize_t sassy_event_ctrl_write(struct file *file,
 				   loff_t *data)
 {
 	int err;
-	struct logger *slog =
-		(struct logger *)PDE_DATA(file_inode(file));
+	struct sassy_logger *slog =
+		(struct sassy_logger *)PDE_DATA(file_inode(file));
 	char kernel_buffer[SASSY_NUMBUF];
 	int logging_state = -1;
 	size_t size;
