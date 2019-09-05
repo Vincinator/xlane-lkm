@@ -33,6 +33,7 @@ int consensus_init_payload(struct sassy_payload *payload)
 int consensus_start(struct sassy_device *sdev)
 {
 	int err;
+	proto->priv->state = LE_RUNNING; 
 
 	write_log(&sdev->le_logger, START_CONSENSUS, rdtsc());
 
@@ -52,6 +53,7 @@ error:
 int consensus_stop(struct sassy_device *sdev)
 {
 	struct consensus_priv *priv;	
+
 
 	if(!sdev)
 		return 0;
@@ -77,6 +79,8 @@ int consensus_stop(struct sassy_device *sdev)
 			stop_leader(sdev);
 			break;
 	}
+
+	priv->state = LE_READY; 
 
 	return 0;
 }
@@ -109,6 +113,9 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	const struct consensus_priv *priv =
 		(const struct consensus_priv *)sproto->priv;
 	int remote_lid, rcluster_id;
+
+	if(priv->state != LE_RUNNING)
+		return 0;
 
 	if (sdev->verbose >= 3)
 			sassy_dbg("consensus payload received\n");

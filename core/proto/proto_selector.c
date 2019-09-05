@@ -183,7 +183,10 @@ static ssize_t proto_le_selector_write(struct file *file,
 
 	switch(new_protocol){
 		case 0:
-			__clear_previous_le_proto(sdev);
+
+			if(sdev->le_proto && sdev->le_proto->ctrl_ops)
+				sdev->le_proto->ctrl_ops.stop(sdev);
+
 			break;
 		case 1:
 			__clear_previous_le_proto(sdev);
@@ -191,6 +194,10 @@ static ssize_t proto_le_selector_write(struct file *file,
 			sdev->le_proto = get_consensus_proto(sdev);
 			sdev->le_proto->ctrl_ops.init(sdev);
 			break;
+		case 2:
+			__clear_previous_le_proto(sdev);
+			break;
+
 		default:
 			sassy_error("Invalid Input.\n");
 			sassy_error("Valid inputs are:\n");

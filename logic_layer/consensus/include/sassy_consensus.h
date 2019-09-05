@@ -15,6 +15,13 @@
 #define MIN_CTIMEOUT_NS 20000000
 #define MAX_CTIMEOUT_NS 40000000
 
+
+enum le_state {
+	LE_RUNNING = 0,
+	LE_READY = 1,
+	LE_UNINIT = 2,
+};
+
 /*
  * Every node starts as follower.
  *
@@ -66,6 +73,8 @@ struct consensus_priv {
 	struct sassy_device *sdev;
 
 	enum node_state nstate;
+
+	enum le_state state;
 
 	u32 leader_id;
 

@@ -76,10 +76,22 @@ ktime_t get_rnd_timeout_plus(int plus)
 			prandom_u32_max(MAX_FTIMEOUT_NS - (plus + MIN_FTIMEOUT_NS)));
 }
 
+ktime_t get_rnd_timeout_candidate_plus(int plus)
+{
+	return ktime_set(0, (plus + MIN_CTIMEOUT_NS) +
+			prandom_u32_max(MAX_CTIMEOUT_NS - (plus + MIN_CTIMEOUT_NS)));
+}
+
 ktime_t get_rnd_timeout(void)
 {
 	return ktime_set(0, MIN_FTIMEOUT_NS +
 			prandom_u32_max(MAX_FTIMEOUT_NS - MIN_FTIMEOUT_NS));
+}
+
+ktime_t get_rnd_timeout_candidate(void)
+{
+	return ktime_set(0, MIN_CTIMEOUT_NS +
+			prandom_u32_max(MAX_CTIMEOUT_NS - MIN_CTIMEOUT_NS));
 }
 
 void set_le_term(unsigned char *pkt, u32 p1)
@@ -138,7 +150,8 @@ struct sassy_protocol *get_consensus_proto(struct sassy_device *sdev)
 	proto->ctrl_ops = consensus_ops;
 	proto->name = "consensus";
 	proto->priv = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
-
+	proto->priv->state = LE_READY; 
+	
 	return proto;
 error:
 	sassy_dbg("Error in %s", __FUNCTION__);

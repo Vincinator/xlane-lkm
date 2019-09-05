@@ -185,6 +185,7 @@ static int init_logger_out(struct sassy_logger *slog)
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/%s",
 		 slog->ifindex, slog->name);
 
+
 	slog->proc_dir =
 		proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL,
 				 &sassy_log_ops,
@@ -230,7 +231,9 @@ int init_logger(struct sassy_logger *slog)
 
 	slog->current_entries = 0;
 
-	init_logger_out(slog);
+	if(!slog->proc_dir)
+		init_logger_out(slog);
+	
 	init_logger_ctrl(slog);
 
 	logger_state_transition_to(slog, LOGGER_READY);
