@@ -41,12 +41,6 @@
 		printk(KERN_ERR LOG_LE_PREFIX format, ##arg);	\
 })
 
-int init_logger(struct logger *slog);
 
-int sassy_log_stop(struct logger *slog);
-int sassy_log_start(struct logger *slog);
-int sassy_log_reset(struct logger *slog);
-
-const char *logger_state_string(enum logger_state state);
 
 #endif  /* _SASSY_LOGGER_H_ */

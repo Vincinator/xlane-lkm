@@ -454,5 +454,14 @@ void init_log_ctrl_base(struct sassy_device *sdev);
 void init_logger_ctrl(struct sassy_logger *slog);
 
 
+int init_logger(struct sassy_logger *slog);
+
+int sassy_log_stop(struct sassy_logger *slog);
+int sassy_log_start(struct sassy_logger *slog);
+int sassy_log_reset(struct sassy_logger *slog);
+
+const char *logger_state_string(enum logger_state state);
+
+
 
 #endif /* _SASSY_H_ */
