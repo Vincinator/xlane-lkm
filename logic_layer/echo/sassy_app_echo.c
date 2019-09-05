@@ -16,8 +16,6 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PROTO][ECHO]"
 
-static struct sassy_echo_priv echo_priv;
-
 static const struct sassy_protocol_ctrl_ops echo_ops = {
 	.init = echo_init,
 	.start = echo_start,
@@ -39,7 +37,7 @@ static int __init sassy_app_echo_init(void)
 struct sassy_protocol *get_echo_proto(struct sassy_device *sdev)
 {
 	struct sassy_protocol *proto;
-
+	struct sassy_echo_priv *epriv; 
 	proto = kmalloc(sizeof(struct sassy_protocol), GFP_KERNEL);
 
 	if(!proto)
@@ -48,11 +46,16 @@ struct sassy_protocol *get_echo_proto(struct sassy_device *sdev)
 	proto->proto_type = SASSY_PROTO_ECHO;
 	proto->ctrl_ops = echo_ops;
 	proto->name = "echo";
-	proto->priv = (void *)&echo_priv;
+	proto->priv = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
 
-    strncpy(proto->priv->echo_logger.name, "echo", MAX_LOGGER_NAME);
-    proto->priv->echo_logger.ifindex = sdev->ifindex;
-    init_logger(&proto->priv->echo_logger);
+	if(!proto->priv)
+		goto error;
+
+	epriv = (struct sassy_echo_priv *)proto->priv;
+
+    strncpy(epriv->echo_logger.name, "echo", MAX_LOGGER_NAME);
+    epriv->echo_logger.ifindex = sdev->ifindex;
+    init_logger(&epriv->echo_logger);
 
 	return proto;
 error:
