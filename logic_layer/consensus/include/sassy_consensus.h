@@ -109,6 +109,9 @@ struct consensus_priv {
 	int ct_min;
 	int ct_max;
 
+	struct proc_dir_entry *le_config_procfs;
+
+
 
 	/* number of followers voted for this node */
 	int votes;
