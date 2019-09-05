@@ -26,7 +26,6 @@ char *_le_state_name(enum le_state state)
 	default: return "UNKNOWN STATE";
 	}
 }
-EXPORT_SYMBOL(le_state_name);
 
 char *le_state_name(struct sassy_device *sdev)
 {
