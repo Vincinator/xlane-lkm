@@ -23,13 +23,13 @@ const char *logger_state_string(enum logger_state state)
 }
 
 
-void logger_state_transition_to(struct logger *slog,
+void logger_state_transition_to(struct sassy_logger *slog,
 			    enum logger_state state)
 {
 	slog->state = state;
 }
 
-int write_log(struct logger *slog,
+int write_log(struct sassy_logger *slog,
 			  int type, uint64_t tcs)
 {
 	struct event_logs *logs;
@@ -56,7 +56,7 @@ int write_log(struct logger *slog,
 }
 EXPORT_SYMBOL(write_log);
 
-int sassy_log_stop(struct logger *slog)
+int sassy_log_stop(struct sassy_logger *slog)
 {
 	int err;
 
@@ -78,7 +78,7 @@ error:
 	return -EPERM;
 }
 
-int sassy_log_start(struct logger *slog)
+int sassy_log_start(struct sassy_logger *slog)
 {
 	int err;
 
@@ -100,7 +100,7 @@ error:
 	return -EPERM;
 }
 
-int sassy_log_reset(struct logger *slog)
+int sassy_log_reset(struct sassy_logger *slog)
 {
 	int err;
 	int i;
@@ -174,7 +174,7 @@ static const struct file_operations sassy_log_ops = {
 };
 
 
-static int init_logger_out(struct logger *slog)
+static int init_logger_out(struct sassy_logger *slog)
 {
 	int err;
 	char name_buf[MAX_SASSY_PROC_NAME];
@@ -207,7 +207,7 @@ error:
 }
 
 
-int init_logger(struct logger *slog) 
+int init_logger(struct sassy_logger *slog) 
 {
 	int err;
 	int i;

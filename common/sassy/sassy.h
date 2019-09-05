@@ -145,7 +145,7 @@ struct event_logs {
 
 };
 
-struct logger {
+struct sassy_logger {
 
 	int ifindex; 
 
@@ -301,7 +301,7 @@ struct sassy_device {
 	struct sassy_protocol *le_proto;
 	struct sassy_protocol *proto;
 
-	struct logger le_logger;
+	struct sassy_logger le_logger;
 
 };
 
@@ -432,7 +432,7 @@ void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev);
 void init_log_ctrl_interfaces(struct sassy_device *sdev);
 int sassy_clean_timestamping(struct sassy_device *sdev);
 
-int write_log(struct logger *slog, int type, uint64_t tcs);
+int write_log(struct sassy_logger *slog, int type, uint64_t tcs);
 
 struct sassy_device *get_sdev(int devid);
 
@@ -451,7 +451,7 @@ void set_le_term(unsigned char *pkt, u32 term);
 int compare_mac(unsigned char *m1, unsigned char *m2);
 
 void init_log_ctrl_base(struct sassy_device *sdev);
-void init_logger_ctrl(struct logger *slog);
+void init_logger_ctrl(struct sassy_logger *slog);
 
 
 
