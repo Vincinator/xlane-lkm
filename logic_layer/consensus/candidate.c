@@ -9,6 +9,7 @@
 
 #include <sassy/payload_helper.h>
 
+#include "include/follower.h"
 #include "include/candidate.h"
 #include "include/sassy_consensus.h"
 
