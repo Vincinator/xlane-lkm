@@ -120,6 +120,7 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		(struct consensus_priv *)sproto->priv;
 	int remote_lid, rcluster_id;
 	int err;
+	struct pminfo *spminfo = &sdev->pminfo;
 
 	if(!consensus_is_alive(sdev))
 		return 0;
