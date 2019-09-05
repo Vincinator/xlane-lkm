@@ -78,8 +78,8 @@ static ssize_t sassy_le_config_write(struct file *file,
 		priv->ct_min = cmin_tmp;
 		priv->ct_max = cmax_tmp;
 	} else {
-		sassy_error("Invalid Ranges! Must assure that fmin < fmac and cmin < cmax \n");
-		sassy_error("input order: fmin, fmac, cmin, cmax \n");
+		sassy_error("Invalid Ranges! Must assure that fmin < fmax and cmin < cmax \n");
+		sassy_error("input order: fmin, fmax, cmin, cmax \n");
 	}
 
 	return count;
@@ -97,7 +97,7 @@ static int sassy_le_config_show(struct seq_file *m, void *v)
 	if (!priv)
 		return -ENODEV;
 
-	seq_printf(m, "fmin: %dms, fmax: %dms, cmin: %dms, cmax: %dms \n",priv->fmin, priv->fmax, priv->cmin, priv->cmax);
+	seq_printf(m, "fmin: %dms, fmax: %dms, cmin: %dms, cmax: %dms \n",priv->ft_min, priv->ft_max, priv->ct_min, priv->ct_max);
 
 	return 0;
 }
