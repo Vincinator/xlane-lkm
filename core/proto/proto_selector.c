@@ -178,24 +178,36 @@ static ssize_t proto_le_selector_write(struct file *file,
 
 	if (sdev->pminfo.state == SASSY_PM_EMITTING) {
 		sassy_error("Stop pacemaker first!\n");
-		return count;
+		return -ENODEV;
 	}
 
 	switch(new_protocol){
-		case 0:
-
-			if(sdev->le_proto && sdev->le_proto->ctrl_ops)
-				sdev->le_proto->ctrl_ops.stop(sdev);
+		case 0: // Stop (if initialized)
+			if(!sdev->le_proto || !sdev->le_proto->ctrl_ops){
+				sassy_error("Leader Election Protocol is not initialized!\
+						write 2 in this file to initialize\n");
+				return -ENODEV;
+			}
+			
+			sdev->le_proto->ctrl_ops.stop(sdev);
 
 			break;
-		case 1:
-			__clear_previous_le_proto(sdev);
+		case 1: // Start (if initialized)
+			if(!sdev->le_proto || !sdev->le_proto->ctrl_ops){
+				sassy_error("Leader Election Protocol is not initialized!\
+						write 2 in this file to initialize\n");
+				return -ENODEV;
+			}
+			
+			sdev->le_proto->ctrl_ops.start(sdev);
+			
+			break;
+		case 2: // Reset 
+			__clear_previous_le_proto(sdev); // clears only if it exits
 			// Initialize leader election protocol
 			sdev->le_proto = get_consensus_proto(sdev);
 			sdev->le_proto->ctrl_ops.init(sdev);
-			break;
-		case 2:
-			__clear_previous_le_proto(sdev);
+			sdev->le_proto->ctrl_ops.stop(sdev);
 			break;
 
 		default:
