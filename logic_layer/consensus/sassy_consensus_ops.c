@@ -34,8 +34,6 @@ int consensus_init(struct sassy_device *sdev)
 	priv->ct_min = MIN_CTIMEOUT_NS;
 	priv->ct_max = MAX_CTIMEOUT_NS;
 
-	init_le_config_ctrl_interfaces(sdev);
-
 	return 0;
 }
 

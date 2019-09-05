@@ -151,6 +151,8 @@ struct sassy_protocol *get_consensus_proto(struct sassy_device *sdev)
 	proto->priv = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
 	cpriv = (struct consensus_priv *)proto->priv;
 	cpriv->state = LE_UNINIT;
+	
+	init_le_config_ctrl_interfaces(sdev);
 
 	return proto;
 error:
