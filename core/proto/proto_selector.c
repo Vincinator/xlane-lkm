@@ -183,7 +183,7 @@ static ssize_t proto_le_selector_write(struct file *file,
 
 	switch(new_protocol){
 		case 0: // Stop (if initialized)
-			if(!sdev->le_proto || !sdev->le_proto->ctrl_ops){
+			if(!sdev->le_proto){
 				sassy_error("Leader Election Protocol is not initialized!\
 						write 2 in this file to initialize\n");
 				return -ENODEV;
@@ -193,7 +193,7 @@ static ssize_t proto_le_selector_write(struct file *file,
 
 			break;
 		case 1: // Start (if initialized)
-			if(!sdev->le_proto || !sdev->le_proto->ctrl_ops){
+			if(!sdev->le_proto){
 				sassy_error("Leader Election Protocol is not initialized!\
 						write 2 in this file to initialize\n");
 				return -ENODEV;
