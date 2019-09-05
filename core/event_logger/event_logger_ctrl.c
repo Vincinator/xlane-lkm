@@ -63,8 +63,8 @@ error:
 
 static int sassy_event_ctrl_show(struct seq_file *m, void *v)
 {
-	struct logger *slog =
-		(struct logger *)m->private;
+	struct sassy_logger *slog =
+		(struct sassy_logger *)m->private;
 
 	if (!slog)
 		return -ENODEV;
@@ -90,7 +90,7 @@ static const struct file_operations sassy_event_ctrl_ops = {
 	.release = single_release,
 };
 
-void init_logger_ctrl(struct logger *slog)
+void init_logger_ctrl(struct sassy_logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
