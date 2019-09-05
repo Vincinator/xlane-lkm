@@ -134,3 +134,5 @@ void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum 
 void log_le_vote(int verbose, enum node_state nstate, uint64_t ts, int term, int cur_votes);
 const char *nstate_string(enum node_state state);
 void le_state_transition_to(struct sassy_device *sdev, enum le_state state);
+
+void init_le_config_ctrl_interfaces(struct sassy_device *sdev, struct consensus_priv *priv);
