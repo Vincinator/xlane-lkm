@@ -33,7 +33,9 @@ int consensus_init_payload(struct sassy_payload *payload)
 int consensus_start(struct sassy_device *sdev)
 {
 	int err;
-	proto->priv->state = LE_RUNNING; 
+	struct consensus_priv *priv = (struct consensus_priv *) sdev->le_proto->priv;
+
+	priv->state = LE_RUNNING; 
 
 	write_log(&sdev->le_logger, START_CONSENSUS, rdtsc());
 
