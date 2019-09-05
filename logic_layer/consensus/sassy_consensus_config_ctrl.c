@@ -24,6 +24,7 @@ static ssize_t sassy_le_config_write(struct file *file,
 	static const char delimiters[] = " ,;()";
 	int state = 0;
 	int fmin_tmp, fmax_tmp, cmin_tmp, cmax_tmp;
+	int tmp;
 
 	if (!priv)
 		return -ENODEV;
@@ -72,10 +73,10 @@ static ssize_t sassy_le_config_write(struct file *file,
 	}
 
 	if(fmin_tmp < fmax_tmp && cmin_tmp < cmax_tmp){
-		priv->fmin = fmin_tmp;
-		priv->fmax = fmax_tmp;
-		priv->cmin = cmin_tmp;
-		priv->cmax = cmax_tmp;
+		priv->ft_min = fmin_tmp;
+		priv->ft_max = fmax_tmp;
+		priv->ct_min = cmin_tmp;
+		priv->ct_max = cmax_tmp;
 	} else {
 		sassy_error("Invalid Ranges! Must assure that fmin < fmac and cmin < cmax \n");
 		sassy_error("input order: fmin, fmac, cmin, cmax \n");
