@@ -33,7 +33,7 @@ char *le_state_name(struct sassy_device *sdev)
 	struct consensus_priv *cpriv;
 
 	if(!sdev)
-		return "NULL"
+		return "NULL";
 
 	cpriv = (struct consensus_priv *) sdev->le_proto->priv;
 
