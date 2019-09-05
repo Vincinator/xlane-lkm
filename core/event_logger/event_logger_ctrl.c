@@ -2,7 +2,10 @@
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
+#include <linux/module.h>
+#include <linux/init.h>
 
+#include <linux/kernel.h>
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
 #include <sassy/sassy_ts.h>
