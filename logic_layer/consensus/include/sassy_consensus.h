@@ -17,7 +17,7 @@
 
 
 
-enum le_state {
+enum w_state {
 	WARMED_UP = 0,
 	WARMING_UP = 1,
 };
