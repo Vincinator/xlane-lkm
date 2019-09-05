@@ -116,9 +116,10 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		    void *payload)
 {
 	struct sassy_protocol *sproto = sdev->le_proto;
-	const struct consensus_priv *priv =
-		(const struct consensus_priv *)sproto->priv;
+	struct consensus_priv *priv =
+		(struct consensus_priv *)sproto->priv;
 	int remote_lid, rcluster_id;
+	int err;
 
 	if(!consensus_is_alive(sdev))
 		return 0;
