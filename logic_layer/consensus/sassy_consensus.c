@@ -140,7 +140,7 @@ static int __init sassy_consensus_init(void)
 struct sassy_protocol *get_consensus_proto(struct sassy_device *sdev)
 {
 	struct sassy_protocol *proto;
-	struct consensus_priov *cpriv;
+	struct consensus_priv *cpriv;
 
 	proto = kmalloc(sizeof(struct sassy_protocol), GFP_KERNEL);
 
