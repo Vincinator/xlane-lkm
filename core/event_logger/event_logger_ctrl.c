@@ -102,7 +102,7 @@ void init_logger_ctrl(struct logger *slog)
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl_%s",
 		 slog->ifindex, slog->name);
 
-	proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL, &sassy_event_ctrl_ops, slog->logs);
+	proc_create_data(name_buf, S_IRWXU | S_IRWX, NULL, &sassy_event_ctrl_ops, slog->logs);
 
 	return 0;
 }

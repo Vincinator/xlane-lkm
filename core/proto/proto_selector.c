@@ -131,13 +131,13 @@ static const struct file_operations proto_selector_ops = {
 
 static void __clear_previous_le_proto(struct sassy_device *sdev)
 {
-	if (sdev->le_proto) {
+	if (sdev->le_proto && sdev->pminfo.state != SASSY_PM_EMITTING) {
 		sassy_dbg("Stop and Clean le protocol\n");
 		sdev->le_proto->ctrl_ops.stop(sdev);
 		sdev->le_proto->ctrl_ops.clean(sdev);
 		kfree(sdev->le_proto); // free old le protocol data
 	} else {
-		sassy_dbg("Leader election protocol was not loaded\n");
+		sassy_dbg("Leader election protocol was not loaded, or PM is emitting! \n");
 	}
 
 }

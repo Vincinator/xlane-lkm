@@ -58,15 +58,35 @@ EXPORT_SYMBOL(write_log);
 
 int sassy_log_stop(struct logger *slog)
 {
-	if (slog->state == LOGGER_UNINIT)
-		return -EPERM;
+	int err;
+
+	if(!slog) {
+		sassy_error("logger is not initialized, can not stop logger.\n");
+		err = -EPERM;
+		goto error;
+	}
+
+	if (slog->state == LOGGER_UNINIT){
+		err = -EPERM;
+		goto error;
+	}
 
 	logger_state_transition_to(slog, LOGGER_READY);
 	return 0;
+
+error:
+	return -EPERM;
 }
 
 int sassy_log_start(struct logger *slog)
 {
+	int err;
+
+	if(!slog) {
+		sassy_error("logger is not initialized, can not start logger.\n");
+		err = -EPERM;
+		goto error;
+	}
 
 	if (slog->state != LOGGER_READY) {
 		sassy_error("logger is not in ready state. %s\n", __FUNCTION__);
@@ -84,6 +104,12 @@ int sassy_log_reset(struct logger *slog)
 {
 	int err;
 	int i;
+
+	if(!slog || !slog->logs ) {
+		sassy_error("logger is not initialized properly! Can not clear logs.\n");
+		err = -EPERM;
+		goto error;
+	}
 
 	if (slog->state == LOGGER_RUNNING) {
 		sassy_error(
@@ -190,7 +216,7 @@ int init_logger(struct logger *slog)
 
 	if (!slog) {
 		err = -EINVAL;
-		sassy_error(" sassy device is NULL %s\n", __FUNCTION__);
+		sassy_error(" logger device is NULL %s\n", __FUNCTION__);
 		goto error;
 	}
 
