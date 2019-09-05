@@ -142,6 +142,12 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 			priv->warms += 1;
 		}
 
+		sassy_log_le("%s, %llu, %d: Received Message from node %d \n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			priv->term,
+			rcluster_id);
+
 		// Do not start Leader Election until all targets have send a message to this node.
 		if(priv->warms != spminfo->num_of_targets)
 			return 0;
@@ -151,6 +157,11 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 
 		// Transition to Follower State
 		err = node_transition(sdev, FOLLOWER);
+
+		sassy_log_le("%s, %llu, %d: Warmup done! \n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			priv->term);
 		
 		if(err)
 			return err;
