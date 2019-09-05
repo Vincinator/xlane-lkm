@@ -196,7 +196,7 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 	case NOMI:
 
 		// Nomination from Node with higher term - cancel own candidature and vote for higher term
-		if(param > priv->term){
+		if(param1 > priv->term){
 			err = node_transition(sdev, FOLLOWER);
 			reply_vote(sdev, remote_lid, rcluster_id, param1, param2);
 			reset_ftimeout(sdev);
