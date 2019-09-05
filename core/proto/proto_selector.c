@@ -62,7 +62,7 @@ static ssize_t proto_selector_write(struct file *file,
 		return err;
 	}
 
-	sproto = sassy_find_protocol_by_id((new_protocol & 0xFF));
+	sproto = generate_protocol(sdev, (new_protocol & 0xFF));
 
 	if (!sproto) {
 		sassy_error("Could not find protocol\n");
@@ -86,7 +86,7 @@ static ssize_t proto_selector_write(struct file *file,
 	sdev->proto->ctrl_ops.init(sdev);
 
 	// Initialize leader election protocol implicitly
-	sdev->le_proto = get_consensus_proto();
+	sdev->le_proto = get_consensus_proto(sdev);
 	sdev->le_proto->ctrl_ops.init(sdev);
 
 	return count;
@@ -188,7 +188,7 @@ static ssize_t proto_le_selector_write(struct file *file,
 		case 1:
 			__clear_previous_le_proto(sdev);
 			// Initialize leader election protocol
-			sdev->le_proto = get_consensus_proto();
+			sdev->le_proto = get_consensus_proto(sdev);
 			sdev->le_proto->ctrl_ops.init(sdev);
 			break;
 		default:

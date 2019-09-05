@@ -36,7 +36,7 @@ static int __init sassy_app_echo_init(void)
 	return 0;
 }
 
-struct sassy_protocol *get_echo_proto(void)
+struct sassy_protocol *get_echo_proto(struct sassy_device *sdev)
 {
 	struct sassy_protocol *proto;
 
@@ -51,7 +51,7 @@ struct sassy_protocol *get_echo_proto(void)
 	proto->priv = (void *)&echo_priv;
 
     strncpy(proto->priv->echo_logger.name, "echo", MAX_LOGGER_NAME);
-    proto->priv->echo_logger.ifindex = ifindex;
+    proto->priv->echo_logger.ifindex = sdev->ifindex;
     init_logger(&proto->priv->echo_logger);
 
 	return proto;

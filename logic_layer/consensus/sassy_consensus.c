@@ -125,7 +125,7 @@ static int __init sassy_consensus_init(void)
 	return 0;
 }
 
-struct sassy_protocol *get_consensus_proto(void)
+struct sassy_protocol *get_consensus_proto(struct sassy_device *sdev)
 {
 	struct sassy_protocol *proto;
 

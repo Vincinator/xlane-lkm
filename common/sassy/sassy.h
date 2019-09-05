@@ -392,7 +392,7 @@ int sassy_remove_protocol(struct sassy_protocol *proto);
 
 const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type);
 
-struct sassy_protocol *sassy_find_protocol_by_id(u8 protocol_id);
+struct sassy_protocol *generate_protocol(struct sassy_device *sdev, u8 protocol_id);
 
 void clean_sassy_ctrl_interfaces(struct sassy_device *sdev);
 void init_sassy_ctrl_interfaces(struct sassy_device *sdev);
@@ -432,9 +432,9 @@ int send_pkts(struct sassy_device *sdev, struct sk_buff **skbs, int num_pkts);
 
 int is_ip_local(struct net_device *dev,	u32 ip_addr);
 
-struct sassy_protocol *get_consensus_proto(void);
-struct sassy_protocol *get_fd_proto(void);
-struct sassy_protocol *get_echo_proto(void);
+struct sassy_protocol *get_consensus_proto(struct sassy_device *sdev);
+struct sassy_protocol *get_fd_proto(struct sassy_device *sdev);
+struct sassy_protocol *get_echo_proto(struct sassy_device *sdev);
 
 void get_cluster_ids(struct sassy_device *sdev, unsigned char *remote_mac, int *lid, int *cid);
 void set_le_noop(struct sassy_device *sdev, unsigned char *pkt);
