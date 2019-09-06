@@ -231,9 +231,8 @@ int init_logger(struct sassy_logger *slog)
 
 	slog->current_entries = 0;
 
-	if(!slog->proc_dir)
-		init_logger_out(slog);
-	
+	init_logger_out(slog);
+
 	init_logger_ctrl(slog);
 
 	logger_state_transition_to(slog, LOGGER_READY);
@@ -241,3 +240,16 @@ int init_logger(struct sassy_logger *slog)
 error:
 	return err;
 }
+
+void remove_logger_ifaces(struct sassy_logger *slog)
+{
+	char name_buf[MAX_SASSY_PROC_NAME];
+
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/%s", slog->ifindex, slog->name);
+	
+	remove_proc_entry(name_buf, NULL);
+
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl_%s", slog->ifindex, slog->name);
+	remove_proc_entry(name_buf, NULL);
+}
+EXPORT_SYMBOL(remove_logger_ifaces)

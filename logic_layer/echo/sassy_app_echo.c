@@ -55,7 +55,6 @@ struct sassy_protocol *get_echo_proto(struct sassy_device *sdev)
 
     strncpy(epriv->echo_logger.name, "echo", MAX_LOGGER_NAME);
     epriv->echo_logger.ifindex = sdev->ifindex;
-    init_logger(&epriv->echo_logger);
 
 	return proto;
 error:

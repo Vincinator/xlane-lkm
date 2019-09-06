@@ -254,6 +254,8 @@ static int sassy_core_remove_nic(int sassy_id)
 
 	remove_proto_selector(score->sdevices[sassy_id]);
 
+	remove_logger_ifaces(score->sdevices[sassy_id]->le_logger);
+
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d",
 		 score->sdevices[sassy_id]->ifindex);
 	proc_mkdir(name_buf, NULL);
