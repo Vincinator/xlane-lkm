@@ -98,7 +98,7 @@ static int sassy_le_config_show(struct seq_file *m, void *v)
 	if (!priv)
 		return -ENODEV;
 
-	seq_printf(m, "fmin,fmax,cmin,cmax (in ns) \n");
+	//seq_printf(m, "fmin,fmax,cmin,cmax (in ns) \n");
 	seq_printf(m, "%d,%d,%d,%d\n",priv->ft_min, priv->ft_max, priv->ct_min, priv->ct_max);
 
 	return 0;
