@@ -6,9 +6,11 @@
 
 int echo_init(struct sassy_device *sdev)
 {
+	struct sassy_echo_priv *epriv = (struct sassy_echo_priv *)sdev->proto->priv;
+
 	sassy_dbg("echo init");
 
-    init_logger(&sdev->le_logger);
+    init_logger(&epriv->echo_logger);
 
 	return 0;
 }

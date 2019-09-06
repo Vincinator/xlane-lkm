@@ -63,7 +63,7 @@ int consensus_is_alive(struct sassy_device *sdev)
 {
 	struct consensus_priv *priv;
 
-	if(!sdev || !sdev->le_proto)
+	if(!sdev->le_proto)
 		return 0;
 
 	priv = (struct consensus_priv *)sdev->le_proto->priv;

@@ -97,12 +97,13 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	if (unlikely(protocol_id < 0 || protocol_id > MAX_PROTOCOLS)) {
 		return;
 	}
+	
+    if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
+    	return;
 
 	sproto = sdev->proto;
 	lesproto = sdev->le_proto;
 
-    if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
-    	return;
 
 	if (unlikely(!sproto || !lesproto))
 		return;
