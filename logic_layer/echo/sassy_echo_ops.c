@@ -33,7 +33,11 @@ int echo_us_update(struct sassy_device *sdev)
 
 int echo_clean(struct sassy_device *sdev)
 {
+	struct sassy_echo_priv *epriv = (struct sassy_echo_priv *)sdev->proto->priv;
+
 	sassy_dbg("echo clean");
+	clear_logger(&epriv->echo_logger);
+
 	return 0;
 }
 

@@ -93,6 +93,13 @@ static const struct file_operations sassy_event_ctrl_ops = {
 	.release = single_release,
 };
 
+void clear_logger(struct sassy_logger *slog)
+{
+	remove_proc_entry(slog->ctrl_proc_dir, NULL);
+	remove_proc_entry(slog->io_proc_dir, NULL);
+	kfree(slog->events);
+}
+
 void init_logger_ctrl(struct sassy_logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
@@ -105,15 +112,11 @@ void init_logger_ctrl(struct sassy_logger *slog)
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl_%s",
 		 slog->ifindex, slog->name);
 
-	if(!slog->ctrl_proc_dir){
-
-		slog->ctrl_proc_dir = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog);
-		
-		if (!slog->ctrl_proc_dir) {
-			sassy_error(" Could not create leader election ctrl log procfs data entry%s\n", __FUNCTION__);
-			return -ENOMEM;
-		}
-
+	slog->ctrl_proc_dir = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog);
+	
+	if (!slog->ctrl_proc_dir) {
+		sassy_error(" Could not create leader election ctrl log procfs data entry%s\n", __FUNCTION__);
+		return -ENOMEM;
 	}
 
 	return 0;
