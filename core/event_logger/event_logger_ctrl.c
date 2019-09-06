@@ -110,9 +110,8 @@ void init_logger_ctrl(struct sassy_logger *slog)
 		slog->ctrl_proc_dir = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog);
 		
 		if (!slog->ctrl_proc_dir) {
-			err = -ENOMEM;
 			sassy_error(" Could not create leader election ctrl log procfs data entry%s\n", __FUNCTION__);
-			return err;
+			return -ENOMEM;
 		}
 
 	}
