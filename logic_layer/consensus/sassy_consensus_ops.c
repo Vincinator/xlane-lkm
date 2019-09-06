@@ -134,7 +134,7 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	struct consensus_priv *priv =
 		(struct consensus_priv *)sproto->priv;
 	int remote_lid, rcluster_id;
-	int err;
+	int err, i;
 	struct pminfo *spminfo = &sdev->pminfo;
 
 	if(!consensus_is_alive(sdev))
@@ -159,7 +159,7 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 			rcluster_id);
 
 		// Do not start Leader Election until all targets have send a message to this node.
-		for(i = 0; i < spminfo->num_of_targets)
+		for(i = 0; i < spminfo->num_of_targets; i++)
 			if(!spminfo->pm_targets[i].alive)
 				return 0;
 
