@@ -56,8 +56,10 @@ const char *pm_state_string(pmstate_t state)
 void pm_state_transition_to(struct pminfo *spminfo,
 			    const enum pmstate state)
 {
+#if 0
 	sassy_dbg("State Transition from %s to %s\n",
 		  pm_state_string(spminfo->state), pm_state_string(state));
+#endif
 	spminfo->state = state;
 }
 
@@ -69,7 +71,7 @@ static inline void sassy_setup_hb_skbs(struct sassy_device *sdev)
 	struct sassy_payload *pkt_payload;
 	struct node_addr *naddr;
 
-	BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
+	// BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 		
@@ -120,14 +122,14 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 }
 
 
-static inline int _emit_pkts(struct sassy_device *sdev,
+static int _emit_pkts(struct sassy_device *sdev,
 		struct pminfo *spminfo)
 {
 	struct sassy_payload *pkt_payload;
 	int i;
 	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
-	enum tsstate ts_state = sdev->ts_state;
+	// enum tsstate ts_state = sdev->ts_state;
 
 	/* If netdev is offline, then stop pacemaker */
 	if (unlikely(!netif_running(ndev) ||
@@ -151,17 +153,17 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		sassy_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
 
-		if (sdev->verbose >= 4)
-			print_hex_dump(KERN_DEBUG,
-				"TX Payload: ", DUMP_PREFIX_NONE,
-				16, 1, pkt_payload, SASSY_PAYLOAD_BYTES, 0);
+		// if (sdev->verbose >= 4)
+		// 	print_hex_dump(KERN_DEBUG,
+		// 		"TX Payload: ", DUMP_PREFIX_NONE,
+		// 		16, 1, pkt_payload, SASSY_PAYLOAD_BYTES, 0);
 
 		sassy_send_hb(ndev, spminfo->pm_targets[i].skb);
 
-		if (ts_state == SASSY_TS_RUNNING) {
-			sassy_write_timestamp(sdev, 0, rdtsc(), i);
-			sassy_write_timestamp(sdev, 4, ktime_get(), i);
-		}
+		// if (ts_state == SASSY_TS_RUNNING) {
+		// 	sassy_write_timestamp(sdev, 0, rdtsc(), i);
+		// 	sassy_write_timestamp(sdev, 4, ktime_get(), i);
+		// }
 
 		// Set leader election OPCODE to noop
 		set_le_noop(sdev, (unsigned char*) pkt_payload);
@@ -170,7 +172,7 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 	return 0;
 }
 
-static inline int _validate_pm(struct sassy_device *sdev,
+static int _validate_pm(struct sassy_device *sdev,
 							struct pminfo *spminfo)
 {
 	if (!spminfo) {

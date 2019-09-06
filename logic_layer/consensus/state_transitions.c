@@ -82,13 +82,15 @@ void accept_leader(struct sassy_device *sdev, int remote_lid, int cluster_id, u3
 {
 	struct consensus_priv *priv = 
 			(struct consensus_priv *)sdev->le_proto->priv;
-	
+
+#if 0
 	sassy_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
 			cluster_id,
 			term);
+#endif
 
 	priv->term = term;
 	priv->leader_id = remote_lid;
@@ -103,10 +105,10 @@ void le_state_transition_to(struct sassy_device *sdev, enum le_state state)
 		return;
 
 	priv = (struct consensus_priv *)sdev->le_proto->priv;
-
+#if 0
 	if(sdev->verbose >= 1)
 		sassy_dbg("Leader Election Activation State Transition from %s to %s \n", _le_state_name(priv->state), _le_state_name(state));
-
+#endif
 	priv->state = state;
 
 }
@@ -148,13 +150,13 @@ int node_transition(struct sassy_device *sdev, enum node_state state)
 
 	if (err)
 		goto error;
-
+#if 0
 	sassy_log_le("%s, %llu, %d: transition to state %s\n",
 				nstate_string(priv->nstate),
 				rdtsc(),
 				priv->term,
 				nstate_string(state));
-	
+#endif
 	priv->nstate = state;
 
 	return 0;

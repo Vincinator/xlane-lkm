@@ -45,11 +45,11 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	 *
 	 */
 	if(priv->c_retries >= CANDIDATURE_RETRY_LIMIT){
-
+#if 0
 		sassy_log_le("%s, %llu, %d: reached maximum of candidature retries\n",
 			nstate_string(priv->nstate),
 			rdtsc());
-
+#endif
 		// (Option 1)
 		//node_transition(sdev, FOLLOWER);
 
@@ -68,13 +68,14 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	timeout = get_rnd_timeout(priv->c_retries * priv->ct_min, priv->c_retries * priv->ct_max);
 
 	hrtimer_forward_now(timer, timeout);
-
+#if 0
 	sassy_log_le("%s, %llu, %d: Restart candidate timer with %lld ms timeout - Candidature retry %d.\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
 			ktime_to_ms(timeout),
 			priv->c_retries);
+#endif
 
 	return HRTIMER_RESTART;
 	
@@ -92,12 +93,14 @@ void reset_ctimeout(struct sassy_device *sdev)
 	hrtimer_cancel(&priv->ctimer);
 	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ctimer, HRTIMER_MODE_REL_PINNED);
-
+#if 0
 	sassy_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
 			ktime_to_ms(timeout));
+#endif
+
 }
 
 void init_ctimeout(struct sassy_device *sdev)
@@ -120,11 +123,13 @@ void init_ctimeout(struct sassy_device *sdev)
 
 	priv->ctimer.function = &_handle_candidate_timeout;
 
+#if 0
 	sassy_log_le("%s, %llu, %d: Init Candidate timeout to %lld ms.\n",
 		nstate_string(priv->nstate),
 		rdtsc(),
 		priv->term,
 		 ktime_to_ms(timeout));
+#endif
 
 	hrtimer_start_range_ns(&priv->ctimer, timeout, HRTIMER_MODE_REL_PINNED, TOLERANCE_CTIMEOUT_NS);
 }
@@ -149,12 +154,14 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 
 	priv->votes++;
 
+#if 0
 	sassy_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
 					nstate_string(priv->nstate),
 					rdtsc(),
 					priv->term,
 					priv->votes,
 					sdev->pminfo.num_of_targets + 1);
+#endif
 
 	write_log(&sdev->le_logger, CANDIDATE_ACCEPT_VOTE, rdtsc());
 

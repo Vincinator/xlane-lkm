@@ -139,10 +139,6 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	if(!consensus_is_alive(sdev))
 		return 0;
 
-
-	if (sdev->verbose >= 3)
-			sassy_dbg("consensus payload received\n");
-
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if(remote_lid == -1 || rcluster_id == -1)
@@ -202,9 +198,6 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 int consensus_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 	       uint64_t ts)
 {
-	if(consensus_is_alive(sdev))
-		return 0;
-
-	if (sdev->verbose >= 3)
-		sassy_dbg("consensus optimistical timestamp received.\n");
+	// if(consensus_is_alive(sdev))
+	// 	return 0;
 }

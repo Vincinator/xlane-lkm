@@ -95,29 +95,25 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	}
 
 	if (unlikely(protocol_id < 0 || protocol_id > MAX_PROTOCOLS)) {
-		sassy_error("Protocol ID is faulty %d\n", protocol_id);
 		return;
 	}
-
-	if (sdev->verbose >= 3)
-		sassy_dbg("%s\n", __FUNCTION__);
 
 	sproto = sdev->proto;
 	lesproto = sdev->le_proto;
 
-	if (unlikely(!sproto || !lesproto))
-		return;
+	if(consensus_is_alive(sdev))
+		lesproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
 
-    if (sdev->pminfo.state != SASSY_PM_EMITTING)
+    if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
+
+	if (unlikely(!sproto))
+		return;
 
 	if (sdev->ts_state == SASSY_TS_RUNNING)
 		sassy_write_timestamp(sdev, 2, rdtsc(), sassy_id);
 
 	sproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
-
-	if(consensus_is_alive(sdev))
-		lesproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
 
 	if (sdev->ts_state == SASSY_TS_RUNNING)
 		sassy_write_timestamp(sdev, 3, rdtsc(), sassy_id);

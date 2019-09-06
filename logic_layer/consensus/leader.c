@@ -32,16 +32,16 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_i
 		break;
 	case LEAD:
 		if(param1 > priv->term){
-
+#if 0
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
-
+#endif
 			accept_leader(sdev, remote_lid, rcluster_id, param1);
 			write_log(&sdev->le_logger, LEADER_ACCEPT_NEW_LEADER, rdtsc());
 
 
 		} else {
-
+#if 0
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower or equal term=%u\n", param1);
 	
@@ -51,6 +51,7 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_i
 				rdtsc(),
 				rcluster_id,
 				priv->term);
+#endif
 		}
 	
 		break;
