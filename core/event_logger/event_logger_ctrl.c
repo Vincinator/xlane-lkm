@@ -101,11 +101,21 @@ void init_logger_ctrl(struct sassy_logger *slog)
 		sassy_error("Logs are not initialized!\n");
 		return -ENOMEM;
 	}
-
+	
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl_%s",
 		 slog->ifindex, slog->name);
 
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog);
+	if(!slog->ctrl_proc_dir){
+
+		slog->ctrl_proc_dir = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog);
+		
+		if (!slog->ctrl_proc_dir) {
+			err = -ENOMEM;
+			sassy_error(" Could not create leader election ctrl log procfs data entry%s\n", __FUNCTION__);
+			return err;
+		}
+
+	}
 
 	return 0;
 }

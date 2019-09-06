@@ -185,18 +185,20 @@ static int init_logger_out(struct sassy_logger *slog)
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/%s",
 		 slog->ifindex, slog->name);
 
+	if(!slog->io_proc_dir){
 
-	slog->proc_dir =
-		proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL,
-				 &sassy_log_ops,
-				 slog);
+		slog->io_proc_dir = proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL, &sassy_log_ops, slog);
+		
+		if (!slog->io_proc_dir) {
+			err = -ENOMEM;
+			sassy_error(" Could not create leader election log procfs data entry%s\n",
+				__FUNCTION__);
+			goto error;
+		}
 
-	if (!slog->proc_dir) {
-		err = -ENOMEM;
-		sassy_error(" Could not create leader election log procfs data entry%s\n",
-			__FUNCTION__);
-		goto error;
 	}
+
+	
 	return 0;
 
 error:
@@ -218,17 +220,16 @@ int init_logger(struct sassy_logger *slog)
 		goto error;
 	}
 
-	slog->events = kmalloc_array(LOGGER_EVENT_LIMIT,
-									sizeof(struct logger_event),
-									GFP_KERNEL);
-
-	if (!slog->events) {
-		err = -ENOMEM;
-		sassy_error(
-			"Could not allocate memory for leader election logs items\n");
-		goto error;
+	if(!slog->event){
+		slog->events = kmalloc_array(LOGGER_EVENT_LIMIT, sizeof(struct logger_event), GFP_KERNEL);
+		if (!slog->events) {
+			err = -ENOMEM;
+			sassy_error(
+				"Could not allocate memory for leader election logs items\n");
+			goto error;
+		}
 	}
-
+	
 	slog->current_entries = 0;
 
 	init_logger_out(slog);

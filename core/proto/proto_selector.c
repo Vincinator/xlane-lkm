@@ -83,7 +83,7 @@ static ssize_t proto_selector_write(struct file *file,
 
 	// switch to new protocol
 	sdev->proto = sproto;
-	sdev->proto->ctrl_ops.init(sdev);
+	sdev->proto->ctrl_ops.init(sdev); // initializes also the protocol logger
 
 	return count;
 }

@@ -7,6 +7,9 @@
 int echo_init(struct sassy_device *sdev)
 {
 	sassy_dbg("echo init");
+
+    init_logger(&sdev->le_logger);
+
 	return 0;
 }
 
