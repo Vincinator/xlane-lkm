@@ -149,8 +149,15 @@ struct sassy_protocol *get_consensus_proto(struct sassy_device *sdev)
 	proto->ctrl_ops = consensus_ops;
 	proto->name = "consensus";
 	proto->priv = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
+
+	
+
 	cpriv = (struct consensus_priv *)proto->priv;
 	cpriv->state = LE_UNINIT;
+	cpriv->ft_min = MIN_FTIMEOUT_NS;
+	cpriv->ft_max = MAX_FTIMEOUT_NS;
+	cpriv->ct_min = MIN_CTIMEOUT_NS;
+	cpriv->ct_max = MAX_CTIMEOUT_NS;
 	cpriv->le_config_procfs = NULL;
 
 	return proto;

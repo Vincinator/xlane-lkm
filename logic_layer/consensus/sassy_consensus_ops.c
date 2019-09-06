@@ -29,10 +29,6 @@ int consensus_init(struct sassy_device *sdev)
 	priv->warms = 0;
 	priv->warmup_state = WARMING_UP;
 	priv->state = LE_RUNNING;
-	priv->ft_min = MIN_FTIMEOUT_NS;
-	priv->ft_max = MAX_FTIMEOUT_NS;
-	priv->ct_min = MIN_CTIMEOUT_NS;
-	priv->ct_max = MAX_CTIMEOUT_NS;
 
 	if(!priv->le_config_procfs)
 		init_le_config_ctrl_interfaces(sdev, priv);
