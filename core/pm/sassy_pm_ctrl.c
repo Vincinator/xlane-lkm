@@ -227,27 +227,15 @@ static ssize_t sassy_hbi_write(struct file *file,
 		goto error;
 	}
 
-	switch (new_hbi) {
-	case 1:
-		spminfo->hbi = CYCLES_PER_1MS;
-		break;
-	case 2:
-		spminfo->hbi = CYCLES_PER_5MS;
-		break;
-	case 3:
-		spminfo->hbi = CYCLES_PER_10MS;
-		break;
-	case 4:
-		spminfo->hbi = CYCLES_PER_100MS;
-		break;
-	default:
-		sassy_error("Unknown interval type. ");
-		sassy_error("Supported Values: 1 (1ms), 2 (5ms), 3 (10ms), 4 (100ms)\n");
-		sassy_error("Did not change last set hbi value: %llu", spminfo->hbi);
+	if( new_hbi < MIN_HB_CYCLES || new_hbi > MAX_HB_CYCLES){
+		sassy_error("Invalid heartbeat interval! range is %lld to %lld, but got %lld",
+					 MIN_HB_CYCLES, MAX_HB_CYCLES, new_hbi);
 		err = -EINVAL;
 		goto error;
 	}
 
+	spminfo->hbi = new_hbi;
+	
 	sassy_dbg("Heartbeat state changed successfully.%s\n", __FUNCTION__);
 	return count;
 error:
