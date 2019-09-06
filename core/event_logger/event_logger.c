@@ -252,4 +252,4 @@ void remove_logger_ifaces(struct sassy_logger *slog)
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl_%s", slog->ifindex, slog->name);
 	remove_proc_entry(name_buf, NULL);
 }
-EXPORT_SYMBOL(remove_logger_ifaces)
+EXPORT_SYMBOL(remove_logger_ifaces);
