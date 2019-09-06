@@ -95,8 +95,8 @@ static const struct file_operations sassy_event_ctrl_ops = {
 
 void clear_logger(struct sassy_logger *slog)
 {
-	remove_proc_entry(slog->ctrl_proc_dir, NULL);
-	remove_proc_entry(slog->io_proc_dir, NULL);
+	remove_proc_entry(slog->ctrl_proc_dir->name, NULL);
+	remove_proc_entry(slog->io_proc_dir->name, NULL);
 	kfree(slog->events);
 }
 
