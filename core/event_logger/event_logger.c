@@ -220,7 +220,7 @@ int init_logger(struct sassy_logger *slog)
 		goto error;
 	}
 
-	if(!slog->event){
+	if(!slog->events){
 		slog->events = kmalloc_array(LOGGER_EVENT_LIMIT, sizeof(struct logger_event), GFP_KERNEL);
 		if (!slog->events) {
 			err = -ENOMEM;
