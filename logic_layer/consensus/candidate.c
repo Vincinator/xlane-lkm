@@ -166,13 +166,15 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 	write_log(&sdev->le_logger, CANDIDATE_ACCEPT_VOTE, rdtsc());
 
 	if (priv->votes * 2 >= (sdev->pminfo.num_of_targets + 1)) {
-		
+
+#if 0
 		sassy_log_le("%s, %llu, %d: got majority with %d from %d possible votes \n",
 				nstate_string(priv->nstate),
 				rdtsc(),
 				priv->term,
 				priv->votes,
 				sdev->pminfo.num_of_targets);
+#endif
 
 		err = node_transition(sdev, LEADER);
 		write_log(&sdev->le_logger, CANDIDATE_BECOME_LEADER, rdtsc());
@@ -195,8 +197,11 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 	u8 opcode = GET_LE_PAYLOAD(pkt, opcode);
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
 	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
-	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
+	
+#if 0
 
+	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
+#endif
 	switch(opcode){
 	case VOTE:
 		accept_vote(sdev, remote_lid, pkt);
@@ -215,17 +220,19 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 	case LEAD:
 		if(param1 >= priv->term){
 
+#if 0
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
-
+#endif
 			accept_leader(sdev, remote_lid, rcluster_id, param1);
 			write_log(&sdev->le_logger, CANDIDATE_ACCEPT_NEW_LEADER, rdtsc());
 
 		} else {
+#if 0
 
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);
-	
+#endif
 			// Ignore this LEAD message, continue to wait for votes 
 	
 		}

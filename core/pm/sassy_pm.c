@@ -122,7 +122,7 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 }
 
 
-static int _emit_pkts(struct sassy_device *sdev,
+static inline int _emit_pkts(struct sassy_device *sdev,
 		struct pminfo *spminfo)
 {
 	struct sassy_payload *pkt_payload;

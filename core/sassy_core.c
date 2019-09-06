@@ -101,14 +101,13 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	sproto = sdev->proto;
 	lesproto = sdev->le_proto;
 
-	if(consensus_is_alive(sdev))
-		lesproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
-
     if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
 
-	if (unlikely(!sproto))
+	if (unlikely(!sproto || !lesproto))
 		return;
+
+	lesproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
 
 	if (sdev->ts_state == SASSY_TS_RUNNING)
 		sassy_write_timestamp(sdev, 2, rdtsc(), sassy_id);

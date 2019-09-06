@@ -20,7 +20,9 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_i
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
 	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
 
+#if 0
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
+#endif 
 
 	switch(opcode){
 
