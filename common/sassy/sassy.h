@@ -448,6 +448,7 @@ void init_logger_ctrl(struct sassy_logger *slog);
 
 
 int init_logger(struct sassy_logger *slog);
+void clear_logger(struct sassy_logger *slog);
 
 int sassy_log_stop(struct sassy_logger *slog);
 int sassy_log_start(struct sassy_logger *slog);
@@ -458,5 +459,6 @@ int consensus_is_alive(struct sassy_device *sdev);
 char *le_state_name(struct sassy_device *sdev);
 void set_all_targets_dead(struct sassy_device *sdev);
 void remove_logger_ifaces(struct sassy_logger *slog);
+
 
 #endif /* _SASSY_H_ */

@@ -109,6 +109,7 @@ void clear_logger(struct sassy_logger *slog)
 	
 	kfree(slog->events);
 }
+EXPORT_SYMBOL(clear_logger);
 
 void init_logger_ctrl(struct sassy_logger *slog)
 {
