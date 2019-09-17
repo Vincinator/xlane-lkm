@@ -1,5 +1,6 @@
 #include <sassy/logger.h>
 #include <sassy/sassy.h>
+#include <sassy/payload_helper.h>
 
 #include "include/sassy_consensus.h"
 #include "include/leader.h"
