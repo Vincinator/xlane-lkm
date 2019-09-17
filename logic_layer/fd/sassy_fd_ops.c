@@ -11,6 +11,8 @@ int fd_init(struct proto_instance *ins)
 	struct sassy_fd_priv *priv = 
 		(struct sassy_fd_priv *)ins->proto_data;
 
+	struct sassy_device *sdev = priv->sdev;
+
 	err = sassy_bypass_init_class(sdev);
 
 	if (err)
