@@ -57,7 +57,7 @@ struct proto_instance *get_fd_proto_instance(struct sassy_device *sdev)
 	fpriv->sdev = sdev;
 	fpriv->ins = ins;
 
-	return proto;
+	return ins;
 error:
 	sassy_dbg("Error in %s", __FUNCTION__);
 	return NULL;
