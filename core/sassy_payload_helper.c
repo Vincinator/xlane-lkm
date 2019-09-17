@@ -11,6 +11,7 @@ char *sassy_get_proto(struct sassy_payload *spay, int n)
 	int i;
 	char *cur_proto;
 	int proto_offset = 0;
+	int cur_offset = 0;
 
 	cur_proto = spay->proto_data;
 
@@ -42,6 +43,7 @@ char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_
 	int i;
 	char *cur_proto;
 	int proto_offset = 0;
+	int cur_offset = 0;
 
 	u16 *pid, *poff;
 
