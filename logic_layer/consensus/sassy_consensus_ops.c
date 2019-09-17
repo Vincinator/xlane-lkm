@@ -82,7 +82,7 @@ int consensus_stop(struct proto_instance *ins)
 			stop_leader(ins);
 			break;
 	}
-	le_state_transition_to(ins, LE_READY);
+	le_state_transition_to(priv, LE_READY);
 
 	set_all_targets_dead(priv->sdev);
 	
@@ -94,8 +94,11 @@ int consensus_stop(struct proto_instance *ins)
 
 int consensus_clean(struct proto_instance *ins)
 {
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
+
 	sassy_dbg("consensus clean\n");
-	le_state_transition_to(ins, LE_UNINIT);
+	le_state_transition_to(priv, LE_UNINIT);
 
 	return 0;
 }

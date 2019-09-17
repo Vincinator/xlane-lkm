@@ -57,7 +57,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 		// node_transition(sdev, LEADER);
 
 		// (Option 3)
-		le_state_transition_to(sdev, LE_READY);
+		le_state_transition_to(priv, LE_READY);
 
 
 		return HRTIMER_NORESTART;
