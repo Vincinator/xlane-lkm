@@ -331,14 +331,6 @@ static int __init sassy_connection_core_init(void)
 		return -1;
 	}
 
-	score->protocols = kmalloc_array(
-		MAX_PROTOCOLS, sizeof(struct sassy_protocol *), GFP_KERNEL);
-
-	if (!score->protocols) {
-		sassy_error("allocation of protocol ptr buffer failed\n");
-		return -1;
-	}
-
 	score->rx_tables = kmalloc_array(
 		MAX_NIC_DEVICES, sizeof(struct sassy_rx_table *), GFP_KERNEL);
 
