@@ -84,7 +84,7 @@ int consensus_stop(struct proto_instance *ins)
 	}
 	le_state_transition_to(ins, LE_READY);
 
-	set_all_targets_dead(sdev);
+	set_all_targets_dead(priv->sdev);
 	
 	priv->warmup_state = WARMING_UP;
 	priv->warms = 0;
@@ -95,7 +95,7 @@ int consensus_stop(struct proto_instance *ins)
 int consensus_clean(struct proto_instance *ins)
 {
 	sassy_dbg("consensus clean\n");
-	le_state_transition_to(sdev, LE_UNINIT);
+	le_state_transition_to(ins, LE_UNINIT);
 
 	return 0;
 }
@@ -118,7 +118,6 @@ int consensus_us_update(struct proto_instance *ins, void *payload)
 int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 		    void *payload)
 {
-	struct sassy_protocol *sproto = sdev->le_proto;
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 	int remote_lid, rcluster_id;

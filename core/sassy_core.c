@@ -274,7 +274,6 @@ int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 	struct sassy_device *sdev = get_sdev(sassy_id);
 	struct sassy_pm_target_info *pmtarget;
 	int ifindex;
-	struct sassy_protocol *sproto;
 
 	if (!mac) {
 		sassy_error("input mac is NULL!\n");

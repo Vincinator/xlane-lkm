@@ -8,7 +8,6 @@
 int fd_init(struct proto_instance *ins)
 {
 	int err = 0;
-	struct sassy_protocol *sproto;
 	struct sassy_fd_priv *priv = 
 		(struct sassy_fd_priv *)ins->proto_data;
 
@@ -22,8 +21,6 @@ int fd_init(struct proto_instance *ins)
 	if (err)
 		goto error;
 
-	sproto = sdev->proto;
-	priv = (struct sassy_fd_priv *)sproto->priv;
 	priv->num_procs = 0;
 
 	sassy_dbg("fd init\n");
@@ -95,7 +92,6 @@ int fd_info(struct proto_instance *ins)
 int fd_us_update(struct proto_instance *ins, void *payload)
 {
 	int i;
-	struct sassy_protocol *sproto = sdev->proto;
 	struct sassy_fd_priv *priv = 
 		(struct sassy_fd_priv *)ins->proto_data;
 

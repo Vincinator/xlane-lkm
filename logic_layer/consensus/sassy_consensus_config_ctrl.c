@@ -128,7 +128,8 @@ void init_le_config_ctrl_interfaces(struct sassy_device *sdev, struct consensus_
 	
 	priv->le_config_procfs =
 					proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, 
-							&sassy_le_config_ops, sdev->le_proto->priv);
+							&sassy_le_config_ops, priv);
+	
 
 }
 EXPORT_SYMBOL(init_le_config_ctrl_interfaces);
