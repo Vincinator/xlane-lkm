@@ -247,12 +247,6 @@ struct le_payload {
 	u32 param2;
 };
 
-struct protocol_payload {
-	u8 protocol_id;
-	u16 next_offset;
-	
-}
-
 
 struct sassy_payload {
 	

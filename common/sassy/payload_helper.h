@@ -61,28 +61,6 @@ int get_proto_offset(char *cur)
 
 }
 
-void sassy_put_protocol_data(struct sassy_payload *spay, void *proto_payload, int proto_size)
-{
-	int i;
-	char *cur_proto;
-	int proto_offset = 0;
-
-	cur_proto = spay->proto_data;
-
-	// Iterate through existing protocols
-	for (i = 0; i < spay->protocols_included; i++) {
-		proto_offset = get_proto_offset(cur_proto);
-		cur_proto = cur_proto + proto_offset;
-	}
-
-	if (proto_offset + proto_size > MAX_SASSY_PAYLOAD_BYTES) {
-		sassy_error("Not enough space in sassy payload for protocol\n");
-		return; // TODO: handle error
-	}
-
-}
-
-
 /* Returns a pointer to the <n>th protocol of <spay>
  * 
  * If less than n protocols are included, a NULL ptr is returned
@@ -105,7 +83,7 @@ char *sassy_get_proto(struct sassy_payload *spay, int n)
 		cur_offset = *(u16 *)(cur_proto + 2);
 		cur_proto = cur_proto + cur_offset;
 	}
-	
+
 	return cur_proto;
 }
 
