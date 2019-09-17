@@ -36,7 +36,8 @@ int echo_us_update(struct proto_instance *ins)
 
 int echo_clean(struct proto_instance *ins)
 {
-	struct sassy_echo_priv *epriv = (struct sassy_echo_priv *)sdev->proto->priv;
+	struct sassy_echo_priv *epriv =
+		(struct sassy_echo_priv *)ins->priv;
 
 	sassy_dbg("echo clean");
 	clear_logger(&ins->logger);
