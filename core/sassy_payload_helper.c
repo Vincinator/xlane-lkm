@@ -99,12 +99,12 @@ char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_
 		sassy_error("Not enough space in sassy payload for protocol\n");
 		return NULL;
 	}
-
 	pid = (u16 *) cur_proto;
 	poff = (u16 *)(cur_proto + 2);
 
 	*pid = proto_id;
 	*poff = proto_size;
+	spay->protocols_included++;
 
 	return cur_proto;
 }

@@ -165,8 +165,9 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		// 	sassy_write_timestamp(sdev, 4, ktime_get(), i);
 		// }
 
-		// Set leader election OPCODE to noop
-		set_le_noop(sdev, (unsigned char*) pkt_payload);
+		// Protocols have been emitted, do not sent them again ..
+		// .. and free the reservations for new protocols
+		invalidate_proto_data(pkt_payload);
 
 	}
 	return 0;

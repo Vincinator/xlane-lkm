@@ -51,6 +51,7 @@ EXPORT_SYMBOL(le_state_name);
 int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term)
 {
 	struct sassy_payload *pkt_payload;
+	char *pkt_payload_sub;
 	int hb_passive_ix;
 
 	hb_passive_ix =
@@ -59,9 +60,15 @@ int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u
 	pkt_payload =
      	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
 
-	// TODO: get correct sub payload ptr
-     	
-	set_le_opcode((unsigned char*)pkt_payload, opcode, term, 0);
+	pkt_payload_sub = 
+ 		sassy_reserve_proto(pkt_payload, SASSY_PROTO_CON_PAYLOAD_SZ, SASSY_PROTO_CONSENSUS);
+
+ 	if(!pkt_payload_sub) {
+ 		sassy_error("Sassy packet full! This error is not handled - not implemented\n");
+ 		return -1;
+ 	}
+
+	set_le_opcode((unsigned char*)pkt_payload_sub, opcode, term, 0);
 	
 	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 
