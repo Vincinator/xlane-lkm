@@ -143,7 +143,7 @@ int setup_nomination(struct proto_instance *ins)
 	priv->term++;
 	priv->votes = 1; // start with selfvote
 
-	setup_le_broadcast_msg(priv, NOMI);
+	setup_le_broadcast_msg(ins, NOMI);
 	return 0;
 }
 
@@ -178,7 +178,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 				sdev->pminfo.num_of_targets);
 #endif
 
-		err = node_transition(priv, LEADER);
+		err = node_transition(ins, LEADER);
 		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, rdtsc());
 
 		if (err) {
@@ -212,7 +212,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 
 		// Nomination from Node with higher term - cancel own candidature and vote for higher term
 		if(param1 > priv->term){
-			node_transition(priv, FOLLOWER);
+			node_transition(ins, FOLLOWER);
 			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}
 
@@ -226,7 +226,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
-			accept_leader(priv, remote_lid, rcluster_id, param1);
+			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, rdtsc());
 
 		} else {

@@ -156,7 +156,7 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 		write_log(&ins->logger, START_CONSENSUS, rdtsc());
 
 		// Transition to Follower State
-		err = node_transition(priv, FOLLOWER);
+		err = node_transition(ins, FOLLOWER);
 
 		sassy_log_le("%s, %llu, %d: Warmup done! \n",
 			nstate_string(priv->nstate),

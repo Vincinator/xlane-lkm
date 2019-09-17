@@ -35,7 +35,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 			priv->term);
 #endif
 
-	err = node_transition(priv, CANDIDATE);
+	err = node_transition(ins, CANDIDATE);
 	write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
 
 	if (err){
@@ -110,7 +110,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 #endif
 
-			accept_leader(priv, remote_lid, rcluster_id, param1);
+			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, rdtsc());
 			reset_ftimeout(ins);
 
@@ -229,7 +229,7 @@ int start_follower(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 			(struct consensus_priv *)ins->proto_data;
 	
-	err = setup_le_broadcast_msg(priv, NOOP);
+	err = setup_le_broadcast_msg(ins, NOOP);
 	
 	if(err)
 		goto error;

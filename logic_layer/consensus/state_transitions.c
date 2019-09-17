@@ -56,9 +56,11 @@ int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u
 	return 0;
 }
 
-int setup_le_broadcast_msg(struct consensus_priv *priv, enum le_opcode opcode)
+int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 {
 	int i;
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
 		setup_le_msg(&priv->sdev->pminfo, opcode, (u32) i, (u32) priv->term);
@@ -66,9 +68,10 @@ int setup_le_broadcast_msg(struct consensus_priv *priv, enum le_opcode opcode)
 	return 0;
 }
 
-void accept_leader(struct consensus_priv *priv, int remote_lid, int cluster_id, u32 term)
+void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u32 term)
 {
-
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
 #if 0
 	sassy_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
 			nstate_string(priv->nstate),
@@ -80,7 +83,7 @@ void accept_leader(struct consensus_priv *priv, int remote_lid, int cluster_id, 
 
 	priv->term = term;
 	priv->leader_id = remote_lid;
-	node_transition(priv, FOLLOWER);
+	node_transition(ins, FOLLOWER);
 }
 
 void le_state_transition_to(struct consensus_priv *priv, enum le_state state)

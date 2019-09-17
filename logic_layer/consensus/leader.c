@@ -36,7 +36,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
-			accept_leader(priv, remote_lid, rcluster_id, param1);
+			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, LEADER_ACCEPT_NEW_LEADER, rdtsc());
 
 
@@ -76,7 +76,7 @@ int start_leader(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	setup_le_broadcast_msg(priv, LEAD);
+	setup_le_broadcast_msg(ins, LEAD);
 
 	priv->nstate = LEADER;
 	
