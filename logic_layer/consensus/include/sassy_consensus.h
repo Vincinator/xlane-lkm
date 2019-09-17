@@ -44,6 +44,8 @@ struct consensus_priv {
 
 	struct sassy_device *sdev;
 
+	struct proto_instance *ins;
+
 	enum node_state nstate;
 
 	enum le_state state;

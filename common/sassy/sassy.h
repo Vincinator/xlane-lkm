@@ -249,15 +249,7 @@ struct le_payload {
 };
 
 
-struct proto_instance {
 
-	enum sassy_protocol_type proto_type;
-	
-	struct sassy_logger logger;
-
-	void *proto_data;
-
-};
 
 struct sassy_payload {
 	
@@ -351,7 +343,7 @@ struct pminfo {
 
 };
 
-struct sassy_protocol;
+struct proto_instance;
 
 struct sassy_device {
 	int ifindex; /* corresponds to ifindex of net_device */
@@ -402,18 +394,20 @@ struct sassy_protocol_ctrl_ops {
 	int (*info)(struct proto_instance *);
 };
 
-struct sassy_protocol {
+struct proto_instance {
+
 	enum sassy_protocol_type proto_type;
+	
+	struct sassy_logger logger;
 
 	char *name;
 
 	struct sassy_protocol_ctrl_ops ctrl_ops;
 
-	struct list_head listh;
+	void *proto_data;
 
-	/* private data of protocol handling */
-	void *priv;
 };
+
 
 struct sk_buff *sassy_setup_hb_packet(struct pminfo *spminfo,
 				      int host_number);

@@ -91,7 +91,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 #endif	
 			} else {
 				reply_vote(sdev, remote_lid, rcluster_id, param1, param2);
-				reset_ftimeout(sdev);
+				reset_ftimeout(ins);
 			}
 		}
 
@@ -112,7 +112,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			accept_leader(sdev, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, rdtsc());
-			reset_ftimeout(sdev);
+			reset_ftimeout(ins);
 
 		} 
 
@@ -129,7 +129,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from known leader term=%u\n", param1);
 #endif
-				reset_ftimeout(sdev);
+				reset_ftimeout(ins);
 
 			}else {
 #if 0
