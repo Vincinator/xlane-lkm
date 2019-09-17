@@ -28,27 +28,6 @@ char *_le_state_name(enum le_state state)
 	}
 }
 
-char *le_state_name(struct sassy_device *sdev)
-{
-	struct consensus_priv *cpriv;
-
-	if(!sdev)
-		return "NULL";
-
-	cpriv = (struct consensus_priv *) sdev->le_proto->priv;
-
-	switch (cpriv->state) {
-	case LE_RUNNING: return "RUNNING";
-	case LE_READY: return "READY";
-	case LE_UNINIT: return "UNINIT";
-	default: return "UNKNOWN STATE";
-	}
-}
-EXPORT_SYMBOL(le_state_name);
-
-
-
-
 int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term)
 {
 	struct sassy_payload *pkt_payload;
