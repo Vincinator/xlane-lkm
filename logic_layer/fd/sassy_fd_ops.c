@@ -85,8 +85,7 @@ int fd_us_update(struct sassy_device *sdev, void *payload)
 	int i;
 	struct sassy_protocol *sproto = sdev->proto;
 	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)sproto->priv;
-	struct sassy_payload *comp_payload = (struct sassy_payload *)payload;
-	struct fd_payload *cur_p = (struct fd_payload *)comp_payload->other_payload;
+	struct fd_payload *cur_p = (struct fd_payload *)payload;
 
 	struct fd_aliveness_counters *last_counters =
 		&priv->last_counter_values;
