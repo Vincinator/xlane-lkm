@@ -112,7 +112,7 @@ void init_ctimeout(struct proto_instance *ins)
 		(struct consensus_priv *)ins->proto_data;
 	
 	if(priv->ctimer_init == 1) {
-		reset_ctimeout(sdev);
+		reset_ctimeout(ins);
 		return;
 	}
 
@@ -186,7 +186,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 			return;
 		}
 	}else {
-		reset_ctimeout(priv);
+		reset_ctimeout(ins);
 	}
 
 }
