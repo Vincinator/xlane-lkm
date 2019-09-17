@@ -13,4 +13,4 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 int consensus_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
 	       uint64_t ts);
 int consensus_us_update(struct sassy_device *sdev, void *payload);
-int consensus_init_payload(struct sassy_payload *payload);
+int consensus_init_payload(void *payload);

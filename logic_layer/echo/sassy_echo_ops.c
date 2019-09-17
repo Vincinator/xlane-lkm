@@ -84,7 +84,7 @@ int echo_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	return 0;
 }
 
-int echo_init_payload(struct sassy_payload *payload)
+int echo_init_payload(void *payload)
 {
 
 	return 0;

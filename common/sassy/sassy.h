@@ -372,7 +372,7 @@ struct sassy_protocol_ctrl_ops {
 	/* Initializes data and user space interfaces */
 	int (*init)(struct sassy_device *);
 
-	int (*init_payload)(struct sassy_payload *data);
+	int (*init_payload)(void *payload);
 
 	int (*start)(struct sassy_device *);
 

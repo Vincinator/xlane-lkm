@@ -32,9 +32,9 @@ error:
 	return err;
 }
 
-int fd_init_payload(struct sassy_payload *payload)
+int fd_init_payload(void *payload)
 {
-	struct fd_payload *fd_p = (struct fd_payload *)payload->other_payload;
+	struct fd_payload *fd_p = (struct fd_payload *)payload;
 	int i;
 
 	sassy_dbg("initializing FD payload\n");
