@@ -532,7 +532,6 @@ int sassy_log_start(struct sassy_logger *slog);
 int sassy_log_reset(struct sassy_logger *slog);
 
 const char *logger_state_string(enum logger_state state);
-int consensus_is_alive(struct consensus_priv *sdev);
 char *le_state_name(struct sassy_device *sdev);
 void set_all_targets_dead(struct sassy_device *sdev);
 void remove_logger_ifaces(struct sassy_logger *slog);
