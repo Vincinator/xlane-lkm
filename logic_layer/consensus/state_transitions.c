@@ -93,19 +93,21 @@ void le_state_transition_to(struct consensus_priv *priv, enum le_state state)
 
 }
 
-int node_transition(struct consensus_priv *priv, enum node_state state)
+int node_transition(struct proto_instance *ins, enum node_state state)
 {
 	int err = 0;
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
 
 	priv->votes = 0; // start with 0 votes on every transition
 	
 	// Stop old timeouts 
 	switch(state){
 		case FOLLOWER:
-			stop_follower(priv);
+			stop_follower(ins);
 			break;
 		case CANDIDATE:
-			stop_candidate(priv);
+			stop_candidate(ins);
 			break;
 		default:
 			break;
@@ -113,13 +115,13 @@ int node_transition(struct consensus_priv *priv, enum node_state state)
 
 	switch (state) {
 	case FOLLOWER:
-		err = start_follower(priv);
+		err = start_follower(ins);
 		break;
 	case CANDIDATE:
-		err = start_candidate(priv);
+		err = start_candidate(ins);
 		break;
 	case LEADER:
-		err = start_leader(priv);
+		err = start_leader(ins);
 		break;
 	default:
 		sassy_error("Unknown node state %d\n - abort", state);
