@@ -86,9 +86,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	u8 *payload_raw_ptr = (u8 *)payload;
 	u8 protocol_id = *payload_raw_ptr;
 	struct sassy_device *sdev = get_sdev(sassy_id);
-	struct sassy_protocol *sproto = NULL;
-	struct sassy_protocol *lesproto = NULL;
-
+	
 	if (unlikely(!sdev)) {
 		sassy_error("sdev is NULL\n");
 		return;
@@ -183,7 +181,7 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->sassy_id = sassy_id;
 	score->sdevices[sassy_id]->ndev = sassy_get_netdevice(ifindex);
 	score->sdevices[sassy_id]->pminfo.num_of_targets = 0;
-	score->sdevices[sassy_id]->proto = NULL;
+//	score->sdevices[sassy_id]->proto = NULL;
 	score->sdevices[sassy_id]->verbose = 0;
 	score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
 	score->sdevices[sassy_id]->ts_state = SASSY_TS_UNINIT;
@@ -232,7 +230,7 @@ static int sassy_core_remove_nic(int sassy_id)
 	remove_proto_instance_ctrl(score->sdevices[sassy_id]);
 
 
-	remove_logger_ifaces(&score->sdevices[sassy_id]->le_logger);
+	//remove_logger_ifaces(&score->sdevices[sassy_id]->le_logger);
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d",
 		 score->sdevices[sassy_id]->ifindex);
