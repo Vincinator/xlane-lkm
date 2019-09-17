@@ -50,9 +50,9 @@ struct proto_instance *get_fd_proto_instance(struct sassy_device *sdev)
 	ins->proto_type = SASSY_PROTO_FD;
 	ins->ctrl_ops = fd_ops;
 	ins->name = "fd";
-	ins->priv = (void *)&fd_priv;
+	ins->proto_data = (void *)&fd_priv;
 
-	fpriv = (struct sassy_fd_priv *)ins->priv;
+	fpriv = (struct sassy_fd_priv *)ins->proto_data;
 
 	fpriv->sdev = sdev;
 	fpriv->ins = ins;

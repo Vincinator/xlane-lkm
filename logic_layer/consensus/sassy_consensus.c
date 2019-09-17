@@ -138,9 +138,9 @@ struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
 	ins->proto_type = SASSY_PROTO_CONSENSUS;
 	ins->ctrl_ops = consensus_ops;
 	ins->name = "consensus";
-	ins->priv = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
+	ins->proto_data = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
 
-	cpriv = (struct consensus_priv *)ins->priv;
+	cpriv = (struct consensus_priv *)ins->proto_data;
 	cpriv->state = LE_UNINIT;
 	cpriv->ft_min = MIN_FTIMEOUT_NS;
 	cpriv->ft_max = MAX_FTIMEOUT_NS;
