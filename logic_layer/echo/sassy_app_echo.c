@@ -38,7 +38,7 @@ struct proto_instance *get_echo_proto_instance(struct sassy_device *sdev)
 {
 	struct proto_instance *ins;
 	struct sassy_echo_priv *epriv; 
-	ins = kmalloc(sizeof(struct sassy_protocol), GFP_KERNEL);
+	ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
 
 	if(!ins)
 		goto error;
