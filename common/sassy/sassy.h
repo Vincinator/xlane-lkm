@@ -371,7 +371,7 @@ struct sassy_device {
 	struct pminfo pminfo;
 
 	int instance_id_mapping[MAX_PROTO_INSTANCES];
-	struct sassy_proto_instance[MAX_PROTO_INSTANCES] protos;
+	struct sassy_proto_instance protos[MAX_PROTO_INSTANCES];
 
 };
 
