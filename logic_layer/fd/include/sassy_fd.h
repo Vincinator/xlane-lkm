@@ -19,6 +19,7 @@ struct sassy_fd_priv {
 
 	// parent
 	struct proto_instance *ins;
+	struct sassy_device *sdev;
 
 	/* Character Device to mmap FD aliveness counter memory to user space */
 	struct device *tx_device;
