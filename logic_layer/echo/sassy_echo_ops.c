@@ -69,7 +69,7 @@ int echo_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 			write_log(&ins->logger, LOG_ECHO_RX_PING, rdtsc());
 
 			// reply back to sender
-			setup_echo_msg(&sdev->pminfo, remote_lid, tx_ts, SASSY_PONG);
+			setup_echo_msg(&epriv->sdev->pminfo, remote_lid, tx_ts, SASSY_PONG);
 			break;
 		case SASSY_PONG:
 			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
