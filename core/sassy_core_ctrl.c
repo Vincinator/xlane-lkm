@@ -47,11 +47,6 @@ static ssize_t sassy_rx_ctrl_write(struct file *file,
 		sassy_dbg("RX disabled\n");
 
 	} else {
-		if (!sdev->proto) {
-			sassy_error("Protocol must be selected first!\n");
-			sdev->rx_state = SASSY_RX_DISABLED;
-			return count;
-		}
 		sdev->rx_state = SASSY_RX_ENABLED;
 		sassy_dbg("RX enabled\n");
 	}

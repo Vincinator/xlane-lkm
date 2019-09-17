@@ -192,11 +192,6 @@ static int _validate_pm(struct sassy_device *sdev,
 		return -ENODEV;
 	}
 
-	if (!sdev->proto) {
-		sassy_error("No Protocol is selected. Aborting.\n");
-		return -EPERM;
-	}
-
 	if (!sdev || !sdev->ndev) {
 		sassy_error("netdevice is NULL\n");
 		return -EINVAL;
