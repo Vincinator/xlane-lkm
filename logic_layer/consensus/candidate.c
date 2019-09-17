@@ -63,7 +63,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 		return HRTIMER_NORESTART;
 	}
 
-	setup_nomination(sdev);
+	setup_nomination(priv->ins);
 
 	timeout = get_rnd_timeout(priv->c_retries * priv->ct_min, priv->c_retries * priv->ct_max);
 
