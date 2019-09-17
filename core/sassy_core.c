@@ -108,6 +108,9 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	if (unlikely(!sproto || !lesproto))
 		return;
 
+	// TODO: iterate through sub protocols of sassy packet
+	//			.. and call protocol handlers
+
 	lesproto->ctrl_ops.post_payload(sdev, remote_mac, (void *)payload);
 
 	if (sdev->ts_state == SASSY_TS_RUNNING)
