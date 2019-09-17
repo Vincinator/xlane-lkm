@@ -20,6 +20,7 @@
 #include <linux/time.h>
 
 #include <sassy/sassy.h>
+#include <sassy/payload_helper.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PACEMAKER]"

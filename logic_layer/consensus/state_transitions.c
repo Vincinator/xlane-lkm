@@ -60,6 +60,7 @@ int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u
 	pkt_payload =
      	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
 
+    // TODO: consider consensus instances!
 	pkt_payload_sub = 
  		sassy_reserve_proto(pkt_payload, SASSY_PROTO_CON_PAYLOAD_SZ, SASSY_PROTO_CONSENSUS);
 
