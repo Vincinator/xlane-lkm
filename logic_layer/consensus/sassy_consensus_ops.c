@@ -129,7 +129,7 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 	if(!consensus_is_alive(priv))
 		return 0;
 
-	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
+	get_cluster_ids(priv->sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if(remote_lid == -1 || rcluster_id == -1)
 		return -1;
