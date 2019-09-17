@@ -125,7 +125,7 @@ static int __init sassy_consensus_init(void)
 	return 0;
 }
 
-struct proto_instance *get_consensus_instance(struct sassy_device *sdev)
+struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
 {
 	struct consensus_priv *cpriv;
 	struct proto_instance *ins;
