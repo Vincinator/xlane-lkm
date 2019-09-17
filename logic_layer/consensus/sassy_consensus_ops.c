@@ -72,13 +72,13 @@ int consensus_stop(struct proto_instance *ins)
 
 	switch(priv->nstate) {
 		case FOLLOWER:
-			stop_follower(ins);
+			stop_follower(priv);
 			break;
 		case CANDIDATE:
-			stop_candidate(ins);
+			stop_candidate(priv);
 			break;
 		case LEADER:
-			stop_leader(ins);
+			stop_leader(priv);
 			break;
 	}
 	le_state_transition_to(priv, LE_READY);
