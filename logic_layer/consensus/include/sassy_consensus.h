@@ -86,7 +86,7 @@ struct consensus_priv {
 	int votes;
 };
 
-int node_transition(struct sassy_device *sdev, enum node_state state);
+int node_transition(struct consensus_priv *priv, enum node_state state);
 
 struct consensus_priv *con_priv(void);
 ktime_t get_rnd_timeout(int min, int max);

@@ -155,7 +155,7 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 		write_log(&ins->logger, START_CONSENSUS, rdtsc());
 
 		// Transition to Follower State
-		err = node_transition(priv, FOLLOWER);
+		err = node_transition(ins, FOLLOWER);
 
 		sassy_log_le("%s, %llu, %d: Warmup done! \n",
 			nstate_string(priv->nstate),
@@ -169,13 +169,13 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 
 	switch (priv->nstate) {
 	case FOLLOWER:
-		follower_process_pkt(priv, remote_lid, rcluster_id, payload);
+		follower_process_pkt(ins, remote_lid, rcluster_id, payload);
 		break;
 	case CANDIDATE:
-		candidate_process_pkt(priv, remote_lid, rcluster_id,  payload);
+		candidate_process_pkt(ins, remote_lid, rcluster_id,  payload);
 		break;
 	case LEADER:
-		leader_process_pkt(priv, remote_lid, rcluster_id, payload);
+		leader_process_pkt(ins, remote_lid, rcluster_id, payload);
 		break;
 	default:
 		sassy_error("Unknown state - BUG\n");
