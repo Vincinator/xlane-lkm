@@ -31,6 +31,6 @@ char *sassy_get_proto(struct sassy_payload *spay, int n);
 char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_id);
 void invalidate_proto_data(struct sassy_payload *spay);
 
-handle_payload_fun get_payload_handler(int protocol_id);
+handle_payload_fun get_payload_handler(enum sassy_protocol_type protocol_id);
 
 
