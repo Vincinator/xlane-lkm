@@ -4,6 +4,6 @@
 
 #include "sassy_consensus.h"
 
-int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_id, unsigned char *pkt);
-int start_leader(struct sassy_device *sdev);
-int stop_leader(struct sassy_device *sdev);
+int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt);
+int start_leader(struct proto_instance *ins);
+int stop_leader(struct proto_instance *ins);

@@ -34,7 +34,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 		return HRTIMER_NORESTART;
 
 	priv->c_retries++;
-	write_log(&sdev->le_logger, CANDIDATE_TIMEOUT, rdtsc());
+	write_log(&priv->ins->logger, CANDIDATE_TIMEOUT, rdtsc());
 	
 	/* The candidate can not get a majority from the cluster.
 	 * Probably less than the required majority of nodes are alive. 
@@ -81,11 +81,11 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	
 }
 
-void reset_ctimeout(struct sassy_device *sdev)
+void reset_ctimeout(struct proto_instance *ins)
 {
 	ktime_t timeout;
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+			(struct consensus_priv *)ins->proto_data;
 
 	priv->c_retries = 0;
 	timeout = get_rnd_timeout(priv->ct_min, priv->ct_max);
@@ -103,12 +103,13 @@ void reset_ctimeout(struct sassy_device *sdev)
 
 }
 
-void init_ctimeout(struct sassy_device *sdev)
+void init_ctimeout(struct proto_instance *ins)
 {
 	int ftime_ns;
 	ktime_t timeout;
+
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 	
 	if(priv->ctimer_init == 1) {
 		reset_ctimeout(sdev);
@@ -134,23 +135,24 @@ void init_ctimeout(struct sassy_device *sdev)
 	hrtimer_start_range_ns(&priv->ctimer, timeout, HRTIMER_MODE_REL_PINNED, TOLERANCE_CTIMEOUT_NS);
 }
 
-int setup_nomination(struct sassy_device *sdev)
+int setup_nomination(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 
 	priv->term++;
 	priv->votes = 1; // start with selfvote
 
-	setup_le_broadcast_msg(sdev, NOMI);
+	setup_le_broadcast_msg(priv, NOMI);
 	return 0;
 }
 
-void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt) 
+void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt) 
 {
-	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
 	int err;
+
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
 
 	priv->votes++;
 
@@ -163,9 +165,9 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 					sdev->pminfo.num_of_targets + 1);
 #endif
 
-	write_log(&sdev->le_logger, CANDIDATE_ACCEPT_VOTE, rdtsc());
+	write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, rdtsc());
 
-	if (priv->votes * 2 >= (sdev->pminfo.num_of_targets + 1)) {
+	if (priv->votes * 2 >= (priv->sdev->pminfo.num_of_targets + 1)) {
 
 #if 0
 		sassy_log_le("%s, %llu, %d: got majority with %d from %d possible votes \n",
@@ -176,23 +178,23 @@ void accept_vote(struct sassy_device *sdev, int remote_lid, unsigned char *pkt)
 				sdev->pminfo.num_of_targets);
 #endif
 
-		err = node_transition(sdev, LEADER);
-		write_log(&sdev->le_logger, CANDIDATE_BECOME_LEADER, rdtsc());
+		err = node_transition(priv, LEADER);
+		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, rdtsc());
 
 		if (err) {
 			sassy_error("Error occured during the transition to leader role\n");
 			return;
 		}
 	}else {
-		reset_ctimeout(sdev);
+		reset_ctimeout(priv);
 	}
 
 }
 
-int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_id, unsigned char *pkt)
+int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 
 	u8 opcode = GET_LE_PAYLOAD(pkt, opcode);
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
@@ -204,14 +206,14 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 #endif
 	switch(opcode){
 	case VOTE:
-		accept_vote(sdev, remote_lid, pkt);
+		accept_vote(priv, remote_lid, pkt);
 		break;
 	case NOMI:
 
 		// Nomination from Node with higher term - cancel own candidature and vote for higher term
 		if(param1 > priv->term){
-			node_transition(sdev, FOLLOWER);
-			reply_vote(sdev, remote_lid, rcluster_id, param1, param2);
+			node_transition(priv, FOLLOWER);
+			reply_vote(priv, remote_lid, rcluster_id, param1, param2);
 		}
 
 		break;		
@@ -224,8 +226,8 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
-			accept_leader(sdev, remote_lid, rcluster_id, param1);
-			write_log(&sdev->le_logger, CANDIDATE_ACCEPT_NEW_LEADER, rdtsc());
+			accept_leader(priv, remote_lid, rcluster_id, param1);
+			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, rdtsc());
 
 		} else {
 #if 0
@@ -245,10 +247,10 @@ int candidate_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluste
 	return 0;
 }
 
-int stop_candidate(struct sassy_device *sdev)
+int stop_candidate(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 
 	if(priv->ctimer_init == 0)
 		return 0;
@@ -258,18 +260,18 @@ int stop_candidate(struct sassy_device *sdev)
 	return hrtimer_cancel(&priv->ctimer) == 1;
 }
 
-int start_candidate(struct sassy_device *sdev)
+int start_candidate(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 
 	priv->votes = 0;
 	priv->nstate = CANDIDATE;
 
 	sassy_dbg("Initialization finished.\n");
 
-	setup_nomination(sdev);
-	init_ctimeout(sdev);
+	setup_nomination(priv);
+	init_ctimeout(priv);
 
 	sassy_dbg("Candidate started.\n");
 

@@ -5,11 +5,12 @@
 #include "include/sassy_fdtx.h"
 
 
-int fd_init(struct sassy_device *sdev)
+int fd_init(struct proto_instance *ins)
 {
 	int err = 0;
 	struct sassy_protocol *sproto;
-	struct sassy_fd_priv *priv;
+	struct sassy_fd_priv *priv = 
+		(struct sassy_fd_priv *)ins->proto_data;
 
 	err = sassy_bypass_init_class(sdev);
 
@@ -51,27 +52,38 @@ int fd_init_payload(void *payload)
 	return 0;
 }
 
-int fd_start(struct sassy_device *sdev)
+int fd_start(struct proto_instance *ins)
 {
+	struct sassy_fd_priv *priv = 
+		(struct sassy_fd_priv *)ins->proto_data;
+
 	sassy_dbg("fd start\n");
 	return 0;
 }
 
-int fd_stop(struct sassy_device *sdev)
+int fd_stop(struct proto_instance *ins)
 {
+	struct sassy_fd_priv *priv = 
+		(struct sassy_fd_priv *)ins->proto_data;
 	sassy_dbg("fd stop\n");
 	return 0;
 }
 
-int fd_clean(struct sassy_device *sdev)
+int fd_clean(struct proto_instance *ins)
 {
+	struct sassy_fd_priv *priv = 
+		(struct sassy_fd_priv *)ins->proto_data;
+
 	sassy_clean_class(sdev);
 	sassy_dbg("fd clean\n");
 	return 0;
 }
 
-int fd_info(struct sassy_device *sdev)
+int fd_info(struct proto_instance *ins)
 {
+	struct sassy_fd_priv *priv = 
+		(struct sassy_fd_priv *)ins->proto_data;
+
 	sassy_dbg("fd info\n");
 	return 0;
 }
@@ -80,11 +92,13 @@ int fd_info(struct sassy_device *sdev)
  * If aliveness counter of US application did not update,
  * then mark corresponding state as down in HB packet of FD protocol
  */
-int fd_us_update(struct sassy_device *sdev, void *payload)
+int fd_us_update(struct proto_instance *ins, void *payload)
 {
 	int i;
 	struct sassy_protocol *sproto = sdev->proto;
-	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)sproto->priv;
+	struct sassy_fd_priv *priv = 
+		(struct sassy_fd_priv *)ins->proto_data;
+
 	struct fd_payload *cur_p = (struct fd_payload *)payload;
 
 	struct fd_aliveness_counters *last_counters =
@@ -118,7 +132,7 @@ int fd_us_update(struct sassy_device *sdev, void *payload)
 	return 0;
 }
 
-int fd_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
+int fd_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 		    void *payload)
 {
 	// .. Test only ..
@@ -131,7 +145,7 @@ int fd_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 		sassy_dbg("fd payload received\n");
 }
 
-int fd_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
+int fd_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 	       uint64_t ts)
 {
 	if (sdev->verbose >= 3) {

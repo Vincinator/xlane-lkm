@@ -9,12 +9,10 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][LE][LEADER]"
 
-int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_id, unsigned char *pkt)
+int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
-
 	struct consensus_priv *priv = 
-			(struct consensus_priv *)sdev->le_proto->priv;
-
+		(struct consensus_priv *)ins->proto_data;
 
 	u8 opcode = GET_LE_PAYLOAD(pkt, opcode);
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
@@ -38,8 +36,8 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_i
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
-			accept_leader(sdev, remote_lid, rcluster_id, param1);
-			write_log(&sdev->le_logger, LEADER_ACCEPT_NEW_LEADER, rdtsc());
+			accept_leader(priv, remote_lid, rcluster_id, param1);
+			write_log(&ins->logger, LEADER_ACCEPT_NEW_LEADER, rdtsc());
 
 
 		} else {
@@ -65,18 +63,18 @@ int leader_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_i
 	return 0;
 }
 
-int stop_leader(struct sassy_device *sdev)
+int stop_leader(struct proto_instance *ins)
 {
 
 	return 0;
 }
 
-int start_leader(struct sassy_device *sdev)
+int start_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
-	
-	setup_le_broadcast_msg(sdev, LEAD);
+		(struct consensus_priv *)ins->proto_data;
+
+	setup_le_broadcast_msg(priv, LEAD);
 
 	priv->nstate = LEADER;
 	

@@ -22,7 +22,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	if(priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
 		return HRTIMER_NORESTART;
 
-	write_log(&sdev->le_logger, FOLLOWER_TIMEOUT, rdtsc());
+	write_log(&priv->ins->logger, FOLLOWER_TIMEOUT, rdtsc());
 
 #if 0
 	if(sdev->verbose >= 1)
@@ -36,7 +36,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 #endif
 
 	err = node_transition(sdev, CANDIDATE);
-	write_log(&sdev->le_logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
+	write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
 
 	if (err){
 		sassy_dbg("Error occured during the transition to candidate role\n");
@@ -46,10 +46,10 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
-void reply_vote(struct sassy_device *sdev, int remote_lid, int rcluster_id, int param1, int param2)
+void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int param1, int param2)
 {
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 #if 0
 
 	sassy_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
@@ -63,14 +63,14 @@ void reply_vote(struct sassy_device *sdev, int remote_lid, int rcluster_id, int 
 	setup_le_msg(&priv->sdev->pminfo, VOTE, remote_lid, param1);
 	priv->voted = param1;
 
-	write_log(&sdev->le_logger, VOTE_FOR_CANDIDATE, rdtsc());
+	write_log(&ins->logger, VOTE_FOR_CANDIDATE, rdtsc());
 
 }
 
-int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster_id, unsigned char *pkt)
+int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
 	struct consensus_priv *priv = 
-			(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 
 	u8 opcode = GET_LE_PAYLOAD(pkt, opcode);
 	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
@@ -111,7 +111,7 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 #endif
 
 			accept_leader(sdev, remote_lid, rcluster_id, param1);
-			write_log(&sdev->le_logger, FOLLOWER_ACCEPT_NEW_LEADER, rdtsc());
+			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, rdtsc());
 			reset_ftimeout(sdev);
 
 		} 
@@ -158,12 +158,12 @@ int follower_process_pkt(struct sassy_device *sdev, int remote_lid, int rcluster
 	return 0;
 }
 
-void init_timeout(struct sassy_device *sdev)
+void init_timeout(struct proto_instance *ins)
 {
 	int ftime_ns;
-	ktime_t timeout;
+	ktime_t timeout;	
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 
 	if(priv->ftimer_init == 1) {
 		reset_ftimeout(sdev);
@@ -188,11 +188,11 @@ void init_timeout(struct sassy_device *sdev)
 	hrtimer_start_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS, HRTIMER_MODE_REL_PINNED);
 }
 
-void reset_ftimeout(struct sassy_device *sdev)
+void reset_ftimeout(struct proto_instance *ins)
 {
 	ktime_t timeout;
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 
 	timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
 
@@ -210,10 +210,10 @@ void reset_ftimeout(struct sassy_device *sdev)
 #endif
 }
 
-int stop_follower(struct sassy_device *sdev)
+int stop_follower(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 
 	if(priv->ftimer_init == 0)
 		return 0;
@@ -223,14 +223,13 @@ int stop_follower(struct sassy_device *sdev)
 	return hrtimer_cancel(&priv->ftimer) == 1;
 }
 
-int start_follower(struct sassy_device *sdev)
+int start_follower(struct proto_instance *ins)
 {
 	int err;
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
-
-
-	err = setup_le_broadcast_msg(sdev, NOOP);
+		(struct consensus_priv *)ins->proto_data;
+	
+	err = setup_le_broadcast_msg(priv, NOOP);
 	
 	if(err)
 		goto error;

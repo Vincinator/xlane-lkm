@@ -10,11 +10,10 @@
 
 
 
-int consensus_init(struct sassy_device *sdev)
+int consensus_init(struct proto_instance *ins)
 {
-	
 	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
+		(struct consensus_priv *)ins->proto_data;
 
 	priv->sdev = sdev;
 	priv->ctimer_init = 0;
@@ -37,12 +36,15 @@ int consensus_init_payload(void *payload)
 	return 0;
 }
 
-int consensus_start(struct sassy_device *sdev)
+int consensus_start(struct proto_instance *ins)
 {
 	int err;
-	struct consensus_priv *priv = (struct consensus_priv *) sdev->le_proto->priv;
 
-	if(consensus_is_alive(sdev)){
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
+
+
+	if(consensus_is_alive(priv)){
 		sassy_dbg("Consensus is already running!\n");
 		return 0;
 	}
@@ -50,7 +52,7 @@ int consensus_start(struct sassy_device *sdev)
 	if (err)
 		goto error;
 
-	le_state_transition_to(sdev, LE_RUNNING);
+	le_state_transition_to(priv, LE_RUNNING);
 
 	return 0;
 
@@ -59,17 +61,12 @@ error:
 	return err;
 }
 
-int consensus_stop(struct sassy_device *sdev)
+int consensus_stop(struct proto_instance *ins)
 {
-	struct consensus_priv *priv;	
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
 
-
-	if(!consensus_is_alive(sdev))
-		return 0;
-
-	priv = (struct consensus_priv *)sdev->le_proto->priv;
-
-	if(!priv)
+	if(!consensus_is_alive(priv))
 		return 0;
 	
 	sassy_dbg("consensus stop\n");
@@ -95,7 +92,7 @@ int consensus_stop(struct sassy_device *sdev)
 	return 0;
 }
 
-int consensus_clean(struct sassy_device *sdev)
+int consensus_clean(struct proto_instance *ins)
 {
 	sassy_dbg("consensus clean\n");
 	le_state_transition_to(sdev, LE_UNINIT);
@@ -103,14 +100,14 @@ int consensus_clean(struct sassy_device *sdev)
 	return 0;
 }
 
-int consensus_info(struct sassy_device *sdev)
+int consensus_info(struct proto_instance *ins)
 {
 	sassy_dbg("consensus info\n");
 	return 0;
 }
 
 
-int consensus_us_update(struct sassy_device *sdev, void *payload)
+int consensus_us_update(struct proto_instance *ins, void *payload)
 {
 	sassy_dbg("consensus update\n");
 
@@ -118,17 +115,17 @@ int consensus_us_update(struct sassy_device *sdev, void *payload)
 	return 0;
 }
 
-int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
+int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 		    void *payload)
 {
 	struct sassy_protocol *sproto = sdev->le_proto;
-	struct consensus_priv *priv =
-		(struct consensus_priv *)sproto->priv;
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
 	int remote_lid, rcluster_id;
 	int err, i;
 	struct pminfo *spminfo = &sdev->pminfo;
 
-	if(!consensus_is_alive(sdev))
+	if(!consensus_is_alive(priv))
 		return 0;
 
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
@@ -155,10 +152,10 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 				return 0;
 
 		priv->warmup_state = WARMED_UP;
-		write_log(&sdev->le_logger, START_CONSENSUS, rdtsc());
+		write_log(&ins->logger, START_CONSENSUS, rdtsc());
 
 		// Transition to Follower State
-		err = node_transition(sdev, FOLLOWER);
+		err = node_transition(priv, FOLLOWER);
 
 		sassy_log_le("%s, %llu, %d: Warmup done! \n",
 			nstate_string(priv->nstate),
@@ -172,13 +169,13 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 
 	switch (priv->nstate) {
 	case FOLLOWER:
-		follower_process_pkt(sdev, remote_lid, rcluster_id, payload);
+		follower_process_pkt(priv, remote_lid, rcluster_id, payload);
 		break;
 	case CANDIDATE:
-		candidate_process_pkt(sdev, remote_lid, rcluster_id,  payload);
+		candidate_process_pkt(priv, remote_lid, rcluster_id,  payload);
 		break;
 	case LEADER:
-		leader_process_pkt(sdev, remote_lid, rcluster_id, payload);
+		leader_process_pkt(priv, remote_lid, rcluster_id, payload);
 		break;
 	default:
 		sassy_error("Unknown state - BUG\n");
@@ -187,7 +184,7 @@ int consensus_post_payload(struct sassy_device *sdev, unsigned char *remote_mac,
 	return 0;
 }
 
-int consensus_post_ts(struct sassy_device *sdev, unsigned char *remote_mac,
+int consensus_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 	       uint64_t ts)
 {
 	// if(consensus_is_alive(sdev))

@@ -249,7 +249,7 @@ struct le_payload {
 };
 
 
-struct sassy_proto_instance {
+struct proto_instance {
 
 	enum sassy_protocol_type proto_type;
 	
@@ -371,7 +371,7 @@ struct sassy_device {
 	struct pminfo pminfo;
 
 	int instance_id_mapping[MAX_PROTO_INSTANCES];
-	struct sassy_proto_instance protos[MAX_PROTO_INSTANCES];
+	struct proto_instance protos[MAX_PROTO_INSTANCES];
 
 };
 
@@ -379,27 +379,27 @@ struct sassy_protocol_ctrl_ops {
 	int (*init_ctrl)(void);
 
 	/* Initializes data and user space interfaces */
-	int (*init)(struct sassy_device *);
+	int (*init)(struct proto_instance *);
 
 	int (*init_payload)(void *payload);
 
-	int (*start)(struct sassy_device *);
+	int (*start)(struct proto_instance *);
 
-	int (*stop)(struct sassy_device *);
+	int (*stop)(struct proto_instance *);
 
-	int (*us_update)(struct sassy_device *, void *payload);
+	int (*us_update)(struct proto_instance *, void *payload);
 
 	/* free memory of app and remove user space interfaces */
-	int (*clean)(struct sassy_device *);
+	int (*clean)(struct proto_instance *);
 
-	int (*post_payload)(struct sassy_device *, unsigned char *remote_mac,
+	int (*post_payload)(struct proto_instance *, unsigned char *remote_mac,
 			    void *payload);
 
-	int (*post_ts)(struct sassy_device *, unsigned char *remote_mac,
+	int (*post_ts)(struct proto_instance *, unsigned char *remote_mac,
 		       uint64_t ts);
 
 	/* Write statistics to debug console  */
-	int (*info)(struct sassy_device *);
+	int (*info)(struct proto_instance *);
 };
 
 struct sassy_protocol {
@@ -532,7 +532,7 @@ int sassy_log_start(struct sassy_logger *slog);
 int sassy_log_reset(struct sassy_logger *slog);
 
 const char *logger_state_string(enum logger_state state);
-int consensus_is_alive(struct sassy_device *sdev);
+int consensus_is_alive(struct consensus_priv *sdev);
 char *le_state_name(struct sassy_device *sdev);
 void set_all_targets_dead(struct sassy_device *sdev);
 void remove_logger_ifaces(struct sassy_logger *slog);

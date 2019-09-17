@@ -59,14 +59,8 @@ const char *opcode_string(enum le_opcode opcode)
 	}
 }
 
-int consensus_is_alive(struct sassy_device *sdev)
+int consensus_is_alive(struct consensus_priv *priv)
 {
-	struct consensus_priv *priv;
-
-	if(!sdev->le_proto)
-		return 0;
-
-	priv = (struct consensus_priv *)sdev->le_proto->priv;
 
 	if(priv->state != LE_RUNNING)
 		return 0;

@@ -77,10 +77,8 @@ int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u
 	return 0;
 }
 
-int setup_le_broadcast_msg(struct sassy_device *sdev, enum le_opcode opcode)
+int setup_le_broadcast_msg(struct consensus_priv *priv, enum le_opcode opcode)
 {
-	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
 	int i;
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
@@ -89,10 +87,8 @@ int setup_le_broadcast_msg(struct sassy_device *sdev, enum le_opcode opcode)
 	return 0;
 }
 
-void accept_leader(struct sassy_device *sdev, int remote_lid, int cluster_id, u32 term)
+void accept_leader(struct consensus_priv *priv, int remote_lid, int cluster_id, u32 term)
 {
-	struct consensus_priv *priv = 
-			(struct consensus_priv *)sdev->le_proto->priv;
 
 #if 0
 	sassy_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
@@ -105,17 +101,11 @@ void accept_leader(struct sassy_device *sdev, int remote_lid, int cluster_id, u3
 
 	priv->term = term;
 	priv->leader_id = remote_lid;
-	node_transition(sdev, FOLLOWER);
+	node_transition(priv, FOLLOWER);
 }
 
-void le_state_transition_to(struct sassy_device *sdev, enum le_state state)
+void le_state_transition_to(struct consensus_priv *priv, enum le_state state)
 {
-	struct consensus_priv *priv;
-
-	if(!sdev || !sdev->le_proto)
-		return;
-
-	priv = (struct consensus_priv *)sdev->le_proto->priv;
 #if 0
 	if(sdev->verbose >= 1)
 		sassy_dbg("Leader Election Activation State Transition from %s to %s \n", _le_state_name(priv->state), _le_state_name(state));
@@ -124,10 +114,8 @@ void le_state_transition_to(struct sassy_device *sdev, enum le_state state)
 
 }
 
-int node_transition(struct sassy_device *sdev, enum node_state state)
+int node_transition(struct consensus_priv *priv, enum node_state state)
 {
-	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
 	int err = 0;
 
 	priv->votes = 0; // start with 0 votes on every transition
@@ -135,10 +123,10 @@ int node_transition(struct sassy_device *sdev, enum node_state state)
 	// Stop old timeouts 
 	switch(state){
 		case FOLLOWER:
-			stop_follower(sdev);
+			stop_follower(priv);
 			break;
 		case CANDIDATE:
-			stop_candidate(sdev);
+			stop_candidate(priv);
 			break;
 		default:
 			break;
@@ -146,13 +134,13 @@ int node_transition(struct sassy_device *sdev, enum node_state state)
 
 	switch (state) {
 	case FOLLOWER:
-		err = start_follower(sdev);
+		err = start_follower(priv);
 		break;
 	case CANDIDATE:
-		err = start_candidate(sdev);
+		err = start_candidate(priv);
 		break;
 	case LEADER:
-		err = start_leader(sdev);
+		err = start_leader(priv);
 		break;
 	default:
 		sassy_error("Unknown node state %d\n - abort", state);
