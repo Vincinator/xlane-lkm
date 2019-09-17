@@ -125,7 +125,7 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 		(struct consensus_priv *)ins->proto_data;
 	int remote_lid, rcluster_id;
 	int err, i;
-	struct pminfo *spminfo = &sdev->pminfo;
+	struct pminfo *spminfo = &priv->sdev->pminfo;
 
 	if(!consensus_is_alive(priv))
 		return 0;
