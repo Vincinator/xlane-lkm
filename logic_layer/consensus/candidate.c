@@ -247,11 +247,9 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	return 0;
 }
 
-int stop_candidate(struct proto_instance *ins)
+int stop_candidate(struct consensus_priv *priv)
 {
-	struct consensus_priv *priv = 
-		(struct consensus_priv *)ins->proto_data;
-
+	
 	if(priv->ctimer_init == 0)
 		return 0;
 
@@ -260,11 +258,8 @@ int stop_candidate(struct proto_instance *ins)
 	return hrtimer_cancel(&priv->ctimer) == 1;
 }
 
-int start_candidate(struct proto_instance *ins)
+int start_candidate(struct consensus_priv *priv)
 {
-	struct consensus_priv *priv = 
-		(struct consensus_priv *)ins->proto_data;
-
 	priv->votes = 0;
 	priv->nstate = CANDIDATE;
 
