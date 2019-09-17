@@ -22,10 +22,9 @@
 
 #define MAX_REMOTE_SOURCES 16
 
-
 #define MIN_HB_CYCLES 100000
 #define MAX_HB_CYCLES 1000000000
-
+						
 #define CYCLES_PER_1MS 2400000
 #define CYCLES_PER_5MS 12000000
 #define CYCLES_PER_10MS 24000000
@@ -36,6 +35,9 @@
 #define SASSY_MLX5_DEVICES_LIMIT                                               \
 	5 /* Number of allowed mlx5 devices that can connect to SASSY */
 #define MAX_CPU_NUMBER 55
+
+
+#define MAX_SASSY_PAYLOAD_BYTES 1024 // asuming an ethernet mtu of ~1500 bytes
 
 #define SASSY_PAYLOAD_BYTES 64
 #define SASSY_HEADER_BYTES                                                     \
@@ -48,7 +50,40 @@ int sassy_core_register_nic(int ifindex);
 #define TIMESTAMP_ARRAY_LIMIT	100000
 #define LE_EVENT_LOG_LIMIT 		100000
 
+#define MAX_PROTOS_PER_PKT 2
+
+
+
 #define DEFAULT_HB_INTERVAL CYC_1MS
+
+
+/* 
+ * Each heartbeat contains one of the following operations 
+ *
+ * NOOP: 			This heartbeat does not contain an update
+ *					for the leader election
+ *
+ * NOMI(TERM): 		The sender of this message has nominated
+ *					itself to become the new leader of the cluster
+ *			   		for the given TERM (parameter1).
+ *
+ * VOTE(TERM,ID): 	The sender voted for the node with 
+ *					the given ID (parameter2) to become
+ *					the new leader in the TERM (parameter1).
+ *
+ * LEAD(TERM):		The sender is the active leader of the cluster.
+ *					The receiver accepts the leader if the term is
+ *					greater or equal the receivers localy stored term
+ *					value.
+ */
+enum le_opcode {
+	NOOP = 0,
+	NOMI = 1,
+	VOTE = 2,
+	LEAD = 3,
+};
+
+
 enum hb_interval {
 	CYC_1MS = 1,
 	CYC_5MS = 2,
@@ -84,7 +119,6 @@ struct sassy_stats {
 	struct sassy_timestamp_logs **timestamp_logs;
 	int timestamp_amount; /* how many different timestamps types are tracked*/
 };
-
 
 enum le_event_type {
 
@@ -166,6 +200,7 @@ enum sassy_protocol_type {
 	SASSY_PROTO_ECHO = 0,
 	SASSY_PROTO_FD = 1,
 	SASSY_PROTO_CONSENSUS = 2,
+
 };
 
 typedef enum sassy_protocol_type sassy_protocol_t;
@@ -194,15 +229,50 @@ struct node_addr {
 	unsigned char dst_mac[6];
 }; 
 
-struct le_payload {
-	u16 opcode;
- 	u32 param1;
-	u32 param2; 
+
+struct log_entry {
+	u32 var_id;
+	u32 value;
 };
 
+struct protocol_payload {
+	u8 protocol_id; 
+	char data[]; // implicitly specified via protocol_id
+};
+
+
+struct le_payload {
+	u16 opcode;
+	u32 param1;
+	u32 param2;
+};
+
+struct protocol_payload {
+	u8 protocol_id;
+	u16 next_offset;
+	
+}
+
+
 struct sassy_payload {
-	struct le_payload lep;
-	char other_payload[64]; // TODO: size of payload..
+	
+	/* The number of protocols that are included in this payload.
+	 * If 0, then this payload is interpreted as "noop" operation 
+	 * 		 .. for all local proto instances
+	 */
+	u8 protocols_included;
+
+	/* Pointer to the first protocol payload.  
+	 *
+	 * TODO: The first value of the protocol payload must be a protocol id of type u8.
+	 * TODO: Protocols with a variable payload size (e.g. consensus lead)
+	 * must include the offset to the next protocol payload as u16 directly after the first value.
+	 * 
+	 * TODO: Check on creation if protocol fits in the payload (MAX_SASSY_PAYLOAD_BYTES). 
+	 * If protocol payload does not fit in the sassy payload, 
+	 * then the protocol payload is queued to be stored in the next sassy payload.
+	 */
+	char proto_data[MAX_SASSY_PAYLOAD_BYTES - 1];
 };
 
 

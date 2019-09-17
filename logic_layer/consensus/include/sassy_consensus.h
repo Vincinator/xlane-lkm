@@ -3,13 +3,10 @@
 #include <sassy/logger.h>
 #include <sassy/sassy.h>
 
-
 #define MAX_NODE_ID 5
 
 #define TOLERANCE_FTIMEOUT_NS 500000
 #define TOLERANCE_CTIMEOUT_NS 500000
-
-
 
 
 enum w_state {
@@ -41,32 +38,6 @@ enum node_state {
 	FOLLOWER = 0,
 	CANDIDATE = 1,
 	LEADER = 2,
-};
-
-/* 
- * Each heartbeat contains one of the following operations 
- *
- * NOOP: 			This heartbeat does not contain an update
- *					for the leader election
- *
- * NOMI(TERM): 		The sender of this message has nominated
- *					itself to become the new leader of the cluster
- *			   		for the given TERM (parameter1).
- *
- * VOTE(TERM,ID): 	The sender voted for the node with 
- *					the given ID (parameter2) to become
- *					the new leader in the TERM (parameter1).
- *
- * LEAD(TERM):		The sender is the active leader of the cluster.
- *					The receiver accepts the leader if the term is
- *					greater or equal the receivers localy stored term
- *					value.
- */
-enum le_opcode {
-	NOOP = 0,
-	NOMI = 1,
-	VOTE = 2,
-	LEAD = 3,
 };
 
 struct consensus_priv {
@@ -110,8 +81,6 @@ struct consensus_priv {
 	int ct_max;
 
 	struct proc_dir_entry *le_config_procfs;
-
-
 
 	/* number of followers voted for this node */
 	int votes;
