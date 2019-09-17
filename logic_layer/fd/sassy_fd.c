@@ -40,6 +40,7 @@ static int __init sassy_fd_init(void)
 struct sassy_protocol *get_fd_proto(struct sassy_device *sdev)
 {
 	struct sassy_protocol *proto;
+	struct sassy_fd_priv *fpriv; 
 
 	proto = kmalloc(sizeof(struct sassy_protocol), GFP_KERNEL);
 
@@ -50,6 +51,11 @@ struct sassy_protocol *get_fd_proto(struct sassy_device *sdev)
 	proto->ctrl_ops = fd_ops;
 	proto->name = "fd";
 	proto->priv = (void *)&fd_priv;
+
+	fpriv = (struct sassy_fd_priv *)proto->priv;
+
+	fpriv->sdev = sdev;
+
 	return proto;
 error:
 	sassy_dbg("Error in %s", __FUNCTION__);

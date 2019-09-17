@@ -149,6 +149,7 @@ struct sassy_protocol *get_consensus_proto(struct sassy_device *sdev)
 	cpriv->ct_min = MIN_CTIMEOUT_NS;
 	cpriv->ct_max = MAX_CTIMEOUT_NS;
 	cpriv->le_config_procfs = NULL;
+	cpriv->sdev = sdev;
 
 	return proto;
 error:

@@ -15,7 +15,6 @@ int consensus_init(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	priv->sdev = sdev;
 	priv->ctimer_init = 0;
 	priv->ftimer_init = 0;
 	priv->voted = -1;
