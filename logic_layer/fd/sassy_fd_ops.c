@@ -70,6 +70,7 @@ int fd_clean(struct proto_instance *ins)
 {
 	struct sassy_fd_priv *priv = 
 		(struct sassy_fd_priv *)ins->proto_data;
+	struct sassy_device *sdev = priv->sdev;
 
 	sassy_clean_class(sdev);
 	sassy_dbg("fd clean\n");
@@ -94,6 +95,7 @@ int fd_us_update(struct proto_instance *ins, void *payload)
 	int i;
 	struct sassy_fd_priv *priv = 
 		(struct sassy_fd_priv *)ins->proto_data;
+	struct sassy_device *sdev = priv->sdev;
 
 	struct fd_payload *cur_p = (struct fd_payload *)payload;
 
@@ -137,15 +139,10 @@ int fd_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 
 	//sassy_dbg("SRC MAC=%pM", remote_mac);
 
-	if (sdev->verbose >= 3)
-		sassy_dbg("fd payload received\n");
 }
 
 int fd_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 	       uint64_t ts)
 {
-	if (sdev->verbose >= 3) {
-		//sassy_dbg("SRC MAC=%pM", remote_mac);
-		sassy_dbg("fd optimistical timestamp received.\n");
-	}
+
 }
