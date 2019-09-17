@@ -52,6 +52,7 @@ int sassy_core_register_nic(int ifindex);
 
 #define MAX_PROTOS_PER_PKT 2
 
+#define MAX_PROTO_INSTANCES 8
 
 
 #define DEFAULT_HB_INTERVAL CYC_1MS
@@ -248,6 +249,16 @@ struct le_payload {
 };
 
 
+struct sassy_proto_instance {
+
+	enum sassy_protocol_type proto_type;
+	
+	struct sassy_logger logger;
+
+	void *proto_data;
+
+};
+
 struct sassy_payload {
 	
 	/* The number of protocols that are included in this payload.
@@ -359,10 +370,8 @@ struct sassy_device {
 	/* SASSY CTRL Structures */
 	struct pminfo pminfo;
 
-	struct sassy_protocol *le_proto;
-	struct sassy_protocol *proto;
-
-	struct sassy_logger le_logger;
+	int instance_id_mapping[MAX_PROTO_INSTANCES];
+	struct sassy_proto_instance[MAX_PROTO_INSTANCES] protos;
 
 };
 
@@ -528,5 +537,7 @@ char *le_state_name(struct sassy_device *sdev);
 void set_all_targets_dead(struct sassy_device *sdev);
 void remove_logger_ifaces(struct sassy_logger *slog);
 
+void init_proto_instance_ctrl(struct sassy_device *sdev);
+void remove_proto_instance_ctrl(struct sassy_device *sdev);
 
 #endif /* _SASSY_H_ */

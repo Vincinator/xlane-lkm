@@ -79,3 +79,25 @@ void invalidate_proto_data(struct sassy_payload *spay)
 	spay->protocols_included = 0;
 }
 EXPORT_SYMBOL(invalidate_proto_data);
+
+
+
+handle_payload_fun get_payload_handler(enum sassy_protocol_type ptype) 
+{
+	switch (ptype) 
+	{
+		case SASSY_PROTO_ECHO:
+		
+			break;
+		case SASSY_PROTO_FD:
+
+			break;
+		case SASSY_PROTO_CONSENSUS:
+
+			break;
+		default:
+			sassy_error("unknwon protocol. \n");
+	}
+
+	return NULL;
+}

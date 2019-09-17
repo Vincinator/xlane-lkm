@@ -13,6 +13,9 @@
   *((u32*)(((unsigned char *)p) + offsetof(struct le_payload, fld))) = v; \
 } while (0)
 
+typedef int(*handle_payload_fun)(struct sassy_device *,
+								 unsigned char *remote_mac,
+								 void *payload);
 
 #define SASSY_PROTO_CON_PAYLOAD_SZ 9
 #define SASSY_CON_METADATA_SZ 23
@@ -27,3 +30,7 @@ int get_proto_offset(char *cur);
 char *sassy_get_proto(struct sassy_payload *spay, int n);
 char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_id);
 void invalidate_proto_data(struct sassy_payload *spay);
+
+handle_payload_fun get_payload_handler(int protocol_id);
+
+

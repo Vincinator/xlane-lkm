@@ -64,6 +64,7 @@ static ssize_t proto_selector_write(struct file *file,
 
 	sproto = generate_protocol(sdev, (new_protocol & 0xFF));
 
+
 	if (!sproto) {
 		sassy_error("Could not find protocol\n");
 		return count;
@@ -85,6 +86,11 @@ static ssize_t proto_selector_write(struct file *file,
 	sdev->proto = sproto;
 	sdev->proto->ctrl_ops.init(sdev); // initializes also the protocol logger
 
+	/* Initialize Logger*/
+    
+    strncpy(sdev->le_logger.name, "le", MAX_LOGGER_NAME);
+    score->sdevices[sassy_id]->le_logger.ifindex = ifindex;
+    init_logger(&score->sdevices[sassy_id]->le_logger);
 	return count;
 }
 
