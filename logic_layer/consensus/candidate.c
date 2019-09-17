@@ -206,7 +206,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 #endif
 	switch(opcode){
 	case VOTE:
-		accept_vote(priv, remote_lid, pkt);
+		accept_vote(ins, remote_lid, pkt);
 		break;
 	case NOMI:
 
