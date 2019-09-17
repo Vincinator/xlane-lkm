@@ -61,7 +61,7 @@ int echo_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 			(struct sassy_echo_priv *)ins->proto_data;
 
 	tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
-	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
+	get_cluster_ids(epriv->sdev, remote_mac, &remote_lid, &rcluster_id);
 	
 	switch(opcode){
 		case SASSY_PING:
