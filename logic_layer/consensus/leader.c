@@ -63,15 +63,19 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	return 0;
 }
 
-int stop_leader(struct consensus_priv *priv)
+int stop_leader(struct proto_instance *ins)
 {
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
 
 	return 0;
 }
 
-int start_leader(struct consensus_priv *priv)
+int start_leader(struct proto_instance *ins)
 {
-	
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
+
 	setup_le_broadcast_msg(priv, LEAD);
 
 	priv->nstate = LEADER;

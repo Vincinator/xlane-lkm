@@ -210,8 +210,11 @@ void reset_ftimeout(struct proto_instance *ins)
 #endif
 }
 
-int stop_follower(struct consensus_priv *priv)
+int stop_follower(struct proto_instance *ins)
 {
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
+
 	if(priv->ftimer_init == 0)
 		return 0;
 
@@ -220,9 +223,11 @@ int stop_follower(struct consensus_priv *priv)
 	return hrtimer_cancel(&priv->ftimer) == 1;
 }
 
-int start_follower(struct consensus_priv *priv)
+int start_follower(struct proto_instance *ins)
 {
 	int err;
+	struct consensus_priv *priv = 
+			(struct consensus_priv *)ins->proto_data;
 	
 	err = setup_le_broadcast_msg(priv, NOOP);
 	
@@ -232,7 +237,7 @@ int start_follower(struct consensus_priv *priv)
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;
 
-	init_timeout(sdev);
+	init_timeout(ins);
 
 #if 0
 	sassy_dbg("Node became a follower\n");
