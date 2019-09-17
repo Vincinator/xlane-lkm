@@ -516,7 +516,7 @@ struct sassy_protocol *get_fd_proto(struct sassy_device *sdev);
 struct sassy_protocol *get_echo_proto(struct sassy_device *sdev);
 
 void get_cluster_ids(struct sassy_device *sdev, unsigned char *remote_mac, int *lid, int *cid);
-void set_le_noop(struct sassy_device *sdev, unsigned char *pkt);
+//void set_le_noop(struct sassy_device *sdev, unsigned char *pkt);
 void set_le_term(unsigned char *pkt, u32 term);
 int compare_mac(unsigned char *m1, unsigned char *m2);
 

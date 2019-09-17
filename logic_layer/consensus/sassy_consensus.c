@@ -98,17 +98,6 @@ void set_le_term(unsigned char *pkt, u32 p1)
 	SET_LE_PAYLOAD(pkt, param1, p1);
 }
 
-void set_le_noop(struct sassy_device *sdev, unsigned char *pkt)
-{
-	struct consensus_priv *priv = 
-				(struct consensus_priv *)sdev->le_proto->priv;
-
-	if(priv->nstate != LEADER)
-		SET_LE_PAYLOAD(pkt, opcode, NOOP);
-	else
-		SET_LE_PAYLOAD(pkt, opcode, LEAD);
-
-}
 
 void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2)
 {
