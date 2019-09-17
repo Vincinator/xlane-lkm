@@ -59,6 +59,8 @@ int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u
 	pkt_payload =
      	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
 
+	// TODO: get correct sub payload ptr
+     	
 	set_le_opcode((unsigned char*)pkt_payload, opcode, term, 0);
 	
 	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
