@@ -2,47 +2,6 @@
 #include <sassy/payload_helper.h>
 
 
-int get_proto_offset(char *cur)
-{
-	u8 protocol_id = *((u8 *) cur);
-	u8 *con_opcode;
-	u16 log_entries;
-
-	switch(protocol_id) 
-	{
-		case SASSY_PROTO_ECHO:
-			return SASSY_PROTO_ECHO_PAYLOAD_SIZE;
-		case SASSY_PROTO_FD:
-			return SASSY_PROTO_FD_PAYLOAD_SIZE;
-		case SASSY_PROTO_CONSENSUS:
-
-			// skip protocol id (u8) and get opcode
-			con_opcode = (u8 *) (cur + 1);
-
-			sassy_dbg("consensus opcode %hhu detected\n ", *con_opcode);
-
-			// LEAD opcode has variable size
-			if((enum le_opcode *) con_opcode == LEAD) {
-				// skip protocol id (u8) and skip con_opcode (u8)
-				log_entries = *(cur + 2);
-
-				sassy_dbg("detected %hhu log command entries\n", log_entries);
-
-				return SASSY_CON_METADATA_SZ + (log_entries * SASSY_CON_LOGCMD_SZ);
-			} 
-			
-			return SASSY_PROTO_CON_PAYLOAD_SZ;
-			
-		default:
-			sassy_error("unknown protocol ID \n");
-			return -EINVAL;
-	}
-
-}
-EXPORT_SYMBOL(get_proto_offset);
-
-
-
 /* Returns a pointer to the <n>th protocol of <spay>
  * 
  * If less than n protocols are included, a NULL ptr is returned
