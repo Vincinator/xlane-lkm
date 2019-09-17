@@ -90,7 +90,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
 #endif	
 			} else {
-				reply_vote(sdev, remote_lid, rcluster_id, param1, param2);
+				reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 				reset_ftimeout(ins);
 			}
 		}
@@ -110,7 +110,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 #endif
 
-			accept_leader(sdev, remote_lid, rcluster_id, param1);
+			accept_leader(priv, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, rdtsc());
 			reset_ftimeout(ins);
 
@@ -166,7 +166,7 @@ void init_timeout(struct proto_instance *ins)
 		(struct consensus_priv *)ins->proto_data;
 
 	if(priv->ftimer_init == 1) {
-		reset_ftimeout(sdev);
+		reset_ftimeout(ins);
 		return;
 	}
 

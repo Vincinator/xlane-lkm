@@ -213,7 +213,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		// Nomination from Node with higher term - cancel own candidature and vote for higher term
 		if(param1 > priv->term){
 			node_transition(priv, FOLLOWER);
-			reply_vote(priv, remote_lid, rcluster_id, param1, param2);
+			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}
 
 		break;		
