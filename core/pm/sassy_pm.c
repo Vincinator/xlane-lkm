@@ -217,11 +217,6 @@ static void __prepare_pm_loop(struct sassy_device *sdev, struct pminfo *spminfo)
 
 	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
-	if(sdev->le_proto != NULL){
-		sdev->le_proto->ctrl_ops.init(sdev);
-		sdev->le_proto->ctrl_ops.start(sdev); // start le after packets are composed!
-	}
-
 	get_cpu(); // disable preemption
 
 }
@@ -229,11 +224,6 @@ static void __prepare_pm_loop(struct sassy_device *sdev, struct pminfo *spminfo)
 static void __postwork_pm_loop(struct sassy_device *sdev)
 {
 	put_cpu();
-
-	if(sdev->le_proto != NULL){
-		sdev->le_proto->ctrl_ops.stop(sdev);
-		sdev->le_proto->ctrl_ops.clean(sdev);
-	}
 }
 
 static int sassy_pm_loop(void *data)
