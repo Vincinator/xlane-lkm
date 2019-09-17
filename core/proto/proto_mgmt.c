@@ -23,9 +23,9 @@
 static LIST_HEAD(available_protocols_l);
 
 
-struct sassy_protocol *generate_protocol(struct sassy_device *sdev, u8 protocol_id)
+struct proto_instance *generate_protocol_instance(struct sassy_device *sdev, u8 protocol_id)
 {
-	struct sassy_protocol *sproto;
+	struct proto_instance *sproto;
 	enum sassy_protocol_type proto_type = (enum sassy_protocol_type)protocol_id;
 
 	sproto = NULL;
@@ -45,4 +45,4 @@ struct sassy_protocol *generate_protocol(struct sassy_device *sdev, u8 protocol_
 
 	return sproto;
 }
-EXPORT_SYMBOL(generate_protocol);
+EXPORT_SYMBOL(generate_protocol_instance);
