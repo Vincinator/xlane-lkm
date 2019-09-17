@@ -49,9 +49,6 @@ struct sassy_rx_table {
  * ifindex of NIC PORT corresponds to array position of struct sassy_rx_table *tables. 
  */
 struct sassy_core {
-	struct sassy_protocol **protocols; /* All Available Protocols */
-	int registered_protocols; /* Must be less or equal to MAX_PROTOCOLS */
-
 	/* NIC independent Data */
 	struct sassy_rx_table **
 		rx_tables; /* Each NIC port (identified by ifindex) has a own table */

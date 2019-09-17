@@ -5,6 +5,7 @@
 struct sassy_echo_priv {
 	struct sassy_logger echo_logger;
 	struct sassy_device *sdev;
+	struct proto_instance *ins;
 };
 
 int echo_init(struct sassy_device *);

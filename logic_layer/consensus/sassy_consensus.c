@@ -125,27 +125,22 @@ static int __init sassy_consensus_init(void)
 	return 0;
 }
 
-struct sassy_protocol *get_consensus_instance(struct sassy_device *sdev)
+struct proto_instance *get_consensus_instance(struct sassy_device *sdev)
 {
-	struct sassy_protocol *proto;
 	struct consensus_priv *cpriv;
 	struct proto_instance *ins;
 
 	ins = kmalloc (sizeof(struct proto_instance), GFP_KERNEL);
 
-	proto = kmalloc(sizeof(struct sassy_protocol), GFP_KERNEL);
-
-	if(!proto)
+	if(!ins)
 		goto error;
 
-	proto->proto_type = SASSY_PROTO_CONSENSUS;
-	proto->ctrl_ops = consensus_ops;
-	proto->name = "consensus";
-	proto->priv = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
+	ins->proto_type = SASSY_PROTO_CONSENSUS;
+	ins->ctrl_ops = consensus_ops;
+	ins->name = "consensus";
+	ins->priv = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
 
-	
-
-	cpriv = (struct consensus_priv *)proto->priv;
+	cpriv = (struct consensus_priv *)ins->priv;
 	cpriv->state = LE_UNINIT;
 	cpriv->ft_min = MIN_FTIMEOUT_NS;
 	cpriv->ft_max = MAX_FTIMEOUT_NS;
@@ -153,13 +148,14 @@ struct sassy_protocol *get_consensus_instance(struct sassy_device *sdev)
 	cpriv->ct_max = MAX_CTIMEOUT_NS;
 	cpriv->le_config_procfs = NULL;
 	cpriv->sdev = sdev;
+	cpriv->ins = ins;
 
-	return proto;
+	return ins;
 error:
 	sassy_dbg("Error in %s", __FUNCTION__);
 	return NULL;
 }
-EXPORT_SYMBOL(get_consensus_proto);
+EXPORT_SYMBOL(get_consensus_proto_instance);
 
 static void __exit sassy_consensus_exit(void)
 {

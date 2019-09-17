@@ -34,36 +34,37 @@ static int __init sassy_app_echo_init(void)
 	return 0;
 }
 
-struct sassy_protocol *get_echo_proto(struct sassy_device *sdev)
+struct proto_instance *get_echo_proto_instance(struct sassy_device *sdev)
 {
-	struct sassy_protocol *proto;
+	struct proto_instance *ins;
 	struct sassy_echo_priv *epriv; 
-	proto = kmalloc(sizeof(struct sassy_protocol), GFP_KERNEL);
+	ins = kmalloc(sizeof(struct sassy_protocol), GFP_KERNEL);
 
-	if(!proto)
+	if(!ins)
 		goto error;
 
-	proto->proto_type = SASSY_PROTO_ECHO;
-	proto->ctrl_ops = echo_ops;
-	proto->name = "echo";
-	proto->priv = kmalloc(sizeof(struct sassy_echo_priv), GFP_KERNEL);
+	ins->proto_type = SASSY_PROTO_ECHO;
+	ins->ctrl_ops = echo_ops;
+	ins->name = "echo";
+	ins->priv = kmalloc(sizeof(struct sassy_echo_priv), GFP_KERNEL);
 
-	if(!proto->priv)
+	if(!ins->priv)
 		goto error;
 
-	epriv = (struct sassy_echo_priv *)proto->priv;
+	epriv = (struct sassy_echo_priv *)ins->priv;
 
 	epriv->sdev = sdev;
+	epriv->ins = ins;
 
     strncpy(epriv->echo_logger.name, "echo", MAX_LOGGER_NAME);
     epriv->echo_logger.ifindex = sdev->ifindex;
 
-	return proto;
+	return ins;
 error:
 	sassy_dbg("Error in %s", __FUNCTION__);
 	return NULL;
 }
-EXPORT_SYMBOL(get_echo_proto);
+EXPORT_SYMBOL(get_echo_proto_instance);
 
 static void __exit sassy_app_echo_exit(void)
 {

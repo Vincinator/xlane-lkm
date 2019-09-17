@@ -37,31 +37,32 @@ static int __init sassy_fd_init(void)
 	return 0;
 }
 
-struct sassy_protocol *get_fd_proto(struct sassy_device *sdev)
+struct proto_instance *get_fd_proto_instance(struct sassy_device *sdev)
 {
-	struct sassy_protocol *proto;
+	struct proto_instance *ins;
 	struct sassy_fd_priv *fpriv; 
 
-	proto = kmalloc(sizeof(struct sassy_protocol), GFP_KERNEL);
+	ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
 
-	if(!proto)
+	if(!ins)
 		goto error;
 
-	proto->proto_type = SASSY_PROTO_FD;
-	proto->ctrl_ops = fd_ops;
-	proto->name = "fd";
-	proto->priv = (void *)&fd_priv;
+	ins->proto_type = SASSY_PROTO_FD;
+	ins->ctrl_ops = fd_ops;
+	ins->name = "fd";
+	ins->priv = (void *)&fd_priv;
 
-	fpriv = (struct sassy_fd_priv *)proto->priv;
+	fpriv = (struct sassy_fd_priv *)ins->priv;
 
 	fpriv->sdev = sdev;
+	fpriv->ins = ins;
 
 	return proto;
 error:
 	sassy_dbg("Error in %s", __FUNCTION__);
 	return NULL;
 }
-EXPORT_SYMBOL(get_fd_proto);
+EXPORT_SYMBOL(get_fd_proto_instance);
 
 static void __exit sassy_fd_exit(void)
 {

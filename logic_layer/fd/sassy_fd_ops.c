@@ -16,7 +16,7 @@ int fd_init(struct proto_instance *ins)
 	if (err)
 		goto error;
 
-	err = sassy_setup_chardev(sdev);
+	err = sassy_setup_chardev(sdev, priv);
 
 	if (err)
 		goto error;

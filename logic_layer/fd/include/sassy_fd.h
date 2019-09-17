@@ -17,6 +17,9 @@ struct fd_aliveness_counters {
 struct sassy_fd_priv {
 	int num_procs;
 
+	// parent
+	struct proto_instance *ins;
+
 	/* Character Device to mmap FD aliveness counter memory to user space */
 	struct device *tx_device;
 	struct cdev cdev_tx;

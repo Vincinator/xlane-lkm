@@ -33,10 +33,13 @@ struct proto_instance *generate_protocol_instance(struct sassy_device *sdev, u8 
 	switch(proto_type)
 	{
 		case SASSY_PROTO_FD:
-			sproto = get_fd_proto(sdev);
+			sproto = get_fd_proto_instance(sdev);
 			break;
 		case SASSY_PROTO_ECHO:
-			sproto = get_echo_proto(sdev);
+			sproto = get_echo_proto_instance(sdev);
+			break;
+		case SASSY_PROTO_CONSENSUS:
+			sproto = get_consensus_proto_instance(sdev);
 			break;
 		default:
 			sassy_error("not a known protocol id\n");
