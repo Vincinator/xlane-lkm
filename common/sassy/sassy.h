@@ -343,7 +343,22 @@ struct pminfo {
 
 };
 
-struct proto_instance;
+struct sassy_protocol_ctrl_ops;
+
+struct proto_instance {
+
+	enum sassy_protocol_type proto_type;
+	
+	struct sassy_logger logger;
+
+	char *name;
+
+	struct sassy_protocol_ctrl_ops ctrl_ops;
+
+	void *proto_data;
+
+};
+
 
 struct sassy_device {
 	int ifindex; /* corresponds to ifindex of net_device */
@@ -394,19 +409,6 @@ struct sassy_protocol_ctrl_ops {
 	int (*info)(struct proto_instance *);
 };
 
-struct proto_instance {
-
-	enum sassy_protocol_type proto_type;
-	
-	struct sassy_logger logger;
-
-	char *name;
-
-	struct sassy_protocol_ctrl_ops ctrl_ops;
-
-	void *proto_data;
-
-};
 
 
 struct sk_buff *sassy_setup_hb_packet(struct pminfo *spminfo,

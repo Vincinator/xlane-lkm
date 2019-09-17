@@ -221,13 +221,10 @@ static const struct file_operations bypass_fileops = {
 	.mmap = sassy_bypass_mmap
 };
 
-int sassy_setup_chardev(struct sassy_device *sdev)
+int sassy_setup_chardev(struct sassy_device *sdev, struct sassy_fd_priv *priv)
 {
 	int ret = 0;
 	dev_t devno;
-
-	struct sassy_protocol *proto = sdev->proto;
-	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)proto->priv;
 
 	BUG_ON(sdev == NULL || sassy_bypass_class == NULL);
 	sassy_dbg("Enter: %s\n", __FUNCTION__);
