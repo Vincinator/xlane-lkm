@@ -24,7 +24,7 @@ int consensus_init(struct proto_instance *ins)
 	priv->state = LE_RUNNING;
 
 	if(!priv->le_config_procfs)
-		init_le_config_ctrl_interfaces(sdev, priv);
+		init_le_config_ctrl_interfaces(priv);
 
 	return 0;
 }

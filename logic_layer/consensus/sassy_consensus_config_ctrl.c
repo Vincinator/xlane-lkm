@@ -120,11 +120,11 @@ static const struct file_operations sassy_le_config_ops = {
 	.release = single_release,
 };
 
-void init_le_config_ctrl_interfaces(struct sassy_device *sdev, struct consensus_priv *priv)
+void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/le_config", sdev->ifindex);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/le_config", priv->sdev->ifindex);
 	
 	priv->le_config_procfs =
 					proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, 
