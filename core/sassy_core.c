@@ -59,6 +59,7 @@ const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type)
 		return "Unknown Protocol!";
 	}
 }
+EXPORT_SYMBOL(sassy_get_protocol_name);
 
 void sassy_post_ts(int sassy_id, uint64_t cycles)
 {
@@ -266,6 +267,15 @@ int sassy_validate_sassy_device(int sassy_id)
 	return 0;
 }
 EXPORT_SYMBOL(sassy_validate_sassy_device);
+
+int register_protocol_instance(sdev, instance_id, protocol_id) 
+{
+	
+
+	return 0;
+}
+
+
 
 int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 				    int protocol_id, int cluster_id)

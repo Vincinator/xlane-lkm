@@ -94,6 +94,15 @@ static int proto_instance_ctrl_show(struct seq_file *m, void *v)
 	struct sassy_device *sdev =
 		(struct sassy_device *)m->private;
 
+	int i;
+
+	seq_printf(m, "---\n");
+	for (i = 0; i < sdev->num_of_proto_instances; i++) {
+		seq_printf(m, "Instance ID: %d\n", sdev->protos[i]->instance_id);
+		seq_printf(m, "Protocol Type: %d\n", sassy_get_protocol_name(sdev->protos[i]->proto_type));
+		seq_printf(m, "---\n");
+	}
+
 	return 0;
 }
 

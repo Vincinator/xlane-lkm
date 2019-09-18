@@ -363,7 +363,9 @@ struct sassy_device {
 	struct pminfo pminfo;
 
 	int instance_id_mapping[MAX_PROTO_INSTANCES];
+	int num_of_proto_instances;
 	struct proto_instance **protos; // array of ptrs to protocol instances
+
 
 };
 
@@ -395,6 +397,8 @@ struct sassy_protocol_ctrl_ops {
 };
 
 struct proto_instance {
+
+	int instance_id;
 
 	enum sassy_protocol_type proto_type;
 	
