@@ -244,7 +244,7 @@ static int sassy_core_remove_nic(int sassy_id)
 
 
 	//remove_logger_ifaces(&score->sdevices[sassy_id]->le_logger);
-	clear_protocol_instances(score->sdevices[sassy_id])
+	clear_protocol_instances(score->sdevices[sassy_id]);
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d",
 		 score->sdevices[sassy_id]->ifindex);
