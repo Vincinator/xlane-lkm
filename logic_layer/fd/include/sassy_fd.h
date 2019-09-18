@@ -39,7 +39,8 @@ struct sassy_fd_priv {
 
 /* MUST not exceed SASSY_PAYLOAD_BYTES in size! */
 struct fd_payload {
-	u8 protocol_id; /* must be the first element */
+	u16 protocol_id; 		// must be the first element
+	u16 offset;
 	u8 message; /* short message bundled with this hb */
 	u8 alive_rp; /* Number of alive processes */
 	struct sassy_process_info pinfo[MAX_PROCESSES_PER_HOST];

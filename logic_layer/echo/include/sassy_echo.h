@@ -21,7 +21,8 @@ enum echo_opcode {
 
 /* MUST not exceed SASSY_PAYLOAD_BYTES in size! */
 struct echo_payload {
-	u8 protocol_id; 		// must be the first element
+	u16 protocol_id; 		// must be the first element
+	u16 offset;
 	enum echo_opcode opcode; 	// PING or PONG?
 	uint64_t tx_ts; 		// tx of ping  
 	//uint64_t rx_ts; 		// rx of pong (on some iface as tx!)
