@@ -130,7 +130,6 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
 	}
 
-
 	// handle next payload
 	_handle_sub_payloads(sdev, remote_mac,((char *) payload) + cur_offset, instances -1, bcnt - cur_offset);
 }
@@ -146,9 +145,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 	if (unlikely(!sdev)) {
 		sassy_error("sdev is NULL\n");
 		return;
-	}
-
-	
+	}	
 	
     if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
@@ -368,7 +365,7 @@ error:
 
 void clear_protocol_instances(struct sassy_device *sdev)
 {
-	int idx;
+	int idx, i;
 
 	if (sdev->num_of_proto_instances > MAX_PROTO_INSTANCES) {
 		sassy_dbg("num_of_proto_instances is faulty! Aborting cleanup of all instances\n");
@@ -379,7 +376,12 @@ void clear_protocol_instances(struct sassy_device *sdev)
 		kfree(sdev->protos[idx]->proto_data);
 		kfree(sdev->protos[idx]);
 	}
+
 	sdev->num_of_proto_instances = 0;
+
+	for(i = 0; i < MAX_PROTO_INSTANCES; i ++)
+		sdev->instance_id_mapping[i] = -1;
+
 }
 
 
