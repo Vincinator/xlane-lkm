@@ -121,9 +121,9 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	cur_proto_id = GET_PROTO_TYPE_VAL(payload);
 	cur_offset = GET_PROTO_OFFSET_VAL(payload);
 
-	// check if instance for the given protocol id exists
 	cur_ins = get_proto_instance(sdev, cur_proto_id);
 
+	// check if instance for the given protocol id exists
 	if(!cur_ins) {
 		sassy_dbg("No instance for protocol id %d were found\n", cur_proto_id);
 	} else {
