@@ -228,7 +228,7 @@ static ssize_t sassy_hbi_write(struct file *file,
 	}
 
 	if( new_hbi < MIN_HB_CYCLES || new_hbi > MAX_HB_CYCLES){
-		sassy_error("Invalid heartbeat interval! range is %lld to %lld, but got %lld",
+		sassy_error("Invalid heartbeat interval! range is %d to %d, but got %ld",
 					 MIN_HB_CYCLES, MAX_HB_CYCLES, new_hbi);
 		err = -EINVAL;
 		goto error;
