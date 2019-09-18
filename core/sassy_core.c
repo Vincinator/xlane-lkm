@@ -198,9 +198,11 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->verbose = 0;
 	score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
 	score->sdevices[sassy_id]->ts_state = SASSY_TS_UNINIT;
+	
 	score->sdevices[sassy_id]->num_of_proto_instances = 0;
+
 	score->sdevices[sassy_id]->protos = 
-				kmalloc_array(MAX_PROTOCOLS, sizeof(struct proto_instance *), GFP_KERNEL);
+				kmalloc_array(MAX_PROTO_INSTANCES, sizeof(struct proto_instance *), GFP_KERNEL);
 
 	/* set default heartbeat interval */
 	//sdev->pminfo.hbi = DEFAULT_HB_INTERVAL;
@@ -290,7 +292,7 @@ int register_protocol_instance(struct sassy_device *sdev, int instance_id, int p
 	int idx = sdev->num_of_proto_instances; // index starts at 0!
 	int ret;
 
-	if (idx > MAX_PROTOCOLS) {
+	if (idx > MAX_PROTO_INSTANCES) {
 		ret = -EPERM;
 		sassy_dbg("Too many instances exist, can not exceed maximum of %d instances\n", MAX_PROTOCOLS);
 		sassy_dbg("Current active instances: %d\n", sdev->num_of_proto_instances);
@@ -326,7 +328,7 @@ void clear_protocol_instances(struct sassy_device *sdev)
 {
 	int idx;
 
-	if (sdev->num_of_proto_instances > MAX_PROTOCOLS) {
+	if (sdev->num_of_proto_instances > MAX_PROTO_INSTANCES) {
 		sassy_dbg("num_of_proto_instances is faulty! Aborting cleanup of all instances\n");
 		return;
 	}

@@ -30,19 +30,13 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 	int err;
 	char kernel_buffer[SASSY_TARGETS_BUF];
 	char *search_str;
-	struct pminfo *spminfo =
-		(struct pminfo *)PDE_DATA(file_inode(file));
-	struct sassy_device *sdev;
+	struct sassy_device *sdev =
+		(struct sassy_device *)PDE_DATA(file_inode(file));
 	size_t size = min(sizeof(kernel_buffer) - 1, count);
 	char *input_str;
 	static const char delimiters[] = " ,;()";
 	int state = 0;
 	int instance_id, protocol_id;
-
-	if (!spminfo)
-		return -ENODEV;
-
-	sdev = container_of(spminfo, struct sassy_device, pminfo);
 
 	if (!sdev) {
 		sassy_error(" Could not find sassy device!\n");
