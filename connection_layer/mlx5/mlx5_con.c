@@ -61,7 +61,7 @@ int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
 	u8 *payload = (u8 *)va;
 
 	sassy_post_payload(sassy_id, payload + headroom + 6,
-			   payload + headroom + 6 + 6 + 14 + 4 + 8 + 4);
+			   payload + headroom + 6 + 6 + 14 + 4 + 8 + 4, cqe_bcnt);
 
 	return 0;
 }

@@ -459,7 +459,7 @@ int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
 int sassy_validate_sassy_device(int sassy_id);
 void sassy_reset_remote_host_counter(int sassy_id);
 
-void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload);
+void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt);
 
 const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type);
 

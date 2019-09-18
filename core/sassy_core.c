@@ -82,21 +82,38 @@ void set_all_targets_dead(struct sassy_device *sdev)
 EXPORT_SYMBOL(set_all_targets_dead);
 
 
-void _handle_payloads(struct sassy_device *sdev, unsigned char *remote_mac, void *payload)
+void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, void *payload, int instances, u32 bcnt)
 {
-	int protocol_id;
-	int offset;
+	int cur_proto_id;
+	int cur_offset;
 
+	/* bcnt <= 0: 
+	 *		no payload left to handle
+	 *
+	 * instances <= 0:
+	 *		all included instances were handled
+	 */
+	if(instances <= 0 || bcnt <= 0){
+		return;
+	}
 
+	cur_proto_id = GET_PROTO_TYPE_VAL(payload);
+	cur_offset = GET_PROTO_OFFSET_VAL(payload);
 
+	// check if instance for the given protocol id exists
+	
+
+	// handle next payload
+	_handle_sub_payloads(sdev, remote_mac,((char *) payload) + cur_offset, instances -1, bcnt - cur_offset);
 }
 
 
-void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
+void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
 {
 	u8 *payload_raw_ptr = (u8 *)payload;
 	u8 protocol_id = *payload_raw_ptr;
 	struct sassy_device *sdev = get_sdev(sassy_id);
+	u8 received_proto_instances;
 	
 	if (unlikely(!sdev)) {
 		sassy_error("sdev is NULL\n");
@@ -114,7 +131,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 	// TODO: iterate through sub protocols of sassy packet
 	//			.. and call protocol handlers
 
-	_handle_payloads(sdev, remote_mac, payload);
+    received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
+	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload), received_proto_instances, cqe_bcnt);
 
 
 }

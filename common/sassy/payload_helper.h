@@ -13,6 +13,19 @@
   *((u32*)(((unsigned char *)p) + offsetof(struct le_payload, fld))) = v; \
 } while (0)
 
+
+#define GET_PROTO_AMOUNT_VAL(p) *(u16 *)((char*) p)
+#define GET_PROTO_START_SUBS_PTR(p) *(u16 *)((char *)p + 1)
+
+
+#define GET_PROTO_TYPE_VAL(p) *(u16 *)((char*)p)
+#define GET_PROTO_TYPE_PTR(p) (u16 *)((char*)p)
+
+
+#define GET_PROTO_OFFSET_VAL(p) *(u16 *)(((char*)p) + 2)
+#define GET_PROTO_OFFSET_PTR(p) (u16 *)(((char*)p) + 2)
+
+
 typedef int(*handle_payload_fun)(struct sassy_device *,
 								 unsigned char *remote_mac,
 								 void *payload);
