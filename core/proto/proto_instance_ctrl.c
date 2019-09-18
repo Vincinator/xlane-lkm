@@ -27,8 +27,66 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 				    const char __user *user_buffer,
 				    size_t count, loff_t *data)
 {
-	
+	int err;
+	char kernel_buffer[SASSY_TARGETS_BUF];
+	char *search_str;
+	struct pminfo *spminfo =
+		(struct pminfo *)PDE_DATA(file_inode(file));
+	struct sassy_device *sdev;
+	size_t size = min(sizeof(kernel_buffer) - 1, count);
+	char *input_str;
+	static const char delimiters[] = " ,;()";
+	int state = 0;
+	int instance_id, protocol_id;
+
+	if (!spminfo)
+		return -ENODEV;
+
+	sdev = container_of(spminfo, struct sassy_device, pminfo);
+
+	if (!sdev) {
+		sassy_error(" Could not find sassy device!\n");
+		return -ENODEV;
+	}
+
+	memset(kernel_buffer, 0, sizeof(kernel_buffer));
+
+	err = copy_from_user(kernel_buffer, user_buffer, count);
+
+	if (err) {
+		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		goto error;
+	}
+
+	kernel_buffer[size] = '\0';
+
+	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
+	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
+		sassy_dbg(" reading: '%s'", input_str);
+		if (!input_str || strlen(input_str) <= 0)
+			continue;
+		if (state == 0) {
+			err = kstrtoint(input_str, 10, &instance_id);
+			
+			if(err)
+				goto error;
+
+			sassy_dbg("instance id: %s\n", input_str);
+			state = 1;
+		} else if (state == 1) {
+			err = kstrtoint(input_str, 10, &protocol_id);
+
+			if(err)
+				goto error;
+
+			register_protocol_instance(sdev, instance_id, protocol_id);
+		} 
+	}
+	sassy_dbg("Created a new protocol instance  of type %d with instance id %d\n", i);
 	return count;
+error:
+	sassy_error("Error during parsing of input.%s\n", __FUNCTION__);
+	return err;
 }
 
 static int proto_instance_ctrl_show(struct seq_file *m, void *v)
