@@ -199,6 +199,8 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
 	score->sdevices[sassy_id]->ts_state = SASSY_TS_UNINIT;
 	score->sdevices[sassy_id]->num_of_proto_instances = 0;
+	score->sdevices[sassy_id]->protos = 
+				kmalloc_array(MAX_PROTOCOLS, sizeof(struct proto_instance *), GFP_KERNEL);
 
 	/* set default heartbeat interval */
 	//sdev->pminfo.hbi = DEFAULT_HB_INTERVAL;
