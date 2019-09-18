@@ -104,7 +104,7 @@ static int proto_instance_ctrl_show(struct seq_file *m, void *v)
 
 	int i;
 
-	if (!sdev || !sdev->protos)
+	if (!sdev ||!sdev->protos)
 		return -ENODEV;
 
 	seq_printf(m, "Total Instances: %d\n", sdev->num_of_proto_instances);
