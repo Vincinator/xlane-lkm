@@ -10,6 +10,7 @@
 #include "sassy_core.h"
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
+#include <sassy/payload_helper.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
@@ -101,7 +102,7 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	cur_offset = GET_PROTO_OFFSET_VAL(payload);
 
 	// check if instance for the given protocol id exists
-	
+
 
 	// handle next payload
 	_handle_sub_payloads(sdev, remote_mac,((char *) payload) + cur_offset, instances -1, bcnt - cur_offset);
