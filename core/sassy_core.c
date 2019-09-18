@@ -198,6 +198,7 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->verbose = 0;
 	score->sdevices[sassy_id]->rx_state = SASSY_RX_DISABLED;
 	score->sdevices[sassy_id]->ts_state = SASSY_TS_UNINIT;
+	score->sdevices[sassy_id]->num_of_proto_instances = 0;
 
 	/* set default heartbeat interval */
 	//sdev->pminfo.hbi = DEFAULT_HB_INTERVAL;
@@ -328,6 +329,7 @@ void clear_protocol_instances(struct sassy_device *sdev)
 		kfree(sdev->protos[idx]->proto_data);
 		kfree(sdev->protos[idx]);
 	}
+	sdev->num_of_proto_instances = 0;
 }
 
 
