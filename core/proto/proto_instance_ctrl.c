@@ -71,6 +71,13 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 			if(err)
 				goto error;
 
+			if(instance_id == -1) {
+				// clear all existing protocols and exit
+				clear_protocol_instances(sdev);
+				sassy_dbg("cleared all instances\n");
+				return count;
+			}
+
 			sassy_dbg("instance id: %s\n", input_str);
 			state = 1;
 		} else if (state == 1) {
