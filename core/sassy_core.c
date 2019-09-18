@@ -295,6 +295,11 @@ int register_protocol_instance(struct sassy_device *sdev, int instance_id, int p
 		sassy_dbg("Too many instances exist, can not exceed maximum of %d instances\n", MAX_PROTOCOLS);
 		goto error;
 	}
+	if(!sdev->protos) {
+		ret = -ENODEV;
+		sassy_dbg("protocols not initialized!\n");
+		goto error;
+	}
 
 	if(sdev->protos[idx]) {
 		sassy_dbg("Instance with id %d already exists!\n", instance_id);
@@ -323,6 +328,11 @@ error:
 void clear_protocol_instances(struct sassy_device *sdev)
 {
 	int idx;
+
+	if (sdev->num_of_proto_instances > MAX_PROTOCOLS) {
+		sassy_dbg("num_of_proto_instances is faulty! Aborting cleanup of all instances\n");
+		return;
+	}
 
 	for(idx = 0; idx < sdev->num_of_proto_instances; idx++) {
 		sdev->protos[idx]->ctrl_ops.stop(sdev->protos[idx]);

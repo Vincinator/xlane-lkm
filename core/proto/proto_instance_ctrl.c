@@ -143,15 +143,15 @@ void init_proto_instance_ctrl(struct sassy_device *sdev)
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances",
 		 sdev->ifindex);
+
 	proc_mkdir(name_buf, NULL);
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/ctrl",
 		 sdev->ifindex);
 
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &proto_instance_ctrl_ops,
-			 &sdev);
+			 sdev);
 
-	
 }
 EXPORT_SYMBOL(init_proto_instance_ctrl);
 
