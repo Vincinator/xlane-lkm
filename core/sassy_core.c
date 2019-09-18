@@ -379,7 +379,7 @@ static int __init sassy_connection_core_init(void)
 
 	proc_mkdir("sassy", NULL);
 
-	init_sassy_proto_info_interfaces();
+	//init_sassy_proto_info_interfaces();
 
 	return 0;
 }
@@ -413,7 +413,7 @@ static void __exit sassy_connection_core_exit(void)
 
 	kfree(score);
 
-	clean_sassy_proto_info_interfaces();
+	//clean_sassy_proto_info_interfaces();
 
 }
 

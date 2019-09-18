@@ -57,8 +57,8 @@ struct sassy_core {
 	struct sassy_device **sdevices;
 };
 
-void init_sassy_proto_info_interfaces(void);
-void clean_sassy_proto_info_interfaces(void);
+//void init_sassy_proto_info_interfaces(void);
+//void clean_sassy_proto_info_interfaces(void);
 
 void init_proto_selector(struct sassy_device *sdev);
 void remove_proto_selector(struct sassy_device *sdev);
