@@ -270,7 +270,8 @@ EXPORT_SYMBOL(sassy_validate_sassy_device);
 
 int register_protocol_instance(struct sassy_device *sdev, int instance_id, int protocol_id) 
 {
-	int idx = instance_id_mapping[instance_id];
+	int idx = sdev->instance_id_mapping[instance_id];
+	int ret;
 
 	if(sdev->protos[idx]) {
 		sassy_dbg("Instance with id %d already exists!\n", instance_id);
