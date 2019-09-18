@@ -66,5 +66,5 @@ void remove_proto_selector(struct sassy_device *sdev);
 struct sassy_core *sassy_core(void);
 
 int register_protocol_instance(struct sassy_device *sdev, int instance_id, int protocol_id);
-
+void clear_protocol_instances(struct sassy_device *sdev, int idx);
 #endif /* _SASSY_DEV_H_ */

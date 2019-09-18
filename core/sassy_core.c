@@ -82,6 +82,16 @@ void set_all_targets_dead(struct sassy_device *sdev)
 EXPORT_SYMBOL(set_all_targets_dead);
 
 
+void _handle_payloads(struct sassy_device *sdev, unsigned char *remote_mac, void *payload)
+{
+	int protocol_id;
+	int offset;
+
+
+
+}
+
+
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 {
 	u8 *payload_raw_ptr = (u8 *)payload;
@@ -103,6 +113,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload)
 
 	// TODO: iterate through sub protocols of sassy packet
 	//			.. and call protocol handlers
+
+	_handle_payloads(sdev, remote_mac, payload);
 
 
 }
@@ -232,6 +244,7 @@ static int sassy_core_remove_nic(int sassy_id)
 
 
 	//remove_logger_ifaces(&score->sdevices[sassy_id]->le_logger);
+	clear_protocol_instances(score->sdevices[sassy_id], )
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d",
 		 score->sdevices[sassy_id]->ifindex);
@@ -270,15 +283,22 @@ EXPORT_SYMBOL(sassy_validate_sassy_device);
 
 int register_protocol_instance(struct sassy_device *sdev, int instance_id, int protocol_id) 
 {
-	int idx = sdev->instance_id_mapping[instance_id];
+
+	int idx = sdev->num_of_proto_instances + 1;
 	int ret;
+
+	if (idx > MAX_PROTOCOLS) {
+		ret = -EPERM;
+		sassy_dbg("Too many instances exist, can not exceed maximum of %d instances\n", MAX_PROTOCOLS);
+		goto error;
+	}
 
 	if(sdev->protos[idx]) {
 		sassy_dbg("Instance with id %d already exists!\n", instance_id);
 		ret = -EPERM;
 		goto error;
 	}
-
+	
 	sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
 
 	if(!sdev->protos[idx]) {
@@ -287,7 +307,9 @@ int register_protocol_instance(struct sassy_device *sdev, int instance_id, int p
 		goto error;
 	}
 
+	sdev->instance_id_mapping[instance_id] = idx;
 	sdev->protos[idx]->instance_id = instance_id;
+	sdev->num_of_proto_instances++;
 
 	return 0;
 error:
@@ -295,6 +317,18 @@ error:
 	return ret;
 }
 
+void clear_protocol_instances(struct sassy_device *sdev)
+{
+	int idx;
+
+	for(idx = 0; idx < sdev->num_of_proto_instances; idx++) {
+		sdev->protos[idx]->ctrl_ops.stop(sdev->protos[idx]);
+		sdev->protos[idx]->ctrl_ops.clean(sdev->protos[idx]);
+		kfree(sdev->protos[idx]->name);
+		kfree(sdev->protos[idx]->proto_data);
+		kfree(sdev->protos[idx]);
+	}
+}
 
 
 int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
