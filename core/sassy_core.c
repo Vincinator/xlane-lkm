@@ -82,12 +82,32 @@ void set_all_targets_dead(struct sassy_device *sdev)
 }
 EXPORT_SYMBOL(set_all_targets_dead);
 
+struct proto_instance *get_proto_instance(struct sassy_device *sdev, int proto_id)
+{
+	int idx;
+
+	if (unlikely(proto_id < 0 || proto_id > MAX_PROTO_INSTANCES)) {
+		sassy_dbg("Invalid protocol id %d\n", proto_id);
+		return NULL;
+	}
+
+	idx = sdev->instance_id_mapping[proto_id];
+
+	if (unlikely(idx < 0 || idx > MAX_PROTO_INSTANCES)) {
+		sassy_dbg("Invalid protocol idx %d\n", idx);
+		return NULL;
+	}
+
+	return sdev->protos[idx];
+}
+
+
 
 void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, void *payload, int instances, u32 bcnt)
 {
 	int cur_proto_id;
 	int cur_offset;
-
+	struct proto_instance *cur_ins;
 	/* bcnt <= 0: 
 	 *		no payload left to handle
 	 *
@@ -102,6 +122,13 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	cur_offset = GET_PROTO_OFFSET_VAL(payload);
 
 	// check if instance for the given protocol id exists
+	cur_ins = get_proto_instance(sdev, cur_proto_id);
+
+	if(!cur_ins) {
+		sassy_dbg("No instance for protocol id %d were found\n",) cur_proto_id;
+	} else {
+		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
+	}
 
 
 	// handle next payload
@@ -121,9 +148,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 		return;
 	}
 
-	if (unlikely(protocol_id < 0 || protocol_id > MAX_PROTOCOLS)) {
-		return;
-	}
+	
 	
     if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
