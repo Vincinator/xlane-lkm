@@ -86,7 +86,11 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 			if(err)
 				goto error;
 
-			register_protocol_instance(sdev, instance_id, protocol_id);
+			err = register_protocol_instance(sdev, instance_id, protocol_id);
+
+			if(err)
+				goto error;
+
 		} 
 	}
 	sassy_dbg("Created a new protocol instance  of type %d with instance id %d\n",

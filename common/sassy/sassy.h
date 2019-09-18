@@ -365,8 +365,6 @@ struct sassy_device {
 	int instance_id_mapping[MAX_PROTO_INSTANCES];
 	int num_of_proto_instances;
 	struct proto_instance **protos; // array of ptrs to protocol instances
-
-
 };
 
 struct sassy_protocol_ctrl_ops {
