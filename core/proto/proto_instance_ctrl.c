@@ -82,7 +82,8 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 			register_protocol_instance(sdev, instance_id, protocol_id);
 		} 
 	}
-	sassy_dbg("Created a new protocol instance  of type %d with instance id %d\n", i);
+	sassy_dbg("Created a new protocol instance  of type %d with instance id %d\n",
+			  protocol_id, instance_id);
 	return count;
 error:
 	sassy_error("Error during parsing of input.%s\n", __FUNCTION__);
