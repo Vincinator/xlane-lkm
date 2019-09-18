@@ -465,7 +465,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload);
 
 const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type);
 
-struct proto_instance *generate_protocol_instance(struct sassy_device *sdev, u8 protocol_id);
+struct proto_instance *generate_protocol_instance(struct sassy_device *sdev, int protocol_id);
 
 void clean_sassy_ctrl_interfaces(struct sassy_device *sdev);
 void init_sassy_ctrl_interfaces(struct sassy_device *sdev);
