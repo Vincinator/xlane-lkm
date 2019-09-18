@@ -268,11 +268,30 @@ int sassy_validate_sassy_device(int sassy_id)
 }
 EXPORT_SYMBOL(sassy_validate_sassy_device);
 
-int register_protocol_instance(sdev, instance_id, protocol_id) 
+int register_protocol_instance(struct sassy_device *sdev, int instance_id, int protocol_id) 
 {
-	
+	int idx = instance_id_mapping[instance_id];
+
+	if(sdev->protos[idx]) {
+		sassy_dbg("Instance with id %d already exists!\n", instance_id);
+		ret = -EPERM;
+		goto error;
+	}
+
+	sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
+
+	if(!sdev->protos[idx]) {
+		sassy_dbg("Could not allocate memory for new protocol instance!\n");
+		ret = -ENOMEM;
+		goto error;
+	}
+
+	sdev->protos[idx]->instance_id = instance_id;
 
 	return 0;
+error:
+	sassy_error("Could not register new protocol instance %d\n", ret);
+	return ret;
 }
 
 
