@@ -190,6 +190,7 @@ int sassy_core_register_nic(int ifindex)
 
 	score->sdevices[sassy_id] =
 		kmalloc(sizeof(struct sassy_device), GFP_KERNEL);
+
 	score->sdevices[sassy_id]->ifindex = ifindex;
 	score->sdevices[sassy_id]->sassy_id = sassy_id;
 	score->sdevices[sassy_id]->ndev = sassy_get_netdevice(ifindex);
@@ -297,12 +298,6 @@ int register_protocol_instance(struct sassy_device *sdev, int instance_id, int p
 		sassy_dbg("Too many instances exist, can not exceed maximum of %d instances\n", MAX_PROTOCOLS);
 		sassy_dbg("Current active instances: %d\n", sdev->num_of_proto_instances);
 
-		goto error;
-	}
-
-	if(sdev->protos[idx]) {
-		sassy_dbg("Instance with id %d already exists!\n", instance_id);
-		ret = -EPERM;
 		goto error;
 	}
 
