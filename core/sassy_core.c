@@ -125,7 +125,7 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	cur_ins = get_proto_instance(sdev, cur_proto_id);
 
 	if(!cur_ins) {
-		sassy_dbg("No instance for protocol id %d were found\n",) cur_proto_id;
+		sassy_dbg("No instance for protocol id %d were found\n", cur_proto_id);
 	} else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
 	}
@@ -245,6 +245,9 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->ts_state = SASSY_TS_UNINIT;
 	
 	score->sdevices[sassy_id]->num_of_proto_instances = 0;
+
+	for(i = 0; i < MAX_PROTO_INSTANCES; i ++)
+		score->sdevices[sassy_id]->instance_id_mapping[i] = -1;
 
 	score->sdevices[sassy_id]->protos = 
 				kmalloc_array(MAX_PROTO_INSTANCES, sizeof(struct proto_instance *), GFP_KERNEL);
