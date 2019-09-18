@@ -287,12 +287,14 @@ EXPORT_SYMBOL(sassy_validate_sassy_device);
 int register_protocol_instance(struct sassy_device *sdev, int instance_id, int protocol_id) 
 {
 
-	int idx = sdev->num_of_proto_instances + 1;
+	int idx = sdev->num_of_proto_instances; // index starts at 0!
 	int ret;
 
 	if (idx > MAX_PROTOCOLS) {
 		ret = -EPERM;
 		sassy_dbg("Too many instances exist, can not exceed maximum of %d instances\n", MAX_PROTOCOLS);
+		sassy_dbg("Current active instances: %d\n", sdev->num_of_proto_instances);
+
 		goto error;
 	}
 
