@@ -2,6 +2,21 @@
 #include <sassy/payload_helper.h>
 
 
+
+#define GET_PROTO_AMOUNT_VAL(p) *(u16 *)((char*) p)
+#define GET_PROTO_START_SUBS_PTR(p) *(u16 *)((char *)p + 1)
+
+
+#define GET_PROTO_TYPE_VAL(p) *(u16 *)((char*)p)
+
+#define GET_PROTO_TYPE_VAL(p) *(u16 *)((char*)p)
+#define GET_PROTO_TYPE_PTR(p) (u16 *)((char*)p)
+
+
+#define GET_PROTO_OFFSET_VAL(p) *(u16 *)(((char*)p) + 2)
+#define GET_PROTO_OFFSET_PTR(p) (u16 *)(((char*)p) + 2)
+
+
 /* Returns a pointer to the <n>th protocol of <spay>
  * 
  * If less than n protocols are included, a NULL ptr is returned
@@ -22,7 +37,7 @@ char *sassy_get_proto(struct sassy_payload *spay, int n)
 
 	// Iterate through existing protocols
 	for (i = 0; i < n; i++) {
-		cur_offset = *(u16 *)(cur_proto + 2);
+		cur_offset = GET_PROTO_OFFSET_VAL(cur_proto);
 		cur_proto = cur_proto + cur_offset;
 	}
 
@@ -51,7 +66,7 @@ char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_
 
 	// Iterate through existing protocols
 	for (i = 0; i < spay->protocols_included; i++) {
-		cur_offset = *(u16 *)(cur_proto + 2);
+		cur_offset = GET_PROTO_OFFSET_VAL(cur_proto);
 		cur_proto = cur_proto + cur_offset;
 		proto_offset += cur_offset;
 	}
