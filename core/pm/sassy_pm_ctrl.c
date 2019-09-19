@@ -56,7 +56,7 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 		break;
 	case 1:
 		sassy_dbg("Start PM as busy loop\n");
-		sassy_pm_start_loop(spminfo)
+		sassy_pm_start_loop(spminfo);
 		break;
 	case 2:
 		sassy_dbg("Reset Kernel Configuration\n");
