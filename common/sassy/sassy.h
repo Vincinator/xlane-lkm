@@ -260,7 +260,7 @@ struct sassy_payload {
 	 * If 0, then this payload is interpreted as "noop" operation 
 	 * 		 .. for all local proto instances
 	 */
-	u8 protocols_included;
+	u16 protocols_included;
 
 	/* Pointer to the first protocol payload.  
 	 *
