@@ -346,7 +346,7 @@ int sassy_pm_start_loop(void *data)
 	struct sassy_device *sdev =
 		container_of(spminfo, struct sassy_device, pminfo);
 	struct cpumask mask;
-	int err;
+	int err, i;
 
 	err = _validate_pm(sdev, spminfo);
 
