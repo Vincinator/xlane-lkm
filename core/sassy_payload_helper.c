@@ -53,9 +53,8 @@ char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_
 
 	cur_proto = spay->proto_data;
 
-
+	// Get ptr to protocol_instances (2 byte unsigned) 
 	instances_ptr = GET_PROTO_AMOUNT_PTR(cur_proto);
-
 
 	// Iterate through existing protocols
 	for (i = 0; i < spay->protocols_included; i++) {
@@ -74,6 +73,7 @@ char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_
 	*pid = proto_id;
 	*poff = proto_size;
 	spay->protocols_included++;
+
 	*instances_ptr = spay->protocols_included;
 
 	return cur_proto;

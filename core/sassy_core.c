@@ -137,10 +137,8 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
 {
-	u8 *payload_raw_ptr = (u8 *)payload;
-	u8 protocol_id = *payload_raw_ptr;
 	struct sassy_device *sdev = get_sdev(sassy_id);
-	u8 received_proto_instances;
+	u16 received_proto_instances;
 	
 	if (unlikely(!sdev)) {
 		sassy_error("sdev is NULL\n");
@@ -151,8 +149,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
     	return;
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
-    sassy_dbg("Received Instances %hhu\n", received_proto_instances);
-
+	//print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
+	//                payload, cqe_bcnt, 0);
 	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload), received_proto_instances, cqe_bcnt);
 
 
