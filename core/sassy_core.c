@@ -149,8 +149,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
     	return;
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
-	//print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
-	//                payload, cqe_bcnt, 0);
+	print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
+	                payload, cqe_bcnt, 0);
 	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload), received_proto_instances, cqe_bcnt);
 
 
