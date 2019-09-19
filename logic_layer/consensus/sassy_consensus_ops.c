@@ -99,7 +99,7 @@ int consensus_clean(struct proto_instance *ins)
 	sassy_dbg("consensus clean\n");
 	le_state_transition_to(priv, LE_UNINIT);
 
-	remove_le_config_ctrl_interfaces(priv->sdev);
+	remove_le_config_ctrl_interfaces(priv);
 
 	return 0;
 }
