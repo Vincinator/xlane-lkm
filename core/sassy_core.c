@@ -102,7 +102,6 @@ struct proto_instance *get_proto_instance(struct sassy_device *sdev, int proto_i
 }
 
 
-
 void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, void *payload, int instances, u32 bcnt)
 {
 	int cur_proto_id;
@@ -149,10 +148,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 	
     if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
-
-
-	// TODO: iterate through sub protocols of sassy packet
-	//			.. and call protocol handlers
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload), received_proto_instances, cqe_bcnt);

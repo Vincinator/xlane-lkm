@@ -55,45 +55,17 @@ static ssize_t sassy_hb_ctrl_proc_write(struct file *file,
 		sassy_pm_stop(spminfo);
 		break;
 	case 1:
-		sassy_dbg("Start PM as hrtimer event\n");
-
-		if (spminfo->active_cpu > MAX_CPU_NUMBER ||
-							spminfo->active_cpu < 0) {
-			sassy_error(" Invalid CPU Number.\n");
-			err = -EINVAL;
-			break;
-		}
-
-		cpumask_clear(&mask);
-
-		heartbeat_task =
-			kthread_create(&sassy_pm_start_timer, spminfo,
-				"sassy heart starter");
-
-		kthread_bind(heartbeat_task, spminfo->active_cpu);
-
-		if (IS_ERR(heartbeat_task)) {
-			sassy_error("Task Error. %s\n", __FUNCTION__);
-			err = -EINVAL;
-			break;
-		}
-
-		sassy_dbg("Start hrtimer starter thread now: %s\n", __FUNCTION__);
-		wake_up_process(heartbeat_task);
-
-		//sassy_pm_start(spminfo);
-		break;
-	case 3:
 		sassy_dbg("Start PM as busy loop\n");
 		sassy_pm_start_loop(spminfo);
 		break;
-	case 4:
+	case 2:
 		sassy_dbg("Reset Kernel Configuration\n");
 		sassy_pm_reset(spminfo);
 		break;
 	default:
 		sassy_error("Unknown action!\n");
-		break;
+		err = -EINVAL;
+		goto error;
 	}
 
 	sassy_dbg("Heartbeat state changed successfully.%s\n", __FUNCTION__);
