@@ -134,3 +134,13 @@ void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 }
 EXPORT_SYMBOL(init_le_config_ctrl_interfaces);
 
+void remove_le_config_ctrl_interfaces(struct consensus_priv *priv)
+{
+	char name_buf[MAX_SASSY_PROC_NAME];
+
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/le_config", priv->sdev->ifindex);
+	
+	remove_proc_entry(name_buf, NULL);
+
+}
+EXPORT_SYMBOL(remove_le_config_ctrl_interfaces);
