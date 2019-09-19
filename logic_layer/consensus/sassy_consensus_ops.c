@@ -42,6 +42,7 @@ int consensus_start(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
+	sassy_dbg("consensus start\n");
 
 	if(consensus_is_alive(priv)){
 		sassy_dbg("Consensus is already running!\n");
