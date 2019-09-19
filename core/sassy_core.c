@@ -351,6 +351,8 @@ int register_protocol_instance(struct sassy_device *sdev, int instance_id, int p
 	sdev->instance_id_mapping[instance_id] = idx;
 	sdev->protos[idx]->instance_id = instance_id;
 	sdev->num_of_proto_instances++;
+	
+	sdev->protos[idx].ctrl_ops.init(sdev->protos[idx]);
 
 	return 0;
 error:

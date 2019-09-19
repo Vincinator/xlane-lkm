@@ -218,7 +218,15 @@ static void __prepare_pm_loop(struct sassy_device *sdev, struct pminfo *spminfo)
 
 static void __postwork_pm_loop(struct sassy_device *sdev)
 {
+	int i;
+
 	put_cpu();
+
+	// Stopping all protocols 
+	for(i = 0; i < sdev->num_of_proto_instances; i++)
+		if(sdev->protos[i] && sdev->protos[i]->ctrl_ops)
+			sdev->protos[i]->ctrl_ops.stop(sdev->protos[idx]);
+
 }
 
 static int sassy_pm_loop(void *data)
@@ -344,6 +352,11 @@ int sassy_pm_start_loop(void *data)
 
 	if (err)
 		return err;
+
+	// Starting all protocols 
+	for(i = 0; i < sdev->num_of_proto_instances; i++)
+		if(sdev->protos[i] && sdev->protos[i]->ctrl_ops)
+			sdev->protos[i]->ctrl_ops.start(sdev->protos[idx]);
 
 	cpumask_clear(&mask);
 
