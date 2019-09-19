@@ -47,7 +47,7 @@ char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_
 	char *cur_proto;
 	int proto_offset = 0;
 	int cur_offset = 0;
-	int *instances_ptr;
+	u16 *instances_ptr;
 
 	u16 *pid, *poff;
 
