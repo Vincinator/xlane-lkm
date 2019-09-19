@@ -224,7 +224,7 @@ static void __postwork_pm_loop(struct sassy_device *sdev)
 
 	// Stopping all protocols 
 	for(i = 0; i < sdev->num_of_proto_instances; i++)
-		if(sdev->protos[i] && sdev->protos[i]->ctrl_ops)
+		if(sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL)
 			sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
 
 }
@@ -355,7 +355,7 @@ int sassy_pm_start_loop(void *data)
 
 	// Starting all protocols 
 	for(i = 0; i < sdev->num_of_proto_instances; i++)
-		if(sdev->protos[i] && sdev->protos[i]->ctrl_ops)
+		if(sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL)
 			sdev->protos[i]->ctrl_ops.start(sdev->protos[i]);
 
 	cpumask_clear(&mask);
