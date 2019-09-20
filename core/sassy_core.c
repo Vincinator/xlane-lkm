@@ -140,8 +140,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 	struct sassy_device *sdev = get_sdev(sassy_id);
 	struct pminfo *spminfo = &sdev->pminfo;
 	u16 received_proto_instances;
-	int i;
-	
+	int i, remote_lid, rcluster_id;
+
 	if (unlikely(!sdev)) {
 		sassy_error("sdev is NULL\n");
 		return;
@@ -152,6 +152,11 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 
 	if(sdev->warmup_state == WARMING_UP){
 
+		get_cluster_ids(priv->sdev, remote_mac, &remote_lid, &rcluster_id);
+
+		if(remote_lid == -1 || rcluster_id == -1)
+			return;
+
 		if(spminfo->pm_targets[remote_lid].alive == 0){
 			spminfo->pm_targets[remote_lid].alive = 1;
 		}
@@ -161,7 +166,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 		// Do not start Leader Election until all targets have send a message to this node.
 		for(i = 0; i < spminfo->num_of_targets; i++)
 			if(!spminfo->pm_targets[i].alive)
-				return 0;
+				return;
 
 		sdev->warmup_state = WARMED_UP;
 
