@@ -179,9 +179,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 		}
 
 		sassy_dbg("Warmup done! \n");
-		
-		if(err)
-			return err;
+
 	}
 
 
