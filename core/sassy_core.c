@@ -140,6 +140,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 	struct sassy_device *sdev = get_sdev(sassy_id);
 	struct pminfo *spminfo = &sdev->pminfo;
 	u16 received_proto_instances;
+	int i;
 	
 	if (unlikely(!sdev)) {
 		sassy_error("sdev is NULL\n");
@@ -155,11 +156,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 			spminfo->pm_targets[remote_lid].alive = 1;
 		}
 
-		sassy_log_le("%s, %llu, %d: Received Message from node %d\n",
-			nstate_string(priv->nstate),
-			rdtsc(),
-			priv->term,
-			rcluster_id);
+		sassy_dbg("Received Message from node %d\n");
 
 		// Do not start Leader Election until all targets have send a message to this node.
 		for(i = 0; i < spminfo->num_of_targets; i++)
