@@ -185,9 +185,6 @@ struct sassy_logger {
 	/* Size is defined by LOGGER_EVENT_LIMIT */
 	struct logger_event *events;
 	
-	struct proc_dir_entry	*ctrl_proc_dir;
-	struct proc_dir_entry	*io_proc_dir;	
-
 
 };
 

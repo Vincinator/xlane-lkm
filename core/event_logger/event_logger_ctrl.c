@@ -120,16 +120,10 @@ void init_logger_ctrl(struct sassy_logger *slog)
 		return -ENOMEM;
 	}
 	
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl_%s",
-		 slog->ifindex, slog->name);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl_%s", slog->ifindex, slog->name);
 
-	slog->ctrl_proc_dir = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog);
+	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog);
 	
-	if (!slog->ctrl_proc_dir) {
-		sassy_error(" Could not create leader election ctrl log procfs data entry%s\n", __FUNCTION__);
-		return -ENOMEM;
-	}
-
 	return 0;
 }
 EXPORT_SYMBOL(init_logger_ctrl);

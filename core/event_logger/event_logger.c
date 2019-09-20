@@ -186,15 +186,8 @@ static int init_logger_out(struct sassy_logger *slog)
 		 slog->ifindex, slog->name);
 
 
-	slog->io_proc_dir = proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL, &sassy_log_ops, slog);
-	
-	if (!slog->io_proc_dir) {
-		err = -ENOMEM;
-		sassy_error(" Could not create leader election log procfs data entry%s\n",
-			__FUNCTION__);
-		goto error;
-	}
-	
+	proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL, &sassy_log_ops, slog);
+		
 	return 0;
 
 error:
@@ -217,6 +210,7 @@ int init_logger(struct sassy_logger *slog)
 	}
 
 	slog->events = kmalloc_array(LOGGER_EVENT_LIMIT, sizeof(struct logger_event), GFP_KERNEL);
+	
 	if (!slog->events) {
 		err = -ENOMEM;
 		sassy_error(
