@@ -178,7 +178,7 @@ struct sassy_logger {
 
 	enum logger_state state;
 
-	char name[MAX_LOGGER_NAME];
+	char *name;
 
 	int current_entries;
 
