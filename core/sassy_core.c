@@ -314,6 +314,8 @@ static int sassy_core_remove_nic(int sassy_id)
 
 	kfree(score->rx_tables[sassy_id]);
 	kfree(score->sdevices[sassy_id]);
+
+	return 0;
 }
 
 int sassy_validate_sassy_device(int sassy_id)
