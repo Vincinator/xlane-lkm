@@ -17,7 +17,7 @@
 #define GET_PROTO_AMOUNT_VAL(p) *(u16 *)((char*) p)
 #define GET_PROTO_AMOUNT_PTR(p) (u16 *)((char*) p)
 
-#define GET_PROTO_START_SUBS_PTR(p) *(u16 *)((char *)p + 1)
+#define GET_PROTO_START_SUBS_PTR(p) (u16 *)((char *)p + 1)
 
 
 #define GET_PROTO_TYPE_VAL(p) *(u16 *)((char*)p)

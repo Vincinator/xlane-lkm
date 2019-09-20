@@ -102,7 +102,7 @@ struct proto_instance *get_proto_instance(struct sassy_device *sdev, int proto_i
 }
 
 
-void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, void *payload, int instances, u32 bcnt)
+void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, char *payload, int instances, u32 bcnt)
 {
 	int cur_proto_id;
 	int cur_offset;
@@ -131,7 +131,7 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	}
 
 	// handle next payload
-	_handle_sub_payloads(sdev, remote_mac,((char *) payload) + cur_offset, instances -1, bcnt - cur_offset);
+	_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances -1, bcnt - cur_offset);
 }
 
 
