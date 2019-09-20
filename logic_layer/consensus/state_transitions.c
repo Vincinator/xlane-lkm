@@ -28,7 +28,7 @@ char *_le_state_name(enum le_state state)
 	}
 }
 
-int setup_le_msg(struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term)
+int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term)
 {
 	struct sassy_payload *pkt_payload;
 	char *pkt_payload_sub;
@@ -63,7 +63,7 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 		(struct consensus_priv *)ins->proto_data;
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
-		setup_le_msg(&priv->sdev->pminfo, opcode, (u32) i, (u32) priv->term);
+		setup_le_msg(ins, &priv->sdev->pminfo, opcode, (u32) i, (u32) priv->term);
 
 	return 0;
 }

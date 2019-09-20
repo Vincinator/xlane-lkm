@@ -60,7 +60,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
 			param1);
 #endif
 
-	setup_le_msg(&priv->sdev->pminfo, VOTE, remote_lid, param1);
+	setup_le_msg(ins, &priv->sdev->pminfo, VOTE, remote_lid, param1);
 	priv->voted = param1;
 
 	write_log(&ins->logger, VOTE_FOR_CANDIDATE, rdtsc());
