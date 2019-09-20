@@ -396,7 +396,7 @@ struct sassy_protocol_ctrl_ops {
 
 struct proto_instance {
 
-	int instance_id;
+	u16 instance_id;
 
 	enum sassy_protocol_type proto_type;
 	

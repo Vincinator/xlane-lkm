@@ -41,7 +41,7 @@ EXPORT_SYMBOL(sassy_get_proto);
  * 
  * returns a pointer to the start of that protocol payload memory area.
  */
-char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_id)
+char *sassy_reserve_proto(u16 instance_id, struct sassy_payload *spay, u16 proto_size)
 {
 	int i;
 	char *cur_proto;
@@ -55,8 +55,11 @@ char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_
 
 	// Iterate through existing protocols
 	for (i = 0; i < spay->protocols_included; i++) {
+		if (instance_id == GET_PROTO_TYPE_VAL(cur_proto))
+			break;
 		cur_offset = GET_PROTO_OFFSET_VAL(cur_proto);
 		cur_proto = cur_proto + cur_offset;
+
 		proto_offset += cur_offset;
 	}
 
@@ -64,10 +67,11 @@ char *sassy_reserve_proto(struct sassy_payload *spay, u16 proto_size, u16 proto_
 		sassy_error("Not enough space in sassy payload for protocol\n");
 		return NULL;
 	}
-	pid = (u16 *) cur_proto;
-	poff = (u16 *)(cur_proto + 2);
+	
+	pid =  GET_PROTO_TYPE_PTR(cur_proto);
+	poff = GET_PROTO_OFFSET_PTR(cur_proto);
 
-	*pid = proto_id;
+	*pid = instance_id;
 	*poff = proto_size;
 	spay->protocols_included++;
 
