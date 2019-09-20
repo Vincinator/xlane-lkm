@@ -47,7 +47,7 @@ struct proto_instance *get_echo_proto_instance(struct sassy_device *sdev)
 	ins->ctrl_ops = echo_ops;
 	ins->name = "echo";
 	ins->logger.name = "echo";
-
+	ins->logger.ifindex = sdev->ifindex;
 	ins->proto_data = kmalloc(sizeof(struct sassy_echo_priv), GFP_KERNEL);
 
 	if(!ins->proto_data)

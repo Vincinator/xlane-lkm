@@ -51,6 +51,8 @@ struct proto_instance *get_fd_proto_instance(struct sassy_device *sdev)
 	ins->ctrl_ops = fd_ops;
 	ins->name = "fd";
 	ins->logger.name = "fd";
+	ins->logger.ifindex = sdev->ifindex;
+
 	ins->proto_data = (void *)&fd_priv;
 
 	fpriv = (struct sassy_fd_priv *)ins->proto_data;
