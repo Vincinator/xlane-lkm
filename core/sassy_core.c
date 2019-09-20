@@ -152,7 +152,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 
 	if(sdev->warmup_state == WARMING_UP){
 
-		get_cluster_ids(priv->sdev, remote_mac, &remote_lid, &rcluster_id);
+		get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 		if(remote_lid == -1 || rcluster_id == -1)
 			return;
@@ -161,7 +161,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 			spminfo->pm_targets[remote_lid].alive = 1;
 		}
 
-		sassy_dbg("Received Message from node %d\n");
+		sassy_dbg("Received Message from node\n");
 
 		// Do not start Leader Election until all targets have send a message to this node.
 		for(i = 0; i < spminfo->num_of_targets; i++)
