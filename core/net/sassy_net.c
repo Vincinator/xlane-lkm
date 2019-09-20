@@ -187,8 +187,8 @@ inline void add_payload(struct sk_buff *skb, struct sassy_payload *payload)
 
 	memcpy(data, payload, SASSY_PAYLOAD_BYTES);
 
-	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1, data,
-		       SASSY_PAYLOAD_BYTES, 0);
+//	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1, data,
+//		       SASSY_PAYLOAD_BYTES, 0);
 }
 
 int is_ip_local(struct net_device *dev,	u32 ip_addr)
@@ -228,7 +228,7 @@ struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 	add_L4_header(nomination_pkt);
 	add_payload(nomination_pkt, payload);
 
-#if SASSY_DEBUG
+#if 0
 	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
 		       payload,
 		       SASSY_PAYLOAD_BYTES, 0);

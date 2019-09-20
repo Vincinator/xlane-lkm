@@ -23,9 +23,7 @@ int consensus_init(struct proto_instance *ins)
 	priv->warmup_state = WARMING_UP;
 	priv->state = LE_READY;
 
-	if(!priv->le_config_procfs)
-		init_le_config_ctrl_interfaces(priv);
-
+	init_le_config_ctrl_interfaces(priv);
 	init_logger(&ins->logger);
 
 	return 0;
@@ -104,7 +102,6 @@ int consensus_clean(struct proto_instance *ins)
 
 	remove_le_config_ctrl_interfaces(priv);
 	remove_logger_ifaces(&ins->logger);
-
 
 	return 0;
 }
