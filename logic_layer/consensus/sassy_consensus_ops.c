@@ -26,6 +26,8 @@ int consensus_init(struct proto_instance *ins)
 	if(!priv->le_config_procfs)
 		init_le_config_ctrl_interfaces(priv);
 
+	init_logger(&ins->logger);
+
 	return 0;
 }
 
@@ -101,6 +103,8 @@ int consensus_clean(struct proto_instance *ins)
 	le_state_transition_to(priv, LE_UNINIT);
 
 	remove_le_config_ctrl_interfaces(priv);
+	remove_logger_ifaces(ins->logger);
+
 
 	return 0;
 }
