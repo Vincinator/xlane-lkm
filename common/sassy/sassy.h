@@ -185,9 +185,12 @@ struct sassy_logger {
 	/* Size is defined by LOGGER_EVENT_LIMIT */
 	struct logger_event *events;
 	
-
 };
 
+enum w_state {
+	WARMED_UP = 0,
+	WARMING_UP = 1,
+};
 
 enum sassy_rx_state {
 	SASSY_RX_DISABLED = 0,
@@ -354,6 +357,8 @@ struct sassy_device {
 
 	enum sassy_rx_state rx_state;
 	enum tsstate ts_state; 
+	enum w_state warmup_state;
+
 
 	struct sassy_stats *stats;
 

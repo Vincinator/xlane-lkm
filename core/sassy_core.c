@@ -138,6 +138,7 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
 {
 	struct sassy_device *sdev = get_sdev(sassy_id);
+	struct pminfo *spminfo = &sdev->pminfo;
 	u16 received_proto_instances;
 	
 	if (unlikely(!sdev)) {
@@ -147,6 +148,42 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 	
     if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
+
+	if(sdev->warmup_state == WARMING_UP){
+
+		if(spminfo->pm_targets[remote_lid].alive == 0){
+			spminfo->pm_targets[remote_lid].alive = 1;
+		}
+
+		sassy_log_le("%s, %llu, %d: Received Message from node %d\n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			priv->term,
+			rcluster_id);
+
+		// Do not start Leader Election until all targets have send a message to this node.
+		for(i = 0; i < spminfo->num_of_targets; i++)
+			if(!spminfo->pm_targets[i].alive)
+				return 0;
+
+		sdev->warmup_state = WARMED_UP;
+
+		// Starting all protocols 
+		for(i = 0; i < sdev->num_of_proto_instances; i++){
+			if(sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL){
+				sassy_dbg("starting instance %d", i);
+				sdev->protos[i]->ctrl_ops.start(sdev->protos[i]);
+			} else {
+				sassy_dbg("protocol instance %d not initialized", i);
+			}
+		}
+
+		sassy_dbg("Warmup done! \n");
+		
+		if(err)
+			return err;
+	}
+
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 

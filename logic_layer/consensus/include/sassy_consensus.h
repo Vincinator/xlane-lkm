@@ -9,11 +9,6 @@
 #define TOLERANCE_CTIMEOUT_NS 500000
 
 
-enum w_state {
-	WARMED_UP = 0,
-	WARMING_UP = 1,
-};
-
 enum le_state {
 	LE_RUNNING = 0,
 	LE_READY = 1,
@@ -49,8 +44,6 @@ struct consensus_priv {
 	enum node_state nstate;
 
 	enum le_state state;
-
-	enum w_state warmup_state;
 
 	int warms;
 

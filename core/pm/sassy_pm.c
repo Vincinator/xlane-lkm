@@ -355,16 +355,6 @@ int sassy_pm_start_loop(void *data)
 
 	sassy_dbg("protocol instances: %d", sdev->num_of_proto_instances);
 
-	// Starting all protocols 
-	for(i = 0; i < sdev->num_of_proto_instances; i++){
-		if(sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL){
-			sassy_dbg("starting instance %d", i);
-			sdev->protos[i]->ctrl_ops.start(sdev->protos[i]);
-		} else {
-			sassy_dbg("protocol instance %d not initialized", i);
-		}
-	}
-
 	cpumask_clear(&mask);
 
 	heartbeat_task = kthread_create(&sassy_pm_loop, sdev, "sassy pm loop");
