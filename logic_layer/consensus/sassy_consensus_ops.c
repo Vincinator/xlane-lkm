@@ -103,7 +103,7 @@ int consensus_clean(struct proto_instance *ins)
 	le_state_transition_to(priv, LE_UNINIT);
 
 	remove_le_config_ctrl_interfaces(priv);
-	remove_logger_ifaces(ins->logger);
+	remove_logger_ifaces(&ins->logger);
 
 
 	return 0;
