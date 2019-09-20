@@ -44,6 +44,13 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 	pkt_payload_sub = 
  		sassy_reserve_proto(ins->instance_id, pkt_payload, SASSY_PROTO_CON_PAYLOAD_SZ);
 
+    if(sdev->verbose >= 1){
+    	print_hex_dump(KERN_DEBUG, "TX PAYLOAD: ", DUMP_PREFIX_NONE, 16, 1,
+	    		pkt_payload, SASSY_PAYLOAD_BYTES, 0);
+		print_hex_dump(KERN_DEBUG, "TX SUB PAY: ", DUMP_PREFIX_NONE, 16, 1,
+	    		pkt_payload_sub, SASSY_PROTO_CON_PAYLOAD_SZ, 0);
+    }
+
  	if(!pkt_payload_sub) {
  		sassy_error("Sassy packet full! This error is not handled - not implemented\n");
  		return -1;
