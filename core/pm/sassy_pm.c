@@ -212,6 +212,8 @@ static void __prepare_pm_loop(struct sassy_device *sdev, struct pminfo *spminfo)
 
 	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
+	sdev->warmup_state = WARMING_UP;
+
 	get_cpu(); // disable preemption
 
 }

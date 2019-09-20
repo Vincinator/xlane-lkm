@@ -45,8 +45,6 @@ struct consensus_priv {
 
 	enum le_state state;
 
-	int warms;
-
 	u32 leader_id;
 
 	u32 node_id;

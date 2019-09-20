@@ -19,8 +19,6 @@ int consensus_init(struct proto_instance *ins)
 	priv->ftimer_init = 0;
 	priv->voted = -1;
 	priv->term = 0;
-	priv->warms = 0;
-	priv->warmup_state = WARMING_UP;
 	priv->state = LE_READY;
 
 	init_le_config_ctrl_interfaces(priv);
@@ -93,9 +91,6 @@ int consensus_stop(struct proto_instance *ins)
 
 	set_all_targets_dead(priv->sdev);
 	
-	priv->warmup_state = WARMING_UP;
-	priv->warms = 0;
-
 	return 0;
 }
 
