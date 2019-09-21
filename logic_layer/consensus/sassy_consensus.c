@@ -93,13 +93,13 @@ ktime_t get_rnd_timeout(int min, int max)
 			prandom_u32_max(max - min));
 }
 
-void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2)
+void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, u32 p2)
 {
 	u16 *opcode;
 	u32 *param1, *param2;
 
 	opcode = GET_CON_PROTO_OPCODE_PTR(pkt);
-	*opcode = (u16) opcode;
+	*opcode = (u16) opco;
 
 	param1 = GET_CON_PROTO_PARAM1_PTR(pkt);
 	*param1 = (u32) p1;
