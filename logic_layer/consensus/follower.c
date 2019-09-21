@@ -24,7 +24,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 
 	write_log(&priv->ins->logger, FOLLOWER_TIMEOUT, rdtsc());
 
-#if 0
+#if 1
 	if(sdev->verbose >= 1)
 		sassy_dbg("Follower Timeout occured!\n");
 
@@ -50,7 +50,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
-#if 0
+#if 1
 
 	sassy_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
 			nstate_string(priv->nstate),
@@ -71,6 +71,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
+	struct sassy_device *sdev = priv->sdev;
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
@@ -105,7 +106,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 */
 		if(param1 > priv->term){
 
-#if 0
+#if 1
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 #endif
@@ -200,7 +201,7 @@ void reset_ftimeout(struct proto_instance *ins)
 	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 
-#if 0
+#if 1
 
 	sassy_log_le("%s, %llu, %d: Set follower timeout to %lld ms.\n",
 			nstate_string(priv->nstate),

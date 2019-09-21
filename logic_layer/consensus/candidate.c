@@ -195,6 +195,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
+	struct sassy_device *sdev = priv->sdev;
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
