@@ -184,10 +184,11 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 	}
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
-	sassy_dbg("Protocol Instances included %d", received_proto_instances);
+
+	if(sdev->verbose >= 3)
+		sassy_dbg("Protocol Instances included %d", received_proto_instances);
 
     if(sdev->verbose >= 4){
-    	sassy_dbg("Protocol Instances included %d", received_proto_instances);
 		sassy_dbg( "FROM: %x:%x:%x:%x:%x:%x)\n",
 				remote_mac[0],
 				remote_mac[1],
