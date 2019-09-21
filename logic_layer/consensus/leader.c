@@ -14,9 +14,9 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	u8 opcode = GET_LE_PAYLOAD(pkt, opcode);
-	u32 param1 = GET_LE_PAYLOAD(pkt, param1);
-	u32 param2 = GET_LE_PAYLOAD(pkt, param2);
+	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
+	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 
 #if 0
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);

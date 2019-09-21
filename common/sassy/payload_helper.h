@@ -13,6 +13,17 @@
   *((u32*)(((unsigned char *)p) + offsetof(struct le_payload, fld))) = v; \
 } while (0)
 
+// protoid(u16) + offset(u16)
+#define GET_CON_PROTO_OPCODE_VAL(p) *(u16 *)((char*) p + 2 + 2)
+#define GET_CON_PROTO_OPCODE_PTR(p) (u16 *)((char*) p + 2 + 2)
+
+// protoid(u16) + offset(u16) + opcode(u16)
+#define GET_CON_PROTO_PARAM1_VAL(p) *(u32 *)((char*) p + 2 + 2 + 2)
+#define GET_CON_PROTO_PARAM1_PTR(p) (u32 *)((char*) p + 2 + 2 + 2 )
+
+// protoid(u16) + offset(u16) + opcode(u16) + param1(u32)
+#define GET_CON_PROTO_PARAM2_VAL(p) *(u32 *)((char*) p + 2 + 2 + 2 + 4)
+#define GET_CON_PROTO_PARAM2_PTR(p) (u32 *)((char*) p + 2 + 2 + 2 + 4)
 
 #define GET_PROTO_AMOUNT_VAL(p) *(u16 *)((char*) p)
 #define GET_PROTO_AMOUNT_PTR(p) (u16 *)((char*) p)

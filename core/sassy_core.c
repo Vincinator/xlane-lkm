@@ -127,7 +127,6 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 		sassy_dbg("No instance for protocol id %d were found\n", cur_proto_id);
 	} else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
-		sassy_dbg("Posted Protocol for Instance id: %d  with proto offset %d\n", cur_proto_id, cur_offset);
 	}
 
 	// handle next payload

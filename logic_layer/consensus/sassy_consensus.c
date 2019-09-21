@@ -93,17 +93,19 @@ ktime_t get_rnd_timeout(int min, int max)
 			prandom_u32_max(max - min));
 }
 
-void set_le_term(unsigned char *pkt, u32 p1)
-{
-	SET_LE_PAYLOAD(pkt, param1, p1);
-}
-
-
 void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2)
 {
-	SET_LE_PAYLOAD(pkt, opcode, opcode);
-	SET_LE_PAYLOAD(pkt, param1, p1);
-	SET_LE_PAYLOAD(pkt, param2, p2);
+	u16 *opcode;
+	u32 *param1, *param2;
+
+	opcode = GET_CON_PROTO_OPCODE_PTR(pkt);
+	*opcode = (u16) opcode;
+
+	param1 = GET_CON_PROTO_PARAM1_PTR(pkt);
+	*param1 = (u32) p1;
+
+	param2 = GET_CON_PROTO_PARAM2_PTR(pkt);
+	*param2 = (u32) p2;
 }
 
 static const struct sassy_protocol_ctrl_ops consensus_ops = {
