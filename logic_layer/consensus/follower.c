@@ -76,7 +76,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 
-#if 0
+#if 1
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 #endif
 
@@ -86,7 +86,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case NOMI:	
 		if(priv->term < param1) {
 	 		if (priv->voted == param1) {
-#if 0
+#if 1
 				sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
 #endif	
 			} else {
@@ -125,14 +125,14 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		else if(param1 == priv->term) {
 
 			if(priv->leader_id == remote_lid){
-#if 0
+#if 1
 				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from known leader term=%u\n", param1);
 #endif
 				reset_ftimeout(ins);
 
 			}else {
-#if 0
+#if 1
 				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from new leader term=%u\n", param1);
 #endif
@@ -143,7 +143,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 * Ignoring this LEAD operation and let the countdown continue to go down.
 		 */
 		else {
-#if 0
+#if 1
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);
 #endif
@@ -177,7 +177,7 @@ void init_timeout(struct proto_instance *ins)
 
 	priv->ftimer.function = &_handle_follower_timeout;
 
-#if 0
+#if 1
 	sassy_log_le("%s, %llu, %d: Init follower timeout to %lld ms. \n",
 		nstate_string(priv->nstate),
 		rdtsc(),
