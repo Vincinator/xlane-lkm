@@ -55,7 +55,7 @@ int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_
 				 priv->term,
 				 priv->node_id,
 				 priv->sm_log.last_idx,
-				 priv->sm_log.term,
+				 priv->sm_log.last_term,
 				 priv->sm_log.commit_idx,
 				 cmd_array,
 				 num_of_entries);
