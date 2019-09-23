@@ -28,7 +28,7 @@ char *_le_state_name(enum le_state state)
 	}
 }
 
-int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_id, struct appen_entries_data *aed)
+int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_id, struct sm_command *cmd_array, int num_of_entries)
 {
 	struct sassy_payload *pkt_payload;
 	char *pkt_payload_sub;
@@ -41,7 +41,7 @@ int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_
      	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
 
 	pkt_payload_sub = 
- 		sassy_reserve_proto(ins->instance_id, pkt_payload, SASSY_PROTO_CON_AE_BASE_SZ + (aed->num_of_entries * AE_ENTRY_SIZE));
+ 		sassy_reserve_proto(ins->instance_id, pkt_payload, SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
 
  	if(!pkt_payload_sub) {
  		sassy_error("Sassy packet full! This error is not handled - not implemented\n");

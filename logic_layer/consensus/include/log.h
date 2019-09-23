@@ -10,6 +10,7 @@ struct sm_command{
 	u32 sm_logvar_value;
 };
 
+
 struct sm_log_entry {
 
 	/* Term in which this command was appended to the log

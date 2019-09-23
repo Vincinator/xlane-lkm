@@ -35,6 +35,7 @@ enum node_state {
 	LEADER = 2,
 };
 
+
 struct consensus_priv {
 
 	struct sassy_device *sdev;
