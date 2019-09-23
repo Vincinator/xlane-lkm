@@ -158,7 +158,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 			spminfo->pm_targets[remote_lid].alive = 1;
 		}
 
-		sassy_dbg("Received Message from node\n");
+		sassy_dbg("Received Message from node %d\n", rcluster_id);
 
 		// Do not start Leader Election until all targets have send a message to this node.
 		for(i = 0; i < spminfo->num_of_targets; i++)

@@ -201,7 +201,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 	
-#if 1
+#if 0
 
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 #endif
@@ -223,7 +223,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	case LEAD:
 		if(param1 >= priv->term){
 
-#if 1
+#if 0
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
@@ -231,7 +231,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, rdtsc());
 
 		} else {
-#if 1
+#if 0
 
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);
