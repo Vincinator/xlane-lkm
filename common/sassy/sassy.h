@@ -82,6 +82,7 @@ enum le_opcode {
 	NOMI = 1,
 	VOTE = 2,
 	LEAD = 3,
+	APPEND = 4,
 };
 
 
@@ -401,7 +402,7 @@ struct sassy_protocol_ctrl_ops {
 
 struct proto_instance {
 
-	u16 instance_id;
+-	u16 instance_id;
 
 	enum sassy_protocol_type proto_type;
 	

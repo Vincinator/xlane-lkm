@@ -43,6 +43,9 @@ typedef int(*handle_payload_fun)(struct sassy_device *,
 								 unsigned char *remote_mac,
 								 void *payload);
 
+#define SASSY_PROTO_CON_AE_BASE_SZ 20
+#define CONLOG_ENTRY_SIZE 8
+
 #define SASSY_PROTO_CON_PAYLOAD_SZ 9
 #define SASSY_CON_METADATA_SZ 23
 #define SASSY_CON_LOGCMD_SZ 8
