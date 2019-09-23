@@ -115,11 +115,11 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 
 			// include the current TERM
 			param1 = GET_CON_PROTO_PARAM1_PTR(pkt_payload_sub);
-			*param1 = (u32) priv->term;
+			*param1 = (u32) cur_priv->term;
 
 			// include the leader ID (TODO: do we need the node_id? Potential small optimization if skipped..)
 			param2 = GET_CON_PROTO_PARAM2_PTR(pkt_payload_sub);
-			*param2 = (u32) priv->node_id;
+			*param2 = (u32) cur_priv->node_id;
 		}
 	}
 
