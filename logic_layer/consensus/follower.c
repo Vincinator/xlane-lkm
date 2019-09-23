@@ -7,7 +7,7 @@
 #include <sassy/payload_helper.h>
 
 #include "include/follower.h"
-#include "include/sassy_consensus.h"
+#include <sassy/consensus.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][LE][FOLLOWER]"

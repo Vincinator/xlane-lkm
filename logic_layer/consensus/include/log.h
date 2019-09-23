@@ -2,7 +2,7 @@
 
 #include <sassy/sassy.h>
 
-#include "sassy_consensus.h"
+#include <sassy/consensus.h>
 
 
 struct rsm_command{

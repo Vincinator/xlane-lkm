@@ -2,7 +2,7 @@
 #include <sassy/sassy.h>
 #include <sassy/payload_helper.h>
 
-#include "include/sassy_consensus.h"
+#include <sassy/consensus.h>
 #include "include/leader.h"
 #include "include/follower.h"
 #include "include/candidate.h"

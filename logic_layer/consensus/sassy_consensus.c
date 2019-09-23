@@ -13,7 +13,7 @@
 
 
 #include "include/sassy_consensus_ops.h"
-#include "include/sassy_consensus.h"
+#include <sassy/consensus.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
