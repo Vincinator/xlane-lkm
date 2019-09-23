@@ -258,6 +258,7 @@ static int sassy_pm_loop(void *data)
 
 		err = _emit_pkts(sdev, spminfo);
 
+
 		if (err) {
 			sassy_pm_stop(spminfo);
 			local_bh_enable();
@@ -267,6 +268,9 @@ static int sassy_pm_loop(void *data)
 
 		local_bh_enable();
 		local_irq_restore(flags);
+	
+		if (sdev->ts_state == SASSY_TS_RUNNING)
+			sassy_write_timestamp(sdev, 0, cycles, 42);
 
 	}
 
