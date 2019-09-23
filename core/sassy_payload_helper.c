@@ -89,8 +89,10 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 {
 	u16 *opcode;
 	u32 *param1, *param2;
+	char *pkt_payload_sub;
 	struct consensus_priv *cur_priv;
-	
+	int i;
+
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
 
