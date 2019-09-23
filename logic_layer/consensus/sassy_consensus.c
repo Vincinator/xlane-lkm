@@ -11,7 +11,7 @@
 
 #include <sassy/payload_helper.h>
 
-
+#include "include/log.h"
 #include "include/sassy_consensus_ops.h"
 #include <sassy/consensus.h>
 
@@ -126,7 +126,7 @@ void set_ae_data(unsigned char *pkt,
 	*leader_commit_idx = in_leaderCommitIdx;
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
-	
+
 	/* Iterate through cmd array and append to pkt - 
 	 * .. each entry consists of 2 x 4byte (note: sizeof u32 is 4byte)
 	 */
