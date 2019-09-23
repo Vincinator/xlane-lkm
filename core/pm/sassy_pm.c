@@ -270,7 +270,7 @@ static int sassy_pm_loop(void *data)
 		local_irq_restore(flags);
 	
 		if (sdev->ts_state == SASSY_TS_RUNNING)
-			sassy_write_timestamp(sdev, 0, cycles, 42);
+			sassy_write_timestamp(sdev, 0, rdtsc(), 42);
 
 	}
 
