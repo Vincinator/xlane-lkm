@@ -93,6 +93,53 @@ ktime_t get_rnd_timeout(int min, int max)
 			prandom_u32_max(max - min));
 }
 
+void set_ae_data(unsigned char *pkt, 
+				 u32 in_term, 
+				 u32 in_leaderid,
+				 u32 in_prevLogIndex,
+				 u32 in_prevLogTerm,
+				 u32 in_leaderCommitIdx,
+				 struct sm_command *cmd_array, 
+				 int num_of_entries)
+{
+	u16 *opcode;
+	u32 *term, *leader_id, *prev_log_idx, *prev_log_term, *leader_commit_idx;
+	int i;
+	u32 *cur_ptr;
+
+	opcode = GET_CON_AE_OPCODE_PTR(pkt);
+	*opcode = (u16) APPEND;
+
+	term = GET_CON_AE_TERM_PTR(pkt);
+	*term = in_term;
+
+	leader_id = GET_CON_AE_LEADER_ID_PTR(pkt);
+	*leader_id = in_leader_id;
+
+	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
+	*prev_log_idx = in_prevLogIndex;
+
+	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
+	*prev_log_term = in_prevLogTerm;
+
+	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
+	*leader_commit_idx = in_leaderCommitIdx;
+
+	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
+	
+	/* Iterate through cmd array and append to pkt - 
+	 * .. each entry consists of 2 x 4byte (note: sizeof u32 is 4byte)
+	 */
+	for(i = 0; i < num_of_entries; i++){
+		*cur_ptr = cmd_array[i].sm_logvar_id;
+		cur_ptr++;
+		*cur_ptr = cmd_array[i].sm_logvar_value;
+		cur_ptr++;
+	}
+
+
+}
+
 void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, u32 p2)
 {
 	u16 *opcode;

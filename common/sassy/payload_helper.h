@@ -13,6 +13,42 @@
   *((u32*)(((unsigned char *)p) + offsetof(struct le_payload, fld))) = v; \
 } while (0)
 
+
+/* TODO: Find a method to define the byte layout via structs and get the memory offsets via
+ * a similiar method like the GET_LE_PAYLOAD from above. 
+ *
+ * The task is to introduce another layer of indirection to find out the ptr size for the 
+ * corresponding struct field..
+ *
+ * These macros are cumbersome to maintain, but as always... 
+ * "meeting the deadline" >>> maintainability 
+ * 
+ * Sorry!  
+ */
+
+// protoid(u16) + offset(u16)
+#define GET_CON_AE_OPCODE_PTR(p) (u16 *)((char*) p + 2 + 2)
+
+// protoid(u16) + offset(u16) + opcode(u16)
+#define GET_CON_AE_TERM_PTR(p) (u32 *)((char*) p + 4 + 2)
+
+// protoid(u16) + offset(u16) + opcode(u16) + term(u32)
+#define GET_CON_AE_LEADER_ID_PTR(p) (u32 *)((char*) p + 6 + 4 )
+
+// protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32)
+#define GET_CON_AE_PREV_LOG_IDX_PTR(p) (u32 *)((char*) p + 10 + 4)
+
+// protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32) + prev_log_idx(u32)
+#define GET_CON_AE_PREV_LOG_TERM_PTR(p) (u32 *)((char*) p + 14 + 4)
+
+// protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32) + prev_log_idx(u32) + prev_term(u32)
+#define GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(p) (u32 *)((char*) p + 18 + 4)
+
+// protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32) + prev_log_idx(u32) + prev_term(u32)
+// .... + leader_commit_idx(32) 
+#define GET_CON_PROTO_ENTRIES_START_PTR(p) (u32 *)((char*) p + 22 + 4)
+
+
 // protoid(u16) + offset(u16)
 #define GET_CON_PROTO_OPCODE_VAL(p) *(u16 *)((char*) p + 2 + 2)
 #define GET_CON_PROTO_OPCODE_PTR(p) (u16 *)((char*) p + 2 + 2)

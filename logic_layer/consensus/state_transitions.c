@@ -33,6 +33,8 @@ int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_
 	struct sassy_payload *pkt_payload;
 	char *pkt_payload_sub;
 	int hb_passive_ix;
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
 
 	hb_passive_ix =
 	     !!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
@@ -48,7 +50,14 @@ int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_
  		return -1;
  	}
 
-	//set_le_opcode((unsigned char*)pkt_payload_sub, opcode, 0, 0);
+	set_ae_data((unsigned char*)pkt_payload_sub,
+				 priv->term,
+				 priv->node_id,
+				 priv->sm_log.last_idx,
+				 priv->sm_log.term,
+				 priv->sm_log.commit_idx,
+				 cmd_array,
+				 num_of_entries);
 	
 	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 
@@ -60,6 +69,7 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 	struct sassy_payload *pkt_payload;
 	char *pkt_payload_sub;
 	int hb_passive_ix;
+
 
 	hb_passive_ix =
 	     !!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;

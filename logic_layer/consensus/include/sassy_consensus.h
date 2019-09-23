@@ -78,6 +78,9 @@ struct consensus_priv {
 
 	/* number of followers voted for this node */
 	int votes;
+
+	/* The consensus log for this instance */
+	struct sm_log;
 };
 
 int node_transition(struct proto_instance *ins, enum node_state state);
@@ -91,7 +94,6 @@ ktime_t get_rnd_timeout_candidate_plus(int plus);
 void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2);
 void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u32 term);
 int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode);
-int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term);
 void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm);
 void log_le_vote(int verbose, enum node_state nstate, uint64_t ts, int term, int cur_votes);
 const char *nstate_string(enum node_state state);

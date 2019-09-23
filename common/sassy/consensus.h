@@ -88,9 +88,22 @@ ktime_t get_rnd_timeout_plus(int plus);
 ktime_t get_rnd_timeout_candidate_plus(int plus);
 
 void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2);
+
+void set_ae_data(unsigned char *pkt, 
+				 u32 in_term, 
+				 u32 in_leaderid,
+				 u32 in_prevLogIndex,
+				 u32 in_prevLogTerm,
+				 u32 in_leaderCommitIdx,
+				 struct sm_command *cmd_array, 
+				 int num_of_entries);
+
 void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u32 term);
 int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode);
 int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term);
+int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_id, struct sm_command *cmd_array, int num_of_entries);
+
+
 void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm);
 void log_le_vote(int verbose, enum node_state nstate, uint64_t ts, int term, int cur_votes);
 const char *nstate_string(enum node_state state);
