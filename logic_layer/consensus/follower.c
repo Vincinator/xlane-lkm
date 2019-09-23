@@ -240,7 +240,7 @@ int start_follower(struct proto_instance *ins)
 
 	init_timeout(ins);
 
-#if 0
+#if 1
 	sassy_dbg("Node became a follower\n");
 #endif
 

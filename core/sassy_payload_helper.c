@@ -85,9 +85,43 @@ EXPORT_SYMBOL(sassy_reserve_proto);
 
 /* Must be called after the sassy packet has been emitted. 
  */
-void invalidate_proto_data(struct sassy_payload *spay)
+void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay)
 {
+	u16 *opcode;
+	u32 *param1, *param2;
+	struct consensus_priv *cur_priv;
+	
+	// free previous piggybacked protocols
 	spay->protocols_included = 0;
+
+
+	// iterate through consensus protocols and include LEAD messages 
+	for(i = 0; i < sdev->num_of_proto_instances; i++){
+		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
+	 		
+	 		// reserve space in sassy heartbeat for consensus LEAD
+	 		pkt_payload_sub =
+	 				sassy_reserve_proto(sdev->protos[i], spay, SASSY_PROTO_CON_PAYLOAD_SZ);
+			
+			// get corresponding local instance data for consensus
+			cur_priv = 
+				(struct consensus_priv *)pkt_payload_sub->proto_data
+
+			// set opcode to LEAD
+			opcode = GET_CON_PROTO_OPCODE_PTR(pkt_payload_sub);
+			*opcode = (u16) LEAD;
+
+			// include the current TERM
+			param1 = GET_CON_PROTO_PARAM1_PTR(pkt_payload_sub);
+			*param1 = (u32) priv->term;
+
+			// include the leader ID (TODO: do we need the node_id? Potential small optimization if skipped..)
+			param2 = GET_CON_PROTO_PARAM2_PTR(pkt_payload_sub);
+			*param2 = (u32) priv->node_id;
+		}
+	}
+
+
 }
 EXPORT_SYMBOL(invalidate_proto_data);
 
