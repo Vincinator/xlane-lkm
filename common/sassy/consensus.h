@@ -58,7 +58,7 @@ struct sm_log_entry {
 };
 
 
-struct sm_log {
+struct state_machine_cmd_log {
 
 	/* Index of the last valid entry in the entries array
 	 */
@@ -118,11 +118,13 @@ struct consensus_priv {
 
 	/* number of followers voted for this node */
 	int votes;
+
+	struct state_machine_cmd_log smlog;
 };
 
 
-int commit_upto_index(struct sm_log *log, u32 index);
-int append_command(struct sm_log *log, struct sm_command *cmd);
+int commit_upto_index(struct state_machine_cmd_log *log, u32 index);
+int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd);
 
 
 

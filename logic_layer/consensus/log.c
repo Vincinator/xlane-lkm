@@ -10,7 +10,7 @@
 #define LOG_PREFIX "[SASSY][RSM]"
 
 
-int apply_log_to_sm(struct sm_log *log, u32 commit_idx)
+int apply_log_to_sm(struct state_machine_cmd_log *log, u32 commit_idx)
 {
 	int err;
 
@@ -29,7 +29,7 @@ error:
 }
 
 
-int commit_upto_index(struct sm_log *log, u32 index)
+int commit_upto_index(struct state_machine_cmd_log *log, u32 index)
 {
 	int err;
 
@@ -67,7 +67,7 @@ error:
 EXPORT_SYMBOL(commit_upto_index);
 
 
-int append_command(struct sm_log *log, struct sm_command *cmd)
+int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd)
 {
 	int err;
 	int last_idx;
