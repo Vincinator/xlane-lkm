@@ -44,6 +44,7 @@ typedef int(*handle_payload_fun)(struct sassy_device *,
 								 void *payload);
 
 #define SASSY_PROTO_CON_AE_BASE_SZ 20
+#define AE_ENTRY_SIZE 8
 #define CONLOG_ENTRY_SIZE 8
 
 #define SASSY_PROTO_CON_PAYLOAD_SZ 9
