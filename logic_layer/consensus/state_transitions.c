@@ -6,6 +6,7 @@
 #include "include/leader.h"
 #include "include/follower.h"
 #include "include/candidate.h"
+#include "include/log.h"
 
 
 static char *node_state_name(enum node_state state)
