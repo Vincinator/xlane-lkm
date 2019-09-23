@@ -1,7 +1,6 @@
 #include <sassy/sassy.h>
 #include <sassy/payload_helper.h>
-
-
+#include <sassy/consensus.h>
 
 
 
@@ -46,7 +45,6 @@ char *sassy_reserve_proto(u16 instance_id, struct sassy_payload *spay, u16 proto
 	char *cur_proto;
 	int proto_offset = 0;
 	int cur_offset = 0;
-	u16 *instances_ptr;
 
 	u16 *pid, *poff;
 
