@@ -103,7 +103,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =
-	 				sassy_reserve_proto(sdev->protos[i], spay, SASSY_PROTO_CON_PAYLOAD_SZ);
+	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_PAYLOAD_SZ);
 			
 			// get corresponding local instance data for consensus
 			cur_priv = 
