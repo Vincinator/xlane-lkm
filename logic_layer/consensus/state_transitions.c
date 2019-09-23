@@ -48,7 +48,7 @@ int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_
  		return -1;
  	}
 
-	set_le_opcode((unsigned char*)pkt_payload_sub, opcode, term, 0);
+	//set_le_opcode((unsigned char*)pkt_payload_sub, opcode, 0, 0);
 	
 	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 
