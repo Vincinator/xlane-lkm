@@ -71,7 +71,7 @@ char *sassy_reserve_proto(u16 instance_id, struct sassy_payload *spay, u16 proto
 	*pid = instance_id;
 	*poff = proto_size;
 
-	sassy_dbg("pid: %hu, poff: %hu", *pid, *poff);
+	//sassy_dbg("pid: %hu, poff: %hu", *pid, *poff);
 
 	spay->protocols_included++;
 
@@ -93,19 +93,20 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
 
-
-	// iterate through consensus protocols and include LEAD messages 
+	// iterate through consensus protocols and include LEAD messages if node is leader
 	for(i = 0; i < sdev->num_of_proto_instances; i++){
 		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
-	 		
+	 		// get corresponding local instance data for consensus
+			cur_priv = 
+				(struct consensus_priv *)sdev->protos[i]->proto_data;
+	 	
+	 		if(cur_priv->nstate != LEADER)
+	 			continue;
+
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =
 	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_PAYLOAD_SZ);
-			
-			// get corresponding local instance data for consensus
-			cur_priv = 
-				(struct consensus_priv *)sdev->protos[i]->proto_data;
-
+		
 			// set opcode to LEAD
 			opcode = GET_CON_PROTO_OPCODE_PTR(pkt_payload_sub);
 			*opcode = (u16) LEAD;
@@ -119,11 +120,8 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 			*param2 = (u32) cur_priv->node_id;
 		}
 	}
-
-
 }
 EXPORT_SYMBOL(invalidate_proto_data);
-
 
 
 handle_payload_fun get_payload_handler(enum sassy_protocol_type ptype) 

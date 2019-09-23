@@ -87,14 +87,12 @@ struct proto_instance *get_proto_instance(struct sassy_device *sdev, int proto_i
 	int idx;
 
 	if (unlikely(proto_id < 0 || proto_id > MAX_PROTO_INSTANCES)) {
-		sassy_dbg("Invalid protocol id %d\n", proto_id);
 		return NULL;
 	}
 
 	idx = sdev->instance_id_mapping[proto_id];
 
 	if (unlikely(idx < 0 || idx > MAX_PROTO_INSTANCES)) {
-		sassy_dbg("Invalid protocol idx %d\n", idx);
 		return NULL;
 	}
 
