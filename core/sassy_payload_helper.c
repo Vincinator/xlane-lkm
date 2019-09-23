@@ -107,7 +107,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 			
 			// get corresponding local instance data for consensus
 			cur_priv = 
-				(struct consensus_priv *)pkt_payload_sub->proto_data
+				(struct consensus_priv *)sdev->protos[i]->proto_data;
 
 			// set opcode to LEAD
 			opcode = GET_CON_PROTO_OPCODE_PTR(pkt_payload_sub);
