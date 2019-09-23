@@ -95,7 +95,7 @@ ktime_t get_rnd_timeout(int min, int max)
 
 void set_ae_data(unsigned char *pkt, 
 				 u32 in_term, 
-				 u32 in_leaderid,
+				 u32 in_leader_id,
 				 u32 in_prevLogIndex,
 				 u32 in_prevLogTerm,
 				 u32 in_leaderCommitIdx,

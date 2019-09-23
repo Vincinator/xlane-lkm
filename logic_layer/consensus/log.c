@@ -20,11 +20,9 @@ int apply_log_to_sm(struct sm_log *log, u32 commit_idx)
 		goto error;
 	}
 
-	// DUMMY Placeholder.. apply the logs to the state machine here..  
-	// apply logs from log->commit_idx to commit_idx 
-	sassy_dbg("DUMMY - Logs applied to state machine until log index %d", commit_idx);
+	// measure throughput here! 
 
-	// TODO: May return number of commands successfully commited to state machine?
+
 	return 0;
 error:
 	return err;
