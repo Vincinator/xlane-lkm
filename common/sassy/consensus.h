@@ -83,6 +83,8 @@ struct consensus_priv;
 struct consensus_test_container {
 	struct consensus_priv *priv;
 	struct hrtimer timer;
+	int running;
+	int x;
 };
 
 struct consensus_priv {
