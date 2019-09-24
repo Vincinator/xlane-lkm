@@ -1,6 +1,7 @@
 #include <sassy/logger.h>
 #include <sassy/sassy.h>
-
+#include <linux/kernel.h>
+#include <linux/slab.h>
 
 #include <sassy/consensus.h>
 #include "include/sassy_consensus_ops.h"
@@ -24,6 +25,7 @@ int consensus_init(struct proto_instance *ins)
 	priv->sm_log.last_term = 0;
 	priv->sm_log.last_idx = 0;
 	priv->sm_log.commit_idx = 0;
+	priv->sm_log.last_applied = 0;
 	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
 
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
