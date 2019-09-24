@@ -116,14 +116,15 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 
 	 		// only append entries if the leader has something fresh to append
 	 		if(cur_index > next_index) {
-
-		 		// Decide how many entries to update for the current target
-
+	 	 		// Decide how many entries to update for the current target
+	 			num_entries =
+	 				(MAX_ENTRIES_PER_PKT < next_index - cur_index) ? MAX_ENTRIES_PER_PKT : next_index - cur_index ;
+		 		
 	 		}
 
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =
-	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE);
+	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
 		
 
 	 		set_ae_data(pkt_payload_sub, 
@@ -134,7 +135,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 				 		prev_log_term,
 				 		leader_commit_idx,
 				 		cmd_array, 
-				 		num_of_entries)
+				 		num_of_entries);
 		}
 	}
 }
