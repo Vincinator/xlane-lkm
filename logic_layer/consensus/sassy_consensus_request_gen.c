@@ -48,7 +48,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	struct consensus_priv *priv = test_data->priv;
 	u32 rand_value, rand_id;
 	ktime_t currtime, interval;
-	struct sm_log_entry *cur_entry;
+	struct sm_command *cur_cmd;
 	int err = 0;
 	int i;
 
@@ -66,9 +66,9 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	for(i = 0; i < test_data->x; i++){
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
-		cur_entry = kmalloc(sizeof(struct sm_log_entry), GFP_KERNEL);
-		cur_entry->cmd.sm_logvar_id = rand_id;
-		cur_entry->cmd.sm_logvar_value = rand_value;
+		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
+		cur_cmd->sm_logvar_id = rand_id;
+		cur_cmd->sm_logvar_value = rand_value;
 		err = append_command(&priv->sm_log, cur_entry, priv->term);
 		if(err)
 			goto error;
