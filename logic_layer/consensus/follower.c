@@ -235,6 +235,10 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	append_success = append_commands(priv, pkt, *num_entries, pkt_size);
 	append_success = !!!append_success; // convert to (0,1) and invert
 
+	// skip commit idx if appending commands failed?
+	//if(append_success == 0)
+	//	goto out:
+
 	// check commit index
 	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
 	if(*leader_commit_idx > priv->sm_log.commit_idx) {
@@ -242,6 +246,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
 	}
 
+out:
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, append_success);
 }
 
