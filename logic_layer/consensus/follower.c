@@ -1,13 +1,15 @@
-#include <sassy/logger.h>
-#include <sassy/sassy.h>
-
+#include <linux/kernel.h>
+#include <linux/slab.h>
 #include <linux/random.h>
 #include <linux/timer.h>
 
 #include <sassy/payload_helper.h>
+#include <sassy/consensus.h>
+#include <sassy/logger.h>
+#include <sassy/sassy.h>
 
 #include "include/follower.h"
-#include <sassy/consensus.h>
+
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][LE][FOLLOWER]"
@@ -139,7 +141,7 @@ int check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u
 	int ret = 0; // 0 := all good.
 	struct sm_log_entry *entry;
 
-	if(log->last_idx < prev_log_idx) || prev_log_idx < 0 ){
+	if(log->last_idx < prev_log_idx || prev_log_idx < 0 ){
 		sassy_dbg("Entry at index %d does not exist\n", prev_log_idx);
 		ret = 1;
 		goto out;
@@ -157,7 +159,7 @@ int check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u
 		sassy_dbg("prev_log_term does not match %d != %d", entry->term, prev_log_term);
 		
 		// Delete entries from prev_log_idx to last_idx
-		remove_from_log_until_last(&log, prev_log_idx);
+		remove_from_log_until_last(log, prev_log_idx);
 		ret = 1;
 		goto out;
 	}
