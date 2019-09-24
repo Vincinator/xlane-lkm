@@ -212,7 +212,7 @@ out:
 }
 
 
-void _handle_append_rpc(struct consensus_priv *priv, unsigned char *pkt)
+void _handle_append_rpc(struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id)
 {
 	u32 *prev_log_term, *prev_log_idx, *leader_commit_idx, *num_entries;
 	int append_success;
@@ -294,7 +294,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, rdtsc());
 			reset_ftimeout(ins);
 
-			_handle_append_rpc(priv, pkt);
+			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 		} 
 
@@ -313,7 +313,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 #endif
 
 				reset_ftimeout(ins);
-				_handle_append_rpc(priv, pkt);
+				_handle_append_rpc(priv, pkt, remote_lid, rcluster_id);
 
 
 			}else {
