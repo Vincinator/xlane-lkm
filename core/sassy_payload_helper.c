@@ -97,7 +97,6 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
 
-
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for(i = 0; i < sdev->num_of_proto_instances; i++){
 		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
@@ -107,14 +106,6 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 	
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
-
-
-
-			// set opcode to LEAD
-			opcode = GET_CON_PROTO_OPCODE_PTR(pkt_payload_sub);
-			*opcode = (u16) APPEND;
-
-
 
 	 		// Check if entries must be appendedS
 	 		cur_index = cur_priv->sm_log.last_idx;
@@ -127,7 +118,6 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		if(cur_index > next_index) {
 
 		 		// Decide how many entries to update for the current target
-			
 
 	 		}
 
