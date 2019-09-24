@@ -127,6 +127,10 @@ struct consensus_priv {
 	struct state_machine_cmd_log sm_log;
 };
 
+struct consensus_test_container {
+	struct consensus_priv *priv;
+	struct hrtimer timer;
+};
 
 int commit_upto_index(struct state_machine_cmd_log *log, u32 index);
 int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd);
