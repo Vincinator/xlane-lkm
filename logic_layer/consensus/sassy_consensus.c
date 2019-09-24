@@ -99,11 +99,12 @@ void set_ae_data(unsigned char *pkt,
 				 u32 in_prevLogIndex,
 				 u32 in_prevLogTerm,
 				 u32 in_leaderCommitIdx,
-				 struct sm_command *cmd_array, 
+				 struct sm_log_entry **entries, 
 				 int num_of_entries)
 {
 	u16 *opcode;
 	u32 *term, *leader_id, *prev_log_idx, *prev_log_term, *leader_commit_idx;
+	u32 *included_entries;
 	int i;
 	u32 *cur_ptr;
 
@@ -122,18 +123,18 @@ void set_ae_data(unsigned char *pkt,
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	*prev_log_term = in_prevLogTerm;
 
+	included_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
+	*included_entries = num_of_entries;
+
 	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
 	*leader_commit_idx = in_leaderCommitIdx;
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	/* Iterate through cmd array and append to pkt - 
-	 * .. each entry consists of 2 x 4byte (note: sizeof u32 is 4byte)
-	 */
-	for(i = 0; i < num_of_entries; i++){
-		*cur_ptr = cmd_array[i].sm_logvar_id;
+	for(i = in_prevLogIndex + 1; i < num_of_entries; i++){
+		*cur_ptr = cmd_array[i]->cmd.sm_logvar_id;
 		cur_ptr++;
-		*cur_ptr = cmd_array[i].sm_logvar_value;
+		*cur_ptr = cmd_array[i]->cmd.sm_logvar_value;
 		cur_ptr++;
 	}
 

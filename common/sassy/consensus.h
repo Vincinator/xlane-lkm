@@ -166,7 +166,7 @@ void set_ae_data(unsigned char *pkt,
 				 u32 in_prevLogIndex,
 				 u32 in_prevLogTerm,
 				 u32 in_leaderCommitIdx,
-				 struct sm_command *cmd_array, 
+				 struct sm_log_entry **entries, 
 				 int num_of_entries);
 
 
