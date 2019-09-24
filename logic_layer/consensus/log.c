@@ -39,13 +39,13 @@ int commit_upto_index(struct state_machine_cmd_log *log, u32 index)
 		goto error;
 	}
 
-	if(index > sm_log->last_idx ){
+	if(index > sm_log.last_idx ){
 		err = -EINVAL;
 		sassy_error("Given Commit Index is greater than number of entries in log\n");
 		goto error;
 	}
 
-	if(index < sm_log->commit_idx ){
+	if(index < sm_log.commit_idx ){
 		err = -EINVAL;
 		sassy_error("Already commited to a later index\n");
 		goto error;
@@ -72,7 +72,7 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd)
 	int err;
 	int last_idx;
 
-	last_idx = sm_log->last_idx;
+	last_idx = sm_log.last_idx;
 
 	if(!sm_log) {
 		err = -EINVAL;
@@ -81,13 +81,13 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd)
 	}
 
 	// mind the off by one counting.. last_idx starts at 0
-	if(sm_log->max_entries == last_idx + 1){
+	if(sm_log.max_entries == last_idx + 1){
 		err = -ENOMEM;
 		sassy_error("Log is full\n");
 		goto error;
 	}
 
-	if(sm_log->commit_idx > last_idx ){
+	if(sm_log.commit_idx > last_idx ){
 		err = -EPROTO;
 		sassy_error("BUG - commit_idx is greater than last_idx!\n");
 		goto error;

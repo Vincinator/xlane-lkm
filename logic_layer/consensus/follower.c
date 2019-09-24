@@ -157,7 +157,7 @@ int check_prev_log_match(struct state_machine_cmd_log *log, int prev_log_term, i
 		sassy_dbg("prev_log_term does not match %d != %d", entry->term, prev_log_term);
 		
 		// Delete entries from prev_log_idx to last_idx
-		remove_from_log_until_last(log, prev_log_idx);
+		remove_from_log_until_last(&log, prev_log_idx);
 		ret = 1;
 		goto out;
 	}
@@ -222,13 +222,13 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
 
 		// append new entries
-		append_commands(priv->sm_log, pkt, num_entries, pkt_size);
+		append_commands(&priv->sm_log, pkt, num_entries, pkt_size);
 
 		// check commit index
 		leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
-		if(*leader_commit_idx > priv->sm_log->commit_idx) {
+		if(*leader_commit_idx > priv->sm_log.commit_idx) {
 			// min(leader_commit_idx, last_idx)
-			priv->sm_log->commit_idx = *leader_commit_idx > priv->sm_log->last_idx ? priv->sm_log->last_idx : *leader_commit_idx;
+			priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
 		}
 
 		break;
