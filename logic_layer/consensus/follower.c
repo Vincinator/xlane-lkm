@@ -107,7 +107,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		cur_cmd->sm_logvar_value = *cur_ptr;
 		cur_ptr++;
 		
-		err = append_command(priv->sm_log, cur_cmd);
+		err = append_command(&priv->sm_log, cur_cmd);
 
 		if(err){
 			// kfree(cur_cmd); // free memory of failed log entry.. others from this loop (?)
