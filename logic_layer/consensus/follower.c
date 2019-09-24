@@ -144,9 +144,9 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 			goto error;
 		}
 
-		cur_cmd->cmd.sm_logvar_id = *cur_ptr;
+		cur_cmd->sm_logvar_id = *cur_ptr;
 		cur_ptr++;
-		cur_cmd->cmd.sm_logvar_value = *cur_ptr;
+		cur_cmd->sm_logvar_value = *cur_ptr;
 		cur_ptr++;
 		
 		err = append_command(&priv->sm_log, cur_cmd, priv->term);
