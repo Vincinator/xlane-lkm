@@ -225,7 +225,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	// if != 0 then missmatch detected 
 	if(check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)) {
 		// reply false
-		break;
+		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0);
+		return;
 	}
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
