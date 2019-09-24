@@ -84,6 +84,9 @@ struct consensus_priv {
 
 	struct proto_instance *ins;
 
+	struct consensus_test_container test_data;
+
+
 	enum node_state nstate;
 
 	enum le_state state;

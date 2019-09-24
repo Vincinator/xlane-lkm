@@ -14,14 +14,14 @@
 
 
 
-
-/* No commands are appended to the logs
- *
- */
-void consensus_test_leader_election_only(struct consensus_priv *priv)
+void testcase_stop_timer(struct consensus_priv *priv)
 {
+	priv->test_data.running = 0;
 
+	sassy_dbg("Actions will not be performed on next timeout.\n");
+	sassy_dbg("Timer will be stopped directly on next timeout\n");
 }
+
 
 
 /* Fully saturates the local log (if leader)  
@@ -30,6 +30,7 @@ void consensus_test_leader_election_only(struct consensus_priv *priv)
 void testcase_one_shot_big_log(struct consensus_priv *priv)
 {
 	struct state_machine_cmd_log *log = &priv->sm_log;
+
 
 }
 
@@ -46,9 +47,8 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	struct sm_command *cur_cmd;
 	int err = 0;
 
-	if (!sassy_pacemaker_is_alive(spminfo)){
+	if (test_data->running == 0)
 		return HRTIMER_NORESTART;
-	}
 
 	currtime  = ktime_get();
 	interval = ktime_set(1, 0);
@@ -89,17 +89,16 @@ void _init_testcase_timeout(struct consensus_test_container *test_data)
 	hrtimer_init(&test_data->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
 
 	test_data->timer.function = &testcase_timer;
-
+	test_data->running = 1;
 	hrtimer_start(&test_data->timer, timeout, HRTIMER_MODE_REL_PINNED);
 }
 
 
 void testcase_X_requests_per_sec(struct consensus_priv *priv, int x)
 {
-	struct consensus_test_container test_data;
 
-	test_data.priv = priv;
-	test_data.x = x;
+	priv->test_data.priv = priv;
+	priv->test_data.x = x;
 
 	if(x < 0)  {
 		sassy_dbg("Invalid Input \n");
@@ -107,7 +106,7 @@ void testcase_X_requests_per_sec(struct consensus_priv *priv, int x)
 	}
 
 	// start hrtimer!
-	_init_testcase_timeout(&test_data);
+	_init_testcase_timeout(&priv->test_data);
 
 	sassy_dbg("Appending %d consensus requests every second, if node is currently the leader\n", x);
 

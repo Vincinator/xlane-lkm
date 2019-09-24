@@ -67,10 +67,10 @@ void reply_append(struct proto_instance *ins, int remote_lid, int rcluster_id, i
 #endif
 
 	hb_passive_ix =
-	     !!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
+	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
 
 	pkt_payload =
-     	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
+     	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
 
 	pkt_payload_sub = 
  		sassy_reserve_proto(ins->instance_id, pkt_payload, SASSY_PROTO_CON_PAYLOAD_SZ);
@@ -82,7 +82,7 @@ void reply_append(struct proto_instance *ins, int remote_lid, int rcluster_id, i
 
 	set_le_opcode((unsigned char*)pkt_payload_sub, APPEND_REPLY, param1, append_success);
 	
-	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
+	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
 
 	if(append_success)
 		write_log(&ins->logger, REPLY_APPEND_SUCCESS, rdtsc());
