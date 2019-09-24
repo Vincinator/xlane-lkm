@@ -15,7 +15,7 @@ void initialze_indices(struct consensus_priv *priv)
 	int i;
 
 
-	for(i = 0; i < priv->MAX_NODE_ID; i++){
+	for(i = 0; i < MAX_NODE_ID; i++){
 		// initialize to leader last log index + 1
 		priv->sm_log.next_index[i] = priv->sm_log.last_idx + 1;
 		priv->sm_log.match_index[i] = 0;
