@@ -48,6 +48,48 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
+void reply_append(struct proto_instance *ins, int remote_lid, int rcluster_id, int param1, int append_success)
+{
+	struct consensus_priv *priv = 
+		(struct consensus_priv *)ins->proto_data;
+	struct sassy_payload *pkt_payload;
+	char *pkt_payload_sub;
+	int hb_passive_ix;
+
+#if 0
+
+	sassy_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
+			nstate_string(priv->nstate),
+			rdtsc(),
+			priv->term,
+			rcluster_id,
+			param1);
+#endif
+
+	hb_passive_ix =
+	     !!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
+
+	pkt_payload =
+     	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
+
+	pkt_payload_sub = 
+ 		sassy_reserve_proto(ins->instance_id, pkt_payload, SASSY_PROTO_CON_PAYLOAD_SZ);
+
+ 	if(!pkt_payload_sub) {
+ 		sassy_error("Sassy packet full! This error is not handled - not implemented\n");
+ 		return -1;
+ 	}
+
+	set_le_opcode((unsigned char*)pkt_payload_sub, APPEND_REPLY, param1, append_success);
+	
+	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
+
+	if(append_success)
+		write_log(&ins->logger, REPLY_APPEND_SUCCESS, rdtsc());
+	else
+		write_log(&ins->logger, REPLY_APPEND_FAIL, rdtsc());
+
+}
 void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int param1, int param2)
 {
 	struct consensus_priv *priv = 
@@ -180,7 +222,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
-
+	int append_success;
 
 	u32 *prev_log_term, *prev_log_idx, *leader_commit_idx, *num_entries;
 
@@ -225,7 +267,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
 
 		// append new entries
-		append_commands(priv, pkt, *num_entries, pkt_size);
+		append_success = append_commands(priv, pkt, *num_entries, pkt_size);
+		append_success = !!!append_success; // convert to (0,1) and invert
 
 		// check commit index
 		leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
@@ -233,6 +276,9 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			// min(leader_commit_idx, last_idx)
 			priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
 		}
+
+
+		reply_append(ins, remote_lid, rcluster_id, param1, append_success);
 
 		break;
 	case LEAD:

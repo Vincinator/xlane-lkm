@@ -32,6 +32,12 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		break;		
 	case NOOP:
 		break;
+	case APPEND_REPLY:
+		break;
+
+	
+
+
 	case LEAD:
 		if(param1 > priv->term){
 #if 0

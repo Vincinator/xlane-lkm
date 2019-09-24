@@ -139,6 +139,10 @@ enum le_event_type {
 	VOTE_FOR_CANDIDATE = 8,
 	CANDIDATE_ACCEPT_VOTE = 9,
 
+
+	REPLY_APPEND_SUCCESS = 10,
+	REPLY_APPEND_FAIL = 11,
+
 };
 
 struct le_event {
