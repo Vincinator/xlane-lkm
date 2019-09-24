@@ -50,6 +50,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	ktime_t currtime, interval;
 	struct sm_command *cur_cmd;
 	int err = 0;
+	int i;
 
 	if (test_data->running == 0)
 		return HRTIMER_NORESTART;

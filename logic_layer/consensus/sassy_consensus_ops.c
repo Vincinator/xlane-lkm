@@ -22,6 +22,7 @@ int consensus_init(struct proto_instance *ins)
 	priv->state = LE_READY;
 
 	init_le_config_ctrl_interfaces(priv);
+	init_eval_ctrl_interfaces(priv);
 	init_logger(&ins->logger);
 
 	return 0;
@@ -102,6 +103,7 @@ int consensus_clean(struct proto_instance *ins)
 	sassy_dbg("consensus clean\n");
 	le_state_transition_to(priv, LE_UNINIT);
 
+	remove_eval_ctrl_interfaces(priv);
 	remove_le_config_ctrl_interfaces(priv);
 	remove_logger_ifaces(&ins->logger);
 
