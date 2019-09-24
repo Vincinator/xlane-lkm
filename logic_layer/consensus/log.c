@@ -33,25 +33,25 @@ int commit_upto_index(struct state_machine_cmd_log *log, u32 index)
 {
 	int err;
 
-	if(!sm_log) {
+	if(!log) {
 		err = -EINVAL;
 		sassy_error("Log ptr points to NULL\n");
 		goto error;
 	}
 
-	if(index > sm_log.last_idx ){
+	if(index > log->last_idx ){
 		err = -EINVAL;
 		sassy_error("Given Commit Index is greater than number of entries in log\n");
 		goto error;
 	}
 
-	if(index < sm_log.commit_idx ){
+	if(index < log->commit_idx ){
 		err = -EINVAL;
 		sassy_error("Already commited to a later index\n");
 		goto error;
 	}
 
-	err = apply_log_to_sm(index);
+	err = apply_log_to_sm(log, index);
 
 	if(err)
 		goto error;
