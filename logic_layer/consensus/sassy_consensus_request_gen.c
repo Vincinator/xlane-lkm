@@ -1,6 +1,8 @@
 #include <sassy/logger.h>
 #include <sassy/sassy.h>
 #include <sassy/consensus.h>
+#include <linux/kernel.h>
+#include <linux/slab.h>
 
 #include "include/sassy_consensus_ops.h"
 #include "include/candidate.h"
