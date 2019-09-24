@@ -9,6 +9,23 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][LE][LEADER]"
 
+
+void initialze_indices(struct consensus_priv *priv)
+{
+	int i;
+
+
+	for(i = 0; i < priv->MAX_NODE_ID; i++){
+		// initialize to leader last log index + 1
+		priv->sm_log.next_index[i] = priv->sm_log.last_idx + 1;
+		priv->sm_log.match_index[i] = 0;
+	}
+
+}
+
+
+
+
 int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
 	struct consensus_priv *priv = 
@@ -35,7 +52,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	case APPEND_REPLY:
 		break;
 
-	
+
 
 
 	case LEAD:
@@ -83,6 +100,8 @@ int start_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
+
+	initialze_indices(priv);
 
 	setup_le_broadcast_msg(ins, LEAD);
 

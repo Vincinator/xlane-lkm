@@ -62,9 +62,6 @@ int consensus_start(struct proto_instance *ins)
 		return 0;
 	}
 
-	if (err)
-		goto error;
-
 	le_state_transition_to(priv, LE_RUNNING);
 
 	err = node_transition(ins, FOLLOWER);
