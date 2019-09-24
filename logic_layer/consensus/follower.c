@@ -212,19 +212,49 @@ out:
 }
 
 
+void _handle_append_rpc(struct consensus_priv *priv, unsigned char *pkt)
+{
+	u32 *prev_log_term, *prev_log_idx, *leader_commit_idx, *num_entries;
+	int append_success;
+	u16 pkt_size;
+
+	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
+	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
+	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
+
+	// if != 0 then missmatch detected 
+	if(check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)) {
+		// reply false
+		break;
+	}
+
+	num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
+
+	// append new entries
+	append_success = append_commands(priv, pkt, *num_entries, pkt_size);
+	append_success = !!!append_success; // convert to (0,1) and invert
+
+	// check commit index
+	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
+	if(*leader_commit_idx > priv->sm_log.commit_idx) {
+		// min(leader_commit_idx, last_idx)
+		priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
+	}
+
+	reply_append(ins, &sdev->pminfo, remote_lid, rcluster_id, param1, append_success);
+}
+
+
 int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 	struct sassy_device *sdev = priv->sdev;
 
-	u16 pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
-	int append_success;
 
-	u32 *prev_log_term, *prev_log_idx, *leader_commit_idx, *num_entries;
 
 #if 0
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
@@ -250,39 +280,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		break;
 	case APPEND:
 
-		if( param1 < priv->term) {
-			// reply false
-			break;
-		}
-
-		prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
-		prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
-
-		// if != 0 then missmatch detected 
-		if(check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)) {
-			// reply false
-			break;
-		}
-
-		num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
-
-		// append new entries
-		append_success = append_commands(priv, pkt, *num_entries, pkt_size);
-		append_success = !!!append_success; // convert to (0,1) and invert
-
-		// check commit index
-		leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
-		if(*leader_commit_idx > priv->sm_log.commit_idx) {
-			// min(leader_commit_idx, last_idx)
-			priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
-		}
-
-
-		reply_append(ins, &sdev->pminfo, remote_lid, rcluster_id, param1, append_success);
-
-		break;
-	case LEAD:
-
 		/* Received a LEAD operation from a node with a higher term, 
 		 * thus this node is accepting the node as new leader.
 		 */
@@ -296,6 +293,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, rdtsc());
 			reset_ftimeout(ins);
+
+			_handle_append_rpc(priv, pkt);
 
 		} 
 
@@ -312,14 +311,17 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from known leader term=%u\n", param1);
 #endif
+
 				reset_ftimeout(ins);
+				_handle_append_rpc(priv, pkt);
+
 
 			}else {
 #if 0
 				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from new leader term=%u\n", param1);
 #endif
-				// Ignore this LEAD message, let the ftimer continue. 
+				// Ignore this LEAD message, let the ftimer continue.. because: "this is not my leader!"
 			}
 		}
 		/* Received a LEAD operation from a node with a lower term.
