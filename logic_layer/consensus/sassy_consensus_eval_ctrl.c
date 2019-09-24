@@ -53,7 +53,7 @@ static ssize_t sassy_eval_ctrl_write(struct file *file,
 		break;
 	default:
 
-		if(eval_selection < 0 ){
+		if(eval_selection < 0 || eval_selection > MAX_){
 			sassy_error("Invalid input: %d - %s\n", eval_selection, __FUNCTION__);
 			err = -EINVAL;
 			goto error;
