@@ -89,7 +89,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	char *pkt_payload_sub;
 	struct consensus_priv *cur_priv;
 	int i;
-	u32 num_entries, next_index, cur_index, prev_log_idx, prev_log_term, leader_commit_idx;
+	u32 num_entries, match_index, next_index, cur_index, prev_log_idx, prev_log_term, leader_commit_idx;
 	struct pminfo *spminfo = &sdev->pminfo;
 	struct sm_command *cmd_array;
 	int num_of_entries = 0;
@@ -120,6 +120,9 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 			num_entries =
 	 				(MAX_ENTRIES_PER_PKT < next_index - cur_index) ? MAX_ENTRIES_PER_PKT : next_index - cur_index ;
 		 		
+	 			// TODO: build cmd_array
+	 				
+
 	 		}
 
 	 		// reserve space in sassy heartbeat for consensus LEAD
