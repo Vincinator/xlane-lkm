@@ -122,6 +122,9 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 		 			 			
 	 		}
 
+	 		// update next_index.. (if request fails, we will go back step by step )
+ 		 	cur_priv->sm_log.next_index[target_id] += num_entries + 1;
+
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =
 	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));

@@ -50,21 +50,22 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	case NOOP:
 		break;
 	case APPEND_REPLY:
-
+		// param1 intepreted as last term of follower
+		// param2 interpreted as success 
 
 		// check if success
 
 		if(param2 != 0){
 			// append rpc success!
 
-			// update next Index for follower with <remote_lid>
-
 			// update match Index for follower with <remote_lid> 
+			priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
 
 		} else {
 			// append rpc failed!
 
 			// decrement nextIndex for follower with <remote_lid>
+			priv->sm_log.next_index[remote_lid]--;
 
 		}
 
