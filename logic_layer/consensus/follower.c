@@ -69,11 +69,12 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
 
 }
 
-int append_commands(struct state_machine_cmd_log *log, unsigned char *pkt, int num_entries, int pkt_size)
+int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_entries, int pkt_size)
 {
 	int i, err, new_total;
 	u32 *cur_ptr;
 	struct sm_command *cur_cmd;
+	struct state_machine_cmd_log *log = &priv->sm_log;
 
 	if(log->last_idx + num_entries >= log->max_entries) {
 		sassy_dbg("Local log is full!\n");
@@ -224,7 +225,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
 
 		// append new entries
-		append_commands(&priv->sm_log, pkt, *num_entries, pkt_size);
+		append_commands(priv, pkt, *num_entries, pkt_size);
 
 		// check commit index
 		leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
