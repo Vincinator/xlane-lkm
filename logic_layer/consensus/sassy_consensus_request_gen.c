@@ -60,7 +60,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 		return HRTIMER_RESTART; // nothing to do, node is not a leader.
 
 	// write x random entries to local log (if node is leader)
-	for(i = 0, i < test_data.x; i++){
+	for(i = 0; i < test_data->x; i++){
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
