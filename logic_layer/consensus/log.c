@@ -66,35 +66,48 @@ error:
 }
 EXPORT_SYMBOL(commit_upto_index);
 
-int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd)
+int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, int term)
 {
 	int err;
 	int last_idx;
 	struct consensus_priv *priv =
 		container_of(log, struct consensus_priv, sm_log);
+	struct sm_log_entry *entry;
 
-	last_idx = sm_log.last_idx;
 
-	if(!sm_log) {
+	last_idx = log->last_idx;
+
+	if(!log) {
 		err = -EINVAL;
 		sassy_error("Log ptr points to NULL\n");
 		goto error;
 	}
 
 	// mind the off by one counting.. last_idx starts at 0
-	if(sm_log.max_entries == last_idx + 1){
+	if(log->max_entries == last_idx + 1){
 		err = -ENOMEM;
 		sassy_error("Log is full\n");
 		goto error;
 	}
 
-	if(sm_log.commit_idx > last_idx ){
+	if(log->commit_idx > last_idx ){
 		err = -EPROTO;
 		sassy_error("BUG - commit_idx is greater than last_idx!\n");
 		goto error;
 	}
 
-	log->entries[last_idx + 1] = cmd;
+	entry = kmalloc(sizeof(struct sm_log_entry), GFP_KERNEL);
+
+	if(!entry){
+		sassy_dbg("out of memory!\n");
+		err = -ENOMEM;
+		goto error;
+	}
+
+	entry->cmd = cmd;
+	entry->term = term;
+
+	log->entries[last_idx + 1] = entry;
 	log->last_idx = last_idx;
 
 	return 0;

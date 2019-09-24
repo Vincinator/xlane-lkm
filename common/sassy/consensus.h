@@ -58,7 +58,7 @@ struct sm_log_entry {
 	 * A ordered set of commands applied to the state machine will 
 	 * transition the state machine to a common state (shared across the cluster).
 	 */ 
-	struct sm_command cmd;
+	struct sm_command *cmd;
 };
 
 
@@ -146,7 +146,7 @@ struct consensus_priv {
 
 
 int commit_upto_index(struct state_machine_cmd_log *log, u32 index);
-int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd);
+int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, int term);
 
 
 
