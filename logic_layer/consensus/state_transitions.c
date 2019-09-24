@@ -50,12 +50,17 @@ int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_
  		sassy_error("Sassy packet full! This error is not handled - not implemented\n");
  		return -1;
  	}
+ 	
+ 	if(!priv->sm_log.entries[priv->sm_log.last_idx]){
+ 		sassy_error("last index is not correct! Crash.\n");
+ 		BUG();
+ 	}
 
 	set_ae_data((unsigned char*)pkt_payload_sub,
 				 priv->term,
 				 priv->node_id,
 				 priv->sm_log.last_idx,
-				 priv->sm_log.last_term,
+				 priv->sm_log.entries[priv->sm_log.last_idx]->term,
 				 priv->sm_log.commit_idx,
 				 cmd_array,
 				 num_of_entries);
