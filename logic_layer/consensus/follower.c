@@ -67,15 +67,119 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
 
 }
 
+int append_commands(struct state_machine_cmd_log *log, unsigned char *pkt, int num_entries, int pkt_size)
+{
+	int i, err, new_total;
+	u32 *cur_ptr;
+	struct sm_command *cur_cmd;
+
+	if(log->last_idx + num_entries >= log->max_entries) {
+		sassy_dbg("Local log is full!\n");
+		err = -ENOMEM;
+		goto error;
+	}
+
+	// check if entries would exceed pkt
+	if((num_entries * AE_ENTRY_SIZE + SASSY_PROTO_CON_AE_BASE_SZ) > pkt_size) {
+		err = -EINVAL;
+		sassy_dbg("Claimed num of log entries would exceed packet size!\n");
+		goto error;
+	}
+
+	new_total = log->last_idx + num_entries;
+	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
+
+	for(i = log->last_idx; i < new_total; i++){
+ 		
+		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
+
+		if(!cur_cmd){
+			err = -ENOMEM;
+			sassy_dbg("Out of Memory\n");
+			goto error;
+		}
+
+		cur_cmd->sm_logvar_id = *cur_ptr;
+		cur_ptr++;
+		cur_cmd->sm_logvar_value = *cur_ptr;
+		cur_ptr++;
+		
+		err = append_command(priv->sm_log, cur_cmd);
+
+		if(err){
+			// kfree(cur_cmd); // free memory of failed log entry.. others from this loop (?)
+			goto error;
+		}
+	}
+
+
+	return 0;
+
+error:
+	sassy_error("Failed to append commands to log\n");
+	return err;
+}
+
+void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx) 
+{
+	int i;
+
+	for(i = 0; i < log->last_idx; i++) {
+		kfree(log->entries[i]);
+	}
+
+	log->last_idx = start_idx - 1;
+
+
+}
+
+
+int check_prev_log_match(struct state_machine_cmd_log *log, int prev_log_term, int prev_log_idx) 
+{
+	int ret = 0; // 0 := all good.
+	struct sm_log_entry *entry;
+
+	if(log->last_idx < prev_log_idx) || prev_log_idx < 0 ){
+		sassy_dbg("Entry at index %d does not exist\n", prev_log_idx);
+		ret = 1;
+		goto out;
+	}
+	
+	entry = log->entries[prev_log_idx];
+
+	if(entry == NULL) {
+		sassy_dbg("Entry is NULL at index %d", prev_log_idx);
+		ret = 1;
+		goto out;
+	}
+
+	if(entry->term != prev_log_term) {
+		sassy_dbg("prev_log_term does not match %d != %d", entry->term, prev_log_term);
+		
+		// Delete entries from prev_log_idx to last_idx
+		remove_from_log_until_last(log, prev_log_idx);
+		ret = 1;
+		goto out;
+	}
+
+out:
+	return ret; 
+}
+
+
 int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 	struct sassy_device *sdev = priv->sdev;
 
+	u16 pkt_size = GET_PROTO_OFFSET_VAL(payload);
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+
+
+	u32 *prev_log_term, *prev_log_idx, *leader_commit_idx, *num_entries;
 
 #if 0
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
@@ -98,6 +202,35 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 		break;	
 	case NOOP:
+		break;
+	case APPEND:
+
+		if( param1 < priv->term) {
+			// reply false
+			break;
+		}
+
+		prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
+		prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
+
+		// if != 0 then missmatch detected 
+		if(check_prev_log_match(*prev_log_term, *prev_log_idx)) {
+			// reply false
+			break;
+		}
+
+		num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
+
+		// append new entries
+		append_commands(log, pkt, num_entries, pkt_size);
+
+		// check commit index
+		leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
+		if(*leader_commit_idx > log->commit_idx) {
+			// min(leader_commit_idx, last_idx)
+			log->commit_idx = *leader_commit_idx > log->last_idx ? log->last_idx : *leader_commit_idx;
+		}
+
 		break;
 	case LEAD:
 

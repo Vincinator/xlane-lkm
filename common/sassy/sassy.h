@@ -83,6 +83,7 @@ enum le_opcode {
 	VOTE = 2,
 	LEAD = 3,
 	APPEND = 4,
+	APPEND_REPLY = 5,
 };
 
 

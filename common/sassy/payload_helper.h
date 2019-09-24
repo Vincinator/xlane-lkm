@@ -46,7 +46,11 @@
 
 // protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32) + prev_log_idx(u32) + prev_term(u32)
 // .... + leader_commit_idx(32) 
-#define GET_CON_PROTO_ENTRIES_START_PTR(p) (u32 *)((char*) p + 22 + 4)
+#define GET_CON_AE_NUM_ENTRIES_PTR(p) (u32 *)((char*) p + 22 + 4)
+
+// protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32) + prev_log_idx(u32) + prev_term(u32)
+// .... + leader_commit_idx(32) + num_entries(u32)
+#define GET_CON_PROTO_ENTRIES_START_PTR(p) (u32 *)((char*) p + 26 + 4)
 
 
 // protoid(u16) + offset(u16)
