@@ -241,7 +241,7 @@ void _handle_append_rpc(struct consensus_priv *priv, unsigned char *pkt)
 		priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
 	}
 
-	reply_append(ins, &sdev->pminfo, remote_lid, rcluster_id, param1, append_success);
+	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, append_success);
 }
 
 
