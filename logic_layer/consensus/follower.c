@@ -222,7 +222,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
 
 		// append new entries
-		append_commands(&priv->sm_log, pkt, num_entries, pkt_size);
+		append_commands(&priv->sm_log, pkt, *num_entries, pkt_size);
 
 		// check commit index
 		leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
