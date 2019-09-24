@@ -3,6 +3,8 @@
 #include <sassy/consensus.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
+#include <linux/random.h>
+#include <linux/timer.h>
 
 #include "include/sassy_consensus_ops.h"
 #include "include/candidate.h"
