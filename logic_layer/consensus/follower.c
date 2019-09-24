@@ -48,7 +48,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
-void reply_append(struct proto_instance *ins, int remote_lid, int rcluster_id, int param1, int append_success)
+void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remote_lid, int rcluster_id, int param1, int append_success)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
@@ -278,7 +278,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		}
 
 
-		reply_append(ins, remote_lid, rcluster_id, param1, append_success);
+		reply_append(ins, &sdev->pminfo remote_lid, rcluster_id, param1, append_success);
 
 		break;
 	case LEAD:
