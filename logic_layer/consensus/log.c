@@ -66,11 +66,12 @@ error:
 }
 EXPORT_SYMBOL(commit_upto_index);
 
-
 int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd)
 {
 	int err;
 	int last_idx;
+	struct consensus_priv *priv =
+		container_of(log, struct consensus_priv, sm_log);
 
 	last_idx = sm_log.last_idx;
 
@@ -95,7 +96,6 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd)
 
 	log->entries[last_idx + 1] = cmd;
 	log->last_idx = last_idx;
-
 
 	return 0;
 error:

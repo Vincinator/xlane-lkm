@@ -82,16 +82,21 @@ EXPORT_SYMBOL(sassy_reserve_proto);
 
 /* Must be called after the sassy packet has been emitted. 
  */
-void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay)
+void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay, int target_id)
 {
 	u16 *opcode;
 	u32 *param1, *param2;
 	char *pkt_payload_sub;
 	struct consensus_priv *cur_priv;
 	int i;
+	u32 num_entries, next_index, cur_index, prev_log_idx, prev_log_term, leader_commit_idx;
+	struct pminfo *spminfo = &sdev->pminfo;
+	struct sm_command *cmd_array;
+	int num_of_entries = 0;
 
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
+
 
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for(i = 0; i < sdev->num_of_proto_instances; i++){
@@ -103,21 +108,43 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 
-	 		// reserve space in sassy heartbeat for consensus LEAD
-	 		pkt_payload_sub =
-	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_PAYLOAD_SZ);
-		
+
+
 			// set opcode to LEAD
 			opcode = GET_CON_PROTO_OPCODE_PTR(pkt_payload_sub);
-			*opcode = (u16) LEAD;
+			*opcode = (u16) APPEND;
 
-			// include the current TERM
-			param1 = GET_CON_PROTO_PARAM1_PTR(pkt_payload_sub);
-			*param1 = (u32) cur_priv->term;
 
-			// include the leader ID (TODO: do we need the node_id? Potential small optimization if skipped..)
-			param2 = GET_CON_PROTO_PARAM2_PTR(pkt_payload_sub);
-			*param2 = (u32) cur_priv->node_id;
+
+	 		// Check if entries must be appendedS
+	 		cur_index = cur_priv->sm_log.last_idx;
+	 		next_index = cur_priv->sm_log.next_index[target_id]; 
+	 		match_index = cur_priv->sm_log.match_index[target_id]; 
+	 		prev_log_term = cur_priv->sm_log.entries[match_index]->term;
+	 		leader_commit_idx = cur_priv->sm_log.commit_idx;
+
+	 		// only append entries if the leader has something fresh to append
+	 		if(cur_index > next_index) {
+
+		 		// Decide how many entries to update for the current target
+			
+
+	 		}
+
+	 		// reserve space in sassy heartbeat for consensus LEAD
+	 		pkt_payload_sub =
+	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE);
+		
+
+	 		set_ae_data(pkt_payload_sub, 
+						cur_priv->term, 
+			 	 		cur_priv->node_id,
+			 	 		cur_priv->sm_log.
+				 		match_index,
+				 		prev_log_term,
+				 		leader_commit_idx,
+				 		cmd_array, 
+				 		num_of_entries)
 		}
 	}
 }

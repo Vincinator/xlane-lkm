@@ -10,6 +10,8 @@
 
 #define MAX_CONSENSUS_LOG 1000000 
 
+#define MAX_ENTRIES_PER_PKT 10
+
 
 enum le_state {
 	LE_RUNNING = 0,

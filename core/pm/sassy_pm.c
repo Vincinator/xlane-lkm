@@ -168,7 +168,7 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 
 		// Protocols have been emitted, do not sent them again ..
 		// .. and free the reservations for new protocols
-		invalidate_proto_data(sdev, pkt_payload);
+		invalidate_proto_data(sdev, pkt_payload, i);
 
 	}
 	return 0;
