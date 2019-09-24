@@ -278,7 +278,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		}
 
 
-		reply_append(ins, &sdev->pminfo remote_lid, rcluster_id, param1, append_success);
+		reply_append(ins, &sdev->pminfo, remote_lid, rcluster_id, param1, append_success);
 
 		break;
 	case LEAD:
