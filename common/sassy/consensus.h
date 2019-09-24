@@ -60,7 +60,7 @@ struct sm_log_entry {
 
 struct state_machine_cmd_log {
 
-	u32 last_term;
+	u32 last_applied;
 
 	/* Index of the last valid entry in the entries array
 	 */

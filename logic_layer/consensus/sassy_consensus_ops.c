@@ -21,6 +21,14 @@ int consensus_init(struct proto_instance *ins)
 	priv->term = 0;
 	priv->state = LE_READY;
 
+	priv->sm_log.last_term = 0;
+	priv->sm_log.last_idx = 0;
+	priv->sm_log.commit_idx = 0;
+	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
+
+	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
+
+
 	init_le_config_ctrl_interfaces(priv);
 	init_eval_ctrl_interfaces(priv);
 	init_logger(&ins->logger);
@@ -99,9 +107,18 @@ int consensus_clean(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
+	int i;
 
 	sassy_dbg("consensus clean\n");
 	le_state_transition_to(priv, LE_UNINIT);
+
+
+	for(i = 0; i < MAX_CONSENSUS_LOG; i++) {
+		if(priv->sm_log.entries[i] != NULL)
+			kfree(priv->sm_log.entries[i]);
+	}
+
+	kfree(priv->sm_log.entries);
 
 	remove_eval_ctrl_interfaces(priv);
 	remove_le_config_ctrl_interfaces(priv);
