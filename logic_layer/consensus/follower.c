@@ -134,7 +134,7 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 }
 
 
-int check_prev_log_match(struct state_machine_cmd_log *log, int prev_log_term, int prev_log_idx) 
+int check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u32 prev_log_idx) 
 {
 	int ret = 0; // 0 := all good.
 	struct sm_log_entry *entry;
@@ -173,7 +173,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		(struct consensus_priv *)ins->proto_data;
 	struct sassy_device *sdev = priv->sdev;
 
-	u16 pkt_size = GET_PROTO_OFFSET_VAL(payload);
+	u16 pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
@@ -214,7 +214,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
 		// if != 0 then missmatch detected 
-		if(check_prev_log_match(*prev_log_term, *prev_log_idx)) {
+		if(check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)) {
 			// reply false
 			break;
 		}
