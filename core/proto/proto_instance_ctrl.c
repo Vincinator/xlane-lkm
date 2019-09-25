@@ -69,6 +69,8 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 				goto error;
 
 			if(instance_id == -1) {
+				sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+
 				// clear all existing protocols and exit
 				clear_protocol_instances(sdev);
 				sassy_dbg("cleared all instances\n");
@@ -96,6 +98,7 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 			  protocol_id, instance_id);
 	return count;
 error:
+
 	sassy_error("Error during parsing of input.%s\n", __FUNCTION__);
 	return err;
 }
