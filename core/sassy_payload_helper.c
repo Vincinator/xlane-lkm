@@ -128,11 +128,10 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =
 	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
-		
+
 	 		set_ae_data(pkt_payload_sub, 
 						cur_priv->term, 
 			 	 		cur_priv->node_id,
-			 	 		cur_priv->sm_log,
 				 		match_index,
 				 		prev_log_term,
 				 		leader_commit_idx,
