@@ -14,7 +14,7 @@ int apply_log_to_sm(struct state_machine_cmd_log *log, u32 commit_idx)
 {
 	int err;
 
-	if(!sm_log) {
+	if(!log) {
 		err = -EINVAL;
 		sassy_error("Log ptr points to NULL\n");
 		goto error;

@@ -48,7 +48,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
-void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remote_lid, int rcluster_id, int param1, int append_success)
+void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remote_lid, int rcluster_id, int param1, int append_success, u32 logged_idx)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
@@ -80,7 +80,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
  		return -1;
  	}
 
-	set_le_opcode((unsigned char*)pkt_payload_sub, APPEND_REPLY, param1, append_success);
+	set_le_opcode((unsigned char*)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx);
 	
 	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
 

@@ -141,10 +141,10 @@ void set_ae_data(unsigned char *pkt,
 
 }
 
-void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, u32 p2)
+void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, u32 p2, u32 p3)
 {
 	u16 *opcode;
-	u32 *param1, *param2;
+	u32 *param1, *param2, param3;
 
 	opcode = GET_CON_PROTO_OPCODE_PTR(pkt);
 	*opcode = (u16) opco;
@@ -154,6 +154,9 @@ void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, u32 p2)
 
 	param2 = GET_CON_PROTO_PARAM2_PTR(pkt);
 	*param2 = (u32) p2;
+	
+	param3 = GET_CON_PROTO_PARAM2_PTR(pkt);
+	*param3 = (u32) p3;
 }
 
 static const struct sassy_protocol_ctrl_ops consensus_ops = {
