@@ -20,7 +20,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
 	int err;
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ftimer);
-	struct sassy_device *sdev = priv->sdev;
+	// struct sassy_device *sdev = priv->sdev;
 
 	if(priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
 		return HRTIMER_NORESTART;
