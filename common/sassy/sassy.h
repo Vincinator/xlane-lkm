@@ -39,9 +39,8 @@
 
 #define MAX_SASSY_PAYLOAD_BYTES 1024 // asuming an ethernet mtu of ~1500 bytes
 
-#define SASSY_PAYLOAD_BYTES 64
-#define SASSY_HEADER_BYTES                                                     \
-	128 // TODO: this should be more than enough for UDP/ipv4
+#define SASSY_PAYLOAD_BYTES 1000
+#define SASSY_HEADER_BYTES 64 // TODO: this should be more than enough for UDP/ipv4
 #define SASSY_PKT_BYTES SASSY_PAYLOAD_BYTES + SASSY_HEADER_BYTES
 
 int sassy_core_register_nic(int ifindex);
