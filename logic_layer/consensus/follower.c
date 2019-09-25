@@ -270,6 +270,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+	u32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
+	u32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
 
 #if 0
@@ -277,17 +279,35 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 #endif
 
 	switch(opcode){
+		// param1 interpreted as term
+		// param2 interpreted as candidateID
+		// param3 interpreted as lastLogIndex
+		// param4 interpreted as lastLogTerm
 	case VOTE:
 		break;
 	case NOMI:	
+
 		if(priv->term < param1) {
 	 		if (priv->voted == param1) {
 #if 0
 				sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
 #endif	
 			} else {
-				reply_vote(ins, remote_lid, rcluster_id, param1, param2);
-				reset_ftimeout(ins);
+				
+				// if local log is empty, just accept the vote!
+				if(priv->sm_log.last_idx == 0)
+					goto accept_nomi;
+
+				// candidates log is at least as up to date as the local log!
+				if(param3 >= priv->sm_log.last_idx){
+					// Terms of previous log item must match
+					if(priv->sm_log.entries[param3]->term == param4){
+accept_nomi:
+						reply_vote(ins, remote_lid, rcluster_id, param1, param2);
+						reset_ftimeout(ins);
+					}
+				}
+
 			}
 		}
 

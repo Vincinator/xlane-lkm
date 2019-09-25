@@ -75,7 +75,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// append rpc failed!
 
 			// decrement nextIndex for follower with <remote_lid>
-			priv->sm_log.next_index[remote_lid] = param3;
+			priv->sm_log.next_index[remote_lid] = param3 + 1;
 
 		}
 

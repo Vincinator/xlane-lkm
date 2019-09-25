@@ -200,7 +200,9 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
-	
+	u32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
+	u32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
+
 #if 0
 
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
@@ -210,6 +212,10 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		accept_vote(ins, remote_lid, pkt);
 		break;
 	case NOMI:
+		// param1 interpreted as term
+		// param2 interpreted as candidateID
+		// param3 interpreted as lastLogIndex
+		// param4 interpreted as lastLogTerm
 
 		// Nomination from Node with higher term - cancel own candidature and vote for higher term
 		if(param1 > priv->term){
