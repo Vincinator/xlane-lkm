@@ -81,7 +81,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
  		return -1;
  	}
 
-	set_le_opcode((unsigned char*)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx);
+	set_le_opcode((unsigned char*)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx, 0);
 	
 	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
 
@@ -105,7 +105,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
 			param1);
 #endif
 
-	setup_le_msg(ins, &priv->sdev->pminfo, VOTE, remote_lid, param1);
+	setup_le_msg(ins, &priv->sdev->pminfo, VOTE, remote_lid, param1, param2, 0, 0);
 	priv->voted = param1;
 
 	write_log(&ins->logger, VOTE_FOR_CANDIDATE, rdtsc());

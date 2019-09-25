@@ -158,7 +158,7 @@ ktime_t get_rnd_timeout_candidate(void);
 ktime_t get_rnd_timeout_plus(int plus);
 ktime_t get_rnd_timeout_candidate_plus(int plus);
 
-void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2, u32 p3);
+void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2, u32 p3, u32 p4);
 
 void set_ae_data(unsigned char *pkt, 
 				 u32 in_term, 
@@ -173,7 +173,7 @@ void set_ae_data(unsigned char *pkt,
 
 void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u32 term);
 int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode);
-int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term);
+int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 param1, u32 param2, u32 param3, u32 param4);
 int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_id, struct sm_command *cmd_array, int num_of_entries);
 
 

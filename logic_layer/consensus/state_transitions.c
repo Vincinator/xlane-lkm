@@ -29,7 +29,7 @@ char *_le_state_name(enum le_state state)
 	}
 }
 
-int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 term)
+int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 param1, u32 param2, u32 param3, u32 param4)
 {
 	struct sassy_payload *pkt_payload;
 	char *pkt_payload_sub;
@@ -50,7 +50,7 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
  		return -1;
  	}
 
-	set_le_opcode((unsigned char*)pkt_payload_sub, opcode, term, 0, 0);
+	set_le_opcode((unsigned char*)pkt_payload_sub, opcode, param1, param2, param3, param4);
 	
 	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 
@@ -63,8 +63,18 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
+	u32 term = priv->term;
+	u32 candidate_id = priv->node_id;
+
+	u32 last_log_idx = priv->sm_log.last_idx;
+
+	if(priv->sm_log.last_idx == 0)
+		last_log_term = priv->term;
+	else
+		last_log_term = priv->sm_log.entries[priv->sm_log.last_idx]->term;
+
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
-		setup_le_msg(ins, &priv->sdev->pminfo, opcode, (u32) i, (u32) priv->term);
+		setup_le_msg(ins, &priv->sdev->pminfo, opcode, (u32) i, term, candidate_id, last_log_idx, last_log_term);
 
 	return 0;
 }
