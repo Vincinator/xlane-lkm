@@ -266,13 +266,13 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 	struct sassy_device *sdev = priv->sdev;
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 	u32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 	u32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 #if 1
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
@@ -284,21 +284,21 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		// param3 interpreted as lastLogIndex of Candidate
 		// param4 interpreted as lastLogTerm of Candidate
 	case VOTE:
-		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+		
 		break;
 	case NOMI:	
-			sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+			
 			if(check_handle_nomination(priv, param1, param2, param3, param4)){
 				reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 				reset_ftimeout(ins);
 			}
-			sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+			
 		break;	
 	case NOOP:
-		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+		
 		break;
 	case APPEND:
-		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+		
 		/* Received a LEAD operation from a node with a higher term, 
 		 * thus this node is accepting the node as new leader.
 		 */

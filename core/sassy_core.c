@@ -89,15 +89,15 @@ struct proto_instance *get_proto_instance(struct sassy_device *sdev, int proto_i
 	if (unlikely(proto_id < 0 || proto_id > MAX_PROTO_INSTANCES)) {
 		return NULL;
 	}
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	idx = sdev->instance_id_mapping[proto_id];
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	if (unlikely(idx < 0 || idx >= MAX_PROTO_INSTANCES)) {
 		return NULL;
 	}
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	return sdev->protos[idx];
 }
@@ -108,7 +108,7 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	int cur_proto_id;
 	int cur_offset;
 	struct proto_instance *cur_ins;
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	/* bcnt <= 0: 
 	 *		no payload left to handle
@@ -117,30 +117,30 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	 *		all included instances were handled
 	 */
 	if(instances <= 0 || bcnt <= 0){
-		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+		
 
 		return;
 	}
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	cur_proto_id = GET_PROTO_TYPE_VAL(payload);
 	cur_offset = GET_PROTO_OFFSET_VAL(payload);
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	cur_ins = get_proto_instance(sdev, cur_proto_id);
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	// check if instance for the given protocol id exists
 	if(!cur_ins) {
 		sassy_dbg("No instance for protocol id %d were found\n", cur_proto_id);
-		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+		
 
 	} else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
-		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+		
 
 	}
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	// handle next payload
 	_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances -1, bcnt - cur_offset);
@@ -163,14 +163,14 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
     if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
 
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	if(sdev->warmup_state == WARMING_UP){
-		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+		
 
 		get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 		
-		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+		
 
 		if(remote_lid == -1 || rcluster_id == -1)
 			return;
@@ -185,11 +185,12 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 		for(i = 0; i < spminfo->num_of_targets; i++)
 			if(!spminfo->pm_targets[i].alive)
 				return;
-		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+
+		
 
 		// Starting all protocols 
 		for(i = 0; i < sdev->num_of_proto_instances; i++){
-				sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+				
 
 			if(sdev->protos != NULL && sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL){
 				sassy_dbg("starting instance %d", i);
@@ -223,8 +224,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 	    		payload, cqe_bcnt, 0);
     }
 	
-	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload), received_proto_instances, cqe_bcnt);
-
+	// _handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload), received_proto_instances, cqe_bcnt);
 
 }
 EXPORT_SYMBOL(sassy_post_payload);
@@ -409,7 +409,7 @@ int register_protocol_instance(struct sassy_device *sdev, int instance_id, int p
 
 	int idx = sdev->num_of_proto_instances; // index starts at 0!
 	int ret;
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	if (idx > MAX_PROTO_INSTANCES) {
 		ret = -EPERM;
@@ -418,21 +418,21 @@ int register_protocol_instance(struct sassy_device *sdev, int instance_id, int p
 
 		goto error;
 	}
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 	sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 	if(!sdev->protos[idx]) {
 		sassy_dbg("Could not allocate memory for new protocol instance!\n");
 		ret = -ENOMEM;
 		goto error;
 	}
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 	sdev->instance_id_mapping[instance_id] = idx;
 	sdev->protos[idx]->instance_id = instance_id;
 	sdev->num_of_proto_instances++;
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 	sdev->protos[idx]->ctrl_ops.init(sdev->protos[idx]);
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 	return 0;
 error:
 	sassy_error("Could not register new protocol instance %d\n", ret);

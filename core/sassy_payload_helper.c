@@ -93,30 +93,30 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	struct pminfo *spminfo = &sdev->pminfo;
 	struct sm_command *cmd_array;
 	int num_of_entries;
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for(i = 0; i < sdev->num_of_proto_instances; i++){
-		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+		
 
 		num_entries = 0;
 
 		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
-	 		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	 		
 
 	 		// get corresponding local instance data for consensus
 			cur_priv = 
 				(struct consensus_priv *)sdev->protos[i]->proto_data;
-	 		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	 		
 
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 	 		
-	 		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	 		
 
 	 		// Check if entries must be appended
 	 		cur_index = cur_priv->sm_log.last_idx;
@@ -139,7 +139,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =
 	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
-	 		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	 		
 
 	 		set_ae_data(pkt_payload_sub, 
 						cur_priv->term, 
@@ -149,7 +149,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 				 		leader_commit_idx,
 				 		cur_priv->sm_log.entries, 
 				 		num_of_entries);
-	 		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	 		
 
 		}
 	}

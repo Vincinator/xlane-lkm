@@ -214,21 +214,21 @@ struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
 	struct proto_instance *ins;
 
 	ins = kmalloc (sizeof(struct proto_instance), GFP_KERNEL);
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	if(!ins)
 		goto error;
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	ins->proto_type = SASSY_PROTO_CONSENSUS;
 	ins->ctrl_ops = consensus_ops;
 	ins->name = "consensus";
 	ins->logger.name = "consensus";
 	ins->logger.ifindex = sdev->ifindex;
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	ins->proto_data = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	cpriv = (struct consensus_priv *)ins->proto_data;
 	cpriv->state = LE_UNINIT;
@@ -239,7 +239,7 @@ struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
 	cpriv->le_config_procfs = NULL;
 	cpriv->sdev = sdev;
 	cpriv->ins = ins;
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	return ins;
 error:

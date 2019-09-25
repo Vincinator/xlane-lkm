@@ -42,7 +42,7 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 		sassy_error(" Could not find sassy device!\n");
 		return -ENODEV;
 	}
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
@@ -54,7 +54,7 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 	}
 
 	kernel_buffer[size] = '\0';
-	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+	
 
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
@@ -63,20 +63,20 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 			continue;
 		if (state == 0) {
 			err = kstrtoint(input_str, 10, &instance_id);
-			sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+			
 
 			if(err)
 				goto error;
 
 			if(instance_id == -1) {
-				sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+				
 
 				// clear all existing protocols and exit
 				clear_protocol_instances(sdev);
 				sassy_dbg("cleared all instances\n");
 				return count;
 			}
-			sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+			
 
 			sassy_dbg("instance id: %s\n", input_str);
 			state = 1;
@@ -85,9 +85,9 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 
 			if(err)
 				goto error;
-			sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+			
 			err = register_protocol_instance(sdev, instance_id, protocol_id);
-			sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+			
 
 			if(err)
 				goto error;
