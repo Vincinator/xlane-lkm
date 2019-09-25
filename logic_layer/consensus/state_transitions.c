@@ -102,8 +102,7 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u
 void le_state_transition_to(struct consensus_priv *priv, enum le_state state)
 {
 #if 1
-	if(sdev->verbose >= 1)
-		sassy_dbg("Leader Election Activation State Transition from %s to %s \n", _le_state_name(priv->state), _le_state_name(state));
+	sassy_dbg("Leader Election Activation State Transition from %s to %s \n", _le_state_name(priv->state), _le_state_name(state));
 #endif
 	priv->state = state;
 
