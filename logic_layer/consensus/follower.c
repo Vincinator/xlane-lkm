@@ -225,7 +225,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	// if != 0 then missmatch detected 
 	if(check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)) {
 		// reply false
-		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log->last_idx);
+		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
 		return;
 	}
 
@@ -247,7 +247,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	}
 
 out:
-	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, append_success, priv->sm_log->last_idx);
+	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, append_success, priv->sm_log.last_idx);
 }
 
 

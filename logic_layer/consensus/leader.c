@@ -60,8 +60,8 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// append rpc success!
 
 			// update match Index for follower with <remote_lid> 
+			//priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
 			priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
-
 		} else {
 			// append rpc failed!
 
