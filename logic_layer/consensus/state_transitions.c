@@ -9,15 +9,15 @@
 #include "include/log.h"
 
 
-static char *node_state_name(enum node_state state)
-{
-	switch (state) {
-	case FOLLOWER: return "Follower";
-	case CANDIDATE: return "Candidate";
-	case LEADER: return "Leader";
-	default: return "UNKNOWN STATE";
-	}
-}
+// static char *node_state_name(enum node_state state)
+// {
+// 	switch (state) {
+// 	case FOLLOWER: return "Follower";
+// 	case CANDIDATE: return "Candidate";
+// 	case LEADER: return "Leader";
+// 	default: return "UNKNOWN STATE";
+// 	}
+// }
 
 char *_le_state_name(enum le_state state)
 {
@@ -67,7 +67,7 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 	u32 candidate_id = priv->node_id;
 
 	u32 last_log_idx = priv->sm_log.last_idx;
-
+	u32 last_log_term;
 	if(priv->sm_log.last_idx == 0)
 		last_log_term = priv->term;
 	else
