@@ -28,9 +28,6 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	write_log(&priv->ins->logger, FOLLOWER_TIMEOUT, rdtsc());
 
 #if 1
-	if(sdev->verbose >= 1)
-		sassy_dbg("Follower Timeout occured!\n");
-
 
 	sassy_log_le("%s, %llu, %d: Follower timer timed out\n",
 			nstate_string(priv->nstate),
