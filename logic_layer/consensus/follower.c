@@ -246,9 +246,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	append_success = append_commands(priv, pkt, *num_entries, pkt_size);
 	append_success = !!!append_success; // convert to (0,1) and invert
 
-	// skip commit idx if appending commands failed?
-	//if(append_success == 0)
-	//	goto out:
+	// skip commit idx if appending commands failed
+	if(append_success == 0)
+		goto out:
 
 	// check commit index
 	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
