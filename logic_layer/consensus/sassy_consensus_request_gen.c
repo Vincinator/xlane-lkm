@@ -22,8 +22,9 @@ void testcase_stop_timer(struct consensus_priv *priv)
 {
 	priv->test_data.running = 0;
 
-	sassy_dbg("Actions will not be performed on next timeout.\n");
-	sassy_dbg("Timer will be stopped directly on next timeout\n");
+	sassy_dbg("Timer will be stopped directly after next timeout\n");
+	sassy_dbg("Actions of next timeout will not be performed.\n");
+
 }
 
 

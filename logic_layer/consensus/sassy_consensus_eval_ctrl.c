@@ -46,7 +46,7 @@ static ssize_t sassy_eval_ctrl_write(struct file *file,
 	switch (eval_selection) {
 	case 0:
 		sassy_dbg("stopping eval timers\n");
-		testcase_stop_timer();
+		testcase_stop_timer(priv);
 		break;
 	case -1:
 		// one shot 
