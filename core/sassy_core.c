@@ -391,7 +391,6 @@ int register_protocol_instance(struct sassy_device *sdev, int instance_id, int p
 		goto error;
 	}
 	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
-
 	sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
 	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 	if(!sdev->protos[idx]) {

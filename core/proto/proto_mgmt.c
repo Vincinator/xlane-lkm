@@ -29,6 +29,7 @@ struct proto_instance *generate_protocol_instance(struct sassy_device *sdev, int
 	enum sassy_protocol_type proto_type = (enum sassy_protocol_type)protocol_id;
 
 	sproto = NULL;
+	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 
 	switch(proto_type)
 	{
@@ -39,12 +40,17 @@ struct proto_instance *generate_protocol_instance(struct sassy_device *sdev, int
 			sproto = get_echo_proto_instance(sdev);
 			break;
 		case SASSY_PROTO_CONSENSUS:
+			sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+
 			sproto = get_consensus_proto_instance(sdev);
+			sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+
 			break;
 		default:
 			sassy_error("not a known protocol id\n");
 			break;
 	}
+	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 
 	return sproto;
 }
