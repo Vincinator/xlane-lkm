@@ -68,7 +68,8 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 
 	u32 last_log_idx = priv->sm_log.last_idx;
 	u32 last_log_term;
-	if(priv->sm_log.last_idx == 0)
+
+	if(priv->sm_log.last_idx == -1)
 		last_log_term = priv->term;
 	else
 		last_log_term = priv->sm_log.entries[priv->sm_log.last_idx]->term;

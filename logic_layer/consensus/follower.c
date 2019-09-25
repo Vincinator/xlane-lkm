@@ -254,6 +254,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
 	if(*leader_commit_idx > priv->sm_log.commit_idx) {
 		// min(leader_commit_idx, last_idx)
+		// note: last_idx of local log can not be null if append_commands was successfully executed
 		priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
 		commit_log(priv);
 	}

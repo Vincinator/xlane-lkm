@@ -101,8 +101,8 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, in
 	entry->cmd = cmd;
 	entry->term = term;
 
-	log->entries[last_idx + 1] = entry;
-	log->last_idx = last_idx;
+	log->last_idx++;
+	log->entries[last_idx] = entry;
 
 	return 0;
 error:

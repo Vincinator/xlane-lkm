@@ -110,7 +110,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 
-	 		// Check if entries must be appendedS
+	 		// Check if entries must be appended
 	 		cur_index = cur_priv->sm_log.last_idx;
 	 		next_index = cur_priv->sm_log.next_index[target_id]; 
 	 		match_index = cur_priv->sm_log.match_index[target_id]; 

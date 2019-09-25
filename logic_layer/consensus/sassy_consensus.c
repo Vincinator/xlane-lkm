@@ -152,7 +152,7 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 			return 0;
 		} else {
 			// if local log is empty, just accept the vote!
-			if(priv->sm_log.last_idx == 0)
+			if(priv->sm_log.last_idx == -1)
 				return 1;
 
 			// candidates log is at least as up to date as the local log!

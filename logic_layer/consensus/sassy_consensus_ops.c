@@ -22,9 +22,9 @@ int consensus_init(struct proto_instance *ins)
 	priv->term = 0;
 	priv->state = LE_READY;
 
-	priv->sm_log.last_idx = 0;
-	priv->sm_log.commit_idx = 0;
-	priv->sm_log.last_applied = 0;
+	priv->sm_log.last_idx = -1;
+	priv->sm_log.commit_idx = -1;
+	priv->sm_log.last_applied = -1;
 	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
 
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
