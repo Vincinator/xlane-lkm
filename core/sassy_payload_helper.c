@@ -115,6 +115,8 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
+	 		
+	 		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 	 		// Check if entries must be appended
 	 		cur_index = cur_priv->sm_log.last_idx;
@@ -137,6 +139,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =
 	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
+	 		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 	 		set_ae_data(pkt_payload_sub, 
 						cur_priv->term, 
@@ -146,6 +149,8 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 				 		leader_commit_idx,
 				 		cur_priv->sm_log.entries, 
 				 		num_of_entries);
+	 		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+
 		}
 	}
 }
