@@ -12,7 +12,7 @@
 #define LOG_PREFIX "[SASSY][RSM]"
 
 
-int apply_log_to_sm(struct state_machine_cmd_log *log, u32 commit_idx)
+int apply_log_to_sm(struct state_machine_cmd_log *log)
 {
 	int err;
 
@@ -24,6 +24,8 @@ int apply_log_to_sm(struct state_machine_cmd_log *log, u32 commit_idx)
 
 	// measure throughput here! 
 
+	sassy_dbg("Applying cmd until commit idx %d\n", log->commit_idx);
+
 
 	return 0;
 error:
@@ -31,9 +33,10 @@ error:
 }
 
 
-int commit_upto_index(struct state_machine_cmd_log *log, u32 index)
+int commit_log(struct consensus_priv *priv)
 {
 	int err;
+	struct state_machine_cmd_log *log = &priv->sm_log; 
 
 	if(!log) {
 		err = -EINVAL;
@@ -41,24 +44,12 @@ int commit_upto_index(struct state_machine_cmd_log *log, u32 index)
 		goto error;
 	}
 
-	if(index > log->last_idx ){
-		err = -EINVAL;
-		sassy_error("Given Commit Index is greater than number of entries in log\n");
-		goto error;
-	}
-
-	if(index < log->commit_idx ){
-		err = -EINVAL;
-		sassy_error("Already commited to a later index\n");
-		goto error;
-	}
-
-	err = apply_log_to_sm(log, index);
+	err = apply_log_to_sm(log);
 
 	if(err)
 		goto error;
 
-	log->commit_idx = index;
+	log->last_applied = index;
 
 
 	return 0;
@@ -67,6 +58,7 @@ error:
 	return err;
 }
 EXPORT_SYMBOL(commit_upto_index);
+
 
 int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, int term)
 {

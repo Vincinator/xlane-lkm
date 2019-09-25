@@ -255,6 +255,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	if(*leader_commit_idx > priv->sm_log.commit_idx) {
 		// min(leader_commit_idx, last_idx)
 		priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
+		commit_log(priv);
 	}
 
 out:
