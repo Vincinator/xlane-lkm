@@ -117,33 +117,24 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	 *		all included instances were handled
 	 */
 	if(instances <= 0 || bcnt <= 0){
-		
-
 		return;
 	}
 	
-
 	cur_proto_id = GET_PROTO_TYPE_VAL(payload);
 	cur_offset = GET_PROTO_OFFSET_VAL(payload);
 	
-
 	cur_ins = get_proto_instance(sdev, cur_proto_id);
 	
-
 	// check if instance for the given protocol id exists
 	if(!cur_ins) {
 		sassy_dbg("No instance for protocol id %d were found\n", cur_proto_id);
 		
-
 	} else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
-		
-
 	}
 	
-
 	// handle next payload
-	_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances -1, bcnt - cur_offset);
+	//_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances -1, bcnt - cur_offset);
 }
 
 
@@ -163,15 +154,10 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
     if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
 
-	
-
 	if(sdev->warmup_state == WARMING_UP){
-		
-
+	
 		get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 		
-		
-
 		if(remote_lid == -1 || rcluster_id == -1)
 			return;
 
@@ -186,12 +172,9 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 			if(!spminfo->pm_targets[i].alive)
 				return;
 
-		
-
 		// Starting all protocols 
 		for(i = 0; i < sdev->num_of_proto_instances; i++){
 				
-
 			if(sdev->protos != NULL && sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL){
 				sassy_dbg("starting instance %d", i);
 				sdev->protos[i]->ctrl_ops.start(sdev->protos[i]);
@@ -206,8 +189,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 	}
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
-
-
 
 	if(sdev->verbose >= 3)
 		sassy_dbg("Protocol Instances included %d", received_proto_instances);
@@ -224,7 +205,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 	    		payload, cqe_bcnt, 0);
     }
 	
-	// _handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload), received_proto_instances, cqe_bcnt);
+	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload), received_proto_instances, cqe_bcnt);
 
 }
 EXPORT_SYMBOL(sassy_post_payload);
