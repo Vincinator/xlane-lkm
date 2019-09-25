@@ -163,7 +163,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 					rdtsc(),
 					priv->term,
 					priv->votes,
-					sdev->pminfo.num_of_targets + 1);
+					priv->sdev->pminfo.num_of_targets + 1);
 #endif
 
 	write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, rdtsc());
