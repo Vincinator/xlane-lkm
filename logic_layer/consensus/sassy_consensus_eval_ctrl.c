@@ -9,6 +9,8 @@
 
 #include <sassy/consensus.h>
 
+#include "include/test.h"
+
 static ssize_t sassy_eval_ctrl_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
 				   loff_t *data)
@@ -53,7 +55,7 @@ static ssize_t sassy_eval_ctrl_write(struct file *file,
 		break;
 	default:
 
-		if(eval_selection < 0 || eval_selection > MAX_){
+		if(eval_selection < 0 || eval_selection > MAX_ENTRIES_PER_PKT){
 			sassy_error("Invalid input: %d - %s\n", eval_selection, __FUNCTION__);
 			err = -EINVAL;
 			goto error;

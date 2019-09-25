@@ -60,8 +60,16 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// append rpc success!
 
 			// update match Index for follower with <remote_lid> 
+			
+			// Asguard can potentially send multiple appendEntries RPCs, and after each RPC
+			// the next_index must be updated to indicate wich entries to send next..
+			// But the replies to the appendEntries RPC will indicate that only to certain index the
+			// follower log was updated. Thus, the follower must include the information to which 
+			// index it has updated the follower log. As an alternative, the leader could remember a state
+			// including the index after emitting the udp packet.. 
 			//priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
-			priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
+			priv->sm_log.match_index[remote_lid] = param3;
+
 		} else {
 			// append rpc failed!
 
