@@ -185,8 +185,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 		for(i = 0; i < spminfo->num_of_targets; i++)
 			if(!spminfo->pm_targets[i].alive)
 				return;
-
-		sdev->warmup_state = WARMED_UP;
 		sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 
 		// Starting all protocols 
@@ -200,6 +198,9 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 				sassy_dbg("protocol instance %d not initialized", i);
 			}
 		}
+
+		sdev->warmup_state = WARMED_UP;
+
 		sassy_dbg("Warmup done! \n");
 	}
 
