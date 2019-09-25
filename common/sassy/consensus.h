@@ -145,7 +145,7 @@ struct consensus_priv {
 };
 
 
-int commit_log(struct state_machine_cmd_log *log);
+int commit_log(struct consensus_priv *priv);
 int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, int term);
 
 
