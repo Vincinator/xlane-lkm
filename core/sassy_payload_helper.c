@@ -93,20 +93,26 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	struct pminfo *spminfo = &sdev->pminfo;
 	struct sm_command *cmd_array;
 	int num_of_entries;
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for(i = 0; i < sdev->num_of_proto_instances; i++){
+		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 		num_entries = 0;
 
 		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
+	 		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+
 	 		// get corresponding local instance data for consensus
 			cur_priv = 
 				(struct consensus_priv *)sdev->protos[i]->proto_data;
-	 	
+	 		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
+
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 

@@ -15,7 +15,7 @@ int consensus_init(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 	priv->ctimer_init = 0;
 	priv->ftimer_init = 0;
 	priv->voted = -1;
@@ -27,25 +27,25 @@ int consensus_init(struct proto_instance *ins)
 	priv->sm_log.last_applied = -1;
 	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
 
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 	if(!priv->sm_log.entries){
 		sassy_dbg("Not enough memory for log of size %d", MAX_CONSENSUS_LOG);
 		BUG();
 	}
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 
 	init_le_config_ctrl_interfaces(priv);
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 	init_eval_ctrl_interfaces(priv);
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 	init_logger(&ins->logger);
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 	return 0;
 }
@@ -162,17 +162,17 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 	int err, i;
 	struct pminfo *spminfo = &priv->sdev->pminfo;
 	
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 	
 	if(!consensus_is_alive(priv))
 		return 0;
 	
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 	get_cluster_ids(priv->sdev, remote_mac, &remote_lid, &rcluster_id);
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 	if(remote_lid == -1 || rcluster_id == -1)
 		return -1;
-	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
+	sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 	switch (priv->nstate) {
 	case FOLLOWER:

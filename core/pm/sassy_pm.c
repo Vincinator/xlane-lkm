@@ -165,10 +165,12 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		// 	sassy_write_timestamp(sdev, 0, rdtsc(), i);
 		// 	sassy_write_timestamp(sdev, 4, ktime_get(), i);
 		// }
+		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 		// Protocols have been emitted, do not sent them again ..
 		// .. and free the reservations for new protocols
 		invalidate_proto_data(sdev, pkt_payload, i);
+		sassy_dbg("%s %i\n",__FUNCTION__, __LINE__);
 
 	}
 	return 0;
