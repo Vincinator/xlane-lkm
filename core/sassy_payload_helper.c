@@ -132,7 +132,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		set_ae_data(pkt_payload_sub, 
 						cur_priv->term, 
 			 	 		cur_priv->node_id,
-			 	 		cur_priv->sm_log.
+			 	 		cur_priv->sm_log,
 				 		match_index,
 				 		prev_log_term,
 				 		leader_commit_idx,
