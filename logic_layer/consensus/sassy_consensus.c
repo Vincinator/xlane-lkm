@@ -12,6 +12,7 @@
 #include <sassy/payload_helper.h>
 
 #include "include/log.h"
+#include "include/consensus_helper.h"
 #include "include/sassy_consensus_ops.h"
 #include <sassy/consensus.h>
 
@@ -139,6 +140,31 @@ void set_ae_data(unsigned char *pkt,
 	}
 
 
+}
+
+int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2, u32 param3, u32 param4)
+{
+	if(priv->term < param1) {
+		if (priv->voted == param1) {
+#if 0
+		sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
+#endif	
+			return 0;
+		} else {
+			// if local log is empty, just accept the vote!
+			if(priv->sm_log.last_idx == 0)
+				return 1;
+
+			// candidates log is at least as up to date as the local log!
+			if(param3 >= priv->sm_log.last_idx){
+				// Terms of previous log item must match with lastLogTerm of Candidate
+				if(priv->sm_log.entries[param3]->term == param4){
+					return 1;
+				}
+			}
+
+		}
+	}
 }
 
 void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, u32 p2, u32 p3)

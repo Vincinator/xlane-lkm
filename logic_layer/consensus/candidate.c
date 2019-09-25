@@ -9,6 +9,7 @@
 
 #include <sassy/payload_helper.h>
 
+#include "include/consensus_helper.h"
 #include "include/follower.h"
 #include "include/candidate.h"
 #include <sassy/consensus.h>
@@ -216,9 +217,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		// param2 interpreted as candidateID
 		// param3 interpreted as lastLogIndex
 		// param4 interpreted as lastLogTerm
-
-		// Nomination from Node with higher term - cancel own candidature and vote for higher term
-		if(param1 > priv->term){
+		if(check_handle_nomination(priv, param1, param2, param3, param4)){
 			node_transition(ins, FOLLOWER);
 			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}

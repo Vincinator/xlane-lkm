@@ -70,8 +70,8 @@
 #define GET_CON_PROTO_PARAM3_PTR(p) (u32 *)((char*) p + 2 + 2 + 2 + 4 + 4)
 
 // protoid(u16) + offset(u16) + opcode(u16) + param1(u32) + param2(u32)  + param3(u32)
-#define GET_CON_PROTO_PARAM3_VAL(p) *(u32 *)((char*) p + 2 + 2 + 2 + 4 + 4 + 4)
-#define GET_CON_PROTO_PARAM3_PTR(p) (u32 *)((char*) p + 2 + 2 + 2 + 4 + 4 + 4)
+#define GET_CON_PROTO_PARAM4_VAL(p) *(u32 *)((char*) p + 2 + 2 + 2 + 4 + 4 + 4)
+#define GET_CON_PROTO_PARAM4_PTR(p) (u32 *)((char*) p + 2 + 2 + 2 + 4 + 4 + 4)
 
 #define GET_PROTO_AMOUNT_VAL(p) *(u16 *)((char*) p)
 #define GET_PROTO_AMOUNT_PTR(p) (u16 *)((char*) p)

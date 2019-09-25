@@ -9,6 +9,7 @@
 #include <sassy/sassy.h>
 
 #include "include/follower.h"
+#include "include/consensus_helper.h"
 
 
 #undef LOG_PREFIX
@@ -279,37 +280,18 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 #endif
 
 	switch(opcode){
-		// param1 interpreted as term
+		// param1 interpreted as term 
 		// param2 interpreted as candidateID
-		// param3 interpreted as lastLogIndex
-		// param4 interpreted as lastLogTerm
+		// param3 interpreted as lastLogIndex of Candidate
+		// param4 interpreted as lastLogTerm of Candidate
 	case VOTE:
 		break;
 	case NOMI:	
-
-		if(priv->term < param1) {
-	 		if (priv->voted == param1) {
-#if 0
-				sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
-#endif	
-			} else {
-				
-				// if local log is empty, just accept the vote!
-				if(priv->sm_log.last_idx == 0)
-					goto accept_nomi;
-
-				// candidates log is at least as up to date as the local log!
-				if(param3 >= priv->sm_log.last_idx){
-					// Terms of previous log item must match
-					if(priv->sm_log.entries[param3]->term == param4){
-accept_nomi:
-						reply_vote(ins, remote_lid, rcluster_id, param1, param2);
-						reset_ftimeout(ins);
-					}
-				}
-
+			
+			if(check_handle_nomination(priv, param1, param2, param3, param4)){
+				reply_vote(ins, remote_lid, rcluster_id, param1, param2);
+				reset_ftimeout(ins);
 			}
-		}
 
 		break;	
 	case NOOP:
