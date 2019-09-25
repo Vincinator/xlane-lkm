@@ -76,6 +76,12 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 {
 	struct sassy_timestamp_logs *logs;
 
+
+	if(!sdev || ! sdev->stats || !sdev->stats->timestamp_logs[logid]){
+		sassy_dbg("Nullptr error in %s\n", __FUNCTION__);
+		return 0;
+	}
+
 	logs = sdev->stats->timestamp_logs[logid];
 
 	if (unlikely(logs->current_timestamps > TIMESTAMP_ARRAY_LIMIT)) {
@@ -125,6 +131,14 @@ int sassy_reset_stats(struct sassy_device *sdev)
 	int err;
 	int i;
 
+	if(sdev == NULL || sdev->stats == NULL) {
+		sassy_error(
+			"can not clear stats, nullptr error.%s\n",
+			__FUNCTION__);
+		err = -EINVAL;
+		goto error
+	}
+
 	if (sdev->ts_state == SASSY_TS_RUNNING) {
 		sassy_error(
 			" can not clear stats when timestamping is active.%s\n",
@@ -142,8 +156,16 @@ int sassy_reset_stats(struct sassy_device *sdev)
 	}
 
 	/* Reset, not free so timestamping can continue directly.*/
-	for (i = 0; i < sdev->stats->timestamp_amount; i++)
-		sdev->stats->timestamp_logs[i]->current_timestamps = 0;
+	for (i = 0; i < sdev->stats->timestamp_amount; i++){
+		if(!sdev->stats->timestamp_logs[i]){
+			sassy_error( "BUG! timestamp_log index does not exist. %s\n",__FUNCTION__);
+			err = -EPERM;
+			goto error;
+		} else {
+			sdev->stats->timestamp_logs[i]->current_timestamps = 0;
+		}
+		
+	}
 
 	return 0;
 error:
