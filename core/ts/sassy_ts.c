@@ -136,7 +136,7 @@ int sassy_reset_stats(struct sassy_device *sdev)
 			"can not clear stats, nullptr error.%s\n",
 			__FUNCTION__);
 		err = -EINVAL;
-		goto error
+		goto error;
 	}
 
 	if (sdev->ts_state == SASSY_TS_RUNNING) {
