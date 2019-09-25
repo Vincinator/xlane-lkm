@@ -49,7 +49,7 @@ int commit_log(struct consensus_priv *priv)
 	if(err)
 		goto error;
 
-	log->last_applied = index;
+	log->last_applied = log->commit_idx;
 
 
 	return 0;
@@ -57,7 +57,7 @@ error:
 	sassy_dbg("Could not commit to Logs. Commit Index %d\n", index);
 	return err;
 }
-EXPORT_SYMBOL(commit_upto_index);
+EXPORT_SYMBOL(commit_log);
 
 
 int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, int term)
