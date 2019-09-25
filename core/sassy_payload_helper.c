@@ -92,13 +92,16 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	u32 num_entries, match_index, next_index, cur_index, prev_log_idx, prev_log_term, leader_commit_idx;
 	struct pminfo *spminfo = &sdev->pminfo;
 	struct sm_command *cmd_array;
-	int num_of_entries = 0;
+	int num_of_entries;
 
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
 
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for(i = 0; i < sdev->num_of_proto_instances; i++){
+
+		num_entries = 0;
+
 		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
 	 		// get corresponding local instance data for consensus
 			cur_priv = 

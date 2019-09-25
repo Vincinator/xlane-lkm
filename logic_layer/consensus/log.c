@@ -2,6 +2,8 @@
 #include <sassy/sassy.h>
 #include <sassy/payload_helper.h>
 
+#include <linux/slab.h>
+#include <linux/kernel.h>
 
 #include "include/leader.h"
 #include <sassy/consensus.h>
