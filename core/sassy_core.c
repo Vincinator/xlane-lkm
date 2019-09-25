@@ -289,7 +289,6 @@ int sassy_core_register_nic(int ifindex)
 						GFP_KERNEL);
 
 	/* Allocate each rhost ring buffer*/
-
 	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
 		score->rx_tables[sassy_id]->rhost_buffers[i] =
 			kmalloc(sizeof(struct sassy_rx_buffer),
@@ -315,6 +314,10 @@ int sassy_core_register_nic(int ifindex)
 
 	score->sdevices[sassy_id]->protos = 
 				kmalloc_array(MAX_PROTO_INSTANCES, sizeof(struct proto_instance *), GFP_KERNEL);
+
+	if(!score->sdevices[sassy_id]->protos){
+		sassy_error("ERROR! Not enough memory for protocol instance array\n");
+	}
 
 	/* set default heartbeat interval */
 	//sdev->pminfo.hbi = DEFAULT_HB_INTERVAL;
