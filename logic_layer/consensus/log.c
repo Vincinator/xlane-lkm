@@ -54,7 +54,7 @@ int commit_log(struct consensus_priv *priv)
 
 	return 0;
 error:
-	sassy_dbg("Could not commit to Logs. Commit Index %d\n", index);
+	sassy_dbg("Could not commit to Logs. Commit Index %d\n", log->commit_idx);
 	return err;
 }
 EXPORT_SYMBOL(commit_log);
