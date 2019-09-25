@@ -176,7 +176,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 				rdtsc(),
 				priv->term,
 				priv->votes,
-				sdev->pminfo.num_of_targets);
+				priv->sdev->pminfo.num_of_targets);
 #endif
 
 		err = node_transition(ins, LEADER);
