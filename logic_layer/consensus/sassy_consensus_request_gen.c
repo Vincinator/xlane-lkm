@@ -69,7 +69,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 		cur_cmd->sm_logvar_id = rand_id;
 		cur_cmd->sm_logvar_value = rand_value;
-		err = append_command(&priv->sm_log, cur_entry, priv->term);
+		err = append_command(&priv->sm_log, cur_cmd, priv->term);
 		if(err)
 			goto error;
 	}
