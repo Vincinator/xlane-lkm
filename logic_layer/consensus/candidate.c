@@ -46,7 +46,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	 *
 	 */
 	if(priv->c_retries >= CANDIDATURE_RETRY_LIMIT){
-#if 0
+#if 1
 		sassy_log_le("%s, %llu, %d: reached maximum of candidature retries\n",
 			nstate_string(priv->nstate),
 			rdtsc());
@@ -69,7 +69,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	timeout = get_rnd_timeout(priv->c_retries * priv->ct_min, priv->c_retries * priv->ct_max);
 
 	hrtimer_forward_now(timer, timeout);
-#if 0
+#if 1
 	sassy_log_le("%s, %llu, %d: Restart candidate timer with %lld ms timeout - Candidature retry %d.\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
@@ -94,7 +94,7 @@ void reset_ctimeout(struct proto_instance *ins)
 	hrtimer_cancel(&priv->ctimer);
 	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ctimer, HRTIMER_MODE_REL_PINNED);
-#if 0
+#if 1
 	sassy_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
@@ -125,7 +125,7 @@ void init_ctimeout(struct proto_instance *ins)
 
 	priv->ctimer.function = &_handle_candidate_timeout;
 
-#if 0
+#if 1
 	sassy_log_le("%s, %llu, %d: Init Candidate timeout to %lld ms.\n",
 		nstate_string(priv->nstate),
 		rdtsc(),
@@ -157,7 +157,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 
 	priv->votes++;
 
-#if 0
+#if 1
 	sassy_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
 					nstate_string(priv->nstate),
 					rdtsc(),
@@ -170,7 +170,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 
 	if (priv->votes * 2 >= (priv->sdev->pminfo.num_of_targets + 1)) {
 
-#if 0
+#if 1
 		sassy_log_le("%s, %llu, %d: got majority with %d from %d possible votes \n",
 				nstate_string(priv->nstate),
 				rdtsc(),
@@ -204,7 +204,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	u32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 	u32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
-#if 0
+#if 1
 
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 #endif
@@ -228,7 +228,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	case LEAD:
 		if(param1 >= priv->term){
 
-#if 0
+#if 1
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
@@ -236,7 +236,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, rdtsc());
 
 		} else {
-#if 0
+#if 1
 
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);

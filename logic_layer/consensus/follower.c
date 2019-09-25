@@ -27,7 +27,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 
 	write_log(&priv->ins->logger, FOLLOWER_TIMEOUT, rdtsc());
 
-#if 0
+#if 1
 	if(sdev->verbose >= 1)
 		sassy_dbg("Follower Timeout occured!\n");
 
@@ -57,7 +57,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	char *pkt_payload_sub;
 	int hb_passive_ix;
 
-#if 0
+#if 1
 
 	sassy_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
 			nstate_string(priv->nstate),
@@ -95,7 +95,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
-#if 0
+#if 1
 
 	sassy_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
 			nstate_string(priv->nstate),
@@ -277,7 +277,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	u32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 
-#if 0
+#if 1
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 #endif
 
@@ -307,7 +307,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 */
 		if(param1 > priv->term){
 
-#if 0
+#if 1
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 #endif
@@ -329,7 +329,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		else if(param1 == priv->term) {
 
 			if(priv->leader_id == remote_lid){
-#if 0
+#if 1
 				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from known leader term=%u\n", param1);
 #endif
@@ -339,7 +339,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 
 			}else {
-#if 0
+#if 1
 				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from new leader term=%u\n", param1);
 #endif
@@ -350,7 +350,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 * Ignoring this LEAD operation and let the countdown continue to go down.
 		 */
 		else {
-#if 0
+#if 1
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);
 #endif
@@ -384,7 +384,7 @@ void init_timeout(struct proto_instance *ins)
 
 	priv->ftimer.function = &_handle_follower_timeout;
 
-#if 0
+#if 1
 	sassy_log_le("%s, %llu, %d: Init follower timeout to %lld ms. \n",
 		nstate_string(priv->nstate),
 		rdtsc(),
@@ -407,7 +407,7 @@ void reset_ftimeout(struct proto_instance *ins)
 	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 
-#if 0
+#if 1
 
 	sassy_log_le("%s, %llu, %d: Set follower timeout to %lld ms.\n",
 			nstate_string(priv->nstate),
@@ -446,7 +446,7 @@ int start_follower(struct proto_instance *ins)
 
 	init_timeout(ins);
 
-#if 0
+#if 1
 	sassy_dbg("Node became a follower\n");
 #endif
 
