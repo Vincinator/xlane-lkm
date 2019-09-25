@@ -381,6 +381,7 @@ int register_protocol_instance(struct sassy_device *sdev, int instance_id, int p
 
 	int idx = sdev->num_of_proto_instances; // index starts at 0!
 	int ret;
+	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 
 	if (idx > MAX_PROTO_INSTANCES) {
 		ret = -EPERM;
@@ -389,21 +390,22 @@ int register_protocol_instance(struct sassy_device *sdev, int instance_id, int p
 
 		goto error;
 	}
+	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 
 	sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
-
+	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 	if(!sdev->protos[idx]) {
 		sassy_dbg("Could not allocate memory for new protocol instance!\n");
 		ret = -ENOMEM;
 		goto error;
 	}
-
+	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 	sdev->instance_id_mapping[instance_id] = idx;
 	sdev->protos[idx]->instance_id = instance_id;
 	sdev->num_of_proto_instances++;
-
+	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 	sdev->protos[idx]->ctrl_ops.init(sdev->protos[idx]);
-
+	sassy_dbg("%s %i",__FUNCTION__, __LINE__);
 	return 0;
 error:
 	sassy_error("Could not register new protocol instance %d\n", ret);
