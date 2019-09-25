@@ -77,7 +77,7 @@ int sassy_write_timestamp(struct sassy_device *sdev,
 	struct sassy_timestamp_logs *logs;
 
 
-	if(!sdev || ! sdev->stats || !sdev->stats->timestamp_logs[logid]){
+	if(!sdev||! sdev->stats||!sdev->stats->timestamp_logs[logid]){
 		sassy_dbg("Nullptr error in %s\n", __FUNCTION__);
 		return 0;
 	}
@@ -131,7 +131,7 @@ int sassy_reset_stats(struct sassy_device *sdev)
 	int err;
 	int i;
 
-	if(sdev == NULL || sdev->stats == NULL) {
+	if(sdev == NULL||sdev->stats == NULL) {
 		sassy_error(
 			"can not clear stats, nullptr error.%s\n",
 			__FUNCTION__);
