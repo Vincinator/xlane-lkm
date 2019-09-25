@@ -169,7 +169,7 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 {
 	int i;
 
-	for(i = 0; i < log->last_idx; i++) {
+	for(i = start_idx; i <= log->last_idx; i++) {
 		kfree(log->entries[i]);
 	}
 
@@ -179,21 +179,29 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 }
 
 
-int check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u32 prev_log_idx) 
+u32 check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u32 prev_log_idx) 
 {
-	int ret = 0; // 0 := all good.
+	u32 ret = 0; // 0 := all good.
 	struct sm_log_entry *entry;
 
-	if(log->last_idx < prev_log_idx || prev_log_idx < 0 ){
+	if(prev_log_idx < 0){
+		// BUG !?
+		sassy_dbg("BUG! Given prev_log_idx is negative!\n", prev_log_idx);
+		ret = log->last_idx;
+		goto out;
+	}
+
+	if(log->last_idx < prev_log_idx ){
 		sassy_dbg("Entry at index %d does not exist\n", prev_log_idx);
-		ret = 1;
+		ret = log->last_idx;
 		goto out;
 	}
 	
 	entry = log->entries[prev_log_idx];
 
 	if(entry == NULL) {
-		sassy_dbg("Entry is NULL at index %d", prev_log_idx);
+		// BUG !?
+		sassy_dbg("BUG! Entry is NULL at index %d", prev_log_idx);
 		ret = 1;
 		goto out;
 	}
@@ -203,7 +211,7 @@ int check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u
 		
 		// Delete entries from prev_log_idx to last_idx
 		remove_from_log_until_last(log, prev_log_idx);
-		ret = 1;
+		ret = log->last_idx; // last_idx was updated by remove_from_log_until_last
 		goto out;
 	}
 
@@ -217,13 +225,15 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	u32 *prev_log_term, *prev_log_idx, *leader_commit_idx, *num_entries;
 	int append_success;
 	u16 pkt_size;
+	u32 check;
 
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
 	// if != 0 then missmatch detected 
-	if(check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)) {
+	check = check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx);
+	if(check) {
 		// reply false
 		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
 		return;

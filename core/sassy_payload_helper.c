@@ -122,11 +122,12 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 	 		// Decide how many entries to update for the current target
 	 			num_entries =
 	 				(MAX_ENTRIES_PER_PKT < next_index - cur_index) ? MAX_ENTRIES_PER_PKT : next_index - cur_index ;
-		 			 			
+		 		
+		 		// update next_index.. (if request fails, we will go back step by step )
+ 		 		cur_priv->sm_log.next_index[target_id] += num_entries + 1;
+	 			
 	 		}
 
-	 		// update next_index.. (if request fails, we will go back step by step )
- 		 	cur_priv->sm_log.next_index[target_id] += num_entries + 1;
 
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =

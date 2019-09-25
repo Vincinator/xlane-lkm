@@ -53,6 +53,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	case APPEND_REPLY:
 		// param1 intepreted as last term of follower
 		// param2 interpreted as success 
+		// param3 contains last idx in follower log 
 
 		// check if success
 
@@ -74,7 +75,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// append rpc failed!
 
 			// decrement nextIndex for follower with <remote_lid>
-			priv->sm_log.next_index[remote_lid]--;
+			priv->sm_log.next_index[remote_lid] = param3;
 
 		}
 
