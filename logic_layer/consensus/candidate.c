@@ -180,7 +180,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 #endif
 
 		// DEBUG: Check if Leader code has an issue..
-		//err = node_transition(ins, LEADER);
+		err = node_transition(ins, LEADER);
 		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, rdtsc());
 
 		if (err) {

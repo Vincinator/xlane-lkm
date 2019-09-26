@@ -20,7 +20,7 @@ void initialze_indices(struct consensus_priv *priv)
 		priv->sm_log.next_index[i] = priv->sm_log.last_idx + 1;
 		priv->sm_log.match_index[i] = 0;
 	}
-
+	sassy_dbg("initialized indices\n");
 }
 
 
@@ -129,7 +129,7 @@ int start_leader(struct proto_instance *ins)
 
 	initialze_indices(priv);
 
-	setup_le_broadcast_msg(ins, APPEND);
+	//setup_le_broadcast_msg(ins, APPEND);
 
 	priv->nstate = LEADER;
 	

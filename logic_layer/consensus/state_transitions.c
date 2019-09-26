@@ -74,8 +74,9 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 	else
 		last_log_term = priv->sm_log.entries[priv->sm_log.last_idx]->term;
 
-	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
 		setup_le_msg(ins, &priv->sdev->pminfo, opcode, (u32) i, term, candidate_id, last_log_idx, last_log_term);
+	}
 
 	return 0;
 }

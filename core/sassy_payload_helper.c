@@ -102,7 +102,6 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for(i = 0; i < sdev->num_of_proto_instances; i++){
 		
-
 		num_entries = 0;
 
 		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
@@ -113,13 +112,23 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
-	 		
+
 	 		// Check if entries must be appended
 	 		cur_index = cur_priv->sm_log.last_idx;
 	 		next_index = cur_priv->sm_log.next_index[target_id]; 
-	 		match_index = cur_priv->sm_log.match_index[target_id]; 
-	 		prev_log_term = cur_priv->sm_log.entries[match_index]->term;
+	 		match_index = cur_priv->sm_log.match_index[target_id];
+
+	 		// check if entry exists
+	 		if(cur_priv->sm_log.entries != NULL && cur_priv->sm_log.entries[match_index] != NULL){
+		 		prev_log_term = cur_priv->sm_log.entries[match_index]->term;
+	 		}else {
+		 		prev_log_term = cur_priv->term;
+	 		}
+
 	 		leader_commit_idx = cur_priv->sm_log.commit_idx;
+
+			sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d\n", 
+				cur_index,next_index, match_index, prev_log_term);
 
 	 		// only append entries if the leader has something fresh to append
 	 		if(cur_index > next_index) {
