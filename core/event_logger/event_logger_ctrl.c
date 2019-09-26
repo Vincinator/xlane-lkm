@@ -96,7 +96,7 @@ static const struct file_operations sassy_event_ctrl_ops = {
 void clear_logger(struct proto_instance *ins)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
-	struct sassy_logger = &ins->logger;
+	struct sassy_logger *slog = &ins->logger;
 	
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log",
 			 slog->ifindex, ins->instance_id);
@@ -115,7 +115,7 @@ EXPORT_SYMBOL(clear_logger);
 void init_logger_ctrl(struct proto_instance *ins)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
-	struct sassy_logger = &ins->logger;
+	 struct sassy_logger *slog = &ins->logger;
 
 	if (!ins||!slog) {
 		sassy_error("ins or Logs are not initialized!\n");
