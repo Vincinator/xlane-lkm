@@ -433,7 +433,7 @@ void clear_protocol_instances(struct sassy_device *sdev)
 	int idx, i;
 
 	if(!sdev){
-		sassy_error("Sdev is NULL - can not clear instances. \n");
+		sassy_error("SDEV is NULL - can not clear instances. \n");
 		return;
 	}
 
@@ -448,18 +448,18 @@ void clear_protocol_instances(struct sassy_device *sdev)
 		return;
 	}
 
-	// invalidate access to proto instances
-	for(i = 0; i < MAX_PROTO_INSTANCES; i++)
-		sdev->instance_id_mapping[i] = -1;
+	for(i = 0; i < sdev->num_of_proto_instances; i++) {
 
-	for(idx = 0; idx < sdev->num_of_proto_instances; idx++) {
-		
+		idx = sdev->instance_id_mapping[i];
+
+		if(idx == -1)
+			continue;
+
+		sassy_dbg("Cleaning proto with idx= %d and id=%d\n", idx, i);
+
 		if(!sdev->protos[idx])
 			continue;
 		
-		if(sdev->protos[idx]->ctrl_ops.stop != NULL)
-			sdev->protos[idx]->ctrl_ops.stop(sdev->protos[idx]);
-
 		if(sdev->protos[idx]->ctrl_ops.clean != NULL)
 			sdev->protos[idx]->ctrl_ops.clean(sdev->protos[idx]);
 
@@ -467,6 +467,10 @@ void clear_protocol_instances(struct sassy_device *sdev)
 		//kfree(sdev->protos[idx]->proto_data);
 		//kfree(sdev->protos[idx]);
 	}
+	sassy_dbg("done clean\n");
+
+	for(i = 0; i < MAX_PROTO_INSTANCES; i++)
+		sdev->instance_id_mapping[i] = -1;
 
 	sdev->num_of_proto_instances = 0;
 
