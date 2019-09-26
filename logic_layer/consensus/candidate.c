@@ -179,7 +179,8 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 				priv->sdev->pminfo.num_of_targets);
 #endif
 
-		err = node_transition(ins, LEADER);
+		// DEBUG: Check if Leader code has an issue..
+		//err = node_transition(ins, LEADER);
 		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, rdtsc());
 
 		if (err) {
@@ -225,7 +226,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		break;		
 	case NOOP:
 		break;
-	case LEAD:
+	case APPEND:
 		if(param1 >= priv->term){
 
 #if 1

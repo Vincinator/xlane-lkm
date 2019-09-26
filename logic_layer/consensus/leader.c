@@ -129,7 +129,7 @@ int start_leader(struct proto_instance *ins)
 
 	initialze_indices(priv);
 
-	setup_le_broadcast_msg(ins, LEAD);
+	setup_le_broadcast_msg(ins, APPEND);
 
 	priv->nstate = LEADER;
 	

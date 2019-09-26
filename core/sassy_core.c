@@ -191,9 +191,9 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 			}
 		}
 
-		sdev->warmup_state = WARMED_UP;
-
 		sassy_dbg("Warmup done! \n");
+		sdev->warmup_state = WARMED_UP;
+		return;
 	}
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
