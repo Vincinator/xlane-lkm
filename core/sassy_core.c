@@ -82,7 +82,7 @@ void set_all_targets_dead(struct sassy_device *sdev)
 }
 EXPORT_SYMBOL(set_all_targets_dead);
 
-struct proto_instance *get_proto_instance(struct sassy_device *sdev, int proto_id)
+struct proto_instance *get_proto_instance(struct sassy_device *sdev, u16 proto_id)
 {
 	int idx;
 
@@ -105,10 +105,11 @@ struct proto_instance *get_proto_instance(struct sassy_device *sdev, int proto_i
 
 void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, char *payload, int instances, u32 bcnt)
 {
-	int cur_proto_id;
-	int cur_offset;
+	u16 cur_proto_id;
+	u16 cur_offset;
 	struct proto_instance *cur_ins;
 	
+	sassy_dbg("recursion. instances %d bcnt %d", instances, bcnt);
 
 	/* bcnt <= 0: 
 	 *		no payload left to handle
@@ -121,20 +122,21 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	}
 	
 	cur_proto_id = GET_PROTO_TYPE_VAL(payload);
+	sassy_dbg("cur_proto_id %d", cur_proto_id);
 	cur_offset = GET_PROTO_OFFSET_VAL(payload);
-	
+	sassy_dbg("cur_offset %d", cur_offset);
+
 	cur_ins = get_proto_instance(sdev, cur_proto_id);
 	
 	// check if instance for the given protocol id exists
 	if(!cur_ins) {
 		sassy_dbg("No instance for protocol id %d were found\n", cur_proto_id);
-		
 	} else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
 	}
 	
 	// handle next payload
-	//_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances -1, bcnt - cur_offset);
+	_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances -1, bcnt - cur_offset);
 }
 
 

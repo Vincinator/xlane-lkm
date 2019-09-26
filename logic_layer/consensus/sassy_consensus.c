@@ -158,7 +158,8 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 			// candidates log is at least as up to date as the local log!
 			if(param3 >= priv->sm_log.last_idx){
 				// Terms of previous log item must match with lastLogTerm of Candidate
-				if(priv->sm_log.entries[param3]->term == param4){
+				if(priv->sm_log.entries[param3] != NULL && 
+						priv->sm_log.entries[param3]->term == param4){
 					return 1;
 				}
 			}
