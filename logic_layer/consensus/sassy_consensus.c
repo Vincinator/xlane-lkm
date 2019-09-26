@@ -151,8 +151,9 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 #endif	
 			return 0;
 		} else {
-			sassy_dbg("priv->sm_log.last_idx %d", priv->sm_log.last_idx);
-			// if local log is empty, just accept the vote!
+			sassy_dbg("priv->sm_log.last_idx %d\n", priv->sm_log.last_idx);
+			
+			// if local log is empty, just grant the vote!
 			if(priv->sm_log.last_idx == -1)
 				return 1;
 

@@ -107,17 +107,13 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 
 		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
 	 		
-
 	 		// get corresponding local instance data for consensus
 			cur_priv = 
 				(struct consensus_priv *)sdev->protos[i]->proto_data;
 	 		
-
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 	 		
-	 		
-
 	 		// Check if entries must be appended
 	 		cur_index = cur_priv->sm_log.last_idx;
 	 		next_index = cur_priv->sm_log.next_index[target_id]; 

@@ -163,8 +163,19 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 	
 	if(!consensus_is_alive(priv))
 		return 0;
+
+	// safety check during debugging and development
+	if(!ins){
+		sassy_dbg("proto instance is null!\n");
+		return 0;
+	}
 	
-	
+	// safety check during debugging and development
+	if(!priv){
+		sassy_dbg("private consensus data is null!\n");
+		return 0;
+	}
+
 	get_cluster_ids(priv->sdev, remote_mac, &remote_lid, &rcluster_id);
 	
 	if(remote_lid == -1 || rcluster_id == -1)
