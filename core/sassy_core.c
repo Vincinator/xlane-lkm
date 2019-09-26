@@ -451,33 +451,28 @@ void clear_protocol_instances(struct sassy_device *sdev)
 	}
 
 	for(i = 0; i < sdev->num_of_proto_instances; i++) {
-
-		idx = sdev->instance_id_mapping[i];
 		
-		sassy_dbg("Cleaning proto with idx= %d and id=%d\n", idx, i);
+		sassy_dbg("Cleaning proto with id=%d\n",i);
 
-		if(idx == -1)
-			continue;
-
-		if(!sdev->protos[idx])
+		if(!sdev->protos[i])
 			continue;
 
 		sassy_dbg("protocol instance exists\n");
 
-		if(sdev->protos[idx]->ctrl_ops.clean != NULL){
+		if(sdev->protos[i]->ctrl_ops.clean != NULL){
 			sassy_dbg(" Call clean function of protocol\n");
-			sdev->protos[idx]->ctrl_ops.clean(sdev->protos[idx]);
+			sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
 			sassy_dbg(" Clean of Protocol done\n");
 
 		}
 		sassy_dbg("Pre Free\n");
 
 		// timer are not finished yet!?
-		kfree(sdev->protos[idx]->proto_data);
+		kfree(sdev->protos[i]->proto_data);
 		
 		sassy_dbg("Half Free\n");
 
-		kfree(sdev->protos[idx]);
+		kfree(sdev->protos[i]);
 
 		sassy_dbg("Post Free\n");
 
