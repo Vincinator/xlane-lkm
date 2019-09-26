@@ -117,7 +117,13 @@ int consensus_clean(struct proto_instance *ins)
 		(struct consensus_priv *)ins->proto_data;
 	int i;
 
-	sassy_dbg("consensus clean\n");
+	if(consensus_is_alive(priv)){
+		sassy_dbg("Consensus is running, stop it first.\n");
+		return 0;
+	}
+
+	sassy_dbg("cleaning consensus\n");
+	
 	le_state_transition_to(priv, LE_UNINIT);
 
 

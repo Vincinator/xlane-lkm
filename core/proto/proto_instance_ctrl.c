@@ -70,7 +70,6 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 
 			if(instance_id == -1) {
 				
-
 				// clear all existing protocols and exit
 				clear_protocol_instances(sdev);
 				sassy_dbg("cleared all instances\n");

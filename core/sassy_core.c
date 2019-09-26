@@ -90,15 +90,12 @@ struct proto_instance *get_proto_instance(struct sassy_device *sdev, u16 proto_i
 		return NULL;
 	}
 	
-
 	idx = sdev->instance_id_mapping[proto_id];
 	
-
 	if (unlikely(idx < 0 || idx >= MAX_PROTO_INSTANCES)) {
 		return NULL;
 	}
 	
-
 	return sdev->protos[idx];
 }
 
@@ -426,10 +423,25 @@ void clear_protocol_instances(struct sassy_device *sdev)
 {
 	int idx, i;
 
+	if(!sdev){
+		sassy_error("Sdev is NULL - can not clear instances. \n");
+		return;
+	}
+
 	if (sdev->num_of_proto_instances > MAX_PROTO_INSTANCES) {
 		sassy_dbg("num_of_proto_instances is faulty! Aborting cleanup of all instances\n");
 		return;
 	}
+
+	// If pacemaker is running, do not clear the protocols!
+	if(sdev->pminfo.state == SASSY_PM_EMITTING){
+		sassy_error("Can not clear protocol instances while pacemaker is running!\n");
+		return;
+	}
+
+	// invalidate access to proto instances
+	for(i = 0; i < MAX_PROTO_INSTANCES; i++)
+		sdev->instance_id_mapping[i] = -1;
 
 	for(idx = 0; idx < sdev->num_of_proto_instances; idx++) {
 		
@@ -448,9 +460,6 @@ void clear_protocol_instances(struct sassy_device *sdev)
 	}
 
 	sdev->num_of_proto_instances = 0;
-
-	for(i = 0; i < MAX_PROTO_INSTANCES; i ++)
-		sdev->instance_id_mapping[i] = -1;
 
 }
 
