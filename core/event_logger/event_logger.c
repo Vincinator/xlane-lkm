@@ -171,10 +171,12 @@ static const struct file_operations sassy_log_ops = {
 };
 
 
-static int init_logger_out(struct proto_instance *slog)
+static int init_logger_out(struct proto_instance *ins)
 {
 	int err;
 	char name_buf[MAX_SASSY_PROC_NAME];
+	struct sassy_logger *slog = &ins->logger;
+
 
 	if (!slog) {
 		err = -ENOMEM;
