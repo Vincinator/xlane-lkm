@@ -140,7 +140,7 @@ int consensus_clean(struct proto_instance *ins)
 			kfree(priv->sm_log.entries[i]);
 	}
 
-	kfree(priv->sm_log.entries);
+	// kfree(priv->sm_log.entries);
 
 	remove_eval_ctrl_interfaces(priv);
 	remove_le_config_ctrl_interfaces(priv);

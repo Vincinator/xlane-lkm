@@ -412,7 +412,7 @@ struct proto_instance {
 
 	enum sassy_protocol_type proto_type;
 	
-	struct sassy_logger logger;
+7	struct sassy_logger logger;
 
 	char *name;
 
