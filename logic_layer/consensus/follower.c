@@ -155,7 +155,6 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		}
 	}
 
-
 	return 0;
 
 error:
@@ -166,6 +165,16 @@ error:
 void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx) 
 {
 	int i;
+
+	if(log->last_idx < 0 ){
+		sassy_dbg("Log already empty.");
+		return;
+	}
+
+	if(start_idx > log->last_idx ){
+		sassy_dbg("No Items at index of %d", start_idx);
+		return;
+	}
 
 	for(i = start_idx; i <= log->last_idx; i++) {
 		kfree(log->entries[i]);
