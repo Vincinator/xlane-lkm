@@ -108,7 +108,7 @@ void clear_logger(struct proto_instance *ins)
 
 	remove_proc_entry(name_buf, NULL);
 	
-	kfree(slog->events);
+	//kfree(slog->events);
 }
 EXPORT_SYMBOL(clear_logger);
 

@@ -145,7 +145,7 @@ int consensus_clean(struct proto_instance *ins)
 
 	remove_eval_ctrl_interfaces(priv);
 	remove_le_config_ctrl_interfaces(priv);
-	remove_logger_ifaces(ins);
+	clear_logger(ins);
 
 	return 0;
 }
