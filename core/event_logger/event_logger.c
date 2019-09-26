@@ -146,7 +146,7 @@ static int sassy_log_show(struct seq_file *m, void *v)
 	struct sassy_logger *slog =
 		(struct sassy_logger *)m->private;
 
-	BUG_ON(!slog);
+	//BUG_ON(!slog);
 
 	for (i = 0; i < slog->current_entries; i++)
 		seq_printf(m, "%d, %llu\n", 
