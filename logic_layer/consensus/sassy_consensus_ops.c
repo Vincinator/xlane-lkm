@@ -135,7 +135,7 @@ int consensus_clean(struct proto_instance *ins)
 	le_state_transition_to(priv, LE_UNINIT);
 
 
-	for(i = 0; i < MAX_CONSENSUS_LOG; i++) {
+	for(i = 0; i < priv->sm_log.last_idx; i++) {
 		if(priv->sm_log.entries[i] != NULL)
 			kfree(priv->sm_log.entries[i]);
 	}
