@@ -442,8 +442,9 @@ void clear_protocol_instances(struct sassy_device *sdev)
 		if(sdev->protos[idx]->ctrl_ops.clean != NULL)
 			sdev->protos[idx]->ctrl_ops.clean(sdev->protos[idx]);
 
-		kfree(sdev->protos[idx]->proto_data);
-		kfree(sdev->protos[idx]);
+		// timer are not finished yet!?
+		//kfree(sdev->protos[idx]->proto_data);
+		//kfree(sdev->protos[idx]);
 	}
 
 	sdev->num_of_proto_instances = 0;
