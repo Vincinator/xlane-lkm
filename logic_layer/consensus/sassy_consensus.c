@@ -151,19 +151,22 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 #endif	
 			return 0;
 		} else {
+			sassy_dbg("priv->sm_log.last_idx %d", priv->sm_log.last_idx);
 			// if local log is empty, just accept the vote!
 			if(priv->sm_log.last_idx == -1)
 				return 1;
 
-			// candidates log is at least as up to date as the local log!
-			if(param3 >= priv->sm_log.last_idx){
-				// Terms of previous log item must match with lastLogTerm of Candidate
-				if(priv->sm_log.entries[param3] != NULL && 
-						priv->sm_log.entries[param3]->term == param4){
-					return 1;
-				}
+			// Safety Check during development & Debugging..
+			if(priv->sm_log.entries[priv->sm_log.last_idx] == NULL){
+				sassy_dbg("BUG! Log is faulty can not grant any votes. /n");
+				return 0;
 			}
 
+			// candidates log is at least as up to date as the local log!
+			if(param3 >= priv->sm_log.last_idx)
+				// Terms of previous log item must match with lastLogTerm of Candidate
+				if(priv->sm_log.entries[priv->sm_log.last_idx]->term == param4)
+					return 1;
 		}
 	}
 }
@@ -187,6 +190,8 @@ void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, u32 p2, u32 
 
 	param4 = GET_CON_PROTO_PARAM4_PTR(pkt);
 	*param4 = (u32) p4;
+
+	sassy_dbg("gen pkt with params p1=%d, p2=%d, p3=%d, p4=%d", p1, p2, p3, p4);
 
 }
 
@@ -220,17 +225,14 @@ struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
 	if(!ins)
 		goto error;
 	
-
 	ins->proto_type = SASSY_PROTO_CONSENSUS;
 	ins->ctrl_ops = consensus_ops;
 	ins->name = "consensus";
 	ins->logger.name = "consensus";
 	ins->logger.ifindex = sdev->ifindex;
 	
-
 	ins->proto_data = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
 	
-
 	cpriv = (struct consensus_priv *)ins->proto_data;
 	cpriv->state = LE_UNINIT;
 	cpriv->ft_min = MIN_FTIMEOUT_NS;
@@ -241,7 +243,6 @@ struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
 	cpriv->sdev = sdev;
 	cpriv->ins = ins;
 	
-
 	return ins;
 error:
 	sassy_dbg("Error in %s", __FUNCTION__);

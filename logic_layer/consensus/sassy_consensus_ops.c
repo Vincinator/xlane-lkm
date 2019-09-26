@@ -30,14 +30,11 @@ int consensus_init(struct proto_instance *ins)
 	
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
 	
-
 	if(!priv->sm_log.entries){
 		sassy_dbg("Not enough memory for log of size %d", MAX_CONSENSUS_LOG);
 		BUG();
 	}
 	
-
-
 	init_le_config_ctrl_interfaces(priv);
 	
 

@@ -288,10 +288,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		break;
 	case NOMI:	
 			
-			// if(check_handle_nomination(priv, param1, param2, param3, param4)){
-			// 	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
-			// 	reset_ftimeout(ins);
-			// }
+			 if(check_handle_nomination(priv, param1, param2, param3, param4)){
+			 	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
+				reset_ftimeout(ins);
+			 }
 			
 		break;	
 	case NOOP:
