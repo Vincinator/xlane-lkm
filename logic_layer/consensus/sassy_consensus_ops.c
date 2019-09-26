@@ -3,6 +3,8 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 
+#include <linux/proc_fs.h>
+
 #include <sassy/consensus.h>
 #include "include/sassy_consensus_ops.h"
 #include "include/candidate.h"
@@ -37,7 +39,7 @@ int consensus_init(struct proto_instance *ins)
 	}
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d", 
-			 sdev->ifindex, ins->instance_id);
+			 priv->sdev->ifindex, ins->instance_id);
 	
 	proc_mkdir(name_buf, NULL);	
 
