@@ -432,12 +432,16 @@ void clear_protocol_instances(struct sassy_device *sdev)
 	}
 
 	for(idx = 0; idx < sdev->num_of_proto_instances; idx++) {
+		
 		if(!sdev->protos[idx])
 			continue;
-		if(sdev->protos[idx]->ctrl_ops.stop)
+		
+		if(sdev->protos[idx]->ctrl_ops.stop != NULL)
 			sdev->protos[idx]->ctrl_ops.stop(sdev->protos[idx]);
-		if(sdev->protos[idx]->ctrl_ops.clean)
+
+		if(sdev->protos[idx]->ctrl_ops.clean != NULL)
 			sdev->protos[idx]->ctrl_ops.clean(sdev->protos[idx]);
+
 		kfree(sdev->protos[idx]->proto_data);
 		kfree(sdev->protos[idx]);
 	}
