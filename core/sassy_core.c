@@ -106,7 +106,6 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	u16 cur_offset;
 	struct proto_instance *cur_ins;
 	
-	sassy_dbg("recursion. instances %d bcnt %d", instances, bcnt);
 
 	/* bcnt <= 0: 
 	 *		no payload left to handle
@@ -117,17 +116,26 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 	if(instances <= 0 || bcnt <= 0){
 		return;
 	}
-	
+
+	if(sdev->verbose >= 3)
+		sassy_dbg("recursion. instances %d bcnt %d", instances, bcnt);
+
 	cur_proto_id = GET_PROTO_TYPE_VAL(payload);
-	sassy_dbg("cur_proto_id %d", cur_proto_id);
+	
+	if(sdev->verbose >= 3)
+		sassy_dbg("cur_proto_id %d", cur_proto_id);
+	
 	cur_offset = GET_PROTO_OFFSET_VAL(payload);
-	sassy_dbg("cur_offset %d", cur_offset);
+	
+	if(sdev->verbose >= 3)
+		sassy_dbg("cur_offset %d", cur_offset);
 
 	cur_ins = get_proto_instance(sdev, cur_proto_id);
 	
 	// check if instance for the given protocol id exists
 	if(!cur_ins) {
-		sassy_dbg("No instance for protocol id %d were found\n", cur_proto_id);
+		if(sdev->verbose >= 3)
+			sassy_dbg("No instance for protocol id %d were found\n", cur_proto_id);
 	} else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
 	}
