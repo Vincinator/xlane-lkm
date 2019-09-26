@@ -124,6 +124,8 @@ int consensus_clean(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 	u32 i;
+	char name_buf[MAX_SASSY_PROC_NAME];
+
 
 	if(consensus_is_alive(priv)){
 		sassy_dbg("Consensus is running, stop it first.\n");
@@ -135,26 +137,29 @@ int consensus_clean(struct proto_instance *ins)
 	le_state_transition_to(priv, LE_UNINIT);
 
 	remove_eval_ctrl_interfaces(priv);
-	sassy_dbg("removed eval_ctrl\n");
 
 	remove_le_config_ctrl_interfaces(priv);
-	sassy_dbg("removed le_config\n");
 
 	clear_logger(ins);
-	sassy_dbg("removed logger\n");
+
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d", 
+		 priv->sdev->ifindex, ins->instance_id);
+	
+	remove_proc_entry(name_buf, NULL);	
 
 	sassy_dbg("last_idx of sm log is %d\n", priv->sm_log.last_idx);
 
-	if(priv->sm_log.last_idx != -1){
+	if(priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG ){
 		for(i = 0; i < priv->sm_log.last_idx; i++) {
 			if(priv->sm_log.entries[i] != NULL)
 				kfree(priv->sm_log.entries[i]);
 		}
-	}else {
+	} else {
 		sassy_dbg("last_idx is -1, no logs to clean.\n");
 	}
 
 	kfree(priv->sm_log.entries);
+
 
 	return 0;
 }

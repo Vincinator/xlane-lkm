@@ -467,17 +467,12 @@ void clear_protocol_instances(struct sassy_device *sdev)
 			sassy_dbg(" Clean of Protocol done\n");
 
 		}
-		sassy_dbg("Pre Free\n");
 
 		// timer are not finished yet!?
 		kfree(sdev->protos[i]->proto_data);
 		
-		sassy_dbg("Half Free\n");
 
 		kfree(sdev->protos[i]);
-
-		sassy_dbg("Post Free\n");
-
 
 	}
 	sassy_dbg("done clean. num of proto instances: %d\n", sdev->num_of_proto_instances);
