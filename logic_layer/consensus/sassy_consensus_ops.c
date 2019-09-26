@@ -123,7 +123,7 @@ int consensus_clean(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
-	int i;
+	u32 i;
 
 	if(consensus_is_alive(priv)){
 		sassy_dbg("Consensus is running, stop it first.\n");
@@ -143,15 +143,18 @@ int consensus_clean(struct proto_instance *ins)
 	clear_logger(ins);
 	sassy_dbg("removed logger\n");
 
-	if(priv->sm_log.last_idx
+	sassy_dbg("last_idx of sm log is %d\n", priv->sm_log.last_idx);
 
-	for(i = 0; i < priv->sm_log.last_idx; i++) {
-		if(priv->sm_log.entries[i] != NULL)
-		// 	kfree(priv->sm_log.entries[i]);
+	if(priv->sm_log.last_idx != -1){
+		for(i = 0; i < priv->sm_log.last_idx; i++) {
+			if(priv->sm_log.entries[i] != NULL)
+				kfree(priv->sm_log.entries[i]);
+		}
+	}else {
+		sassy_dbg("last_idx is -1, no logs to clean.\n");
 	}
 
-	// kfree(priv->sm_log.entries);
-
+	kfree(priv->sm_log.entries);
 
 	return 0;
 }
