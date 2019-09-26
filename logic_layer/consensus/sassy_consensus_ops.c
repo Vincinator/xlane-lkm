@@ -134,6 +134,9 @@ int consensus_clean(struct proto_instance *ins)
 
 	le_state_transition_to(priv, LE_UNINIT);
 
+	remove_eval_ctrl_interfaces(priv);
+	remove_le_config_ctrl_interfaces(priv);
+	clear_logger(ins);
 
 	for(i = 0; i < priv->sm_log.last_idx; i++) {
 		if(priv->sm_log.entries[i] != NULL)
@@ -142,9 +145,6 @@ int consensus_clean(struct proto_instance *ins)
 
 	// kfree(priv->sm_log.entries);
 
-	remove_eval_ctrl_interfaces(priv);
-	remove_le_config_ctrl_interfaces(priv);
-	clear_logger(ins);
 
 	return 0;
 }
