@@ -52,7 +52,6 @@ int consensus_init(struct proto_instance *ins)
 	// requires "proto_instances/%d"
 	init_logger(ins);
 	
-
 	return 0;
 }
 
