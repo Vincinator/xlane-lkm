@@ -155,6 +155,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		}
 	}
 
+
 	return 0;
 
 error:

@@ -143,10 +143,10 @@ int consensus_clean(struct proto_instance *ins)
 	clear_logger(ins);
 	sassy_dbg("removed logger\n");
 
-	for(i = 0; i < priv->sm_log.last_idx; i++) {
-		sassy_dbg("i %d\n", i);
+	if(priv->sm_log.last_idx
 
-		// if(priv->sm_log.entries[i] != NULL)
+	for(i = 0; i < priv->sm_log.last_idx; i++) {
+		if(priv->sm_log.entries[i] != NULL)
 		// 	kfree(priv->sm_log.entries[i]);
 	}
 
