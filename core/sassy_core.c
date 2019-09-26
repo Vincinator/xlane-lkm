@@ -148,7 +148,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 		sassy_error("sdev is NULL\n");
 		return;
 	}	
-	sassy_dbg("Payload size: %d, state: %d %s %i", cqe_bcnt, sdev->pminfo.state, __FUNCTION__, __LINE__);
+	
+	//sassy_dbg("Payload size: %d, state: %d %s %i", cqe_bcnt, sdev->pminfo.state, __FUNCTION__, __LINE__);
 
     if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
