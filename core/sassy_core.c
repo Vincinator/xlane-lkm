@@ -321,7 +321,7 @@ int sassy_core_register_nic(int ifindex)
 	init_timestamping(score->sdevices[sassy_id]);
 
 	/* Initialize logger base for NIC */
-	init_log_ctrl_base(score->sdevices[sassy_id]);
+	//init_log_ctrl_base(score->sdevices[sassy_id]);
 
 	/*  Initialize protocol instance controller */
 	init_proto_instance_ctrl(score->sdevices[sassy_id]);

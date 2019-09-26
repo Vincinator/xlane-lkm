@@ -181,6 +181,8 @@ struct sassy_logger {
 
 	int ifindex; 
 
+	int instance_id;
+
 	enum logger_state state;
 
 	char *name;
@@ -529,8 +531,8 @@ void init_log_ctrl_base(struct sassy_device *sdev);
 void init_logger_ctrl(struct sassy_logger *slog);
 
 
-int init_logger(struct sassy_logger *slog);
-void clear_logger(struct sassy_logger *slog);
+int init_logger(struct proto_instance *ins);
+void clear_logger(struct proto_instance *ins);
 
 int sassy_log_stop(struct sassy_logger *slog);
 int sassy_log_start(struct sassy_logger *slog);
@@ -539,7 +541,7 @@ int sassy_log_reset(struct sassy_logger *slog);
 const char *logger_state_string(enum logger_state state);
 char *le_state_name(struct sassy_device *sdev);
 void set_all_targets_dead(struct sassy_device *sdev);
-void remove_logger_ifaces(struct sassy_logger *slog);
+void remove_logger_ifaces(struct proto_instance *ins);
 
 void init_proto_instance_ctrl(struct sassy_device *sdev);
 void remove_proto_instance_ctrl(struct sassy_device *sdev);

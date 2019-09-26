@@ -239,7 +239,6 @@ struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
 	cpriv->ft_max = MAX_FTIMEOUT_NS;
 	cpriv->ct_min = MIN_CTIMEOUT_NS;
 	cpriv->ct_max = MAX_CTIMEOUT_NS;
-	cpriv->le_config_procfs = NULL;
 	cpriv->sdev = sdev;
 	cpriv->ins = ins;
 	

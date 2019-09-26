@@ -124,11 +124,10 @@ void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/le_config", priv->sdev->ifindex);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/le_config",
+			 priv->sdev->ifindex, priv->ins->instance_id);
 	
-	priv->le_config_procfs =
-					proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, 
-							&sassy_le_config_ops, priv);
+	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_le_config_ops, priv);
 	
 
 }
@@ -138,7 +137,8 @@ void remove_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/le_config", priv->sdev->ifindex);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/le_config",
+			 priv->sdev->ifindex, priv->ins->instance_id);
 	
 	remove_proc_entry(name_buf, NULL);
 

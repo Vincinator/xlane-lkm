@@ -171,7 +171,7 @@ static const struct file_operations sassy_log_ops = {
 };
 
 
-static int init_logger_out(struct sassy_logger *slog)
+static int init_logger_out(struct proto_instance *slog)
 {
 	int err;
 	char name_buf[MAX_SASSY_PROC_NAME];
@@ -182,8 +182,8 @@ static int init_logger_out(struct sassy_logger *slog)
 		goto error;
 	}
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/%s",
-		 slog->ifindex, slog->name);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log",
+		 ins->logger.ifindex, ins->instance_id);
 
 
 	proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL, &sassy_log_ops, slog);
@@ -196,16 +196,17 @@ error:
 }
 
 
-int init_logger(struct sassy_logger *slog) 
+int init_logger(struct proto_instance *ins) 
 {
 	int err;
 	int i;
+	struct sassy_logger *slog = &ins->logger;
 
 	err = 0;
 
-	if (!slog) {
+	if (!ins||!slog) {
 		err = -EINVAL;
-		sassy_error(" logger device is NULL %s\n", __FUNCTION__);
+		sassy_error(" ins or logger device is NULL %s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -220,9 +221,9 @@ int init_logger(struct sassy_logger *slog)
 	
 	slog->current_entries = 0;
 
-	init_logger_out(slog);
+	init_logger_out(ins);
 
-	init_logger_ctrl(slog);
+	init_logger_ctrl(ins);
 
 	logger_state_transition_to(slog, LOGGER_READY);
 
@@ -230,15 +231,19 @@ error:
 	return err;
 }
 
-void remove_logger_ifaces(struct sassy_logger *slog)
+void remove_logger_ifaces(struct proto_instance *ins)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
+	struct sassy_logger *slog = &ins->logger;
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/%s", slog->ifindex, slog->name);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log",
+			 slog->ifindex, slog->instance_id);
 	
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/log/ctrl_%s", slog->ifindex, slog->name);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/ctrl",
+			 slog->ifindex, slog->instance_id);
+
 	remove_proc_entry(name_buf, NULL);
 }
 EXPORT_SYMBOL(remove_logger_ifaces);

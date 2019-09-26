@@ -15,7 +15,8 @@ int consensus_init(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
-	
+	char name_buf[MAX_SASSY_PROC_NAME];
+
 	priv->ctimer_init = 0;
 	priv->ftimer_init = 0;
 	priv->voted = -1;
@@ -34,14 +35,20 @@ int consensus_init(struct proto_instance *ins)
 		sassy_dbg("Not enough memory for log of size %d", MAX_CONSENSUS_LOG);
 		//BUG();
 	}
+
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d", 
+			 sdev->ifindex, ins->instance_id);
 	
+	proc_mkdir(name_buf, NULL);	
+
+	// requires "proto_instances/%d"
 	init_le_config_ctrl_interfaces(priv);
 	
-
+	// requires "proto_instances/%d"
 	init_eval_ctrl_interfaces(priv);
 	
-
-	init_logger(&ins->logger);
+	// requires "proto_instances/%d"
+	init_logger(ins);
 	
 
 	return 0;
@@ -123,7 +130,7 @@ int consensus_clean(struct proto_instance *ins)
 	}
 
 	sassy_dbg("cleaning consensus\n");
-	
+
 	le_state_transition_to(priv, LE_UNINIT);
 
 
@@ -136,7 +143,7 @@ int consensus_clean(struct proto_instance *ins)
 
 	remove_eval_ctrl_interfaces(priv);
 	remove_le_config_ctrl_interfaces(priv);
-	remove_logger_ifaces(&ins->logger);
+	remove_logger_ifaces(ins);
 
 	return 0;
 }
