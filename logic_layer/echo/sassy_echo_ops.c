@@ -40,7 +40,7 @@ int echo_clean(struct proto_instance *ins)
 		(struct sassy_echo_priv *)ins->proto_data;
 
 	sassy_dbg("echo clean");
-	clear_logger(&ins->logger);
+	clear_logger(ins);
 
 	return 0;
 }
