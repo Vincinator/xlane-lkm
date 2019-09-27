@@ -171,7 +171,7 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 	}
 }
 
-void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, s32 p2, s32 p3, s32 p4)
+void set_le_opcode(unsigned char *pkt, enum le_opcode opco, s32 p1, s32 p2, s32 p3, s32 p4)
 {
 	u16 *opcode;
 	u32 *param1;

@@ -156,7 +156,7 @@ ktime_t get_rnd_timeout_candidate(void);
 ktime_t get_rnd_timeout_plus(int plus);
 ktime_t get_rnd_timeout_candidate_plus(int plus);
 
-void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2, u32 p3, u32 p4);
+void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, s32 p1, s32 p2, s32 p3, s32 p4);
 
 void set_ae_data(unsigned char *pkt, 
 				 s32 in_term, 
