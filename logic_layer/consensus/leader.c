@@ -125,16 +125,16 @@ int start_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
 	struct sassy_payload *pkt_payload;
-	int hb_passive_ix;
+	int hb_passive_ix, i;
 	
 	initialze_indices(priv);
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
 		hb_passive_ix =
-		     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
+		     !!!spminfo->pm_targets[i].pkt_data.hb_active_ix;
 
 		pkt_payload =
-	     	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
+	     	spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_ix];
 
 		setup_append_msg(priv, pkt_payload, ins->instance_id, i);
 	}
