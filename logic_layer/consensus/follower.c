@@ -110,12 +110,15 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
 
 int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_entries, int pkt_size)
 {
-	int i, err, new_total;
+	int i, err, new_last;
 	u32 *cur_ptr;
 	struct sm_command *cur_cmd;
 	struct state_machine_cmd_log *log = &priv->sm_log;
 
-	if(log->last_idx + num_entries >= log->max_entries) {
+
+	new_last = log->last_idx + num_entries;
+
+	if(new_last >= MAX_CONSENSUS_LOG) {
 		sassy_dbg("Local log is full!\n");
 		err = -ENOMEM;
 		goto error;
@@ -128,10 +131,9 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		goto error;
 	}
 
-	new_total = log->last_idx + num_entries;
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	for(i = log->last_idx; i < new_total; i++){
+	for(i = log->last_idx + 1; i <= new_last; i++){
  		
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
@@ -225,7 +227,7 @@ out:
 }
 
 
-int _check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx)
+int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx)
 {
 
 	if(prev_log_term < 0)

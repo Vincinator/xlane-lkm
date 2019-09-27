@@ -78,7 +78,7 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, in
 	}
 
 	// mind the off by one counting.. last_idx starts at 0
-	if(log->max_entries == last_idx + 1){
+	if(MAX_CONSENSUS_LOG <= last_idx + 1){
 		err = -ENOMEM;
 		sassy_error("Log is full\n");
 		goto error;
