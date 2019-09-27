@@ -14,16 +14,12 @@ void initialze_indices(struct consensus_priv *priv)
 {
 	int i;
 
-
 	for(i = 0; i < MAX_NODE_ID; i++){
 		// initialize to leader last log index + 1
 		priv->sm_log.next_index[i] = priv->sm_log.last_idx + 1;
 		priv->sm_log.match_index[i] = 0;
 	}
-	sassy_dbg("initialized indices\n");
 }
-
-
 
 
 int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
@@ -130,10 +126,18 @@ int start_leader(struct proto_instance *ins)
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
 	struct sassy_payload *pkt_payload;
 	int hb_passive_ix;
-
+	
 	initialze_indices(priv);
 
-	setup_append_msg(priv, ins->instance_id);
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
+		hb_passive_ix =
+		     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
+
+		pkt_payload =
+	     	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
+
+		setup_append_msg(priv, pkt_payload, ins->instance_id);
+	}
 
 	return 0;
 }

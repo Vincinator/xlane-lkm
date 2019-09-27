@@ -159,7 +159,7 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 }
 
 
-void setup_append_msg(struct consensus_priv *cur_priv, int instance_id)
+void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spay, int instance_id)
 {
 	s32 num_entries, match_index, next_index, cur_index;
 	s32 prev_log_idx, prev_log_term, leader_commit_idx;
@@ -208,8 +208,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, int instance_id)
 
 	// reserve space in sassy heartbeat for consensus LEAD
 	pkt_payload_sub =
-		sassy_reserve_proto(instance_id,
-						spay,
+		sassy_reserve_proto(instance_id, spay,
 						SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
 
 	set_ae_data(pkt_payload_sub, 
