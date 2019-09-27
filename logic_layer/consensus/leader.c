@@ -30,9 +30,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	struct sassy_device *sdev = priv->sdev;
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
-	s32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-	s32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
-	s32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
+	s32 param1, param2, param3;
 	//s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
 #if 0
@@ -51,6 +49,9 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		// param1 intepreted as last term of follower
 		// param2 interpreted as success 
 		// param3 contains last idx in follower log 
+		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 
 		// check if success
 
@@ -79,6 +80,8 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		break;
 
 	case APPEND:
+		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+
 		if(param1 > priv->term){
 #if 0
 			if(sdev->verbose >= 2)

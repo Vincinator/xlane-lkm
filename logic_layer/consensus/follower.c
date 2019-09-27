@@ -317,14 +317,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
-	struct sassy_device *sdev = priv->sdev;
+	//struct sassy_device *sdev = priv->sdev;
 	
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
-	s32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-	s32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
-	s32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
-	s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
-	
+	s32 param1, param2, param3, param4;
 
 #if 0
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
@@ -336,21 +332,22 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		// param3 interpreted as lastLogIndex of Candidate
 		// param4 interpreted as lastLogTerm of Candidate
 	case VOTE:
-		
 		break;
 	case NOMI:	
-			
-			 if(check_handle_nomination(priv, param1, param2, param3, param4)){
-			 	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
-				reset_ftimeout(ins);
-			 }
-			
+	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt)
+		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
+		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
+		
+		 if(check_handle_nomination(priv, param1, param2, param3, param4)){
+		 	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
+			reset_ftimeout(ins);
+		 }
 		break;	
 	case NOOP:
-		
 		break;
 	case APPEND:
-		
+	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt)
 		/* Received a LEAD operation from a node with a higher term, 
 		 * thus this node is accepting the node as new leader.
 		 */
