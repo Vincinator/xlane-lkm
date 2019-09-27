@@ -175,7 +175,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 
-	 		if(unlikely(_log_is_faulty(cur_priv)){
+	 		if(unlikely(_log_is_faulty(cur_priv))) {
 	 			sassy_dbg("Log is faulty or not initialized.\n");
 	 			continue;
 	 		}
