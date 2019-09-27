@@ -64,19 +64,19 @@ struct sm_log_entry {
 
 struct state_machine_cmd_log {
 
-	u32 next_index[MAX_NODE_ID];
+	s32 next_index[MAX_NODE_ID];
 
-	u32 match_index[MAX_NODE_ID];
+	s32 match_index[MAX_NODE_ID];
 
-	u32 last_applied;
+	s32 last_applied;
 
 	/* Index of the last valid entry in the entries array
 	 */
-	u32 last_idx;
+	s32 last_idx;
 
 	/* Index of the last commited entry in the entries array 
 	 */
-	u32 commit_idx;
+	s32 commit_idx;
 
 	/* Maximum index of the entries array
 	 */
@@ -159,11 +159,11 @@ ktime_t get_rnd_timeout_candidate_plus(int plus);
 void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, u32 p1, u32 p2, u32 p3, u32 p4);
 
 void set_ae_data(unsigned char *pkt, 
-				 u32 in_term, 
-				 u32 in_leaderid,
-				 u32 in_prevLogIndex,
-				 u32 in_prevLogTerm,
-				 u32 in_leaderCommitIdx,
+				 s32 in_term, 
+				 s32 in_leaderid,
+				 s32 in_prevLogIndex,
+				 s32 in_prevLogTerm,
+				 s32 in_leaderCommitIdx,
 				 struct sm_log_entry **entries, 
 				 int num_of_entries);
 
@@ -171,7 +171,7 @@ void set_ae_data(unsigned char *pkt,
 
 void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u32 term);
 int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode);
-int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, u32 param1, u32 param2, u32 param3, u32 param4);
+int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, s32 param1, s32 param2, s32 param3, s32 param4);
 int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_id, struct sm_command *cmd_array, int num_of_entries);
 
 

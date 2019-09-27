@@ -249,18 +249,6 @@ struct protocol_payload {
 };
 
 
-struct le_payload {
-	u16 proto_type;
-	u16 offset;
-
-	u16 opcode;
-	u32 param1;
-	u32 param2;
-};
-
-
-
-
 struct sassy_payload {
 	
 	/* The number of protocols that are included in this payload.

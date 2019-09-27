@@ -53,8 +53,8 @@ const char *opcode_string(enum le_opcode opcode)
 		return "Nomination";
 	case NOOP:
 		return "Noop";
-	case LEAD:
-		return "Lead";
+	case APPEND:
+		return "Append";
 	default:
 		return "Unknown State ";
 	}
@@ -95,17 +95,17 @@ ktime_t get_rnd_timeout(int min, int max)
 }
 
 void set_ae_data(unsigned char *pkt, 
-				 u32 in_term, 
-				 u32 in_leader_id,
-				 u32 in_prevLogIndex,
-				 u32 in_prevLogTerm,
-				 u32 in_leaderCommitIdx,
+				 s32 in_term, 
+				 s32 in_leader_id,
+				 s32 in_prevLogIndex,
+				 s32 in_prevLogTerm,
+				 s32 in_leaderCommitIdx,
 				 struct sm_log_entry **entries, 
 				 int num_of_entries)
 {
 	u16 *opcode;
-	u32 *term, *leader_id, *prev_log_idx, *prev_log_term, *leader_commit_idx;
-	u32 *included_entries;
+	s32 *prev_log_idx, *leader_commit_idx;
+	u32 *included_entries, *term, *prev_log_term, *leader_id;
 	int i;
 	u32 *cur_ptr;
 

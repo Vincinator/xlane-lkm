@@ -228,7 +228,8 @@ out:
 
 void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id)
 {
-	u32 *prev_log_term, *prev_log_idx, *leader_commit_idx, *num_entries;
+	u32 *prev_log_term, *num_entries;
+	s32 *prev_log_idx, *leader_commit_idx;
 	int append_success;
 	u16 pkt_size;
 	u32 check;
@@ -357,7 +358,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		else {
 #if 1
 			if(sdev->verbose >= 2)
-				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);
+				sassy_dbg("Received APPEND from leader with lower term=%u\n", param1);
 #endif
 			// Ignore this LEAD message, let the ftimer continue. 
 		}
