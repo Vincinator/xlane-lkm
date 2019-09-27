@@ -41,7 +41,6 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 #endif 
 
 	switch(opcode){
-
 	case VOTE:
 		break;
 	case NOMI:
