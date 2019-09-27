@@ -186,7 +186,7 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 }
 
 
-u32 check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u32 prev_log_idx) 
+u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u32 prev_log_idx) 
 {
 	u32 ret = 0; // 0 := all good.
 	struct sm_log_entry *entry;
@@ -225,6 +225,21 @@ out:
 }
 
 
+int _check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx)
+{
+
+	if(prev_log_term < 0)
+		return -EINVAL;
+
+	if(prev_log_idx < 0 || prev_log_idx > MAX_CONSENSUS_LOG)
+		return -EINVAL;
+
+	if(pkt_size < 0 || pkt_size > SASSY_PROTO_CON_AE_BASE_SZ + (MAX_ENTRIES_PER_PKT * AE_ENTRY_SIZE))
+		return -EINVAL;
+
+	return 1;
+}
+
 void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id)
 {
 	u32 *prev_log_term, *num_entries;
@@ -238,15 +253,15 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
 
-	if(!_validate_append_rpc(pkt_size, prev_log_term, prev_log_idx)){
+	if(_check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx)){
 		sassy_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
-				  pkt_size, prev_log_term, prev_log_idx);
+				  pkt_size, *prev_log_term, *prev_log_idx);
 		goto reply_false;
 	}
 
-	if(check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)){
+	if(_check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)){
 		sassy_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n", 
-				  prev_log_term, prev_log_idx, priv->sm_log.last_idx);
+				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
 		goto reply_false;
 	}
 
