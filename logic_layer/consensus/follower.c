@@ -239,7 +239,7 @@ int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx)
 	if(pkt_size < 0 || pkt_size > SASSY_PROTO_CON_AE_BASE_SZ + (MAX_ENTRIES_PER_PKT * AE_ENTRY_SIZE))
 		return -EINVAL;
 
-	return 1;
+	return 0;
 }
 
 void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id)
@@ -260,6 +260,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 				  pkt_size, *prev_log_term, *prev_log_idx);
 		goto reply_false;
 	}
+
+	// tested until this line..
 
 	if(_check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)){
 		sassy_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n", 
