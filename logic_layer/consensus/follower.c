@@ -238,7 +238,7 @@ int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx)
 
 void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id)
 {
-	u32 *prev_log_term, *num_entries;
+	u32 *prev_log_term, num_entries;
 	s32 *prev_log_idx, *leader_commit_idx;
 	int append_success;
 	u16 pkt_size;
@@ -247,7 +247,13 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
+	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
+	// nothing to append, 
+	if(num_entries == 0){
+		sassy_dbg("nothing to append.\n");
+		goto no_eply;
+	}
 
 	if(_check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx)){
 		sassy_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
@@ -263,15 +269,15 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_false;
 	}
 
-	num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
 
-	if(*num_entries < 0 || *num_entries > MAX_ENTRIES_PER_PKT){
-		sassy_dbg("invalid num_entries=%d\n", *num_entries);
+
+	if(num_entries < 0 || num_entries > MAX_ENTRIES_PER_PKT){
+		sassy_dbg("invalid num_entries=%d\n", num_entries);
 		goto reply_false;
 	}
 
 	// append entries and if it fails, reply false
-	if(append_commands(priv, pkt, *num_entries, pkt_size)){
+	if(append_commands(priv, pkt, num_entries, pkt_size)){
 		sassy_dbg("append commands failed\n");
 		goto reply_false;
 	}
@@ -300,11 +306,16 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	}
 
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
+	
 	return;
 
 reply_false:
-	
+
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
+
+no_eply:
+
+
 }
 
 

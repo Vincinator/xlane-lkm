@@ -59,7 +59,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		// check if success
 
-		if(param2 != 0){
+		if(param2 == 1){
 			// append rpc success!
 
 			// update match Index for follower with <remote_lid> 

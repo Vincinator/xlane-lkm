@@ -206,7 +206,6 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
 #if 1
-
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 #endif
 	switch(opcode){
@@ -218,10 +217,11 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		// param2 interpreted as candidateID
 		// param3 interpreted as lastLogIndex
 		// param4 interpreted as lastLogTerm
-		// if(check_handle_nomination(priv, param1, param2, param3, param4)){
-		// 	node_transition(ins, FOLLOWER);
-		// 	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
-		// }
+
+		if(check_handle_nomination(priv, param1, param2, param3, param4)){
+		 	node_transition(ins, FOLLOWER);
+		 	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
+		 }
 
 		break;		
 	case NOOP:
