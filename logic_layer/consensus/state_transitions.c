@@ -81,7 +81,7 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 	return 0;
 }
 
-void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u32 term)
+void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, s32 term)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
