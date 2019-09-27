@@ -251,7 +251,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	// nothing to append, 
 	if(num_entries == 0){
-		sassy_dbg("nothing to append.\n");
+		// sassy_dbg("nothing to append.\n");
 		// no reply if nothing to append!
 		return;
 	}
@@ -269,8 +269,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
 		goto reply_false;
 	}
-
-
 
 	if(num_entries < 0 || num_entries > MAX_ENTRIES_PER_PKT){
 		sassy_dbg("invalid num_entries=%d\n", num_entries);
@@ -460,8 +458,7 @@ void reset_ftimeout(struct proto_instance *ins)
 	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 
-#if 1
-
+#if 0
 	sassy_log_le("%s, %llu, %d: Set follower timeout to %lld ms.\n",
 			nstate_string(priv->nstate),
 			rdtsc(),

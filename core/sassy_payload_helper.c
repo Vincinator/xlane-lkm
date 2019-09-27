@@ -158,17 +158,77 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 	return cur_priv->sm_log.entries[idx]->term;
 }
 
+
+void setup_append_msg(struct consensus_priv *cur_priv, int instance_id)
+{
+	s32 num_entries, match_index, next_index, cur_index;
+	s32 prev_log_idx, prev_log_term, leader_commit_idx;
+	int num_of_entries = 0;
+	struct sm_command *cmd_array;
+	char *pkt_payload_sub;
+
+	if(unlikely(_log_is_faulty(cur_priv))) {
+		sassy_dbg("Log is faulty or not initialized.\n");
+		continue;
+	}
+
+	// Check if entries must be appended
+	cur_index = _get_last_idx_safe(cur_priv);
+	next_index = _get_next_idx(cur_priv, target_id); 
+
+	if(next_index == -1){
+		sassy_dbg("Invalid target id resulted in invalid next_index!\n");
+		continue;
+	}
+
+	prev_log_idx = _get_prev_log_term(cur_priv, next_index - 1);
+
+	leader_commit_idx = cur_priv->sm_log.commit_idx;
+
+	if(cur_index >= next_index){
+		sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d\n", 
+			cur_index, next_index, match_index, prev_log_term);
+			
+		// Facts:
+		//	- cur_index >= next_index
+		//  - Must include entries in next consensus append message
+		//  - thus, num_of_entries will not be 0
+
+		// Decide how many entries to update for the current target
+		num_entries = (MAX_ENTRIES_PER_PKT < next_index - cur_index) ? 
+				MAX_ENTRIES_PER_PKT : next_index - cur_index ;
+
+		// update next_index without receiving the response from the target
+		// .. If the receiver rejects this append command, this node will set the 
+		// .. the next_index to the last known safe index of the receivers log.
+		// .. In this implementation the receiver sends the last known safe index
+		// .. with the append reply.
+		cur_priv->sm_log.next_index[target_id] += num_entries + 1;
+	}
+
+	// reserve space in sassy heartbeat for consensus LEAD
+	pkt_payload_sub =
+		sassy_reserve_proto(instance_id,
+						spay,
+						SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
+
+	set_ae_data(pkt_payload_sub, 
+			cur_priv->term, 
+ 	 		cur_priv->node_id,
+	 		next_index - 1, // previous is one before the "this should be send next" index
+	 		prev_log_term,
+	 		leader_commit_idx,
+	 		cur_priv, 
+	 		num_of_entries);
+}
+EXPORT_SYMBOL(setup_append_msg)
+
+
 /* Must be called after the sassy packet has been emitted. 
  */
 void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay, int target_id)
 {
-	struct consensus_priv *cur_priv;
-	struct pminfo *spminfo = &sdev->pminfo;
-	struct sm_command *cmd_array;
-	char *pkt_payload_sub;
-	s32 num_entries, match_index, next_index, cur_index;
-	s32 prev_log_idx, prev_log_term, leader_commit_idx;
-	int num_of_entries;
+	struct consensus_priv *cur_priv;	
 	int i;
 
 	// free previous piggybacked protocols
@@ -177,8 +237,6 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for(i = 0; i < sdev->num_of_proto_instances; i++){
 		
-		num_entries = 0;
-
 		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
 	 		
 	 		// get corresponding local instance data for consensus
@@ -188,59 +246,8 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 
-	 		if(unlikely(_log_is_faulty(cur_priv))) {
-	 			sassy_dbg("Log is faulty or not initialized.\n");
-	 			continue;
-	 		}
-
-	 		// Check if entries must be appended
-	 		cur_index = _get_last_idx_safe(cur_priv);
-	 		next_index = _get_next_idx(cur_priv, target_id); 
-
-	 		if(next_index == -1){
-	 			sassy_dbg("Invalid target id resulted in invalid next_index!\n");
-	 			continue;
-	 		}
-
-	 		prev_log_idx = _get_prev_log_term(cur_priv, next_index - 1);
-
-	 		leader_commit_idx = cur_priv->sm_log.commit_idx;
-
-			if(cur_index >= next_index){
-				sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d\n", 
-					cur_index, next_index, match_index, prev_log_term);
-	 			
-				// Facts:
-				//	- cur_index >= next_index
-				//  - Must include entries in next consensus append message
-				//  - thus, num_of_entries will not be 0
-
-				// Decide how many entries to update for the current target
-				num_entries = (MAX_ENTRIES_PER_PKT < next_index - cur_index) ? 
-						MAX_ENTRIES_PER_PKT : next_index - cur_index ;
-
-				// update next_index without receiving the response from the target
-				// .. If the receiver rejects this append command, this node will set the 
-				// .. the next_index to the last known safe index of the receivers log.
-				// .. In this implementation the receiver sends the last known safe index
-				// .. with the append reply.
-				cur_priv->sm_log.next_index[target_id] += num_entries + 1;
-	 		}
-
-	 		// reserve space in sassy heartbeat for consensus LEAD
-	 		pkt_payload_sub =
- 				sassy_reserve_proto(sdev->protos[i]->instance_id,
-									spay,
-									SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
- 		
-	 		set_ae_data(pkt_payload_sub, 
-						cur_priv->term, 
-			 	 		cur_priv->node_id,
-				 		next_index - 1, // previous is one before the "this should be send next" index
-				 		prev_log_term,
-				 		leader_commit_idx,
-				 		cur_priv, 
-				 		num_of_entries);
+	 		setup_append_msg(cur_priv, sdev->protos[i]->instance_id);
+	 		
 		}
 	}
 }

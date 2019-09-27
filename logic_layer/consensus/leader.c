@@ -127,15 +127,14 @@ int stop_leader(struct proto_instance *ins)
 
 int start_leader(struct proto_instance *ins)
 {
-	struct consensus_priv *priv = 
-		(struct consensus_priv *)ins->proto_data;
+	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
+	struct sassy_payload *pkt_payload;
+	int hb_passive_ix;
 
 	initialze_indices(priv);
 
-	//setup_le_broadcast_msg(ins, APPEND);
+	setup_append_msg(priv, ins->instance_id);
 
-	priv->nstate = LEADER;
-	
 	return 0;
 }
 EXPORT_SYMBOL(start_leader);
