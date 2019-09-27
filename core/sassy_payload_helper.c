@@ -168,7 +168,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 
 	if(unlikely(_log_is_faulty(cur_priv))) {
 		sassy_dbg("Log is faulty or not initialized.\n");
-		continue;
+		return;
 	}
 
 	// Check if entries must be appended
