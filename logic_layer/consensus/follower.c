@@ -267,8 +267,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
 
-	if(num_entries < 0 || num_entries > MAX_ENTRIES_PER_PKT){
-		sassy_dbg("invalid num_entries=%d\n", num_entries);
+	if(*num_entries < 0 || *num_entries > MAX_ENTRIES_PER_PKT){
+		sassy_dbg("invalid num_entries=%d\n", *num_entries);
 		goto reply_false;
 	}
 
