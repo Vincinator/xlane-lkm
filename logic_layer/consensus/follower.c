@@ -252,7 +252,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	// nothing to append, 
 	if(num_entries == 0){
 		sassy_dbg("nothing to append.\n");
-		goto no_eply;
+		// no reply if nothing to append!
+		return;
 	}
 
 	if(_check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx)){
@@ -312,9 +313,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 reply_false:
 
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
-
-no_eply:
-
 
 }
 
