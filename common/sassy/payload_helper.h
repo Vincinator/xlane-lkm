@@ -109,5 +109,5 @@ typedef int(*handle_payload_fun)(struct sassy_device *,
 int get_proto_offset(char *cur);
 char *sassy_get_proto(struct sassy_payload *spay, int n);
 char *sassy_reserve_proto(u16 instance_id, struct sassy_payload *spay, u16 proto_size);
-void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spay, int instance_id);
+void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spay, int instance_id, int target_id);
 void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay, int i);

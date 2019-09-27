@@ -136,7 +136,7 @@ int start_leader(struct proto_instance *ins)
 		pkt_payload =
 	     	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
 
-		setup_append_msg(priv, pkt_payload, ins->instance_id);
+		setup_append_msg(priv, pkt_payload, ins->instance_id, i);
 	}
 
 	return 0;

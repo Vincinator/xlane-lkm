@@ -159,7 +159,7 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 }
 
 
-void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spay, int instance_id)
+void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spay, int instance_id, int target_id)
 {
 	s32 num_entries, match_index, next_index, cur_index;
 	s32 prev_log_idx, prev_log_term, leader_commit_idx;
@@ -244,7 +244,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 
-	 		setup_append_msg(cur_priv, spay, sdev->protos[i]->instance_id);
+	 		setup_append_msg(cur_priv, spay, sdev->protos[i]->instance_id, target_id);
 	 		
 		}
 	}
