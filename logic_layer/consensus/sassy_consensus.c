@@ -113,11 +113,11 @@ void set_ae_data(unsigned char *pkt,
 	int first_idx = in_prevLogIndex + 1;
 
 	// check if num_of_entries would exceed actual entries
-	if(first_idx + (num_of_entries - 1) > priv->sm_log.last_idx){
-		sassy_error("BUG! can not send more entries than the available entries in local log. %d, %d, %d\n",
-					first_idx, num_of_entries, priv->sm_log.last_idx);
-		return;
-	}
+	// if(first_idx + (num_of_entries - 1) > priv->sm_log.last_idx){
+	// 	sassy_error("BUG! can not send more entries than the available entries in local log. %d, %d, %d\n",
+	// 				first_idx, num_of_entries, priv->sm_log.last_idx);
+	// 	return;
+	// }
 
 	opcode = GET_CON_AE_OPCODE_PTR(pkt);
 	*opcode = (u16) APPEND;
@@ -175,9 +175,7 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 		sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
 #endif	
 			return 0;
-		} else {
-			sassy_dbg("priv->sm_log.last_idx %d\n", priv->sm_log.last_idx);
-			
+		} else {			
 			// if local log is empty, just grant the vote!
 			if(priv->sm_log.last_idx == -1)
 				return 1;

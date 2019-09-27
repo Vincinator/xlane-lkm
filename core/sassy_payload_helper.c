@@ -166,19 +166,19 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	int num_of_entries = 0;
 	char *pkt_payload_sub;
 
-	if(unlikely(_log_is_faulty(cur_priv))) {
-		sassy_dbg("Log is faulty or not initialized.\n");
-		return;
-	}
+	// if(unlikely(_log_is_faulty(cur_priv))) {
+	// 	sassy_dbg("Log is faulty or not initialized.\n");
+	// 	return;
+	// }
 
 	// Check if entries must be appended
 	cur_index = _get_last_idx_safe(cur_priv);
 	next_index = _get_next_idx(cur_priv, target_id); 
 
-	if(next_index == -1){
-		sassy_dbg("Invalid target id resulted in invalid next_index!\n");
-		return;
-	}
+	// if(next_index == -1){
+	// 	sassy_dbg("Invalid target id resulted in invalid next_index!\n");
+	// 	return;
+	// }
 
 	prev_log_idx = _get_prev_log_term(cur_priv, next_index - 1);
 
@@ -243,6 +243,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 
+	 		// TODO: optimize append calls that do not contain any log updates
 	 		setup_append_msg(cur_priv, spay, sdev->protos[i]->instance_id, target_id);
 	 		
 		}
