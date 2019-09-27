@@ -193,13 +193,12 @@ u32 check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u
 	struct sm_log_entry *entry;
 
 	if(prev_log_idx < 0){
-		// BUG !?
 		sassy_dbg("BUG! Given prev_log_idx is negative!\n", prev_log_idx);
 		ret = log->last_idx;
 		goto out;
 	}
 
-	if(log->last_idx < prev_log_idx ){
+	if(prev_log_idx > log->last_idx ){
 		sassy_dbg("Entry at index %d does not exist\n", prev_log_idx);
 		ret = log->last_idx;
 		goto out;
@@ -208,7 +207,6 @@ u32 check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u
 	entry = log->entries[prev_log_idx];
 
 	if(entry == NULL) {
-		// BUG !?
 		sassy_dbg("BUG! Entry is NULL at index %d", prev_log_idx);
 		ret = 1;
 		goto out;

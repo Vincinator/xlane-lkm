@@ -156,11 +156,9 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	struct sm_command *cmd_array;
 	int num_of_entries;
 	
-
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
 	
-
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for(i = 0; i < sdev->num_of_proto_instances; i++){
 		
@@ -183,6 +181,12 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		// Check if entries must be appended
 	 		cur_index = _get_last_idx_safe(cur_priv);
 	 		next_index = _get_next_idx(cur_priv, target_id); 
+
+	 		if(next_index == -1){
+	 			sassy_dbg("Invalid target id resulted in invalid next_index!\n");
+	 			continue;
+	 		}
+
 	 		leader_commit_idx = cur_priv->sm_log.commit_idx;
 
 			if(cur_index >= next_index){

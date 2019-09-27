@@ -81,7 +81,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		break;
 
-	case LEAD:
+	case APPEND:
 		if(param1 > priv->term){
 #if 1
 			if(sdev->verbose >= 2)
