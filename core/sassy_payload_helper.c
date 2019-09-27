@@ -164,7 +164,6 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	s32 num_entries, match_index, next_index, cur_index;
 	s32 prev_log_idx, prev_log_term, leader_commit_idx;
 	int num_of_entries = 0;
-	struct sm_command *cmd_array;
 	char *pkt_payload_sub;
 
 	if(unlikely(_log_is_faulty(cur_priv))) {
@@ -178,7 +177,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 
 	if(next_index == -1){
 		sassy_dbg("Invalid target id resulted in invalid next_index!\n");
-		continue;
+		return;
 	}
 
 	prev_log_idx = _get_prev_log_term(cur_priv, next_index - 1);
