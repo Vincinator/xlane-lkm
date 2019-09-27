@@ -141,6 +141,22 @@ int _log_is_faulty(struct consensus_priv *priv)
 	return 0;
 }
 
+s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
+{
+
+	if(idx < 0)
+		return -1;
+
+	if(idx > cur_priv->sm_log.last_idx)
+		return -1;
+
+	if(!cur_priv->sm_log.entries[idx]){
+		sassy_dbg("BUG! entries is null at index %d\n", idx)
+		return -1;
+	}
+
+	return cur_priv->sm_log.entries[idx]->term;
+}
 
 /* Must be called after the sassy packet has been emitted. 
  */
@@ -186,6 +202,8 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 			continue;
 	 		}
 
+	 		prev_log_idx = _get_prev_log_term(cur_priv, next_index - 1);
+
 	 		leader_commit_idx = cur_priv->sm_log.commit_idx;
 
 			if(cur_index >= next_index){
@@ -218,7 +236,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		set_ae_data(pkt_payload_sub, 
 						cur_priv->term, 
 			 	 		cur_priv->node_id,
-				 		next_index,
+				 		next_index - 1, // previous is one before the "this should be send next" index
 				 		prev_log_term,
 				 		leader_commit_idx,
 				 		cur_priv->sm_log.entries, 

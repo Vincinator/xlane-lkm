@@ -188,13 +188,13 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 }
 
 
-u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, u32 prev_log_idx) 
+u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, s32 prev_log_idx) 
 {
 	u32 ret = 0; // 0 := all good.
 	struct sm_log_entry *entry;
 
 	if(prev_log_idx < 0){
-		sassy_dbg("BUG! Given prev_log_idx is negative!\n", prev_log_idx);
+		sassy_dbg("Given prev_log_idx is negative!\n", prev_log_idx);
 		ret = log->last_idx;
 		goto out;
 	}
@@ -231,13 +231,13 @@ int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx)
 {
 
 	if(prev_log_term < 0)
-		return -EINVAL;
+		return 1;
 
 	if(prev_log_idx < 0 || prev_log_idx > MAX_CONSENSUS_LOG)
-		return -EINVAL;
+		return 1;
 
 	if(pkt_size < 0 || pkt_size > SASSY_PROTO_CON_AE_BASE_SZ + (MAX_ENTRIES_PER_PKT * AE_ENTRY_SIZE))
-		return -EINVAL;
+		return 1;
 
 	return 0;
 }
