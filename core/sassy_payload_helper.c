@@ -151,7 +151,7 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 		return -1;
 
 	if(!cur_priv->sm_log.entries[idx]){
-		sassy_dbg("BUG! entries is null at index %d\n", idx)
+		sassy_dbg("BUG! entries is null at index %d\n", idx);
 		return -1;
 	}
 
