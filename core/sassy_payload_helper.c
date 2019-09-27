@@ -220,8 +220,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	 		cur_priv, 
 	 		num_of_entries);
 }
-EXPORT_SYMBOL(setup_append_msg)
-
+EXPORT_SYMBOL(setup_append_msg);
 
 /* Must be called after the sassy packet has been emitted. 
  */
