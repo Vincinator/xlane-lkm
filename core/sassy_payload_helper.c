@@ -121,7 +121,7 @@ int _get_next_idx(struct consensus_priv *priv, int target_id)
 
 int _get_last_idx_safe(struct consensus_priv *priv)
 {
-	if(priv->sm_log.last_idx < -1){
+	if(priv->sm_log.last_idx < -1)
 		priv->sm_log.last_idx = -1; // repair last index!
 
 	return priv->sm_log.last_idx;
@@ -140,8 +140,6 @@ int _log_is_faulty(struct consensus_priv *priv)
 
 	return 0;
 }
-
-
 
 
 /* Must be called after the sassy packet has been emitted. 
