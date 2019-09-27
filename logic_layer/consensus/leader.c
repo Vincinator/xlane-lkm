@@ -35,7 +35,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	s32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 	s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
-#if 1
+#if 0
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 	sassy_dbg("%d, %d, %d, %d", param1, param2, param3, param4);
 #endif 
@@ -81,7 +81,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 	case APPEND:
 		if(param1 > priv->term){
-#if 1
+#if 0
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
@@ -90,7 +90,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 
 		} else {
-#if 1
+#if 0
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower or equal term=%u\n", param1);
 	
