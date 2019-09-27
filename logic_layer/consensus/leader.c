@@ -34,9 +34,10 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	struct sassy_device *sdev = priv->sdev;
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
-	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
-	u32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
+	s32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+	s32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+	s32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
+	s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
 #if 1
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
