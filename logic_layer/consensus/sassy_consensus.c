@@ -132,7 +132,7 @@ void set_ae_data(unsigned char *pkt,
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	for(i = in_prevLogIndex + 1; i < num_of_entries; i++){
+	for(i = in_prevLogIndex; i < num_of_entries; i++){
 		*cur_ptr = entries[i]->cmd->sm_logvar_id;
 		cur_ptr++;
 		*cur_ptr = entries[i]->cmd->sm_logvar_value;

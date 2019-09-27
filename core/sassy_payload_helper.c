@@ -183,41 +183,28 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		// Check if entries must be appended
 	 		cur_index = _get_last_idx_safe(cur_priv);
 	 		next_index = _get_next_idx(cur_priv, target_id); 
-	 		match_index = _get_match_idx(cur_priv, target_id); 
 	 		leader_commit_idx = cur_priv->sm_log.commit_idx;
 
-			sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d\n", 
-				cur_index, next_index, match_index, prev_log_term);
-
-			if(cur_index < next_index){
-	 			sassy_error("Local last idx is smaller than saved next index for target.\n");
-	 			sassy_dbg("last_idx=%d, next_index=%d.\n", cur_index, next_index);
-	 			// This nodes local logs are faulty. Do not send heartbeats (current solution..)
-	 			return;
-			}
-
-			// If true: Target is up to date
-			if(cur_index == next_index)
-				goto reserve_proto; 
- 			
-			// Facts:
-			//	- cur_index > next_index
-			//  - Must include entries in next consensus append message
-			//  - thus, num_of_entries will not be 0
-
-			// Decide how many entries to update for the current target
-			num_entries = (MAX_ENTRIES_PER_PKT < next_index - cur_index) ? 
-					MAX_ENTRIES_PER_PKT : next_index - cur_index ;
-
-			// update next_index without receiving the response from the target
-			// .. If the receiver rejects this append command, this node will set the 
-			// .. the next_index to the last known safe index of the receivers log.
-			// .. In this implementation the receiver sends the last known safe index
-			// .. with the append reply.
-			cur_priv->sm_log.next_index[target_id] += num_entries + 1;
+			if(cur_index >= next_index){
+				sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d\n", 
+					cur_index, next_index, match_index, prev_log_term);
 	 			
+				// Facts:
+				//	- cur_index >= next_index
+				//  - Must include entries in next consensus append message
+				//  - thus, num_of_entries will not be 0
 
-reserve_proto:
+				// Decide how many entries to update for the current target
+				num_entries = (MAX_ENTRIES_PER_PKT < next_index - cur_index) ? 
+						MAX_ENTRIES_PER_PKT : next_index - cur_index ;
+
+				// update next_index without receiving the response from the target
+				// .. If the receiver rejects this append command, this node will set the 
+				// .. the next_index to the last known safe index of the receivers log.
+				// .. In this implementation the receiver sends the last known safe index
+				// .. with the append reply.
+				cur_priv->sm_log.next_index[target_id] += num_entries + 1;
+	 		}
 
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =
@@ -226,7 +213,7 @@ reserve_proto:
 	 		set_ae_data(pkt_payload_sub, 
 						cur_priv->term, 
 			 	 		cur_priv->node_id,
-				 		match_index,
+				 		next_index,
 				 		prev_log_term,
 				 		leader_commit_idx,
 				 		cur_priv->sm_log.entries, 
