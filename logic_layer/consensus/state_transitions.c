@@ -63,11 +63,11 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	u32 term = priv->term;
-	u32 candidate_id = priv->node_id;
+	s32 term = priv->term;
+	s32 candidate_id = priv->node_id;
 
-	u32 last_log_idx = priv->sm_log.last_idx;
-	u32 last_log_term;
+	s32 last_log_idx = priv->sm_log.last_idx;
+	s32 last_log_term;
 
 	if(priv->sm_log.last_idx == -1)
 		last_log_term = priv->term;
@@ -81,7 +81,7 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 	return 0;
 }
 
-void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, s32 term)
+void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u32 term)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;

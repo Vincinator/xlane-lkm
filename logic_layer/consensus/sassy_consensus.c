@@ -171,10 +171,11 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 	}
 }
 
-void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, u32 p2, u32 p3, u32 p4)
+void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, s32 p2, s32 p3, s32 p4)
 {
 	u16 *opcode;
-	u32 *param1, *param2, *param3, *param4;
+	u32 *param1;
+	s32 *param2, *param3, *param4;
 
 	opcode = GET_CON_PROTO_OPCODE_PTR(pkt);
 	*opcode = (u16) opco;
@@ -183,15 +184,15 @@ void set_le_opcode(unsigned char *pkt, enum le_opcode opco, u32 p1, u32 p2, u32 
 	*param1 = (u32) p1;
 
 	param2 = GET_CON_PROTO_PARAM2_PTR(pkt);
-	*param2 = (u32) p2;
+	*param2 = (s32) p2;
 	
 	param3 = GET_CON_PROTO_PARAM3_PTR(pkt);
-	*param3 = (u32) p3;
+	*param3 = (s32) p3;
 
 	param4 = GET_CON_PROTO_PARAM4_PTR(pkt);
-	*param4 = (u32) p4;
+	*param4 = (s32) p4;
 
-	sassy_dbg("gen pkt with params p1=%d, p2=%d, p3=%d, p4=%d", p1, p2, p3, p4);
+	sassy_dbg("gen pkt with params p1=%u, p2=%d, p3=%d, p4=%d", p1, p2, p3, p4);
 
 }
 

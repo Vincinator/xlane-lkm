@@ -87,7 +87,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 		write_log(&ins->logger, REPLY_APPEND_FAIL, rdtsc());
 
 }
-void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int param1, int param2)
+void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32 param1, s32 param2)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
@@ -322,9 +322,9 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	u32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-	u32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
-	u32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
-	u32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
+	s32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+	s32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
+	s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 	
 
 #if 1

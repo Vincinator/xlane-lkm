@@ -169,7 +169,7 @@ void set_ae_data(unsigned char *pkt,
 
 
 
-void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, s32 term);
+void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u32 term);
 int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode);
 int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, s32 param1, s32 param2, s32 param3, s32 param4);
 int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_id, struct sm_command *cmd_array, int num_of_entries);
