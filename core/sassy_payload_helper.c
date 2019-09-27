@@ -80,6 +80,70 @@ char *sassy_reserve_proto(u16 instance_id, struct sassy_payload *spay, u16 proto
 EXPORT_SYMBOL(sassy_reserve_proto);
 
 
+int _check_target_id(struct consensus_priv *priv, int target_id)
+{
+
+	if(target_id < 0)
+		goto error;
+
+	if(target_id > MAX_NODE_ID)
+		goto error;
+
+	return 1;
+error:
+	sassy_dbg("Target ID is not valid: %d\n", target_id);
+	return 0;
+}
+
+int _get_match_idx(struct consensus_priv *priv, int target_id)
+{
+	u32 match_index;
+
+	if(_check_target_id(priv, target_id))
+		match_index = priv->sm_log.match_index[target_id];
+	else
+		match_index = -1;
+
+	return match_index;
+}
+
+int _get_next_idx(struct consensus_priv *priv, int target_id)
+{
+	u32 next_index;
+
+	if(_check_target_id(priv, target_id))
+		next_index = priv->sm_log.next_index[target_id];
+	else
+		next_index = -1;
+
+	return next_index;
+}
+
+int _get_last_idx_safe(struct consensus_priv *priv)
+{
+	if(priv->sm_log.last_idx < -1){
+		priv->sm_log.last_idx = -1; // repair last index!
+
+	return priv->sm_log.last_idx;
+}
+
+int _log_is_faulty(struct consensus_priv *priv) 
+{
+
+	if(!priv)
+		return 1;
+
+	if(!priv->sm_log.entries)
+		return 1;
+
+	//  if required add more consistency checks here..
+
+	return 0;
+}
+
+
+
+
 /* Must be called after the sassy packet has been emitted. 
  */
 void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay, int target_id)
@@ -113,39 +177,54 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 
-	 		// Check if entries must be appended
-	 		cur_index = cur_priv->sm_log.last_idx;
-	 		next_index = cur_priv->sm_log.next_index[target_id]; 
-	 		match_index = cur_priv->sm_log.match_index[target_id];
-
-	 		// check if entry exists
-	 		if(cur_priv->sm_log.entries != NULL && cur_priv->sm_log.entries[match_index] != NULL){
-		 		prev_log_term = cur_priv->sm_log.entries[match_index]->term;
-	 		}else {
-		 		prev_log_term = cur_priv->term;
+	 		if(unlikely(_log_is_faulty(cur_priv)){
+	 			sassy_dbg("Log is faulty or not initialized.\n");
+	 			continue;
 	 		}
 
+	 		// Check if entries must be appended
+	 		cur_index = _get_last_idx_safe(cur_priv);
+	 		next_index = _get_next_idx(cur_priv, target_id); 
+	 		match_index = _get_match_idx(cur_priv, target_id); 
 	 		leader_commit_idx = cur_priv->sm_log.commit_idx;
 
 			sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d\n", 
-				cur_index,next_index, match_index, prev_log_term);
+				cur_index, next_index, match_index, prev_log_term);
 
-	 		// only append entries if the leader has something fresh to append
-	 		if(cur_index > next_index) {
-	 	 		// Decide how many entries to update for the current target
-	 			num_entries =
-	 				(MAX_ENTRIES_PER_PKT < next_index - cur_index) ? MAX_ENTRIES_PER_PKT : next_index - cur_index ;
-		 		
-		 		// update next_index.. (if request fails, we will go back step by step )
- 		 		cur_priv->sm_log.next_index[target_id] += num_entries + 1;
+			if(cur_index < next_index){
+	 			sassy_error("Local last idx is smaller than saved next index for target.\n");
+	 			sassy_dbg("last_idx=%d, next_index=%d.\n", cur_index, next_index);
+	 			// This nodes local logs are faulty. Do not send heartbeats (current solution..)
+	 			return;
+			}
+
+			// If true: Target is up to date
+			if(cur_index == next_index)
+				goto reserve_proto; 
+ 			
+			// Facts:
+			//	- cur_index > next_index
+			//  - Must include entries in next consensus append message
+			//  - thus, num_of_entries will not be 0
+
+			// Decide how many entries to update for the current target
+			num_entries = (MAX_ENTRIES_PER_PKT < next_index - cur_index) ? 
+					MAX_ENTRIES_PER_PKT : next_index - cur_index ;
+
+			// update next_index without receiving the response from the target
+			// .. If the receiver rejects this append command, this node will set the 
+			// .. the next_index to the last known safe index of the receivers log.
+			// .. In this implementation the receiver sends the last known safe index
+			// .. with the append reply.
+			cur_priv->sm_log.next_index[target_id] += num_entries + 1;
 	 			
-	 		}
+
+reserve_proto:
 
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =
 	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
 	 		
-
 	 		set_ae_data(pkt_payload_sub, 
 						cur_priv->term, 
 			 	 		cur_priv->node_id,
