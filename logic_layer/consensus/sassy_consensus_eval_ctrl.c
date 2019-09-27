@@ -26,7 +26,6 @@ static ssize_t sassy_eval_ctrl_write(struct file *file,
 
 	size = min(sizeof(kernel_buffer) - 1, count);
 
-	sassy_error("Write init count=%lu %s\n", count, __FUNCTION__);
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);

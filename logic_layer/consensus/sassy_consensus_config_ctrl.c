@@ -42,7 +42,6 @@ static ssize_t sassy_le_config_write(struct file *file,
 
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
-		sassy_dbg(" reading: '%s'", input_str);
 		if (!input_str || strlen(input_str) <= 0)
 			continue;
 
@@ -55,19 +54,15 @@ static ssize_t sassy_le_config_write(struct file *file,
 
 		if (state == 0) {
 			fmin_tmp = tmp;
-			sassy_dbg("fmin: %d\n", tmp);
 			state = 1;
 		} else if (state == 1) {
 			fmax_tmp = tmp;
-			sassy_dbg("fmax: %d\n", tmp);
 			state = 2;
 		} else if (state == 2) {
 			cmin_tmp = tmp;
-			sassy_dbg("cmin: %d\n", tmp);
 			state = 3;
 		} else if (state == 3){
 			cmax_tmp = tmp;
-			sassy_dbg("cmax: %d\n", tmp);
 			break;
 		}
 	}

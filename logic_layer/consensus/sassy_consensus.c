@@ -218,8 +218,6 @@ void set_le_opcode(unsigned char *pkt, enum le_opcode opco, s32 p1, s32 p2, s32 
 	param4 = GET_CON_PROTO_PARAM4_PTR(pkt);
 	*param4 = (s32) p4;
 
-	sassy_dbg("gen pkt with params p1=%u, p2=%d, p3=%d, p4=%d", p1, p2, p3, p4);
-
 }
 
 static const struct sassy_protocol_ctrl_ops consensus_ops = {

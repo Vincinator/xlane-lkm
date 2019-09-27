@@ -58,7 +58,6 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
-		sassy_dbg(" reading: '%s'", input_str);
 		if (!input_str || strlen(input_str) <= 0)
 			continue;
 		if (state == 0) {

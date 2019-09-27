@@ -267,8 +267,6 @@ static ssize_t sassy_payload_write(struct file *file,
 
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
-		sassy_dbg("reading: %s", input_str);
-
 		if (strcmp(input_str, "") == 0 || strlen(input_str) == 0)
 			break;
 
@@ -381,7 +379,6 @@ static ssize_t sassy_target_write(struct file *file,
 	sdev->pminfo.num_of_targets = 0;
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
-		sassy_dbg(" reading: '%s'", input_str);
 		if (!input_str || strlen(input_str) <= 0)
 			continue;
 		if (i > SASSY_TARGETS_BUF) {
@@ -396,7 +393,6 @@ static ssize_t sassy_target_write(struct file *file,
 					    __FUNCTION__);
 				return -EINVAL;
 			}
-			sassy_dbg("ip: %s\n", input_str);
 			state = 1;
 		} else if (state == 1) {
 			current_mac = sassy_convert_mac(input_str);
@@ -405,7 +401,6 @@ static ssize_t sassy_target_write(struct file *file,
 					"Invalid MAC. Failed to convert to byte string.\n");
 				return -EINVAL;
 			}
-			sassy_dbg(" mac: %s\n", input_str);
 			state = 2;
 
 		} else if (state == 2) {
@@ -417,18 +412,14 @@ static ssize_t sassy_target_write(struct file *file,
 				goto error;
 			}
 
-			sassy_dbg("protocol: %d\n", current_protocol);
 
 		
 			state = 3;
 		} else if (state == 3){
 			err = kstrtoint(input_str, 10, &cluster_id);
 
-			sassy_dbg("cluster id: %d\n", cluster_id);
 
 			if(is_ip_local(sdev->ndev, current_ip)){
-				sassy_dbg("got local ip: %d\n", current_ip);
-				sassy_dbg("cluster id of local is: %d\n", cluster_id);
 				sdev->cluster_id = cluster_id;
 			} else {
 				sassy_core_register_remote_host(sdev->sassy_id,
