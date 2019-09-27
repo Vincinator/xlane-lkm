@@ -59,7 +59,7 @@
 
 // protoid(u16) + offset(u16) + opcode(u16)
 #define GET_CON_PROTO_PARAM1_VAL(p) *(u32 *)((char*) p + 2 + 2 + 2)
-#define GET_CON_PROTO_PARAM1_PTR(p) (su2 *)((char*) p + 2 + 2 + 2 )
+#define GET_CON_PROTO_PARAM1_PTR(p) (u32 *)((char*) p + 2 + 2 + 2 )
 
 // protoid(u16) + offset(u16) + opcode(u16) + param1(u32)
 #define GET_CON_PROTO_PARAM2_VAL(p) *(s32 *)((char*) p + 2 + 2 + 2 + 4)
