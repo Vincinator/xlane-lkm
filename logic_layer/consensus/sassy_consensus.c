@@ -103,7 +103,7 @@ void set_ae_data(unsigned char *pkt,
 				 struct consensus_priv *priv, 
 				 int num_of_entries)
 {
-	struct sm_log_entry **entries = priv->entries;
+	struct sm_log_entry **entries = priv->sm_log.entries;
 	u16 *opcode;
 	s32 *prev_log_idx, *leader_commit_idx;
 	u32 *included_entries, *term, *prev_log_term, *leader_id;
