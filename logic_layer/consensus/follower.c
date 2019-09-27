@@ -244,25 +244,23 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	u16 pkt_size;
 	u32 check;
 
-	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
-	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
-	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
-
-	// nothing to append, 
+ 
 	if(num_entries == 0){
-		// sassy_dbg("nothing to append.\n");
 		// no reply if nothing to append!
 		return;
 	}
+
+	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
+	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
+	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
+
 
 	if(_check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx)){
 		sassy_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
 				  pkt_size, *prev_log_term, *prev_log_idx);
 		goto reply_false;
 	}
-
-	// tested until this line..
 
 	if(_check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)){
 		sassy_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n", 
@@ -387,7 +385,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 				reset_ftimeout(ins);
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
-
 
 			}else {
 #if 1

@@ -244,7 +244,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 
-	 		setup_append_msg(cur_priv, sdev->protos[i]->instance_id);
+	 		setup_append_msg(cur_priv, spay, sdev->protos[i]->instance_id);
 	 		
 		}
 	}
