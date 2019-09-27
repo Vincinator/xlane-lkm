@@ -100,14 +100,24 @@ void set_ae_data(unsigned char *pkt,
 				 s32 in_prevLogIndex,
 				 s32 in_prevLogTerm,
 				 s32 in_leaderCommitIdx,
-				 struct sm_log_entry **entries, 
+				 struct consensus_priv *priv, 
 				 int num_of_entries)
 {
+	struct sm_log_entry **entries = priv->entries;
 	u16 *opcode;
 	s32 *prev_log_idx, *leader_commit_idx;
 	u32 *included_entries, *term, *prev_log_term, *leader_id;
 	int i;
 	u32 *cur_ptr;
+	// index of first entry to send
+	int first_idx = in_prevLogIndex + 1;
+
+	// check if num_of_entries would exceed actual entries
+	if(first_idx + (num_of_entries - 1) > priv->sm_log.last_idx){
+		sassy_error("BUG! can not send more entries than the available entries in local log. %d, %d, %d\n",
+					first_idx, num_of_entries, priv->sm_log.last_idx);
+		return;
+	}
 
 	opcode = GET_CON_AE_OPCODE_PTR(pkt);
 	*opcode = (u16) APPEND;
@@ -130,9 +140,25 @@ void set_ae_data(unsigned char *pkt,
 	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
 	*leader_commit_idx = in_leaderCommitIdx;
 
+	// done if there are no entries to include
+	if(num_of_entries == 0)
+		return;
+
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	for(i = in_prevLogIndex; i < num_of_entries; i++){
+	for(i = first_idx; i <  first_idx + num_of_entries; i++){
+
+		if(!entries[i]){
+			sassy_dbg("BUG! - entries at %d is null", i);
+			return;
+		}
+
+		if(!entries[i]->cmd){
+			sassy_dbg("BUG! - entries cmd at %d is null", i);
+			return;
+		}
+
+		// write entry data to payload
 		*cur_ptr = entries[i]->cmd->sm_logvar_id;
 		cur_ptr++;
 		*cur_ptr = entries[i]->cmd->sm_logvar_value;

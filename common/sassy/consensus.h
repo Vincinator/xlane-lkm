@@ -164,7 +164,7 @@ void set_ae_data(unsigned char *pkt,
 				 s32 in_prevLogIndex,
 				 s32 in_prevLogTerm,
 				 s32 in_leaderCommitIdx,
-				 struct sm_log_entry **entries, 
+				 struct consensus_priv *priv, 
 				 int num_of_entries);
 
 

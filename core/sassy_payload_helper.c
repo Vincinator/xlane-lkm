@@ -239,7 +239,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 				 		next_index - 1, // previous is one before the "this should be send next" index
 				 		prev_log_term,
 				 		leader_commit_idx,
-				 		cur_priv->sm_log.entries, 
+				 		cur_priv, 
 				 		num_of_entries);
 		}
 	}
