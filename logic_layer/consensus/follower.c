@@ -334,7 +334,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case VOTE:
 		break;
 	case NOMI:	
-	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt)
+	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
@@ -347,7 +347,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case NOOP:
 		break;
 	case APPEND:
-	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt)
+	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 		/* Received a LEAD operation from a node with a higher term, 
 		 * thus this node is accepting the node as new leader.
 		 */
