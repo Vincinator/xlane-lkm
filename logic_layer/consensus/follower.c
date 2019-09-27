@@ -55,8 +55,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	int hb_passive_ix;
 
 #if 1
-
-	sassy_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
+	sassy_log_le("%s, %llu, %d: Replying to append message for cluster node %d with term %d\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
@@ -238,26 +237,48 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
-	// if != 0 then missmatch detected 
-	check = check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx);
-	if(check) {
-		// reply false
-		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
-		return;
+
+	if(!_validate_append_rpc(pkt_size, prev_log_term, prev_log_idx)){
+		sassy_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
+				  pkt_size, prev_log_term, prev_log_idx);
+		goto reply_false;
+	}
+
+	if(check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)){
+		sassy_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n", 
+				  prev_log_term, prev_log_idx, priv->sm_log.last_idx);
+		goto reply_false;
 	}
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_PTR(pkt);
 
-	// append new entries
-	append_success = append_commands(priv, pkt, *num_entries, pkt_size);
-	append_success = !!!append_success; // convert to (0,1) and invert
+	if(num_entries < 0 || num_entries > MAX_ENTRIES_PER_PKT){
+		sassy_dbg("invalid num_entries=%d\n", num_entries);
+		goto reply_false;
+	}
 
-	// skip commit idx if appending commands failed
-	if(append_success == 0)
-		goto out;
+	// append entries and if it fails, reply false
+	if(append_commands(priv, pkt, *num_entries, pkt_size)){
+		sassy_dbg("append commands failed\n");
+		goto reply_false;
+	}
 
 	// check commit index
 	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
+
+	// check if leader_commit_idx is out of bounds
+	if(*leader_commit_idx < 0 || *leader_commit_idx > MAX_CONSENSUS_LOG) {
+		sassy_dbg("Out of bounds: leader_commit_idx=%d", *leader_commit_idx);
+		goto reply_false;
+	}
+
+	// check if leader_commit_idx points to a valid entry
+	if(*leader_commit_idx > priv->sm_log.last_idx){
+		sassy_dbg("Not referencing a valid log entry: leader_commit_idx=%d", *leader_commit_idx);
+		goto reply_false;
+	}
+
+	// Check if commit index must be updated
 	if(*leader_commit_idx > priv->sm_log.commit_idx) {
 		// min(leader_commit_idx, last_idx)
 		// note: last_idx of local log can not be null if append_commands was successfully executed
@@ -265,8 +286,12 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		commit_log(priv);
 	}
 
-out:
-	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, append_success, priv->sm_log.last_idx);
+	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
+	return;
+
+reply_false:
+	
+	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
 }
 
 

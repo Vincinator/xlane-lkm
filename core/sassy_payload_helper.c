@@ -146,16 +146,15 @@ int _log_is_faulty(struct consensus_priv *priv)
  */
 void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay, int target_id)
 {
-	u16 *opcode;
-	u32 *param1, *param2;
-	char *pkt_payload_sub;
 	struct consensus_priv *cur_priv;
-	int i;
-	s32 num_entries, match_index, next_index, cur_index, prev_log_idx, prev_log_term, leader_commit_idx;
 	struct pminfo *spminfo = &sdev->pminfo;
 	struct sm_command *cmd_array;
+	char *pkt_payload_sub;
+	s32 num_entries, match_index, next_index, cur_index;
+	s32 prev_log_idx, prev_log_term, leader_commit_idx;
 	int num_of_entries;
-	
+	int i;
+
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
 	
@@ -212,8 +211,10 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 
 	 		// reserve space in sassy heartbeat for consensus LEAD
 	 		pkt_payload_sub =
-	 				sassy_reserve_proto(sdev->protos[i]->instance_id, spay, SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
-	 		
+ 				sassy_reserve_proto(sdev->protos[i]->instance_id,
+									spay,
+									SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
+ 		
 	 		set_ae_data(pkt_payload_sub, 
 						cur_priv->term, 
 			 	 		cur_priv->node_id,
@@ -222,30 +223,7 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 				 		leader_commit_idx,
 				 		cur_priv->sm_log.entries, 
 				 		num_of_entries);
-	 		
-
 		}
 	}
 }
 EXPORT_SYMBOL(invalidate_proto_data);
-
-
-handle_payload_fun get_payload_handler(enum sassy_protocol_type ptype) 
-{
-	switch (ptype) 
-	{
-		case SASSY_PROTO_ECHO:
-		
-			break;
-		case SASSY_PROTO_FD:
-
-			break;
-		case SASSY_PROTO_CONSENSUS:
-
-			break;
-		default:
-			sassy_error("unknwon protocol. \n");
-	}
-
-	return NULL;
-}
