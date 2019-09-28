@@ -60,7 +60,7 @@ char *sassy_reserve_proto(u16 instance_id, struct sassy_payload *spay, u16 proto
 		proto_offset += cur_offset;
 	}
 
-	if (proto_offset + proto_size > MAX_SASSY_PAYLOAD_BYTES) {
+	if (unlikely(proto_offset + proto_size > MAX_SASSY_PAYLOAD_BYTES)) {
 		sassy_error("Not enough space in sassy payload for protocol\n");
 		return NULL;
 	}

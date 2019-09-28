@@ -119,6 +119,8 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 	tail_ptr = skb_tail_pointer(skb);
 	data_ptr = (tail_ptr - SASSY_PAYLOAD_BYTES);
 
+	// TODO: directly write in skb, and use skb dual-buffer!?
+	// TODO: check if the skb memory is moved/freed by the NIC
 	memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
 }
 
@@ -259,7 +261,6 @@ static int sassy_pm_loop(void *data)
 		local_bh_disable();
 
 		err = _emit_pkts(sdev, spminfo);
-
 
 		if (err) {
 			sassy_pm_stop(spminfo);
