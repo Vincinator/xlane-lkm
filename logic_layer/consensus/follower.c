@@ -325,6 +325,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 	param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 	param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
+
 #if 1
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 #endif
@@ -353,7 +354,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 */
 		if(param1 > priv->term){
 
-#if 0
+#if 1
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 #endif
@@ -384,7 +385,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 			}else {
-#if 0
+#if 1
 				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from new leader term=%u\n", param1);
 #endif
@@ -395,7 +396,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 * Ignoring this LEAD operation and let the countdown continue to go down.
 		 */
 		else {
-#if 0
+#if 1
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received APPEND from leader with lower term=%u\n", param1);
 #endif
@@ -490,7 +491,7 @@ int start_follower(struct proto_instance *ins)
 
 	init_timeout(ins);
 
-#if 0
+#if 1
 	sassy_dbg("Node became a follower\n");
 #endif
 

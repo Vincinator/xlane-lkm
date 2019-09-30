@@ -87,7 +87,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
 		if(param1 > priv->term){
-#if 0
+#if 1
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
@@ -96,7 +96,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 
 		} else {
-#if 0
+#if 1
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower or equal term=%u\n", param1);
 	

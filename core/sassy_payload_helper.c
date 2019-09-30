@@ -184,7 +184,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	// 	sassy_dbg("Invalid target id resulted in invalid next_index!\n");
 	// 	return;
 	// }
-	sassy_dbg("cur_index=%d, next_index=%d\n", cur_index, next_index);
+	//sassy_dbg("cur_index=%d, next_index=%d\n", cur_index, next_index);
 	prev_log_term = _get_prev_log_term(cur_priv, next_index == -1 ? -1 : next_index - 1 );
 
 	leader_commit_idx = cur_priv->sm_log.commit_idx;
