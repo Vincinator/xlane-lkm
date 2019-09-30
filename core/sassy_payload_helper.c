@@ -190,9 +190,6 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	leader_commit_idx = cur_priv->sm_log.commit_idx;
 
 	if(cur_index >= next_index){
-		sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d\n", 
-			cur_index, next_index, match_index, prev_log_term);
-			
 		// Facts:
 		//	- cur_index >= next_index
 		//  - Must include entries in next consensus append message
@@ -200,7 +197,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 
 		// Decide how many entries to update for the current target
 		num_entries = (MAX_ENTRIES_PER_PKT < cur_index - next_index + 1) ? 
-				MAX_ENTRIES_PER_PKT : cur_index - next_index + 1;
+				MAX_ENTRIES_PER_PKT : (cur_index - next_index + 1);
 
 		// update next_index without receiving the response from the target
 		// .. If the receiver rejects this append command, this node will set the 
@@ -208,6 +205,9 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 		// .. In this implementation the receiver sends the last known safe index
 		// .. with the append reply.
 		cur_priv->sm_log.next_index[target_id] += num_entries + 1;
+
+		sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d, num_entries=%d\n", 
+			cur_index, next_index, match_index, prev_log_term, num_entries);
 	}
 
 	// reserve space in sassy heartbeat for consensus LEAD
@@ -219,7 +219,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 			cur_priv->term, 
  	 		cur_priv->node_id,
  	 		// previous is one before the "this should be send next" index
-	 		next_index == -1 ? -1 : next_index - 1 ,
+	 		next_index,
 	 		prev_log_term,
 	 		leader_commit_idx,
 	 		cur_priv, 

@@ -97,7 +97,7 @@ ktime_t get_rnd_timeout(int min, int max)
 void set_ae_data(unsigned char *pkt, 
 				 s32 in_term, 
 				 s32 in_leader_id,
-				 s32 in_prevLogIndex,
+				 s32 in_nextLogIndex,
 				 s32 in_prevLogTerm,
 				 s32 in_leaderCommitIdx,
 				 struct consensus_priv *priv, 
@@ -110,7 +110,7 @@ void set_ae_data(unsigned char *pkt,
 	int i;
 	u32 *cur_ptr;
 	// index of first entry to send
-	int first_idx = in_prevLogIndex + 1;
+	int first_idx = in_nextLogIndex;
 
 	//check if num_of_entries would exceed actual entries
 	if(first_idx + (num_of_entries - 1) > priv->sm_log.last_idx){
@@ -118,7 +118,6 @@ void set_ae_data(unsigned char *pkt,
 					first_idx, num_of_entries, priv->sm_log.last_idx);
 		return;
 	}
-
 
 	opcode = GET_CON_AE_OPCODE_PTR(pkt);
 	*opcode = (u16) APPEND;
@@ -130,7 +129,7 @@ void set_ae_data(unsigned char *pkt,
 	*leader_id = in_leader_id;
 
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
-	*prev_log_idx = in_prevLogIndex;
+	*prev_log_idx = in_nextLogIndex  == -1 ? -1 : in_nextLogIndex - 1;
 
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	*prev_log_term = in_prevLogTerm;
