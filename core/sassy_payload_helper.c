@@ -193,7 +193,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 		// Facts:
 		//	- cur_index >= next_index
 		//  - Must include entries in next consensus append message
-		//  - thus, num_entries will not be 0
+		//  - thus, num_of_entries will not be 0
 
 		// Decide how many entries to update for the current target
 		num_entries = (MAX_ENTRIES_PER_PKT < cur_index - next_index + 1) ? 
