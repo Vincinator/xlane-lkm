@@ -110,7 +110,7 @@ void set_ae_data(unsigned char *pkt,
 	int i;
 	u32 *cur_ptr;
 	// index of first entry to send
-	int first_idx = in_nextLogIndex;
+	s32 first_idx = in_nextLogIndex;
 
 	//check if num_of_entries would exceed actual entries
 	if(first_idx + (num_of_entries - 1) > priv->sm_log.last_idx){
