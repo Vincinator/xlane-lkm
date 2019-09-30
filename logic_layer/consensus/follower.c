@@ -286,7 +286,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
 
 	// check if leader_commit_idx is out of bounds
-	if(*leader_commit_idx < 0 || *leader_commit_idx > MAX_CONSENSUS_LOG) {
+	if(*leader_commit_idx < -1 || *leader_commit_idx > MAX_CONSENSUS_LOG) {
 		sassy_dbg("Out of bounds: leader_commit_idx=%d", *leader_commit_idx);
 		goto reply_false;
 	}
