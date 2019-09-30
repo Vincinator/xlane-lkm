@@ -168,7 +168,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 {
 	s32 num_entries, match_index, next_index, cur_index;
 	s32 prev_log_idx, prev_log_term, leader_commit_idx;
-	int num_of_entries = 0;
+	s32 num_of_entries = 0;
 	char *pkt_payload_sub;
 
 	// if(unlikely(_log_is_faulty(cur_priv))) {
