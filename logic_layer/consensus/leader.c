@@ -55,8 +55,8 @@ void update_commit_idx(struct consensus_priv *priv)
 				}
 	}
 
-	if(N > priv->commit_idx){
-		priv->commit_idx = N;
+	if(N > priv->sm_log.commit_idx){
+		priv->sm_log.commit_idx = N;
 		sassy_dbg("found new commit_idx %d", N);
 	}
 
