@@ -7,7 +7,7 @@
 #include <sassy/logger.h>
 #include <sassy/consensus.h>
 
-
+// /proc/sassy/<ifindex/some_blah_
 static ssize_t sassy_le_config_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
 				   loff_t *data)
@@ -93,7 +93,7 @@ static int sassy_le_config_show(struct seq_file *m, void *v)
 		return -ENODEV;
 
 	//seq_printf(m, "fmin,fmax,cmin,cmax (in ns) \n");
-	seq_printf(m, "%d,%d,%d,%d\n",priv->ft_min, priv->ft_max, priv->ct_min, priv->ct_max);
+	seq_printf(m, "%d,%d,%d,%d\n", priv->ft_min, priv->ft_max, priv->ct_min, priv->ct_max);
 
 	return 0;
 }
