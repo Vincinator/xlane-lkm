@@ -112,7 +112,7 @@ void set_ae_data(unsigned char *pkt,
 	// index of first entry to send
 	int first_idx = in_prevLogIndex + 1;
 
-	check if num_of_entries would exceed actual entries
+	//check if num_of_entries would exceed actual entries
 	if(first_idx + (num_of_entries - 1) > priv->sm_log.last_idx){
 		sassy_error("BUG! can not send more entries than the available entries in local log. %d, %d, %d\n",
 					first_idx, num_of_entries, priv->sm_log.last_idx);
