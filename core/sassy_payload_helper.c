@@ -249,17 +249,11 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		if(cur_priv->nstate != LEADER)
 	 			continue;
 
-	 		sassy_dbg("Include APPEND opcode\n");
-
 	 		// TODO: optimize append calls that do not contain any log updates
 	 		setup_append_msg(cur_priv, spay, sdev->protos[i]->instance_id, target_id);
 	 		
-	 		sassy_dbg("Loop %d done\n", i);
 
 		}
 	}
-	if(cur_priv->nstate == LEADER)
-		sassy_dbg("For Loop Done\n");
-
 }
 EXPORT_SYMBOL(invalidate_proto_data);
