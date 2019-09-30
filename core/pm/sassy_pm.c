@@ -139,7 +139,7 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		     !netif_carrier_ok(ndev))) {
 		return -1;
 	}
-	
+
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
 		// Always update payload to avoid jitter!

@@ -325,9 +325,11 @@ struct pminfo {
 
 	int active_cpu;
 
+	
 	int num_of_targets;
 
 	//enum hb_interval hbi;
+	// 2.4 GHz (must be fixed) 
 	uint64_t hbi;
 
 	struct sassy_pm_target_info pm_targets[MAX_REMOTE_SOURCES];

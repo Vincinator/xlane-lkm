@@ -245,11 +245,12 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	u32 check;
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
- 
+
 	if(num_entries == 0){
 		// no reply if nothing to append!
 		return;
 	}
+	sassy_dbg("Appending Entries! num_entries=%d\n",num_entries);
 
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
@@ -303,7 +304,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	}
 
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
-	
+	sassy_dbg("append commands done\n");
+
 	return;
 
 reply_false:
