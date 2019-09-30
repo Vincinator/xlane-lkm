@@ -119,6 +119,7 @@ void set_ae_data(unsigned char *pkt,
 		return;
 	}
 
+
 	opcode = GET_CON_AE_OPCODE_PTR(pkt);
 	*opcode = (u16) APPEND;
 
