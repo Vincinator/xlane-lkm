@@ -213,7 +213,8 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	set_ae_data(pkt_payload_sub, 
 			cur_priv->term, 
  	 		cur_priv->node_id,
-	 		next_index - 1, // previous is one before the "this should be send next" index
+ 	 		// previous is one before the "this should be send next" index
+	 		next_index == -1 ? -1 : next_index - 1 ,
 	 		prev_log_term,
 	 		leader_commit_idx,
 	 		cur_priv, 
