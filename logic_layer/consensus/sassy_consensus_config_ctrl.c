@@ -5,8 +5,6 @@
 
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
-#include <sassy/sassy_ts.h>
-
 #include <sassy/consensus.h>
 
 static ssize_t sassy_le_config_write(struct file *file,

@@ -4,7 +4,6 @@
 #include <linux/list.h>
 #include <linux/spinlock_types.h>
 
-#include <sassy/sassy_ts.h>
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
 #include <linux/time.h>
@@ -345,14 +344,14 @@ struct proto_instance;
 struct sassy_device {
 	int ifindex; /* corresponds to ifindex of net_device */
 	int sassy_id;
+
 	u32 cluster_id;
 
 	int verbose; /* Prints more information when set to 1 during RX/TX to dmesg*/
 
-	enum sassy_rx_state rx_state;
+	enum sassy_rx_state rx_state; 
 	enum tsstate ts_state; 
 	enum w_state warmup_state;
-
 
 	struct sassy_stats *stats;
 

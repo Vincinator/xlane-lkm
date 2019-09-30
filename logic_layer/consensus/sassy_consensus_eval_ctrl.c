@@ -5,8 +5,6 @@
 
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
-#include <sassy/sassy_ts.h>
-
 #include <sassy/consensus.h>
 
 #include "include/test.h"

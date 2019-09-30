@@ -5,7 +5,6 @@
 
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
-#include <sassy/sassy_ts.h>
 
 static ssize_t sassy_ts_ctrl_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
