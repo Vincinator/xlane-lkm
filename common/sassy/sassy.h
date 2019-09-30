@@ -1,7 +1,6 @@
 #ifndef _SASSY_H_
 #define _SASSY_H_
 
-
 #include <linux/list.h>
 #include <linux/spinlock_types.h>
 
