@@ -110,13 +110,6 @@ void set_ae_data(unsigned char *pkt,
 	int i;
 	u32 *cur_ptr;
 
-	//check if num_of_entries would exceed actual entries
-	if(first_idx + (num_of_entries - 1) > priv->sm_log.last_idx){
-		sassy_error("BUG! can not send more entries than available... %d, %d, %d\n",
-					first_idx, num_of_entries, priv->sm_log.last_idx);
-		return;
-	}
-
 	opcode = GET_CON_AE_OPCODE_PTR(pkt);
 	*opcode = (u16) APPEND;
 
@@ -142,6 +135,18 @@ void set_ae_data(unsigned char *pkt,
 	if(num_of_entries == 0)
 		return;
 
+	if(first_idx > priv->sm_log.last_idx ){
+		sassy_error("Nothing to send, first_idx > priv->sm_log.last_idx %d, %d", first_idx, priv->sm_log.last_idx);
+		*included_entries = 0;
+		return;
+	}
+	//check if num_of_entries would exceed actual entries
+	if((first_idx + (num_of_entries - 1) )> priv->sm_log.last_idx){
+		sassy_error("BUG! can not send more entries than available... %d, %d, %d\n",
+					first_idx, num_of_entries, priv->sm_log.last_idx);
+		*included_entries = 0;
+		return;
+	}
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
 	for(i = first_idx; i <  first_idx + num_of_entries; i++){
