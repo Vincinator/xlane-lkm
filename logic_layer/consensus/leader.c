@@ -22,7 +22,7 @@ void initialze_indices(struct consensus_priv *priv)
 
 int _is_potential_commit_idx(struct consensus_priv *priv, int N)
 {
-	int i, hits;
+	int i, hits,double_majority;
 
 	hits = 0;
 
