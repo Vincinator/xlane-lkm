@@ -148,6 +148,7 @@ void set_ae_data(unsigned char *pkt,
 		return;
 	}
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
+	sassy_dbg("first_idx=%d, first_idx + num_of_entries= %d", first_idx, first_idx + num_of_entries );
 
 	for(i = first_idx; i <  first_idx + num_of_entries; i++){
 		sassy_dbg("Including Entry to Append MSG...");

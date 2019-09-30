@@ -166,9 +166,9 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 
 void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spay, int instance_id, int target_id)
 {
-	s32 num_entries, match_index, next_index, cur_index;
+	s32 match_index, next_index, cur_index;
 	s32 prev_log_idx, prev_log_term, leader_commit_idx;
-	s32 num_of_entries = 0;
+	s32 num_entries = 0;
 	char *pkt_payload_sub;
 
 	// if(unlikely(_log_is_faulty(cur_priv))) {
@@ -193,7 +193,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 		// Facts:
 		//	- cur_index >= next_index
 		//  - Must include entries in next consensus append message
-		//  - thus, num_of_entries will not be 0
+		//  - thus, num_entries will not be 0
 
 		// Decide how many entries to update for the current target
 		num_entries = (MAX_ENTRIES_PER_PKT < cur_index - next_index + 1) ? 
@@ -206,14 +206,14 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 		// .. with the append reply.
 		cur_priv->sm_log.next_index[target_id] += num_entries;
 
-		sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d, num_entries=%d\n", 
-			cur_index, next_index, match_index, prev_log_term, num_entries);
+		// sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d, num_entries=%d\n", 
+		// 	cur_index, next_index, match_index, prev_log_term, num_entries);
 	}
 
 	// reserve space in sassy heartbeat for consensus LEAD
 	pkt_payload_sub =
 		sassy_reserve_proto(instance_id, spay,
-						SASSY_PROTO_CON_AE_BASE_SZ + (num_of_entries * AE_ENTRY_SIZE));
+						SASSY_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
 	set_ae_data(pkt_payload_sub, 
 			cur_priv->term, 
@@ -223,7 +223,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	 		prev_log_term,
 	 		leader_commit_idx,
 	 		cur_priv, 
-	 		num_of_entries);
+	 		num_entries);
 }
 EXPORT_SYMBOL(setup_append_msg);
 
