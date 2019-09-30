@@ -31,8 +31,11 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3;
-	//s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
-
+	s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
+	
+	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+	param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+	param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 #if 1
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 	sassy_dbg("%d, %d, %d, %d", param1, param2, param3, param4);
@@ -67,7 +70,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// index it has updated the follower log. As an alternative, the leader could remember a state
 			// including the index after emitting the udp packet.. 
 			//priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
-			
+
 			priv->sm_log.match_index[remote_lid] = param3;
 
 		} else {
