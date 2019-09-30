@@ -9,7 +9,6 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][LE][LEADER]"
 
-
 void initialze_indices(struct consensus_priv *priv)
 {
 	int i;
@@ -21,6 +20,47 @@ void initialze_indices(struct consensus_priv *priv)
 	}
 }
 
+int _is_potential_commit_idx(struct consensus_priv *priv, int N)
+{
+	int i, hits;
+
+	hits = 0;
+
+	double_majority = priv->sdev->pminfo.num_of_targets + 1;
+
+	for(i = 0; i < MAX_NODE_ID; i++){
+		if(priv->sm_log.match_index[i] >= N) {
+			hits++;
+		}
+	}
+	return hits * 2 >= double_majority;
+}
+
+void update_commit_idx(struct consensus_priv *priv)
+{
+	int N, current_N, i;
+
+	N = priv->sm_log.match_index[0];
+
+	// each match_index is a potential new commit_idx candidate
+	for(i = 0; i < MAX_NODE_ID; i++){
+
+		current_N = priv->sm_log.match_index[i];
+
+		if(priv->sm_log.entries[current_N]->term == priv->term)
+			// majority of match_index[j] >= N and sm_log.entries[N]->term == currentTerm
+			if(_is_potential_commit_idx(priv, current_N))
+				if(current_N > N){
+					N = current_N;
+				}
+	}
+
+	if(N > priv->commit_idx){
+		priv->commit_idx = N;
+		sassy_dbg("found new commit_idx %d", N);
+	}
+
+}
 
 int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
@@ -60,7 +100,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		if(param2 == 1){
 			// append rpc success!
-			sassy_dbg("Received Reply with State=success\n");
+			sassy_dbg("Received Reply with State=success param3=%d\n",param3);
 			// update match Index for follower with <remote_lid> 
 			
 			// Asguard can potentially send multiple appendEntries RPCs, and after each RPC
@@ -72,6 +112,8 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			//priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
 
 			priv->sm_log.match_index[remote_lid] = param3;
+
+			update_commit_idx(priv);
 
 		} else {
 			// append rpc failed!

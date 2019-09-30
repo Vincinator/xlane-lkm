@@ -24,7 +24,7 @@ int apply_log_to_sm(struct state_machine_cmd_log *log)
 
 	// measure throughput here! 
 
-	sassy_dbg("Applying cmd until commit idx %d\n", log->commit_idx);
+	sassy_dbg("GEWINNE GEWINNE GEWINNE!! \n Applying cmd until commit idx %d\n", log->commit_idx);
 
 
 	return 0;
