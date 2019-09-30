@@ -193,8 +193,13 @@ u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, 
 {
 	struct sm_log_entry *entry;
 
-	if(prev_log_idx < 0){
-		sassy_dbg("Given prev_log_idx is negative!\n", prev_log_idx);
+	if(prev_log_idx == -1){
+		sassy_dbg("prev log idx is -1\n");
+		return 0;
+	}
+
+	if(prev_log_idx < -1){
+		sassy_dbg("prev log idx is invalid! %d\n", prev_log_idx);
 		return 1;
 	}
 
@@ -225,10 +230,7 @@ u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, 
 int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx)
 {
 
-	if(prev_log_term < 0)
-		return 1;
-
-	if(prev_log_idx < 0 || prev_log_idx > MAX_CONSENSUS_LOG)
+	if(prev_log_idx > MAX_CONSENSUS_LOG)
 		return 1;
 
 	if(pkt_size < 0 || pkt_size > SASSY_PROTO_CON_AE_BASE_SZ + (MAX_ENTRIES_PER_PKT * AE_ENTRY_SIZE))
@@ -256,7 +258,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
-
 
 	if(_check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx)){
 		sassy_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",

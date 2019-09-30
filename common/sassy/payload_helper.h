@@ -34,7 +34,7 @@
 #define GET_CON_AE_TERM_PTR(p) (u32 *)((char*) p + 4 + 2)
 
 // protoid(u16) + offset(u16) + opcode(u16) + term(u32)
-#define GET_CON_AE_LEADER_ID_PTR(p) (u32 *)((char*) p + 6 + 4 )
+#define GET_CON_AE_LEADER_ID_PTR(p) (u32 *)((char*) p + 6 + 4)
 
 // protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32)
 #define GET_CON_AE_PREV_LOG_IDX_PTR(p) (s32 *)((char*) p + 10 + 4)

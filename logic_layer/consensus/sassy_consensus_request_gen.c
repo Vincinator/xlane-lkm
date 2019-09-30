@@ -56,7 +56,6 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	if (test_data->running == 0)
 		return HRTIMER_NORESTART;
 
-
 	currtime  = ktime_get();
 	interval = ktime_set(1, 0);
 	hrtimer_forward(timer, currtime, interval);

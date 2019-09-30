@@ -140,6 +140,7 @@ void set_ae_data(unsigned char *pkt,
 		*included_entries = 0;
 		return;
 	}
+
 	//check if num_of_entries would exceed actual entries
 	if((first_idx + (num_of_entries - 1) )> priv->sm_log.last_idx){
 		sassy_error("BUG! can not send more entries than available... %d, %d, %d\n",
@@ -147,10 +148,11 @@ void set_ae_data(unsigned char *pkt,
 		*included_entries = 0;
 		return;
 	}
+
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 	sassy_dbg("first_idx=%d, first_idx + num_of_entries= %d", first_idx, first_idx + num_of_entries );
 
-	for(i = first_idx; i <  first_idx + num_of_entries; i++){
+	for(i = first_idx; i < first_idx + num_of_entries; i++){
 		sassy_dbg("Including Entry to Append MSG...");
 		
 		if(!entries[i]){
