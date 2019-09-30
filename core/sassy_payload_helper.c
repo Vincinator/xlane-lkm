@@ -114,7 +114,7 @@ s32 _get_next_idx(struct consensus_priv *priv, int target_id)
 	if(_check_target_id(priv, target_id))
 		next_index = priv->sm_log.next_index[target_id];
 	else
-		next_index = -1;
+		next_index = 0;
 
 	return next_index;
 }
@@ -204,7 +204,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 		// .. the next_index to the last known safe index of the receivers log.
 		// .. In this implementation the receiver sends the last known safe index
 		// .. with the append reply.
-		cur_priv->sm_log.next_index[target_id] += num_entries + 1;
+		cur_priv->sm_log.next_index[target_id] += num_entries;
 
 		sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d, num_entries=%d\n", 
 			cur_index, next_index, match_index, prev_log_term, num_entries);

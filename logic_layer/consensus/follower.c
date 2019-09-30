@@ -63,6 +63,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 			param1);
 #endif
 
+
 	hb_passive_ix =
 	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
 
