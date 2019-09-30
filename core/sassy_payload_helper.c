@@ -95,9 +95,9 @@ error:
 	return 0;
 }
 
-int _get_match_idx(struct consensus_priv *priv, int target_id)
+s32 _get_match_idx(struct consensus_priv *priv, int target_id)
 {
-	u32 match_index;
+	s32 match_index;
 
 	if(_check_target_id(priv, target_id))
 		match_index = priv->sm_log.match_index[target_id];
@@ -107,9 +107,9 @@ int _get_match_idx(struct consensus_priv *priv, int target_id)
 	return match_index;
 }
 
-int _get_next_idx(struct consensus_priv *priv, int target_id)
+s32 _get_next_idx(struct consensus_priv *priv, int target_id)
 {
-	u32 next_index;
+	s32 next_index;
 
 	if(_check_target_id(priv, target_id))
 		next_index = priv->sm_log.next_index[target_id];
@@ -119,7 +119,7 @@ int _get_next_idx(struct consensus_priv *priv, int target_id)
 	return next_index;
 }
 
-int _get_last_idx_safe(struct consensus_priv *priv)
+s32 _get_last_idx_safe(struct consensus_priv *priv)
 {
 	if(priv->sm_log.last_idx < -1)
 		priv->sm_log.last_idx = -1; // repair last index!
@@ -149,6 +149,11 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 
 	if(idx > cur_priv->sm_log.last_idx)
 		return -1;
+
+	if(idx > MAX_CONSENSUS_LOG){
+		sassy_dbg("BUG! idx > MAX_CONSENSUS_LOG. %d\n", idx);
+		return -1;
+	}
 
 	if(!cur_priv->sm_log.entries[idx]){
 		sassy_dbg("BUG! entries is null at index %d\n", idx);
@@ -180,7 +185,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	// 	return;
 	// }
 
-	prev_log_idx = _get_prev_log_term(cur_priv, next_index - 1);
+	prev_log_term = _get_prev_log_term(cur_priv, next_index == -1 ? -1 : next_index - 1 );
 
 	leader_commit_idx = cur_priv->sm_log.commit_idx;
 

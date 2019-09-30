@@ -56,6 +56,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	if (test_data->running == 0)
 		return HRTIMER_NORESTART;
 
+
 	currtime  = ktime_get();
 	interval = ktime_set(1, 0);
 	hrtimer_forward(timer, currtime, interval);
@@ -63,17 +64,27 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	if(priv->nstate != LEADER)
 		return HRTIMER_RESTART; // nothing to do, node is not a leader.
 
+	sassy_error("Appending to log (start)\n");
+
 	// write x random entries to local log (if node is leader)
 	for(i = 0; i < test_data->x; i++){
+		sassy_error("Appending to log (%d)\n", i);
+
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
+
+		if(!cur_cmd){
+			err = -ENOMEM;
+			goto error;
+		}
 		cur_cmd->sm_logvar_id = rand_id;
 		cur_cmd->sm_logvar_value = rand_value;
 		err = append_command(&priv->sm_log, cur_cmd, priv->term);
 		if(err)
 			goto error;
 	}
+	sassy_error("Appending to log (end)\n");
 
 	return HRTIMER_RESTART;
 error:
