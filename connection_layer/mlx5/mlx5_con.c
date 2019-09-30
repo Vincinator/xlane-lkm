@@ -3,7 +3,6 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 
-#include <sassy/mlx5_con.h>
 #include <sassy/sassy.h>
 #include <sassy/logger.h>
 
