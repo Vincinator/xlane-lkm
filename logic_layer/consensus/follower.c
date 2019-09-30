@@ -54,15 +54,15 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	char *pkt_payload_sub;
 	int hb_passive_ix;
 
-#if 0
-	sassy_log_le("%s, %llu, %d: Replying to append message for cluster node %d with term %d\n",
+#if 1
+	sassy_log_le("%s, %llu, %d: REPLY APPEND append_success=%d, param1=%d,logged_idx=%d \n",
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
-			rcluster_id,
-			param1);
+			append_success,
+			param1,
+			logged_idx);
 #endif
-
 
 	hb_passive_ix =
 	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;

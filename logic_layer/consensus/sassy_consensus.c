@@ -55,6 +55,8 @@ const char *opcode_string(enum le_opcode opcode)
 		return "Noop";
 	case APPEND:
 		return "Append";
+	case APPEND_REPLY:
+		return "Append Reply";
 	default:
 		return "Unknown State ";
 	}
@@ -150,9 +152,11 @@ void set_ae_data(unsigned char *pkt,
 	}
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
+
 	sassy_dbg("first_idx=%d, first_idx + num_of_entries= %d", first_idx, first_idx + num_of_entries );
 
 	for(i = first_idx; i < first_idx + num_of_entries; i++){
+		
 		sassy_dbg("Including Entry to Append MSG...");
 		
 		if(!entries[i]){
