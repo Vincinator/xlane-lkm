@@ -317,7 +317,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
-	//struct sassy_device *sdev = priv->sdev;
+	struct sassy_device *sdev = priv->sdev;
 	
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
