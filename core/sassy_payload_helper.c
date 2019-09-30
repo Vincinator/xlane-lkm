@@ -194,15 +194,15 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 		//  - thus, num_of_entries will not be 0
 
 		// Decide how many entries to update for the current target
-		//num_entries = (MAX_ENTRIES_PER_PKT < next_index - cur_index) ? 
-		//		MAX_ENTRIES_PER_PKT : next_index - cur_index ;
+		num_entries = (MAX_ENTRIES_PER_PKT < next_index - cur_index) ? 
+				MAX_ENTRIES_PER_PKT : next_index - cur_index ;
 
 		// update next_index without receiving the response from the target
 		// .. If the receiver rejects this append command, this node will set the 
 		// .. the next_index to the last known safe index of the receivers log.
 		// .. In this implementation the receiver sends the last known safe index
 		// .. with the append reply.
-		//cur_priv->sm_log.next_index[target_id] += num_entries + 1;
+		cur_priv->sm_log.next_index[target_id] += num_entries + 1;
 	}
 
 	// reserve space in sassy heartbeat for consensus LEAD
