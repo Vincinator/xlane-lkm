@@ -233,7 +233,7 @@ int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx)
 	if(prev_log_idx > MAX_CONSENSUS_LOG)
 		return 1;
 
-	if(pkt_size < 0 || pkt_size > SASSY_PROTO_CON_AE_BASE_SZ + (MAX_ENTRIES_PER_PKT * AE_ENTRY_SIZE))
+	if(pkt_size < 0 || pkt_size > SASSY_PROTO_CON_AE_BASE_SZ + (cur_priv->max_entry_per_pkt * AE_ENTRY_SIZE))
 		return 1;
 
 	return 0;
@@ -271,7 +271,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_false;
 	}
 
-	if(num_entries < 0 || num_entries > MAX_ENTRIES_PER_PKT){
+	if(num_entries < 0 || num_entries > cur_priv->max_entry_per_pkt){
 		sassy_dbg("invalid num_entries=%d\n", num_entries);
 		goto reply_false;
 	}

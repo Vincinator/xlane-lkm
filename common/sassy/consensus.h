@@ -8,9 +8,11 @@
 #define TOLERANCE_FTIMEOUT_NS 500000
 #define TOLERANCE_CTIMEOUT_NS 500000
 
-#define MAX_CONSENSUS_LOG 10 
+#define MAX_CONSENSUS_LOG 1000000
 
-#define MAX_ENTRIES_PER_PKT 100
+#define AE_ENTRY_SIZE 8
+#define MAX_AE_ENTRIES_PER_PKT 125
+
 #define MAX_THROUGPUT_LOGGER_EVENTS 10000
 
 
@@ -136,6 +138,8 @@ struct consensus_priv {
 
 	int ct_min;
 	int ct_max;
+
+	int max_entry_per_pk;
 
 	/* number of followers voted for this node */
 	int votes;
