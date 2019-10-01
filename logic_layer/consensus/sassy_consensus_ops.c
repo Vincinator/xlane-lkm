@@ -67,7 +67,7 @@ int consensus_init(struct proto_instance *ins)
 	// requires "proto_instances/%d"
 	init_logger(&ins->logger);
 
-	init_logger(&ins->throughput_logger);
+	init_logger(&priv->throughput_logger);
 
 
 	
@@ -161,7 +161,7 @@ int consensus_clean(struct proto_instance *ins)
 
 	clear_logger(&ins->logger);
 
-	clear_logger(&ins->throughput_logger);
+	clear_logger(&priv->throughput_logger);
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d", 
 		 priv->sdev->ifindex, ins->instance_id);
