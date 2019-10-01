@@ -135,12 +135,12 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 				sassy_dbg("Received LEAD from leader with lower or equal term=%u\n", param1);
 	
 			// Ignore this LEAD message, continue to send LEAD messages 
-			sassy_log_le("%s, %llu, %d: Cluster node %d also claims to be leader in term %u. Local Term=%d\n",
+			sassy_log_le("%s, %llu, %d: Cluster node %d also claims to be leader in term %u.\n",
 				nstate_string(priv->nstate),
 				rdtsc(),
+				priv->term,
 				rcluster_id,
-				param1,
-				priv->term);
+				param1);
 #endif
 		}
 	
