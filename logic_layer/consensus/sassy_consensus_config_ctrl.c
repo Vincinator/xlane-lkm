@@ -22,7 +22,7 @@ static ssize_t sassy_le_config_write(struct file *file,
 	char *input_str;
 	static const char delimiters[] = " ,;()";
 	int state = 0;
-	int fmin_tmp, fmax_tmp, cmin_tmp, cmax_tmp, max_entry_per_pkt_tmp;
+	int fmin_tmp, fmax_tmp, cmin_tmp, cmax_tmp, max_entries_per_pkt_tmp;
 	int tmp;
 
 	if (!priv)
@@ -64,18 +64,18 @@ static ssize_t sassy_le_config_write(struct file *file,
 			cmax_tmp = tmp;
 			state = 4;
 		}else if (state == 4){
-			max_entry_per_pkt_tmp = tmp;
+			max_entries_per_pkt_tmp = tmp;
 			break;
 		} 
 	}
 
 	if(!(fmin_tmp < fmax_tmp && cmin_tmp < cmax_tmp)){
 		sassy_error("Invalid Ranges! Must assure that fmin < fmax and cmin < cmax \n");
-		sassy_error("input order: fmin, fmax, cmin, cmax, max_entry_per_pkt_tmp  \n");
+		sassy_error("input order: fmin, fmax, cmin, cmax, max_entries_per_pkt_tmp  \n");
 		goto error;
 	}
 
-	if(max_entry_per_pkt_tmp > 0 && max_entry_per_pkt_tmp < MAX_AE_ENTRIES_PER_PKT) {
+	if(max_entries_per_pkt_tmp > 0 && max_entries_per_pkt_tmp < MAX_AE_ENTRIES_PER_PKT) {
 		sassy_error("Invalid for entries per consensus payload!\n");
 		sassy_error("Must be in (0,%d) interval!\n", MAX_AE_ENTRIES_PER_PKT);
 		goto error;
@@ -85,7 +85,7 @@ static ssize_t sassy_le_config_write(struct file *file,
 	priv->ft_max = fmax_tmp;
 	priv->ct_min = cmin_tmp;
 	priv->ct_max = cmax_tmp;
-	priv->max_entry_per_pkt = max_entry_per_pkt_tmp;
+	priv->max_entries_per_pkt = max_entries_per_pkt_tmp;
 
 
 	return count;

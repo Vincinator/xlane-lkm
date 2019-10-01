@@ -196,8 +196,8 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 		//  - thus, num_of_entries will not be 0
 
 		// Decide how many entries to update for the current target
-		num_entries = (cur_priv->max_entry_per_pkt < cur_index - next_index + 1) ? 
-				cur_priv->max_entry_per_pkt : (cur_index - next_index + 1);
+		num_entries = (cur_priv->max_entries_per_pkt < cur_index - next_index + 1) ? 
+				cur_priv->max_entries_per_pkt : (cur_index - next_index + 1);
 
 		// update next_index without receiving the response from the target
 		// .. If the receiver rejects this append command, this node will set the 
