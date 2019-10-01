@@ -30,7 +30,7 @@ int consensus_init(struct proto_instance *ins)
 	priv->sm_log.last_idx = -1;
 	priv->sm_log.commit_idx = -1;
 	priv->sm_log.last_applied = -1;
-	priv->sm_log.max_entries = priv->max_consensus_log;
+	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
 
 	ins->logger.name = "consensus_le";
 	ins->logger.instance_id = ins->instance_id;
