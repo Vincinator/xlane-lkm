@@ -153,11 +153,7 @@ void set_ae_data(unsigned char *pkt,
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	sassy_dbg("first_idx=%d, first_idx + num_of_entries= %d", first_idx, first_idx + num_of_entries );
-
 	for(i = first_idx; i < first_idx + num_of_entries; i++){
-		
-		sassy_dbg("Including Entry to Append MSG...");
 		
 		if(!entries[i]){
 			sassy_dbg("BUG! - entries at %d is null", i);
@@ -168,9 +164,6 @@ void set_ae_data(unsigned char *pkt,
 			sassy_dbg("BUG! - entries cmd at %d is null", i);
 			return;
 		}
-
-		sassy_dbg("cmd id=%d cmd val=%d\n",
-			entries[i]->cmd->sm_logvar_id, entries[i]->cmd->sm_logvar_value);
 
 		// write entry data to payload
 		*cur_ptr = entries[i]->cmd->sm_logvar_id;

@@ -157,7 +157,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 
 	priv->votes++;
 
-#if 1
+#if 0
 	sassy_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
 					nstate_string(priv->nstate),
 					rdtsc(),
@@ -170,7 +170,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 
 	if (priv->votes * 2 >= (priv->sdev->pminfo.num_of_targets + 1)) {
 
-#if 1
+#if 0
 		sassy_log_le("%s, %llu, %d: got majority with %d from %d possible votes \n",
 				nstate_string(priv->nstate),
 				rdtsc(),
@@ -200,12 +200,8 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	struct sassy_device *sdev = priv->sdev;
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
-	s32 param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-	s32 param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
-	s32 param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
-	s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
-
-#if 1
+	s32 param1, param2, param3, param4;
+#if 0
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 #endif
 	switch(opcode){
@@ -218,6 +214,11 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		// param3 interpreted as lastLogIndex
 		// param4 interpreted as lastLogTerm
 
+		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
+		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
+
 		if(check_handle_nomination(priv, param1, param2, param3, param4)){
 		  	node_transition(ins, FOLLOWER);
 		  	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
@@ -227,9 +228,11 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	case NOOP:
 		break;
 	case APPEND:
+		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+
 		if(param1 >= priv->term){
 
-#if 1
+#if 0
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
@@ -237,7 +240,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, rdtsc());
 
 		} else {
-#if 1
+#if 0
 
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower term=%u\n", param1);

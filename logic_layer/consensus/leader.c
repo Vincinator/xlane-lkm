@@ -73,14 +73,6 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	s32 param1, param2, param3;
 	s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 	
-	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-	param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
-	param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
-#if 1
-	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
-	sassy_dbg("opcode=%d, p1=%d, p2=%d, p3=%d, p4=%d",opcode, param1, param2, param3, param4);
-#endif 
-
 	switch(opcode){
 	case VOTE:
 		break;
@@ -92,7 +84,6 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		// param1 intepreted as last term of follower
 		// param2 interpreted as success 
 		// param3 contains last idx in follower log 
-		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 

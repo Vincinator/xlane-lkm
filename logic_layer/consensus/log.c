@@ -97,7 +97,6 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 
 	log->entries[last_idx + 1] = entry;
 	log->last_idx++; // increase only if it is safe to access the entries array at last_idx! (parallel access)
-	sassy_dbg("Appended Log Entry - new last index: %d\n", log->last_idx);
 
 	return 0;
 error:

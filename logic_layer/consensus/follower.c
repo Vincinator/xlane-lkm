@@ -54,7 +54,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	char *pkt_payload_sub;
 	int hb_passive_ix;
 
-#if 1
+#if 0
 	sassy_log_le("%s, %llu, %d: REPLY APPEND append_success=%d, param1=%d,logged_idx=%d \n",
 			nstate_string(priv->nstate),
 			rdtsc(),
@@ -325,10 +325,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
- 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-	param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
-	param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
-	param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
+
 
 #if 1
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
@@ -342,7 +339,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case VOTE:
 		break;
 	case NOMI:	
-
+	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
+		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 	 	if(check_handle_nomination(priv, param1, param2, param3, param4)){
 		 	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 			reset_ftimeout(ins);
