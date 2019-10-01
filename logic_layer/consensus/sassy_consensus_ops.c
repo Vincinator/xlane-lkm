@@ -29,7 +29,7 @@ int consensus_init(struct proto_instance *ins)
 	priv->sm_log.commit_idx = -1;
 	priv->sm_log.last_applied = -1;
 	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
-	
+
 	ins->logger.name = "consensus_le";
 
 	ins->logger.instance_id = ins->instance_id;
@@ -159,7 +159,9 @@ int consensus_clean(struct proto_instance *ins)
 
 	remove_le_config_ctrl_interfaces(priv);
 
-	clear_logger(ins);
+	clear_logger(&ins->logger);
+
+	clear_logger(&ins->throughput_logger);
 
 	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d", 
 		 priv->sdev->ifindex, ins->instance_id);
