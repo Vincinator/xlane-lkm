@@ -12,19 +12,19 @@
 #define LOG_PREFIX "[SASSY][RSM]"
 
 
-int apply_log_to_sm(struct state_machine_cmd_log *log)
+int apply_log_to_sm(struct consensus_priv *priv)
 {
 	int err;
+	struct state_machine_cmd_log *log;
+	int applying;
 
-	if(!log) {
-		err = -EINVAL;
-		sassy_error("Log ptr points to NULL\n");
-		goto error;
-	}
+	log = &priv->sm_log;
+	applying = log->commit_idx - log->last_applied;
 
-	// measure throughput here! 
 
-	sassy_dbg("GEWINNE GEWINNE GEWINNE!! \n Applying cmd until commit idx %d\n", log->commit_idx);
+	write_log(&priv->throughput_logger, applying, rdtsc());
+
+	sassy_dbg("Added %d commands to State Machine. \n", applying);
 
 
 	return 0;
@@ -38,13 +38,7 @@ int commit_log(struct consensus_priv *priv)
 	int err;
 	struct state_machine_cmd_log *log = &priv->sm_log; 
 
-	if(!log) {
-		err = -EINVAL;
-		sassy_error("Log ptr points to NULL\n");
-		goto error;
-	}
-
-	err = apply_log_to_sm(log);
+	err = apply_log_to_sm(priv);
 
 	if(err)
 		goto error;

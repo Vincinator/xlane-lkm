@@ -29,12 +29,14 @@ void logger_state_transition_to(struct sassy_logger *slog,
 	slog->state = state;
 }
 
+
 int write_log(struct sassy_logger *slog,
 			  int type, uint64_t tcs)
 {
 	
 	if (slog->state != LOGGER_RUNNING)
 		return 0;
+
 
 	if (unlikely(slog->current_entries > LOGGER_EVENT_LIMIT)) {
 
@@ -171,11 +173,10 @@ static const struct file_operations sassy_log_ops = {
 };
 
 
-static int init_logger_out(struct proto_instance *ins)
+static int init_logger_out(struct sassy_logger *slog)
 {
 	int err;
 	char name_buf[MAX_SASSY_PROC_NAME];
-	struct sassy_logger *slog = &ins->logger;
 
 
 	if (!slog) {
@@ -184,8 +185,8 @@ static int init_logger_out(struct proto_instance *ins)
 		goto error;
 	}
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log",
-		 ins->logger.ifindex, ins->instance_id);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log_%s",
+		 slog->ifindex, slog->instance_id, slog->name);
 
 
 	proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL, &sassy_log_ops, slog);
@@ -198,17 +199,16 @@ error:
 }
 
 
-int init_logger(struct proto_instance *ins) 
+int init_logger(struct sassy_logger *slog) 
 {
 	int err;
 	int i;
-	struct sassy_logger *slog = &ins->logger;
 
 	err = 0;
 
-	if (!ins||!slog) {
+	if (!slog) {
 		err = -EINVAL;
-		sassy_error(" ins or logger device is NULL %s\n", __FUNCTION__);
+		sassy_error("logger device is NULL %s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -223,9 +223,9 @@ int init_logger(struct proto_instance *ins)
 	
 	slog->current_entries = 0;
 
-	init_logger_out(ins);
+	init_logger_out(slog);
 
-	init_logger_ctrl(ins);
+	init_logger_ctrl(slog);
 
 	logger_state_transition_to(slog, LOGGER_READY);
 
@@ -233,18 +233,17 @@ error:
 	return err;
 }
 
-void remove_logger_ifaces(struct proto_instance *ins)
+void remove_logger_ifaces(struct sassy_logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
-	struct sassy_logger *slog = &ins->logger;
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log",
-			 slog->ifindex, slog->instance_id);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log_%s",
+			 slog->ifindex, slog->instance_id, slog->name);
 	
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/ctrl",
-			 slog->ifindex, slog->instance_id);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/ctrl_%s",
+			 slog->ifindex, slog->instance_id, slog->name);
 
 	remove_proc_entry(name_buf, NULL);
 }

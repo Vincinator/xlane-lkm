@@ -29,8 +29,23 @@ int consensus_init(struct proto_instance *ins)
 	priv->sm_log.commit_idx = -1;
 	priv->sm_log.last_applied = -1;
 	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
-
 	
+	ins->logger.name = "consensus_le";
+
+	ins->logger.instance_id = ins->instance_id;
+	
+	priv->throughput_logger.instance_id = ins->instance_id;
+	
+	priv->throughput_logger.name = "consensus_throughput";
+
+	priv->throughput_logger.events = kmalloc_array(MAX_THROUGPUT_LOGGER_EVENTS, sizeof(struct logger_event *), GFP_KERNEL);
+	
+
+	if(!priv->throughput_logger.events){
+		sassy_dbg("Not enough memory for throughput_logger of size %d", MAX_THROUGPUT_LOGGER_EVENTS);
+		//BUG();
+	}
+
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
 	
 	if(!priv->sm_log.entries){
@@ -50,7 +65,11 @@ int consensus_init(struct proto_instance *ins)
 	init_eval_ctrl_interfaces(priv);
 	
 	// requires "proto_instances/%d"
-	init_logger(ins);
+	init_logger(&ins->logger);
+
+	init_logger(&ins->throughput_logger);
+
+
 	
 	return 0;
 }

@@ -11,7 +11,8 @@ int echo_init(struct proto_instance *ins)
 
 	sassy_dbg("echo init");
 
-    init_logger(ins);
+
+    //init_logger(&ins->logger);
 
 	return 0;
 }

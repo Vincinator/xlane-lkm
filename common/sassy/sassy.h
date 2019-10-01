@@ -179,7 +179,7 @@ struct sassy_logger {
 
 	int ifindex; 
 
-	int instance_id;
+	u16 instance_id;
 
 	enum logger_state state;
 
@@ -515,11 +515,11 @@ void set_le_term(unsigned char *pkt, u32 term);
 int compare_mac(unsigned char *m1, unsigned char *m2);
 
 void init_log_ctrl_base(struct sassy_device *sdev);
-void init_logger_ctrl(struct proto_instance *ins);
+void init_logger_ctrl(struct sassy_logger *slog);
 
 
-int init_logger(struct proto_instance *ins);
-void clear_logger(struct proto_instance *ins);
+int init_logger(struct sassy_logger *slog);
+void clear_logger(struct sassy_logger *slog);
 
 int sassy_log_stop(struct sassy_logger *slog);
 int sassy_log_start(struct sassy_logger *slog);

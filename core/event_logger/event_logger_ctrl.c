@@ -92,18 +92,17 @@ static const struct file_operations sassy_event_ctrl_ops = {
 	.release = single_release,
 };
 
-void clear_logger(struct proto_instance *ins)
+void clear_logger(struct sassy_logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
-	struct sassy_logger *slog = &ins->logger;
 	
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log",
-			 slog->ifindex, ins->instance_id);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log_%s",
+			 slog->ifindex, slog->instance_id, slog->name);
 
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/ctrl",
-			 slog->ifindex, ins->instance_id);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/ctrl_%s",
+			 slog->ifindex, slog->instance_id, slog->name);
 
 	remove_proc_entry(name_buf, NULL);
 	
@@ -111,18 +110,17 @@ void clear_logger(struct proto_instance *ins)
 }
 EXPORT_SYMBOL(clear_logger);
 
-void init_logger_ctrl(struct proto_instance *ins)
+void init_logger_ctrl(struct sassy_logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
-	 struct sassy_logger *slog = &ins->logger;
 
-	if (!ins||!slog) {
+	if (!slog) {
 		sassy_error("ins or Logs are not initialized!\n");
 		return -ENOMEM;
 	}
 	
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/ctrl",
-			 slog->ifindex, ins->instance_id);
+	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/ctrl_%s",
+			 slog->ifindex, slog->instance_id, slog->name);
 
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog);
 	

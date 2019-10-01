@@ -11,6 +11,7 @@
 #define MAX_CONSENSUS_LOG 100000 
 
 #define MAX_ENTRIES_PER_PKT 10
+#define MAX_THROUGPUT_LOGGER_EVENTS 10000
 
 
 enum le_state {
@@ -140,6 +141,8 @@ struct consensus_priv {
 	int votes;
 
 	struct state_machine_cmd_log sm_log;
+	struct sassy_logger throughput_logger;
+
 };
 
 
