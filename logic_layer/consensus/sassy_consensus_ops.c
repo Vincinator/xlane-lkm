@@ -32,7 +32,7 @@ int consensus_init(struct proto_instance *ins)
 
 	ins->logger.name = "consensus_le";
 	ins->logger.instance_id = ins->instance_id;
-	ins->logger.ifindex = sdev->ifindex;
+	ins->logger.ifindex = priv->sdev->ifindex;
 
 	priv->throughput_logger.instance_id = ins->instance_id;
 	priv->throughput_logger.ifindex = priv->sdev->ifindex;
