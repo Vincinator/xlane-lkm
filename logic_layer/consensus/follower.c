@@ -227,13 +227,13 @@ u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, 
 }
 
 
-int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx)
+int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_entry_per_pkt)
 {
 
 	if(prev_log_idx > MAX_CONSENSUS_LOG)
 		return 1;
 
-	if(pkt_size < 0 || pkt_size > SASSY_PROTO_CON_AE_BASE_SZ + (cur_priv->max_entry_per_pkt * AE_ENTRY_SIZE))
+	if(pkt_size < 0 || pkt_size > SASSY_PROTO_CON_AE_BASE_SZ + (max_entry_per_pkt * AE_ENTRY_SIZE))
 		return 1;
 
 	return 0;
@@ -259,7 +259,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
-	if(_check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx)){
+	if(_check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx, priv->max_entry_per_pkt)){
 		sassy_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
 				  pkt_size, *prev_log_term, *prev_log_idx);
 		goto reply_false;
@@ -271,7 +271,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_false;
 	}
 
-	if(num_entries < 0 || num_entries > cur_priv->max_entry_per_pkt){
+	if(num_entries < 0 || num_entries > priv->max_entry_per_pkt){
 		sassy_dbg("invalid num_entries=%d\n", num_entries);
 		goto reply_false;
 	}
