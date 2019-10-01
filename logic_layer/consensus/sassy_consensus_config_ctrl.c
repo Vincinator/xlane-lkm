@@ -75,7 +75,7 @@ static ssize_t sassy_le_config_write(struct file *file,
 		goto error;
 	}
 
-	if(max_entries_per_pkt_tmp > 0 && max_entries_per_pkt_tmp < MAX_AE_ENTRIES_PER_PKT) {
+	if(!(max_entries_per_pkt_tmp > 0 && max_entries_per_pkt_tmp < MAX_AE_ENTRIES_PER_PKT)) {
 		sassy_error("Invalid for entries per consensus payload!\n");
 		sassy_error("Must be in (0,%d) interval!\n", MAX_AE_ENTRIES_PER_PKT);
 		goto error;
