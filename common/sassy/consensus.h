@@ -85,6 +85,12 @@ struct state_machine_cmd_log {
 	 */
 	u32 max_entries;
 
+	/* locked if node currently writes to this consensus log.
+	 * this lock prevents the race condition when a follower can not keep up
+	 * with the updates from the current leader.
+	 */
+	int lock;
+
 	struct sm_log_entry **entries;
 
 };
@@ -140,12 +146,6 @@ struct consensus_priv {
 	int ct_max;
 
 	int max_entries_per_pkt;
-
-	/* locked if node currently writes to this consensus log.
-	 * this lock prevents the race condition when a follower can not keep up
-	 * with the updates from the current leader.
-	 */
-	int lock;
 
 	/* number of followers voted for this node */
 	int votes;
