@@ -35,6 +35,34 @@ void testcase_stop_timer(struct consensus_priv *priv)
 void testcase_one_shot_big_log(struct consensus_priv *priv)
 {
 	struct state_machine_cmd_log *log = &priv->sm_log;
+	int i, err;
+	struct sm_command *cur_cmd;
+	err = 0;
+	u32 rand_value, rand_id;
+
+	for(i = 0; i < MAX_CONSENSUS_LOG; i++){
+
+		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
+		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
+		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
+
+		if(!cur_cmd){
+			err = -ENOMEM;
+			goto error;
+		}
+		cur_cmd->sm_logvar_id = rand_id;
+		cur_cmd->sm_logvar_value = rand_value;
+		err = append_command(&priv->sm_log, cur_cmd, priv->term);
+		
+		if(err)
+			goto error;
+	}
+
+	return 0;
+
+error:
+	sassy_error("Evaluation Crashed errorcode=%d\n", err);
+	return err;
 
 
 }
@@ -63,11 +91,9 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	if(priv->nstate != LEADER)
 		return HRTIMER_RESTART; // nothing to do, node is not a leader.
 
-	sassy_error("Appending to log (start)\n");
 
 	// write x random entries to local log (if node is leader)
 	for(i = 0; i < test_data->x; i++){
-		sassy_error("Appending to log (%d)\n", i);
 
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
@@ -83,7 +109,6 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 		if(err)
 			goto error;
 	}
-	sassy_error("Appending to log (end)\n");
 
 	return HRTIMER_RESTART;
 error:

@@ -357,7 +357,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 */
 		if(param1 > priv->term){
 
-#if 1
+#if 0
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 #endif
@@ -388,7 +388,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 			}else {
-#if 1
+#if 0
 				if(sdev->verbose >= 2)
 					sassy_dbg("Received message from new leader term=%u\n", param1);
 #endif

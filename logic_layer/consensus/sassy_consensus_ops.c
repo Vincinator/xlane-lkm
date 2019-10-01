@@ -25,8 +25,6 @@ int consensus_init(struct proto_instance *ins)
 	priv->term = 0;
 	priv->state = LE_READY;
 
-
-
 	priv->sm_log.last_idx = -1;
 	priv->sm_log.commit_idx = -1;
 	priv->sm_log.last_applied = -1;
