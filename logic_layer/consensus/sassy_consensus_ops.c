@@ -168,7 +168,7 @@ int consensus_clean(struct proto_instance *ins)
 	
 	remove_proc_entry(name_buf, NULL);	
 
-	sassy_dbg("last_idx of sm log is %d\n", priv->sm_log.last_idx);
+	sassy_dbg("Cleaning %d entries from sm log\n", priv->sm_log.last_idx);
 
 	if(priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
 		for(i = 0; i < priv->sm_log.last_idx; i++) {
