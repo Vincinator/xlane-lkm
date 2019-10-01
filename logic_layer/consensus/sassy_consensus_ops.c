@@ -34,9 +34,9 @@ int consensus_init(struct proto_instance *ins)
 	ins->logger.instance_id = ins->instance_id;
 	ins->logger.ifindex = sdev->ifindex;
 
-	cpriv->throughput_logger.instance_id = ins->instance_id;
-	cpriv->throughput_logger.ifindex = cpriv->sdev->ifindex;
-	cpriv->throughput_logger.name = "consensus_throughput";
+	priv->throughput_logger.instance_id = ins->instance_id;
+	priv->throughput_logger.ifindex = priv->sdev->ifindex;
+	priv->throughput_logger.name = "consensus_throughput";
 
 	priv->throughput_logger.events = kmalloc_array(MAX_THROUGPUT_LOGGER_EVENTS, sizeof(struct logger_event *), GFP_KERNEL);
 	
