@@ -176,6 +176,7 @@ void set_ae_data(unsigned char *pkt,
 
 int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2, u32 param3, u32 param4)
 {
+
 	if(priv->term < param1) {
 		if (priv->voted == param1) {
 #if 1

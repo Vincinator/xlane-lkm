@@ -141,6 +141,12 @@ struct consensus_priv {
 
 	int max_entries_per_pkt;
 
+	/* locked if node currently writes to this consensus log.
+	 * this lock prevents the race condition when a follower can not keep up
+	 * with the updates from the current leader.
+	 */
+	int lock;
+
 	/* number of followers voted for this node */
 	int votes;
 

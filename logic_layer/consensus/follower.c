@@ -259,27 +259,32 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
+	if(priv->sm_log.lock)
+		goto reply_false;
+
+	priv->sm_log.lock = 1;
+
 	if(_check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx, priv->max_entries_per_pkt)){
 		sassy_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
 				  pkt_size, *prev_log_term, *prev_log_idx);
-		goto reply_false;
+		goto reply_false_unlock;
 	}
 
 	if(_check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)){
 		sassy_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n", 
 				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
-		goto reply_false;
+		goto reply_false_unlock;
 	}
 
 	if(num_entries < 0 || num_entries > priv->max_entries_per_pkt){
 		sassy_dbg("invalid num_entries=%d\n", num_entries);
-		goto reply_false;
+		goto reply_false_unlock;
 	}
 
 	// append entries and if it fails, reply false
 	if(append_commands(priv, pkt, num_entries, pkt_size)){
 		sassy_dbg("append commands failed\n");
-		goto reply_false;
+		goto reply_false_unlock;
 	}
 
 	// check commit index
@@ -288,13 +293,13 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	// check if leader_commit_idx is out of bounds
 	if(*leader_commit_idx < -1 || *leader_commit_idx > MAX_CONSENSUS_LOG) {
 		sassy_dbg("Out of bounds: leader_commit_idx=%d", *leader_commit_idx);
-		goto reply_false;
+		goto reply_false_unlock;
 	}
 
 	// check if leader_commit_idx points to a valid entry
 	if(*leader_commit_idx > priv->sm_log.last_idx){
 		sassy_dbg("Not referencing a valid log entry: leader_commit_idx=%d", *leader_commit_idx);
-		goto reply_false;
+		goto reply_false_unlock;
 	}
 
 	// Check if commit index must be updated
@@ -310,8 +315,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	return;
 
+reply_false_unlock:
+	priv->sm_log.lock = 0;
 reply_false:
-
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
 
 }
