@@ -139,7 +139,7 @@ struct consensus_priv {
 	int ct_min;
 	int ct_max;
 
-	int max_entry_per_pk;
+	int max_entry_per_pkt;
 
 	/* number of followers voted for this node */
 	int votes;
