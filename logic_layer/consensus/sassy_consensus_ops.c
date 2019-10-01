@@ -30,14 +30,6 @@ int consensus_init(struct proto_instance *ins)
 	priv->sm_log.last_applied = -1;
 	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
 
-	ins->logger.name = "consensus_le";
-
-	ins->logger.instance_id = ins->instance_id;
-	
-	priv->throughput_logger.instance_id = ins->instance_id;
-	
-	priv->throughput_logger.name = "consensus_throughput";
-
 	priv->throughput_logger.events = kmalloc_array(MAX_THROUGPUT_LOGGER_EVENTS, sizeof(struct logger_event *), GFP_KERNEL);
 	
 

@@ -265,9 +265,17 @@ struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
 	ins->proto_type = SASSY_PROTO_CONSENSUS;
 	ins->ctrl_ops = consensus_ops;
 	ins->name = "consensus";
-	ins->logger.name = "consensus";
+
+
+	ins->logger.name = "consensus_le";
+	ins->logger.instance_id = ins->instance_id;
 	ins->logger.ifindex = sdev->ifindex;
-	
+
+	cpriv->throughput_logger.instance_id = ins->instance_id;
+	cpriv->throughput_logger.ifindex = priv->sdev->ifindex;
+	cpriv->throughput_logger.name = "consensus_throughput";
+
+
 	ins->proto_data = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
 	
 	cpriv = (struct consensus_priv *)ins->proto_data;
