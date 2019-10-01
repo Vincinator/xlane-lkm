@@ -528,7 +528,7 @@ int sassy_log_reset(struct sassy_logger *slog);
 const char *logger_state_string(enum logger_state state);
 char *le_state_name(struct sassy_device *sdev);
 void set_all_targets_dead(struct sassy_device *sdev);
-void remove_logger_ifaces(struct proto_instance *ins);
+void remove_logger_ifaces(struct sassy_logger *slog);
 
 void init_proto_instance_ctrl(struct sassy_device *sdev);
 void remove_proto_instance_ctrl(struct sassy_device *sdev);
