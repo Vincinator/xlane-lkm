@@ -272,7 +272,7 @@ struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
 	ins->logger.ifindex = sdev->ifindex;
 
 	cpriv->throughput_logger.instance_id = ins->instance_id;
-	cpriv->throughput_logger.ifindex = priv->sdev->ifindex;
+	cpriv->throughput_logger.ifindex = cpriv->sdev->ifindex;
 	cpriv->throughput_logger.name = "consensus_throughput";
 
 
