@@ -35,7 +35,7 @@
 #define MAX_CPU_NUMBER 55
 
 
-#define MAX_SASSY_PAYLOAD_BYTES 1024 // asuming an ethernet mtu of ~1500 bytes
+#define MAX_SASSY_PAYLOAD_BYTES 1400 // asuming an ethernet mtu of ~1500 bytes
 
 #define SASSY_PAYLOAD_BYTES 1000
 #define SASSY_HEADER_BYTES 64 // TODO: this should be more than enough for UDP/ipv4

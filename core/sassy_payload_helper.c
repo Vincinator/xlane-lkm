@@ -215,6 +215,9 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 		sassy_reserve_proto(instance_id, spay,
 						SASSY_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
+	if(!pkt_payload_sub)
+		return;
+
 	set_ae_data(pkt_payload_sub, 
 			cur_priv->term, 
  	 		cur_priv->node_id,

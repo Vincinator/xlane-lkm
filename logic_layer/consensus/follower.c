@@ -72,6 +72,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 
 	pkt_payload_sub = 
  		sassy_reserve_proto(ins->instance_id, pkt_payload, SASSY_PROTO_CON_PAYLOAD_SZ);
+	
 
  	if(!pkt_payload_sub) {
  		sassy_error("Sassy packet full! This error is not handled - not implemented\n");
