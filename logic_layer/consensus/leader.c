@@ -57,7 +57,7 @@ void update_commit_idx(struct consensus_priv *priv)
 
 	if(N > priv->sm_log.commit_idx){
 		priv->sm_log.commit_idx = N;
-		sassy_dbg("found new commit_idx %d", N);
+		// sassy_dbg("found new commit_idx %d", N);
 	}
 
 }
@@ -91,7 +91,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		if(param2 == 1){
 			// append rpc success!
-			sassy_dbg("Received Reply with State=success param3=%d\n",param3);
+			//sassy_dbg("Received Reply with State=success param3=%d\n",param3);
 			// update match Index for follower with <remote_lid> 
 			
 			// Asguard can potentially send multiple appendEntries RPCs, and after each RPC
@@ -108,7 +108,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		} else {
 			// append rpc failed!
-			sassy_dbg("Received Reply with State=failed\n");
+			//sassy_dbg("Received Reply with State=failed\n");
 
 			// decrement nextIndex for follower with <remote_lid>
 			priv->sm_log.next_index[remote_lid] = param3 + 1;
@@ -130,7 +130,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 
 		} else {
-#if 1
+#if 0
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received LEAD from leader with lower or equal term=%u\n", param1);
 	

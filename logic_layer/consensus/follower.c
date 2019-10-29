@@ -333,7 +333,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	s32 param1, param2, param3, param4;
 
 
-#if 1
+#if 0
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 #endif
 
@@ -405,7 +405,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 * Ignoring this LEAD operation and let the countdown continue to go down.
 		 */
 		else {
-#if 1
+#if 0
 			if(sdev->verbose >= 2)
 				sassy_dbg("Received APPEND from leader with lower term=%u\n", param1);
 #endif
@@ -500,7 +500,7 @@ int start_follower(struct proto_instance *ins)
 
 	init_timeout(ins);
 
-#if 1
+#if 0
 	sassy_dbg("Node became a follower\n");
 #endif
 
