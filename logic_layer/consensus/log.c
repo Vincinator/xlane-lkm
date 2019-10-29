@@ -24,7 +24,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
 	write_log(&priv->throughput_logger, applying, rdtsc());
 
-	sassy_dbg("Added %d commands to State Machine. \n", applying);
+//	sassy_dbg("Added %d commands to State Machine. \n", applying);
 
 
 	return 0;

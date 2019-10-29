@@ -298,7 +298,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	// check if leader_commit_idx points to a valid entry
 	if(*leader_commit_idx > priv->sm_log.last_idx){
-		sassy_dbg("Not referencing a valid log entry: leader_commit_idx=%d", *leader_commit_idx);
+//		sassy_dbg("Not referencing a valid log entry: leader_commit_idx=%d", *leader_commit_idx);
 		goto reply_false_unlock;
 	}
 
