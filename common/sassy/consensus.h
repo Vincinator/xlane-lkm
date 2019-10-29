@@ -3,7 +3,7 @@
 #include <sassy/logger.h>
 #include <sassy/sassy.h>
 
-#define MAX_NODE_ID 5
+#define MAX_NODE_ID 10
 
 #define TOLERANCE_FTIMEOUT_NS 500000
 #define TOLERANCE_CTIMEOUT_NS 500000
