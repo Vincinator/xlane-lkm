@@ -509,7 +509,7 @@ int start_follower(struct proto_instance *ins)
 
 // Eval Version: Factor out the randomness for evaluation only.
 
-	if(priv->sdev->sdev->cluster_id == 1) {
+	if(priv->sdev->cluster_id == 1) {
 		// start candidature
 		node_transition(priv->ins, CANDIDATE);
 		write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
