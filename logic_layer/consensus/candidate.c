@@ -182,6 +182,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 		// DEBUG: Check if Leader code has an issue..
 		err = node_transition(ins, LEADER);
 		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, rdtsc());
+		priv->accu_rand = 0;
 
 		if (err) {
 			sassy_error("Error occured during the transition to leader role\n");

@@ -171,6 +171,7 @@ enum logger_state {
 struct logger_event {
 	uint64_t timestamp_tcs;
 	int type;
+	uint64_t accu_random_timeouts; 
 };
 
 

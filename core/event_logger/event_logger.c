@@ -29,6 +29,31 @@ void logger_state_transition_to(struct sassy_logger *slog,
 	slog->state = state;
 }
 
+int write_log_accu_rand(struct sassy_logger *slog,
+			  int type, uint64_t tcs, uint64_t accu)
+{
+	
+	if (slog->state != LOGGER_RUNNING)
+		return 0;
+
+
+	if (unlikely(slog->current_entries > LOGGER_EVENT_LIMIT)) {
+
+		sassy_dbg("Logs are full! Stopped event logging. %s\n", __FUNCTION__);
+
+		sassy_log_stop(slog);
+		logger_state_transition_to(slog, LOGGER_LOG_FULL);
+		return -ENOMEM;
+	}
+
+	slog->events[slog->current_entries].timestamp_tcs = tcs;
+	slog->events[slog->current_entries].type = type;
+	slog->events[slog->current_entries].accu_random_timeouts = accu;
+	slog->current_entries += 1;
+
+	return 0;
+}
+EXPORT_SYMBOL(write_log);
 
 int write_log(struct sassy_logger *slog,
 			  int type, uint64_t tcs)
@@ -49,6 +74,8 @@ int write_log(struct sassy_logger *slog,
 
 	slog->events[slog->current_entries].timestamp_tcs = tcs;
 	slog->events[slog->current_entries].type = type;
+	slog->events[slog->current_entries].accu_random_timeouts = 0;
+
 	slog->current_entries += 1;
 
 	return 0;
@@ -150,10 +177,11 @@ static int sassy_log_show(struct seq_file *m, void *v)
 
 	//BUG_ON(!slog);
 
-	for (i = 0; i < slog->current_entries; i++)
+	for (i = 0; i < slog->current_entries; i++){
 		seq_printf(m, "%d, %llu\n", 
-							slog->events[i].type, 
-							slog->events[i].timestamp_tcs);
+				slog->events[i].type, 
+				slog->events[i].timestamp_tcs);
+	}
 
 	return 0;
 }

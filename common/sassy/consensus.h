@@ -5,7 +5,7 @@
 
 #define MAX_NODE_ID 10
 
-#define TOLERANCE_FTIMEOUT_NS 500000
+#define TOLERANCE_FTIMEOUT_NS 5000
 #define TOLERANCE_CTIMEOUT_NS 500000
 
 #define MAX_CONSENSUS_LOG 100000
@@ -127,6 +127,8 @@ struct consensus_priv {
 	int cluster_mapping[MAX_NODE_ID];
 
 	u32 term;
+
+	uint64_t accu_rand;
 
 	/* last term this node has voted in. Initialized with -1*/
 	u32 voted; 

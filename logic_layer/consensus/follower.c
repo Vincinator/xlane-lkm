@@ -438,6 +438,8 @@ void init_timeout(struct proto_instance *ins)
 	priv->ftimer_init = 1;
 
 	priv->ftimer.function = &_handle_follower_timeout;
+	
+	priv->accu_rand = timeout; // first rand timeout of this follower
 
 #if 0
 	sassy_log_le("%s, %llu, %d: Init follower timeout to %lld ms. \n",
@@ -461,6 +463,8 @@ void reset_ftimeout(struct proto_instance *ins)
 	hrtimer_cancel(&priv->ftimer);
 	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
+	
+	priv->accu_rand = timeout; // consequetive rand timeout of this follower
 
 #if 0
 	sassy_log_le("%s, %llu, %d: Set follower timeout to %lld ms.\n",
@@ -498,7 +502,18 @@ int start_follower(struct proto_instance *ins)
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;
 
-	init_timeout(ins);
+
+// True Raft Version: 
+
+ 	//init_timeout(ins);
+
+// Eval Version: Factor out the randomness for evaluation only.
+
+	if(priv->sdev->sdev->cluster_id == 1) {
+		// start candidature
+		node_transition(priv->ins, CANDIDATE);
+		write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
+	}
 
 #if 0
 	sassy_dbg("Node became a follower\n");
