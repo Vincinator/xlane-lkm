@@ -96,13 +96,24 @@ int consensus_start(struct proto_instance *ins)
 	}
 
 	le_state_transition_to(priv, LE_RUNNING);
-
-	err = node_transition(ins, FOLLOWER);
-
+	
 	write_log(&ins->logger, START_CONSENSUS, rdtsc());
-
+	
+	err = node_transition(ins, FOLLOWER);
+	
 	if (err)
 		goto error;
+	
+	// Eval Version: Factor out the randomness for evaluation only.
+	// node with cluster id 1 starts self nomination directly on consensus start 
+	if(priv->sdev->cluster_id == 1) {
+		
+		// start candidature
+		sassy_dbg(" Node is selected to start the candidature\n");
+
+		node_transition(priv->ins, CANDIDATE);
+		write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
+	}
 
 	return 0;
 

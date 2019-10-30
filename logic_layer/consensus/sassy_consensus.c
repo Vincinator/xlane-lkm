@@ -179,11 +179,11 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 
 	if(priv->term < param1) {
 		if (priv->voted == param1) {
-#if 0
+#if 1
 		sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
 #endif	
 			return 0;
-		} else {			
+		} else {	Für 		
 			// if local log is empty, just grant the vote!
 			if(priv->sm_log.last_idx == -1)
 				return 1;
