@@ -228,7 +228,7 @@ struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 	add_L4_header(nomination_pkt);
 	add_payload(nomination_pkt, payload);
 
-#if 1
+#if 0
 	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
 		       payload,
 		       SASSY_PAYLOAD_BYTES, 0);
