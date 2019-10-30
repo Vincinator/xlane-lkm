@@ -458,16 +458,16 @@ void reset_ftimeout(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
+	// timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
 
-	hrtimer_cancel(&priv->ftimer);
-	hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
-	hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
+	// hrtimer_cancel(&priv->ftimer);
+	// hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
+	// hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 	
-	priv->accu_rand = timeout; // consequetive rand timeout of this follower
+	// priv->accu_rand = timeout; // consequetive rand timeout of this follower
 
 #if 0
-	sassy_log_le("%s, %llu, %d: Set follower timeout to %lld ms.\n",
+	sassy_log_le("%s, %llu, %d: reset follower timeout occured.\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
