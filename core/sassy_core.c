@@ -162,7 +162,8 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
     if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
 
-	if(sdev->warmup_state == WARMING_UP){
+    // Warmup only for leader node..
+	if(sdev->cluster_id == 1 && sdev->warmup_state == WARMING_UP){
 	
 		get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 		
@@ -198,21 +199,6 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
-	if(sdev->verbose >= 3)
-		sassy_dbg("Protocol Instances included %d", received_proto_instances);
-
-    if(sdev->verbose >= 4){
-		sassy_dbg( "FROM: %x:%x:%x:%x:%x:%x)\n",
-				remote_mac[0],
-				remote_mac[1],
-				remote_mac[2],
-				remote_mac[3],
-				remote_mac[4],
-				remote_mac[5]);
-		print_hex_dump(KERN_DEBUG, "RX PAYLOAD: ", DUMP_PREFIX_NONE, 16, 1,
-	    		payload, cqe_bcnt, 0);
-    }
-	
 	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload), received_proto_instances, cqe_bcnt);
 
 }

@@ -133,6 +133,8 @@ struct consensus_priv {
 	/* last term this node has voted in. Initialized with -1*/
 	u32 voted; 
 
+	u32 started_log;
+
 	/* follower timeout */
 	struct hrtimer ftimer;
 	int ftimer_init;
