@@ -39,7 +39,6 @@ static inline bool can_fire(uint64_t prev_time, uint64_t cur_time, uint64_t inte
 	return (cur_time - prev_time) >= interval;
 }
 
-
 const char *pm_state_string(pmstate_t state)
 {
 	switch (state) {
@@ -252,8 +251,8 @@ static int sassy_pm_loop(void *data)
 
 		cur_time = rdtsc();
 
-		if (!can_fire(prev_time, cur_time, interval))
-			continue;
+		// if (!can_fire(prev_time, cur_time, interval))
+		// 	continue;
 
 		prev_time = cur_time;
 		
