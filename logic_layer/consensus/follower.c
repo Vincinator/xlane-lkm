@@ -36,7 +36,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 #endif
 
 	err = node_transition(priv->ins, CANDIDATE);
-	
+
 	write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
 
 	if (err){
@@ -460,11 +460,11 @@ void reset_ftimeout(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	// timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
+	 timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
 
-	// hrtimer_cancel(&priv->ftimer);
-	// hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
-	// hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
+	 hrtimer_cancel(&priv->ftimer);
+	 hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
+	 hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 	
 	// priv->accu_rand = timeout; // consequetive rand timeout of this follower
 
