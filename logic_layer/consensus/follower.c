@@ -36,6 +36,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 #endif
 
 	err = node_transition(priv->ins, CANDIDATE);
+	
 	write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
 
 	if (err){
