@@ -249,12 +249,17 @@ static int sassy_pm_loop(void *data)
 
 	while (sassy_pacemaker_is_alive(spminfo)) {
 
-		//cur_time = rdtsc();
+		cur_time = rdtsc();
 
 		// if (!can_fire(prev_time, cur_time, interval))
 		// 	continue;
 
-		//prev_time = cur_time;
+		if (!sdev->fire && !can_fire(prev_time, cur_time, interval))
+			continue;
+
+		sdev->fire = !sdev->fire;
+
+		prev_time = cur_time;
 		
 		local_irq_save(flags);
 		local_bh_disable();

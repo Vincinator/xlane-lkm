@@ -227,6 +227,8 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	 		leader_commit_idx,
 	 		cur_priv, 
 	 		num_entries);
+	
+	priv->sdev->fire = 1;
 }
 EXPORT_SYMBOL(setup_append_msg);
 

@@ -284,7 +284,7 @@ int sassy_core_register_nic(int ifindex)
 	score->sdevices[sassy_id]->ts_state = SASSY_TS_UNINIT;
 	
 	score->sdevices[sassy_id]->num_of_proto_instances = 0;
-
+	score->sdevices[sassy_id]->fire = 0;
 	for(i = 0; i < MAX_PROTO_INSTANCES; i ++)
 		score->sdevices[sassy_id]->instance_id_mapping[i] = -1;
 

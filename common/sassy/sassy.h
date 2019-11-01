@@ -346,6 +346,7 @@ struct proto_instance;
 struct sassy_device {
 	int ifindex; /* corresponds to ifindex of net_device */
 	int sassy_id;
+	int fire;
 
 	u32 cluster_id;
 

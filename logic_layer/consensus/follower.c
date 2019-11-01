@@ -105,6 +105,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 
 	setup_le_msg(ins, &priv->sdev->pminfo, VOTE, remote_lid, param1, param2, 0, 0);
 	priv->voted = param1;
+	priv->sdev->fire = 1;
 
 	write_log(&ins->logger, VOTE_FOR_CANDIDATE, rdtsc());
 
@@ -495,7 +496,7 @@ int start_follower(struct proto_instance *ins)
 			(struct consensus_priv *)ins->proto_data;
 	
 	err = setup_le_broadcast_msg(ins, NOOP);
-	
+
 	if(err)
 		goto error;
 

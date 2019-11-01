@@ -145,6 +145,7 @@ int setup_nomination(struct proto_instance *ins)
 	priv->votes = 1; // start with selfvote
 
 	setup_le_broadcast_msg(ins, NOMI);
+	priv->sdev->fire = 1;
 	return 0;
 }
 
