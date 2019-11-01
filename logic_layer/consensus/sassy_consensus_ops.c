@@ -69,14 +69,6 @@ int consensus_init(struct proto_instance *ins)
 	init_logger(&ins->logger);
 
 	init_logger(&priv->throughput_logger);
-
-	// accept leader election messages to handle early! 
-	le_state_transition_to(priv, LE_RUNNING);
-	start_follower(ins);
-
-	if(priv->sdev->cluster_id != 1)
-		write_log(&ins->logger, START_CONSENSUS, rdtsc());
-
 	
 	return 0;
 }
@@ -96,29 +88,19 @@ int consensus_start(struct proto_instance *ins)
 
 	sassy_dbg("consensus start\n");
 
-	// if(consensus_is_alive(priv)){
-	// 	sassy_dbg("Consensus is already running!\n");
-	// 	return 0;
-	// }
-	
-	write_log(&ins->logger, START_CONSENSUS, rdtsc());
-	
-	// err = node_transition(ins, FOLLOWER);
-	
-	// if (err)
-	// 	goto error;
-	
-	// Eval Version: Factor out the randomness for evaluation only.
-	// node with cluster id 1 starts self nomination directly on consensus start 
-	if(priv->sdev->cluster_id == 1) {
-		
-		// start candidature
-		sassy_dbg(" Node is selected to start the candidature\n");
-
-		node_transition(priv->ins, CANDIDATE);
-		write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
+	if(consensus_is_alive(priv)){
+		sassy_dbg("Consensus is already running!\n");
+		return 0;
 	}
 
+	le_state_transition_to(priv, LE_RUNNING);
+
+	err = node_transition(ins, FOLLOWER);
+
+	write_log(&ins->logger, START_CONSENSUS, rdtsc());
+
+	if (err)
+		goto error;
 	return 0;
 
 error:
@@ -147,6 +129,7 @@ int consensus_stop(struct proto_instance *ins)
 			stop_leader(ins);
 			break;
 	}
+	
 	le_state_transition_to(priv, LE_READY);
 
 	set_all_targets_dead(priv->sdev);
