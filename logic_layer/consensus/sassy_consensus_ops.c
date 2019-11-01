@@ -101,6 +101,7 @@ int consensus_start(struct proto_instance *ins)
 
 	if (err)
 		goto error;
+	
 	return 0;
 
 error:
@@ -129,7 +130,7 @@ int consensus_stop(struct proto_instance *ins)
 			stop_leader(ins);
 			break;
 	}
-	
+
 	le_state_transition_to(priv, LE_READY);
 
 	set_all_targets_dead(priv->sdev);

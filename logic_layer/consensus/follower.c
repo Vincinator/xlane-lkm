@@ -506,7 +506,7 @@ int start_follower(struct proto_instance *ins)
 
 // True Raft Version: 
 
- 	//init_timeout(ins);
+ 	init_timeout(ins);
 
 #if 0
 	sassy_dbg("Node became a follower\n");
