@@ -162,8 +162,7 @@ void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, 
     if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
     	return;
 
-    // Warmup only for leader node..
-	if(sdev->cluster_id == 1 && sdev->warmup_state == WARMING_UP){
+	if(sdev->warmup_state == WARMING_UP){
 	
 		get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 		
