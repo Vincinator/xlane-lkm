@@ -61,6 +61,7 @@ void update_commit_idx(struct consensus_priv *priv)
 			// majority of match_index[j] >= N and sm_log.entries[N]->term == currentTerm
 			if(_is_potential_commit_idx(priv, current_N))
 				if(current_N > N){
+					write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, rdtsc());
 					N = current_N;
 				}
 	}
@@ -115,6 +116,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			priv->sm_log.match_index[remote_lid] = param3;
 
 			update_commit_idx(priv);
+
 
 		} else {
 			// append rpc failed!

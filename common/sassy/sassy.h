@@ -139,6 +139,8 @@ enum le_event_type {
 	REPLY_APPEND_SUCCESS = 10,
 	REPLY_APPEND_FAIL = 11,
 
+	CONSENSUS_REQUEST = 12,
+	GOT_CONSENSUS_ON_VALUE = 13,
 };
 
 struct le_event {
