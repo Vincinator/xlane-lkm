@@ -84,7 +84,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	ktime_t currtime, interval;
 	struct sm_command *cur_cmd;
 	int err = 0;
-	int i;
+	int i, tar;
 
 	if (test_data->running == 0)
 		return HRTIMER_NORESTART;
@@ -115,22 +115,24 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 			goto error;
 	}
 
-	// iterate through consensus protocols and include LEAD messages if node is leader
-		for(i = 0; i < sdev->num_of_proto_instances; i++){
-			
-			if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
-		 		
-		 		// get corresponding local instance data for consensus
-				priv = 
-					(struct consensus_priv *)sdev->protos[i]->proto_data;
-		 		
-		 		if(priv->nstate != LEADER)
-		 			continue;
+	for (tar = 0; tar < spminfo->num_of_targets; tar++) {
 
-		 		// TODO: optimize append calls that do not contain any log updates
-		 		setup_append_msg(priv, spay, sdev->protos[i]->instance_id, target_id);
-		 		
+		// iterate through consensus protocols and include LEAD messages if node is leader
+			for(i = 0; i < sdev->num_of_proto_instances; i++){
+				
+				if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
+			 		
+			 		// get corresponding local instance data for consensus
+					priv = 
+						(struct consensus_priv *)sdev->protos[i]->proto_data;
+			 		
+			 		if(priv->nstate != LEADER)
+			 			continue;
 
+			 		// TODO: optimize append calls that do not contain any log updates
+			 		setup_append_msg(priv, spay, sdev->protos[i]->instance_id, tar);
+			 	
+				}
 			}
 		}
 		
