@@ -13,7 +13,7 @@ void initialze_indices(struct consensus_priv *priv)
 {
 	int i;
 
-	for(i = 0; i < MAX_NODE_ID; i++){
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
 		// initialize to leader last log index + 1
 		priv->sm_log.next_index[i] = priv->sm_log.last_idx + 1;
 		priv->sm_log.match_index[i] = 0;
@@ -28,7 +28,7 @@ int _is_potential_commit_idx(struct consensus_priv *priv, int N)
 
 	double_majority = priv->sdev->pminfo.num_of_targets + 1;
 
-	for(i = 0; i < MAX_NODE_ID; i++){
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
 		if(priv->sm_log.match_index[i] >= N) {
 			hits++;
 		}
@@ -40,12 +40,22 @@ void update_commit_idx(struct consensus_priv *priv)
 {
 	int N, current_N, i;
 
+	if(!priv){
+		sassy_error("prib is NULL!\n");
+		return;
+	}
+
 	N = priv->sm_log.match_index[0];
 
 	// each match_index is a potential new commit_idx candidate
-	for(i = 0; i < MAX_NODE_ID; i++){
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
 
 		current_N = priv->sm_log.match_index[i];
+
+		if(current_N >= MAX_CONSENSUS_LOG){
+			sassy_error("\n");
+			return;
+		}
 
 		if(priv->sm_log.entries[current_N]->term == priv->term)
 			// majority of match_index[j] >= N and sm_log.entries[N]->term == currentTerm

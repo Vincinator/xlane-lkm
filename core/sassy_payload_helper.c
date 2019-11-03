@@ -86,7 +86,7 @@ int _check_target_id(struct consensus_priv *priv, int target_id)
 	if(target_id < 0)
 		goto error;
 
-	if(target_id > MAX_NODE_ID)
+	if(target_id > priv->sdev->pminfo.num_of_targets)
 		goto error;
 
 	return 1;
