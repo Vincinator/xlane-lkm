@@ -75,6 +75,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 			container_of(timer, struct consensus_test_container, timer);
 
 	struct consensus_priv *priv = test_data->priv;
+	struct sassy_device *sdev = priv->sdev;
 	u32 rand_value, rand_id;
 	ktime_t currtime, interval;
 	struct sm_command *cur_cmd;
@@ -116,14 +117,14 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 			if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
 		 		
 		 		// get corresponding local instance data for consensus
-				cur_priv = 
+				priv = 
 					(struct consensus_priv *)sdev->protos[i]->proto_data;
 		 		
-		 		if(cur_priv->nstate != LEADER)
+		 		if(priv->nstate != LEADER)
 		 			continue;
 
 		 		// TODO: optimize append calls that do not contain any log updates
-		 		setup_append_msg(cur_priv, spay, sdev->protos[i]->instance_id, target_id);
+		 		setup_append_msg(priv, spay, sdev->protos[i]->instance_id, target_id);
 		 		
 
 			}
