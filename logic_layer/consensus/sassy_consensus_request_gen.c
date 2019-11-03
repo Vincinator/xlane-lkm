@@ -83,8 +83,9 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	u32 rand_value, rand_id;
 	ktime_t currtime, interval;
 	struct sm_command *cur_cmd;
+	struct sassy_payload *spay;
 	int err = 0;
-	int i, tar;
+	int i, tar, hb_passive_idx;
 
 	if (test_data->running == 0)
 		return HRTIMER_NORESTART;
@@ -114,6 +115,12 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 		if(err)
 			goto error;
 	}
+
+	hb_passive_idx =
+	 spminfo->pm_targets[i].pkt_data.hb_passive;
+
+	spay =
+	 spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive];
 
 	for (tar = 0; tar < spminfo->num_of_targets; tar++) {
 
