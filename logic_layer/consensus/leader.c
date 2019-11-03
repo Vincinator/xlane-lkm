@@ -41,7 +41,7 @@ void update_commit_idx(struct consensus_priv *priv)
 	int N, current_N, i;
 
 	if(!priv){
-		sassy_error("prib is NULL!\n");
+		sassy_error("priv is NULL!\n");
 		return;
 	}
 

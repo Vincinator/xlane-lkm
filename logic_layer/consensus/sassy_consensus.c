@@ -122,7 +122,7 @@ void set_ae_data(unsigned char *pkt,
 	*leader_id = in_leader_id;
 
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
-	*prev_log_idx = first_idx  == -1 ? -1 : first_idx - 1;
+	*prev_log_idx = first_idx - 1;
 
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	*prev_log_term = in_prevLogTerm;
