@@ -117,10 +117,10 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	}
 
 	hb_passive_idx =
-	 spminfo->pm_targets[i].pkt_data.hb_passive;
+	 spminfo->pm_targets[i].pkt_data.hb_active_ix;
 
 	spay =
-	 spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive];
+	 spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_idx];
 
 	for (tar = 0; tar < spminfo->num_of_targets; tar++) {
 
