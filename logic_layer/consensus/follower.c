@@ -445,7 +445,7 @@ void init_timeout(struct proto_instance *ins)
 	
 	priv->accu_rand = timeout; // first rand timeout of this follower
 
-#if 1
+#if 0
 	sassy_log_le("%s, %llu, %d: Init follower timeout to %lld ms. \n",
 		nstate_string(priv->nstate),
 		rdtsc(),
@@ -470,7 +470,7 @@ void reset_ftimeout(struct proto_instance *ins)
 	
 	// priv->accu_rand = timeout; // consequetive rand timeout of this follower
 
-#if 1
+#if 0
 	sassy_log_le("%s, %llu, %d: reset follower timeout occured.\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
