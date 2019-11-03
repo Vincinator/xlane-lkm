@@ -117,18 +117,18 @@ void _handle_sub_payloads(struct sassy_device *sdev, unsigned char *remote_mac, 
 		return;
 	}
 
-	if(sdev->verbose >= 3)
-		sassy_dbg("recursion. instances %d bcnt %d", instances, bcnt);
+	// if(sdev->verbose >= 3)
+	// 	sassy_dbg("recursion. instances %d bcnt %d", instances, bcnt);
 
 	cur_proto_id = GET_PROTO_TYPE_VAL(payload);
 	
-	if(sdev->verbose >= 3)
-		sassy_dbg("cur_proto_id %d", cur_proto_id);
+	// if(sdev->verbose >= 3)
+	// 	sassy_dbg("cur_proto_id %d", cur_proto_id);
 	
 	cur_offset = GET_PROTO_OFFSET_VAL(payload);
 	
-	if(sdev->verbose >= 3)
-		sassy_dbg("cur_offset %d", cur_offset);
+	// if(sdev->verbose >= 3)
+	// 	sassy_dbg("cur_offset %d", cur_offset);
 
 	cur_ins = get_proto_instance(sdev, cur_proto_id);
 	

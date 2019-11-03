@@ -123,7 +123,6 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 	memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
 }
 
-
 static inline int _emit_pkts(struct sassy_device *sdev,
 		struct pminfo *spminfo)
 {
