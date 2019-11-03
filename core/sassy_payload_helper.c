@@ -256,7 +256,6 @@ void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay
 	 		// TODO: optimize append calls that do not contain any log updates
 	 		setup_append_msg(cur_priv, spay, sdev->protos[i]->instance_id, target_id);
 	 		
-
 		}
 	}
 }
