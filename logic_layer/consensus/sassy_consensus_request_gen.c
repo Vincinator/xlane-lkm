@@ -83,6 +83,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	u32 rand_value, rand_id;
 	ktime_t currtime, interval;
 	struct sm_command *cur_cmd;
+	struct pminfo *spminfo = &sdev->pminfo;
 	struct sassy_payload *spay;
 	int err = 0;
 	int i, tar, hb_passive_idx;
