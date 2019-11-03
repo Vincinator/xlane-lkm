@@ -61,14 +61,14 @@ void update_commit_idx(struct consensus_priv *priv)
 			// majority of match_index[j] >= N and sm_log.entries[N]->term == currentTerm
 			if(_is_potential_commit_idx(priv, current_N))
 				if(current_N > N){
-					write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, rdtsc());
 					N = current_N;
 				}
 	}
 
 	if(N > priv->sm_log.commit_idx){
 		priv->sm_log.commit_idx = N;
-		// sassy_dbg("found new commit_idx %d", N);
+		write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, rdtsc());
+		sassy_dbg("found new commit_idx %d", N);
 	}
 
 }

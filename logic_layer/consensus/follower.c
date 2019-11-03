@@ -261,6 +261,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
+	// TODO: wait until lock is released!
 	if(priv->sm_log.lock)
 		goto reply_false;
 
@@ -315,6 +316,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	}
 
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
+	sdev->fire = 1;
+
 	priv->sm_log.lock = 0;
 
 	return;
@@ -323,6 +326,7 @@ reply_false_unlock:
 	priv->sm_log.lock = 0;
 reply_false:
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
+	sdev->fire = 1;
 
 }
 
@@ -389,8 +393,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		else if(param1 == priv->term) {
 
 			if(priv->leader_id == remote_lid){
-#if 1
-				if(sdev->verbose >= 2)
+#if 0
+				if(sdev->verbose >= 5)
 					sassy_dbg("Received message from known leader term=%u\n", param1);
 #endif
 
