@@ -144,11 +144,16 @@ int _log_is_faulty(struct consensus_priv *priv)
 s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 {
 
-	if(idx < 0)
-		return -1;
+	if(idx < 0){
+		sassy_dbg("idx < 0 %d\n", idx);
+		return 0;
+	}
 
-	if(idx > cur_priv->sm_log.last_idx)
+	if(idx > cur_priv->sm_log.last_idx){
+		sassy_dbg("idx > cur_priv->sm_log.last_id %d\n", idx);
+
 		return -1;
+	}
 
 	if(idx > MAX_CONSENSUS_LOG){
 		sassy_dbg("BUG! idx > MAX_CONSENSUS_LOG. %d\n", idx);
@@ -180,12 +185,17 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	cur_index = _get_last_idx_safe(cur_priv);
 	next_index = _get_next_idx(cur_priv, target_id); 
 
-	// if(next_index == -1){
-	// 	sassy_dbg("Invalid target id resulted in invalid next_index!\n");
-	// 	return;
-	// }
-	//sassy_dbg("cur_index=%d, next_index=%d\n", cur_index, next_index);
+	if(next_index == -1){
+		sassy_dbg("Invalid target id resulted in invalid next_index!\n");
+		return;
+	}
+	sassy_dbg("PREP AE: cur_index=%d, next_index=%d\n", cur_index, next_index);
 	prev_log_term = _get_prev_log_term(cur_priv, next_index - 1 );
+
+	if(prev_log_term == -1){
+		sassy_error("BUG! - prev_log_term is invalid\n");
+		return;
+	}
 
 	leader_commit_idx = cur_priv->sm_log.commit_idx;
 
@@ -206,8 +216,8 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 		// .. with the append reply.
 		cur_priv->sm_log.next_index[target_id] += num_entries;
 
-		// sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d, num_entries=%d\n", 
-		// 	cur_index, next_index, match_index, prev_log_term, num_entries);
+		 sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d, num_entries=%d\n", 
+		 	cur_index, next_index, match_index, prev_log_term, num_entries);
 	}
 
 	// reserve space in sassy heartbeat for consensus LEAD

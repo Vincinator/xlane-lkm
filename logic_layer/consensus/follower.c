@@ -262,8 +262,10 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
 	// TODO: wait until lock is released!
-	if(priv->sm_log.lock)
+	if(priv->sm_log.lock){
+		sassy_dbg("Too fast! sm log is still locked..\n");
 		goto reply_false;
+	}
 
 	priv->sm_log.lock = 1;
 
@@ -472,8 +474,6 @@ void reset_ftimeout(struct proto_instance *ins)
 	 hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
 	 hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 	
-	// priv->accu_rand = timeout; // consequetive rand timeout of this follower
-
 #if 0
 	sassy_log_le("%s, %llu, %d: reset follower timeout occured.\n",
 			nstate_string(priv->nstate),
@@ -509,9 +509,6 @@ int start_follower(struct proto_instance *ins)
 
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;
-
-
-// True Raft Version: 
 
  	init_timeout(ins);
 

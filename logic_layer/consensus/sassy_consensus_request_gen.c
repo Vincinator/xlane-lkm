@@ -91,7 +91,8 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	if(priv->nstate != LEADER)
 		return HRTIMER_RESTART; // nothing to do, node is not a leader.
 
-
+	sassy_dbg("Incoming Client requests.. \n");
+	
 	// write x random entries to local log (if node is leader)
 	for(i = 0; i < test_data->x; i++){
 
