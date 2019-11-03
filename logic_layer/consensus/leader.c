@@ -53,7 +53,7 @@ void update_commit_idx(struct consensus_priv *priv)
 		current_N = priv->sm_log.match_index[i];
 
 		if(current_N >= MAX_CONSENSUS_LOG){
-			sassy_error("\n");
+			sassy_error("current_N is invalid\n");
 			return;
 		}
 
@@ -67,8 +67,9 @@ void update_commit_idx(struct consensus_priv *priv)
 
 	if(N > priv->sm_log.commit_idx){
 		priv->sm_log.commit_idx = N;
-		write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, rdtsc());
 		sassy_dbg("found new commit_idx %d", N);
+
+		write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, rdtsc());
 	}
 
 }
