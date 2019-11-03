@@ -316,7 +316,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	}
 
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
-	sdev->fire = 1;
+	priv->sdev->fire = 1;
 
 	priv->sm_log.lock = 0;
 
@@ -326,7 +326,7 @@ reply_false_unlock:
 	priv->sm_log.lock = 0;
 reply_false:
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
-	sdev->fire = 1;
+	priv->sdev->fire = 1;
 
 }
 
