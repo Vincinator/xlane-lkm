@@ -16,11 +16,8 @@
 #include "include/test.h"
 
 
-
 #define MAX_VALUE_SM_VALUE_SPACE 1024
 #define MAX_VALUE_SM_ID_SPACE 255
-
-
 
 void testcase_stop_timer(struct consensus_priv *priv)
 {
@@ -30,8 +27,6 @@ void testcase_stop_timer(struct consensus_priv *priv)
 	sassy_dbg("Actions of next timeout will not be performed.\n");
 
 }
-
-
 
 /* Fully saturates the local log (if leader)  
  *
@@ -68,9 +63,7 @@ error:
 	sassy_error("Evaluation Crashed errorcode=%d\n", err);
 	return err;
 
-
 }
-
 
 static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 {
@@ -116,36 +109,6 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 		if(err)
 			goto error;
 	}
-
-	hb_passive_idx =
-	 spminfo->pm_targets[i].pkt_data.hb_active_ix;
-
-	spay =
-	 spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_idx];
-
-	for (tar = 0; tar < spminfo->num_of_targets; tar++) {
-
-		// iterate through consensus protocols and include LEAD messages if node is leader
-			for(i = 0; i < sdev->num_of_proto_instances; i++){
-				
-				if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
-			 		
-			 		// get corresponding local instance data for consensus
-					priv = 
-						(struct consensus_priv *)sdev->protos[i]->proto_data;
-			 		
-			 		if(priv->nstate != LEADER)
-			 			continue;
-
-			 		// TODO: optimize append calls that do not contain any log updates
-			 		setup_append_msg(priv, spay, sdev->protos[i]->instance_id, tar);
-			 	
-				}
-			}
-		}
-		
-		priv->sdev->fire = 1;
-
 
 	return HRTIMER_RESTART;
 error:
