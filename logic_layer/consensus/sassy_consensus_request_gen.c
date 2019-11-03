@@ -1,6 +1,9 @@
 #include <sassy/logger.h>
 #include <sassy/sassy.h>
 #include <sassy/consensus.h>
+#include <sassy/payload_helper.h>
+
+
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/random.h>
@@ -11,6 +14,7 @@
 #include "include/follower.h"
 #include "include/leader.h"
 #include "include/test.h"
+
 
 
 #define MAX_VALUE_SM_VALUE_SPACE 1024
