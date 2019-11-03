@@ -56,7 +56,7 @@ const char *pm_state_string(pmstate_t state)
 void pm_state_transition_to(struct pminfo *spminfo,
 			    const enum pmstate state)
 {
-#if 0
+#if 1
 	sassy_dbg("State Transition from %s to %s\n",
 		  pm_state_string(spminfo->state), pm_state_string(state));
 #endif
