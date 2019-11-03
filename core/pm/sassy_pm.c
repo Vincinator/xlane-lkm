@@ -253,7 +253,7 @@ static int sassy_pm_loop(void *data)
 		// if (!can_fire(prev_time, cur_time, interval))
 		// 	continue;
 
-		if (!sdev->fire&&!can_fire(prev_time, cur_time, interval))
+		if (!can_fire(prev_time, cur_time, interval))
 			continue;
 
 		sdev->fire = !sdev->fire;
