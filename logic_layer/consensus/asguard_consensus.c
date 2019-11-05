@@ -17,7 +17,7 @@
 #include <asguard/consensus.h>
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Vincent Riesop");
+MODULE_AUTHOR("Distributed Systems Group");
 MODULE_DESCRIPTION("SASSY consensus");
 MODULE_VERSION("0.01");
 

@@ -7,7 +7,7 @@
 #include <asguard/logger.h>
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Vincent Riesop");
+MODULE_AUTHOR("Distributed Systems Group");
 MODULE_DESCRIPTION("SASSY MLX5 Connection");
 MODULE_VERSION("0.01");
 
@@ -17,6 +17,7 @@ MODULE_VERSION("0.01");
 /* Initialized in asguard_mlx5_con_init*/
 static struct asguard_mlx5_con_info **infos;
 static int mlx5_devices;
+
 
 int asguard_mlx5_con_register_device(int ifindex)
 {
@@ -33,7 +34,7 @@ int asguard_mlx5_con_register_device(int ifindex)
 		asguard_error("Allocation error in function %s\n", __FUNCTION__);
 		return -1;
 	}
-
+	
 	asguard_dbg("Register MLX5 Device with ifindex=%d\n", ifindex);
 	asguard_dbg("Assigned asguard_id (%d) to ifindex (%d)\n", asguard_id,
 		  ifindex);
@@ -45,10 +46,9 @@ EXPORT_SYMBOL(asguard_mlx5_con_register_device);
 
 int asguard_mlx5_post_optimistical_timestamp(int asguard_id, uint64_t cycle_ts)
 {
-	if (unlikely(asguard_id < 0))
-		return 0;
 
-	asguard_post_ts(asguard_id, cycle_ts);
+	if(infos[asguard_id].asguard_post_ts != NULL)
+		infos[asguard_id].asguard_post_ts(asguard_id, cycle_ts);
 
 	return 0;
 }
@@ -59,7 +59,8 @@ int asguard_mlx5_post_payload(int asguard_id, void *va, u32 frag_size, u16 headr
 {
 	u8 *payload = (u8 *)va;
 
-	asguard_post_payload(asguard_id, payload + headroom + 6,
+	if(infos[asguard_id].asguard_post_payload != NULL)
+		infos[asguard_id].asguard_post_payload(asguard_id, payload + headroom + 6,
 			   payload + headroom + 6 + 6 + 14 + 4 + 8 + 4, cqe_bcnt);
 
 	return 0;
@@ -100,8 +101,6 @@ EXPORT_SYMBOL(asguard_mlx5_get_channel);
 
 int asguard_mlx5_con_register_channel(int asguard_id, int ix, int cqn, void *c)
 {
-	if (asguard_validate_asguard_device(asguard_id))
-		return -1;
 
 	if (asguard_id < 0 || asguard_id >= SASSY_MLX5_DEVICES_LIMIT) {
 		asguard_error("asguard_id was %d in %s\n", asguard_id, __FUNCTION__);

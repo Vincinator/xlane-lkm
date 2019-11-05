@@ -298,6 +298,9 @@ struct asguard_mlx5_con_info {
 	int ix;
 	int cqn;
 	void *c; /* mlx5 channel */
+
+	void (*asguard_post_ts)(int, uint64_t); 
+	void (*asguard_post_payload)(int, unsigned char *, void *, u32);
 };
 
 struct asguard_pacemaker_test_data {

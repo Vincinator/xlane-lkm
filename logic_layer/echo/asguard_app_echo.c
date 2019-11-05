@@ -9,7 +9,7 @@
 #include "include/asguard_echo.h"
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Vincent Riesop");
+MODULE_AUTHOR("Distributed Systems Group");
 MODULE_DESCRIPTION("SASSY app echo");
 MODULE_VERSION("0.01");
 

@@ -9,7 +9,7 @@
 #include "include/asguard_fd.h"
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Vincent Riesop");
+MODULE_AUTHOR("Distributed Systems Group");
 MODULE_DESCRIPTION("SASSY app failure detector");
 MODULE_VERSION("0.01");
 

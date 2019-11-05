@@ -7,4 +7,4 @@ all:
 	make -C /home/dsp/asguard-kernel-src M=$(PWD) modules
 
 clean:
-	make -C /home/dsp/asguard-kernel-src M=$(PWD) clean
+	make -C /home/dspmeisten/asguard-kernel-src M=$(PWD) clean

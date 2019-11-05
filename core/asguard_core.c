@@ -13,7 +13,7 @@
 #include <asguard/payload_helper.h>
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Vincent Riesop");
+MODULE_AUTHOR("Distributed Systems Group");
 MODULE_DESCRIPTION("SASSY Connection Core");
 MODULE_VERSION("0.01");
 
@@ -22,7 +22,6 @@ MODULE_VERSION("0.01");
 
 static struct asguard_core *score;
 
-static int device_counter;
 
 struct asguard_device *get_sdev(int devid)
 {
@@ -230,18 +229,6 @@ void asguard_reset_remote_host_counter(int asguard_id)
 }
 EXPORT_SYMBOL(asguard_reset_remote_host_counter);
 
-static int asguard_generate_next_id(void)
-{
-	if (device_counter >= SASSY_MLX5_DEVICES_LIMIT) {
-		asguard_error(
-			"Reached Limit of maximum connected mlx5 devices.\n");
-		asguard_error("Limit=%d, device_counter=%d\n",
-			    SASSY_MLX5_DEVICES_LIMIT, device_counter);
-		return -1;
-	}
-
-	return device_counter++;
-}
 
 /* Called by Connection Layer Glue (e.g. mlx5_con.c) */
 int asguard_core_register_nic(int ifindex)
