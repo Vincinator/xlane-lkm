@@ -3,6 +3,7 @@
 
 #include <asguard/asguard.h>
 #include <asguard/logger.h>
+#include <asguard/consensus.h>
 
 #ifndef offsetof
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
@@ -108,8 +109,8 @@ typedef int(*handle_payload_fun)(struct asguard_device *,
 int get_proto_offset(char *cur);
 char *asguard_get_proto(struct asguard_payload *spay, int n);
 char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 proto_size);
-void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id);
 void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay, int i);
+void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id);
 
 
 #endif  /* _ASGUARD_PHELP_H_ */
