@@ -522,4 +522,7 @@ void remove_logger_ifaces(struct asguard_logger *slog);
 void init_proto_instance_ctrl(struct asguard_device *sdev);
 void remove_proto_instance_ctrl(struct asguard_device *sdev);
 
+int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
+				    int protocol_id, int cluster_id);
+
 #endif /* _ASGUARD_H_ */
