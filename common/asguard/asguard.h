@@ -41,7 +41,7 @@
 #define ASGUARD_HEADER_BYTES 64 // TODO: this should be more than enough for UDP/ipv4
 #define ASGUARD_PKT_BYTES ASGUARD_PAYLOAD_BYTES + ASGUARD_HEADER_BYTES
 
-int asguard_core_register_nic(int ifindex);
+int asguard_core_register_nic(int ifindex, int asguard_id)
 
 #define ASGUARD_NUM_TS_LOG_TYPES 8
 #define TIMESTAMP_ARRAY_LIMIT	100000
