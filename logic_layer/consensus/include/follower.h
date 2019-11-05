@@ -1,8 +1,8 @@
 #pragma once
 
-#include <sassy/sassy.h>
+#include <asguard/asguard.h>
 
-#include <sassy/consensus.h>
+#include <asguard/consensus.h>
 
 int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt);
 void reset_ftimeout(struct proto_instance *ins);

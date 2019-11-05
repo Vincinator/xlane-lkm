@@ -1,15 +1,15 @@
-#include <sassy/logger.h>
-#include <sassy/sassy.h>
+#include <asguard/logger.h>
+#include <asguard/asguard.h>
 
-#include "include/sassy_echo.h"
-#include "include/sassy_echo_ops.h"
+#include "include/asguard_echo.h"
+#include "include/asguard_echo_ops.h"
 
 int echo_init(struct proto_instance *ins)
 {
-	struct sassy_echo_priv *epriv = 
-			(struct sassy_echo_priv *)ins->proto_data;
+	struct asguard_echo_priv *epriv = 
+			(struct asguard_echo_priv *)ins->proto_data;
 
-	sassy_dbg("echo init");
+	asguard_dbg("echo init");
 
 
     //init_logger(&ins->logger);
@@ -19,28 +19,28 @@ int echo_init(struct proto_instance *ins)
 
 int echo_start(struct proto_instance *ins)
 {
-	sassy_dbg("echo start");
+	asguard_dbg("echo start");
 	return 0;
 }
 
 int echo_stop(struct proto_instance *ins)
 {
-	sassy_dbg("echo stop");
+	asguard_dbg("echo stop");
 	return 0;
 }
 
 int echo_us_update(struct proto_instance *ins)
 {
-	sassy_dbg("echo us update");
+	asguard_dbg("echo us update");
 	return 0;
 }
 
 int echo_clean(struct proto_instance *ins)
 {
-	struct sassy_echo_priv *epriv =
-		(struct sassy_echo_priv *)ins->proto_data;
+	struct asguard_echo_priv *epriv =
+		(struct asguard_echo_priv *)ins->proto_data;
 
-	sassy_dbg("echo clean");
+	asguard_dbg("echo clean");
 	//clear_logger(epriv);
 
 	return 0;
@@ -48,7 +48,7 @@ int echo_clean(struct proto_instance *ins)
 
 int echo_info(struct proto_instance *ins)
 {
-	sassy_dbg("echo info");
+	asguard_dbg("echo info");
 	return 0;
 }
 
@@ -59,8 +59,8 @@ int echo_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 	uint64_t tx_ts;
 	enum echo_opcode opcode;
 
-	struct sassy_echo_priv *epriv = 
-			(struct sassy_echo_priv *)ins->proto_data;
+	struct asguard_echo_priv *epriv = 
+			(struct asguard_echo_priv *)ins->proto_data;
 
 	tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
 	get_cluster_ids(epriv->sdev, remote_mac, &remote_lid, &rcluster_id);
@@ -80,7 +80,7 @@ int echo_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 
 			break;
 		default:
-			sassy_error("Unknown echo opcode!");
+			asguard_error("Unknown echo opcode!");
 
 	}
 
@@ -97,11 +97,11 @@ int echo_init_payload(void *payload)
 int echo_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 		 uint64_t ts)
 {
-	struct sassy_echo_priv *epriv = 
-		(struct sassy_echo_priv *)ins->proto_data;
+	struct asguard_echo_priv *epriv = 
+		(struct asguard_echo_priv *)ins->proto_data;
 
-	sassy_dbg("SRC MAC=%pM", remote_mac);
-	sassy_dbg("echo post optimistical ts");
+	asguard_dbg("SRC MAC=%pM", remote_mac);
+	asguard_dbg("echo post optimistical ts");
 	return 0;
 }
 

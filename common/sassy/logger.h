@@ -20,22 +20,22 @@
  * Prefixes NIC device ID and SASSY Context (e.g. [SASSY][NIC4][CONSENSUS])
  */
 #if SASSY_DEBUG
-	#define sassy_dbg(format, arg...)						\
+	#define asguard_dbg(format, arg...)						\
 	({														\
 		if (1)												\
 			printk(KERN_DEBUG LOG_PREFIX format, ##arg);	\
 	})
 #else
-	#define sassy_dbg(format, arg...)
+	#define asguard_dbg(format, arg...)
 #endif
 
-#define sassy_error(format, arg...)						\
+#define asguard_error(format, arg...)						\
 ({														\
 	if (1)												\
 		printk(KERN_ERR LOG_PREFIX format, ##arg);	\
 })
 
-#define sassy_log_le(format, arg...)						\
+#define asguard_log_le(format, arg...)						\
 ({														\
 	if (1)												\
 		printk(KERN_ERR LOG_LE_PREFIX format, ##arg);	\

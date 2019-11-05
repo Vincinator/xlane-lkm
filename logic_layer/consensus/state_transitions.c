@@ -1,8 +1,8 @@
-#include <sassy/logger.h>
-#include <sassy/sassy.h>
-#include <sassy/payload_helper.h>
+#include <asguard/logger.h>
+#include <asguard/asguard.h>
+#include <asguard/payload_helper.h>
 
-#include <sassy/consensus.h>
+#include <asguard/consensus.h>
 #include "include/leader.h"
 #include "include/follower.h"
 #include "include/candidate.h"
@@ -31,7 +31,7 @@ char *_le_state_name(enum le_state state)
 
 int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, s32 param1, s32 param2, s32 param3, s32 param4)
 {
-	struct sassy_payload *pkt_payload;
+	struct asguard_payload *pkt_payload;
 	char *pkt_payload_sub;
 	int hb_passive_ix;
 
@@ -43,10 +43,10 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
      	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
 
 	pkt_payload_sub = 
- 		sassy_reserve_proto(ins->instance_id, pkt_payload, SASSY_PROTO_CON_PAYLOAD_SZ);
+ 		asguard_reserve_proto(ins->instance_id, pkt_payload, SASSY_PROTO_CON_PAYLOAD_SZ);
 
  	if(!pkt_payload_sub) {
- 		sassy_error("Sassy packet full! This error is not handled - not implemented\n");
+ 		asguard_error("Sassy packet full! This error is not handled - not implemented\n");
  		return -1;
  	}
 
@@ -85,7 +85,7 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 #if 1
-	sassy_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
+	asguard_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
 			nstate_string(priv->nstate),
 			rdtsc(),
 			priv->term,
@@ -102,7 +102,7 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u
 void le_state_transition_to(struct consensus_priv *priv, enum le_state state)
 {
 #if 1
-	sassy_dbg("Leader Election Activation State Transition from %s to %s \n", _le_state_name(priv->state), _le_state_name(state));
+	asguard_dbg("Leader Election Activation State Transition from %s to %s \n", _le_state_name(priv->state), _le_state_name(state));
 #endif
 	priv->state = state;
 
@@ -139,14 +139,14 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 		err = start_leader(ins);
 		break;
 	default:
-		sassy_error("Unknown node state %d\n - abort", state);
+		asguard_error("Unknown node state %d\n - abort", state);
 		err = -EINVAL;
 	}
 
 	if (err)
 		goto error;
 #if 1
-	sassy_log_le("%s, %llu, %d: transition to state %s\n",
+	asguard_log_le("%s, %llu, %d: transition to state %s\n",
 				nstate_string(priv->nstate),
 				rdtsc(),
 				priv->term,
@@ -157,7 +157,7 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 	return 0;
 
 error:
-	sassy_error(" node transition failed\n");
+	asguard_error(" node transition failed\n");
 	return err;
 }
 

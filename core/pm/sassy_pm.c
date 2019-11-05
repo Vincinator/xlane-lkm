@@ -1,4 +1,4 @@
-#include <sassy/logger.h>
+#include <asguard/logger.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/kthread.h>
@@ -19,8 +19,8 @@
 #include <linux/ktime.h>
 #include <linux/time.h>
 
-#include <sassy/sassy.h>
-#include <sassy/payload_helper.h>
+#include <asguard/asguard.h>
+#include <asguard/payload_helper.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PACEMAKER]"
@@ -29,7 +29,7 @@ static struct task_struct *heartbeat_task;
 
 static inline bool
 
-sassy_pacemaker_is_alive(struct pminfo *spminfo)
+asguard_pacemaker_is_alive(struct pminfo *spminfo)
 {
 	return spminfo->state == SASSY_PM_EMITTING;
 }
@@ -57,18 +57,18 @@ void pm_state_transition_to(struct pminfo *spminfo,
 			    const enum pmstate state)
 {
 #if 1
-	sassy_dbg("State Transition from %s to %s\n",
+	asguard_dbg("State Transition from %s to %s\n",
 		  pm_state_string(spminfo->state), pm_state_string(state));
 #endif
 	spminfo->state = state;
 }
 
-static inline void sassy_setup_hb_skbs(struct sassy_device *sdev)
+static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 {
 	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
 	int hb_active_ix;
-	struct sassy_payload *pkt_payload;
+	struct asguard_payload *pkt_payload;
 	struct node_addr *naddr;
 
 	// BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
@@ -89,7 +89,7 @@ static inline void sassy_setup_hb_skbs(struct sassy_device *sdev)
 	}
 }
 
-static inline void sassy_send_hb(struct net_device *ndev, struct sk_buff *skb)
+static inline void asguard_send_hb(struct net_device *ndev, struct sk_buff *skb)
 {
 	int ret;
 	struct netdev_queue *txq;
@@ -100,7 +100,7 @@ static inline void sassy_send_hb(struct net_device *ndev, struct sk_buff *skb)
 	HARD_TX_LOCK(ndev, txq, smp_processor_id());
 
 	if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
-		sassy_error("Device Busy unlocking.\n");
+		asguard_error("Device Busy unlocking.\n");
 		goto unlock;
 	}
 
@@ -110,7 +110,7 @@ unlock:
 	HARD_TX_UNLOCK(ndev, txq);
 }
 
-static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
+static inline void asguard_update_skb_payload(struct sk_buff *skb, void *payload)
 {
 	unsigned char *tail_ptr;
 	unsigned char *data_ptr;
@@ -123,10 +123,10 @@ static inline void sassy_update_skb_payload(struct sk_buff *skb, void *payload)
 	memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
 }
 
-static inline int _emit_pkts(struct sassy_device *sdev,
+static inline int _emit_pkts(struct asguard_device *sdev,
 		struct pminfo *spminfo)
 {
-	struct sassy_payload *pkt_payload;
+	struct asguard_payload *pkt_payload;
 	int i;
 	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
@@ -151,7 +151,7 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		//if (sdev->proto->ctrl_ops.us_update != NULL)
 		//	sdev->proto->ctrl_ops.us_update(sdev, pkt_payload);
 
-		sassy_update_skb_payload(spminfo->pm_targets[i].skb,
+		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
 
 		// if (sdev->verbose >= 4)
@@ -159,11 +159,11 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 		// 		"TX Payload: ", DUMP_PREFIX_NONE,
 		// 		16, 1, pkt_payload, SASSY_PAYLOAD_BYTES, 0);
 
-		sassy_send_hb(ndev, spminfo->pm_targets[i].skb);
+		asguard_send_hb(ndev, spminfo->pm_targets[i].skb);
 
 		// if (ts_state == SASSY_TS_RUNNING) {
-		// 	sassy_write_timestamp(sdev, 0, rdtsc(), i);
-		// 	sassy_write_timestamp(sdev, 4, ktime_get(), i);
+		// 	asguard_write_timestamp(sdev, 0, rdtsc(), i);
+		// 	asguard_write_timestamp(sdev, 4, ktime_get(), i);
 		// }
 		
 
@@ -176,31 +176,31 @@ static inline int _emit_pkts(struct sassy_device *sdev,
 	return 0;
 }
 
-static int _validate_pm(struct sassy_device *sdev,
+static int _validate_pm(struct asguard_device *sdev,
 							struct pminfo *spminfo)
 {
 	if (!spminfo) {
-		sassy_error("No Device. %s\n", __FUNCTION__);
+		asguard_error("No Device. %s\n", __FUNCTION__);
 		return -ENODEV;
 	}
 
 	if (spminfo->state != SASSY_PM_READY) {
-		sassy_error("Pacemaker is not in ready state!\n");
+		asguard_error("Pacemaker is not in ready state!\n");
 		return -EPERM;
 	}
 
 	if (!sdev) {
-		sassy_error("No sdev\n");
+		asguard_error("No sdev\n");
 		return -ENODEV;
 	}
 
 	if (!sdev || !sdev->ndev) {
-		sassy_error("netdevice is NULL\n");
+		asguard_error("netdevice is NULL\n");
 		return -EINVAL;
 	}
 
 	if (spminfo->num_of_targets <= 0) {
-		sassy_error("num_of_targets is invalid! Have you set the target hosts?\n");
+		asguard_error("num_of_targets is invalid! Have you set the target hosts?\n");
 		return -EINVAL;
 	}
 
@@ -208,9 +208,9 @@ static int _validate_pm(struct sassy_device *sdev,
 }
 
 
-static void __prepare_pm_loop(struct sassy_device *sdev, struct pminfo *spminfo)
+static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminfo)
 {
-	sassy_setup_hb_skbs(sdev);
+	asguard_setup_hb_skbs(sdev);
 
 	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
 
@@ -220,7 +220,7 @@ static void __prepare_pm_loop(struct sassy_device *sdev, struct pminfo *spminfo)
 
 }
 
-static void __postwork_pm_loop(struct sassy_device *sdev)
+static void __postwork_pm_loop(struct asguard_device *sdev)
 {
 	int i;
 
@@ -233,10 +233,10 @@ static void __postwork_pm_loop(struct sassy_device *sdev)
 
 }
 
-static int sassy_pm_loop(void *data)
+static int asguard_pm_loop(void *data)
 {
 	uint64_t prev_time, cur_time;
-	struct sassy_device *sdev = (struct sassy_device *) data;
+	struct asguard_device *sdev = (struct asguard_device *) data;
 	struct pminfo *spminfo = &sdev->pminfo;
 	uint64_t interval = spminfo->hbi;	
 	unsigned long flags;
@@ -246,7 +246,7 @@ static int sassy_pm_loop(void *data)
 	
 	prev_time = rdtsc();
 
-	while (sassy_pacemaker_is_alive(spminfo)) {
+	while (asguard_pacemaker_is_alive(spminfo)) {
 
 		cur_time = rdtsc();
 
@@ -266,7 +266,7 @@ static int sassy_pm_loop(void *data)
 		err = _emit_pkts(sdev, spminfo);
 
 		if (err) {
-			sassy_pm_stop(spminfo);
+			asguard_pm_stop(spminfo);
 			local_bh_enable();
 			local_irq_restore(flags);
 			return err;
@@ -276,7 +276,7 @@ static int sassy_pm_loop(void *data)
 		local_irq_restore(flags);
 	
 		// if (sdev->ts_state == SASSY_TS_RUNNING)
-		// 	sassy_write_timestamp(sdev, 0, rdtsc(), 42);
+		// 	asguard_write_timestamp(sdev, 0, rdtsc(), 42);
 
 	}
 
@@ -285,18 +285,18 @@ static int sassy_pm_loop(void *data)
 	return 0;
 }
 
-static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
+static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 {
 	unsigned long flags;
 	struct pminfo *spminfo =
 			container_of(timer, struct pminfo, pm_timer);
 
-	struct sassy_device *sdev =
-			container_of(spminfo, struct sassy_device, pminfo);
+	struct asguard_device *sdev =
+			container_of(spminfo, struct asguard_device, pminfo);
 
 	ktime_t currtime, interval;
 
-	if (!sassy_pacemaker_is_alive(spminfo)){
+	if (!asguard_pacemaker_is_alive(spminfo)){
 		return HRTIMER_NORESTART;
 	}
 
@@ -304,7 +304,7 @@ static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	interval = ktime_set(0, 100000000);
 	hrtimer_forward(timer, currtime, interval);
 
-	sassy_setup_hb_skbs(sdev);
+	asguard_setup_hb_skbs(sdev);
 
 	get_cpu(); /* disable preemption */
 
@@ -320,12 +320,12 @@ static enum hrtimer_restart sassy_pm_timer(struct hrtimer *timer)
 	return HRTIMER_RESTART;
 }
 
-int sassy_pm_start_timer(void *data)
+int asguard_pm_start_timer(void *data)
 {
 	struct pminfo *spminfo =
 		(struct pminfo *) data;
-	struct sassy_device *sdev =
-		container_of(spminfo, struct sassy_device, pminfo);
+	struct asguard_device *sdev =
+		container_of(spminfo, struct asguard_device, pminfo);
 	ktime_t interval;
 	int active_cpu;
 	int err;
@@ -342,7 +342,7 @@ int sassy_pm_start_timer(void *data)
 	hrtimer_init(&spminfo->pm_timer, CLOCK_MONOTONIC,
 		HRTIMER_MODE_REL_PINNED);
 
-	spminfo->pm_timer.function = &sassy_pm_timer;
+	spminfo->pm_timer.function = &asguard_pm_timer;
 
 	hrtimer_start(&spminfo->pm_timer, interval,
 		HRTIMER_MODE_REL_PINNED);
@@ -351,12 +351,12 @@ int sassy_pm_start_timer(void *data)
 }
 
 
-int sassy_pm_start_loop(void *data)
+int asguard_pm_start_loop(void *data)
 {
 	struct pminfo *spminfo =
 		(struct pminfo *) data;
-	struct sassy_device *sdev =
-		container_of(spminfo, struct sassy_device, pminfo);
+	struct asguard_device *sdev =
+		container_of(spminfo, struct asguard_device, pminfo);
 	struct cpumask mask;
 	int err, i;
 
@@ -365,16 +365,16 @@ int sassy_pm_start_loop(void *data)
 	if (err)
 		return err;
 
-	sassy_dbg("protocol instances: %d", sdev->num_of_proto_instances);
+	asguard_dbg("protocol instances: %d", sdev->num_of_proto_instances);
 
 	cpumask_clear(&mask);
 
-	heartbeat_task = kthread_create(&sassy_pm_loop, sdev, "sassy pm loop");
+	heartbeat_task = kthread_create(&asguard_pm_loop, sdev, "asguard pm loop");
 
 	kthread_bind(heartbeat_task, spminfo->active_cpu);
 
 	if (IS_ERR(heartbeat_task)) {
-		sassy_error("Task Error. %s\n", __FUNCTION__);
+		asguard_error("Task Error. %s\n", __FUNCTION__);
 		return -EINVAL;
 	}
 
@@ -383,32 +383,32 @@ int sassy_pm_start_loop(void *data)
 	return 0;
 }
 
-int sassy_pm_stop(struct pminfo *spminfo)
+int asguard_pm_stop(struct pminfo *spminfo)
 {
 	pm_state_transition_to(spminfo, SASSY_PM_READY);
 
 	return 0;
 }
 
-int sassy_pm_reset(struct pminfo *spminfo)
+int asguard_pm_reset(struct pminfo *spminfo)
 {
-	struct sassy_device *sdev;
+	struct asguard_device *sdev;
 
-	sassy_dbg("Reset Pacemaker Configuration\n");
+	asguard_dbg("Reset Pacemaker Configuration\n");
 
 	if (!spminfo) {
-		sassy_error("No Device. %s\n", __FUNCTION__);
+		asguard_error("No Device. %s\n", __FUNCTION__);
 		return -ENODEV;
 	}
 
 	if (spminfo->state == SASSY_PM_EMITTING) {
-		sassy_error(
+		asguard_error(
 			"Can not reset targets when pacemaker is running\n");
 		return -EPERM;
 	}
 
-	sdev = container_of(spminfo, struct sassy_device, pminfo);
+	sdev = container_of(spminfo, struct asguard_device, pminfo);
 
-	sassy_reset_remote_host_counter(sdev->sassy_id);
+	asguard_reset_remote_host_counter(sdev->asguard_id);
 	return 0;
 }

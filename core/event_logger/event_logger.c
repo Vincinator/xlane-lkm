@@ -2,8 +2,8 @@
 #include <linux/seq_file.h>
 #include <net/net_namespace.h>
 
-#include <sassy/sassy.h>
-#include <sassy/logger.h>
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
 
 
 const char *logger_state_string(enum logger_state state)
@@ -23,13 +23,13 @@ const char *logger_state_string(enum logger_state state)
 }
 
 
-void logger_state_transition_to(struct sassy_logger *slog,
+void logger_state_transition_to(struct asguard_logger *slog,
 			    enum logger_state state)
 {
 	slog->state = state;
 }
 
-int write_log(struct sassy_logger *slog,
+int write_log(struct asguard_logger *slog,
 			  int type, uint64_t tcs)
 {
 	
@@ -39,9 +39,9 @@ int write_log(struct sassy_logger *slog,
 
 	if (unlikely(slog->current_entries > LOGGER_EVENT_LIMIT)) {
 
-		sassy_dbg("Logs are full! Stopped event logging. %s\n", __FUNCTION__);
+		asguard_dbg("Logs are full! Stopped event logging. %s\n", __FUNCTION__);
 
-		sassy_log_stop(slog);
+		asguard_log_stop(slog);
 		logger_state_transition_to(slog, LOGGER_LOG_FULL);
 		return -ENOMEM;
 	}
@@ -56,12 +56,12 @@ int write_log(struct sassy_logger *slog,
 }
 EXPORT_SYMBOL(write_log);
 
-int sassy_log_stop(struct sassy_logger *slog)
+int asguard_log_stop(struct asguard_logger *slog)
 {
 	int err;
 
 	if(!slog) {
-		sassy_error("logger is not initialized, can not stop logger.\n");
+		asguard_error("logger is not initialized, can not stop logger.\n");
 		err = -EPERM;
 		goto error;
 	}
@@ -78,18 +78,18 @@ error:
 	return -EPERM;
 }
 
-int sassy_log_start(struct sassy_logger *slog)
+int asguard_log_start(struct asguard_logger *slog)
 {
 	int err;
 
 	if(!slog) {
-		sassy_error("logger is not initialized, can not start logger.\n");
+		asguard_error("logger is not initialized, can not start logger.\n");
 		err = -EPERM;
 		goto error;
 	}
 
 	if (slog->state != LOGGER_READY) {
-		sassy_error("logger is not in ready state. %s\n", __FUNCTION__);
+		asguard_error("logger is not in ready state. %s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -100,19 +100,19 @@ error:
 	return -EPERM;
 }
 
-int sassy_log_reset(struct sassy_logger *slog)
+int asguard_log_reset(struct asguard_logger *slog)
 {
 	int err;
 	int i;
 
 	if(!slog) {
-		sassy_error("logger is not initialized properly! Can not clear logs.\n");
+		asguard_error("logger is not initialized properly! Can not clear logs.\n");
 		err = -EPERM;
 		goto error;
 	}
 
 	if (slog->state == LOGGER_RUNNING) {
-		sassy_error(
+		asguard_error(
 			"can not clear logger when it is active.%s\n",
 			__FUNCTION__);
 		err = -EPERM;
@@ -120,7 +120,7 @@ int sassy_log_reset(struct sassy_logger *slog)
 	}
 
 	if (slog->state != LOGGER_READY) {
-		sassy_error(
+		asguard_error(
 			"can not clear stats, logger is in an undefined state.%s\n",
 			__FUNCTION__);
 		err = -EPERM;
@@ -131,23 +131,23 @@ int sassy_log_reset(struct sassy_logger *slog)
 
 	return 0;
 error:
-	sassy_error(" error code: %d for %s\n", err, __FUNCTION__);
+	asguard_error(" error code: %d for %s\n", err, __FUNCTION__);
 	return err;
 }
 
 
-static ssize_t sassy_log_write(struct file *file, const char __user *buffer,
+static ssize_t asguard_log_write(struct file *file, const char __user *buffer,
 				size_t count, loff_t *data)
 {
 	/* Do nothing on write. */
 	return count;
 }
 
-static int sassy_log_show(struct seq_file *m, void *v)
+static int asguard_log_show(struct seq_file *m, void *v)
 {
 	int i;
-	struct sassy_logger *slog =
-		(struct sassy_logger *)m->private;
+	struct asguard_logger *slog =
+		(struct asguard_logger *)m->private;
 
 	//BUG_ON(!slog);
 
@@ -160,22 +160,22 @@ static int sassy_log_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-static int sassy_log_open(struct inode *inode, struct file *file)
+static int asguard_log_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, sassy_log_show, PDE_DATA(inode));
+	return single_open(file, asguard_log_show, PDE_DATA(inode));
 }
 
-static const struct file_operations sassy_log_ops = {
+static const struct file_operations asguard_log_ops = {
 	.owner = THIS_MODULE,
-	.open = sassy_log_open,
-	.write = sassy_log_write,
+	.open = asguard_log_open,
+	.write = asguard_log_write,
 	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
 
 
-static int init_logger_out(struct sassy_logger *slog)
+static int init_logger_out(struct asguard_logger *slog)
 {
 	int err;
 	char name_buf[MAX_SASSY_PROC_NAME];
@@ -183,25 +183,25 @@ static int init_logger_out(struct sassy_logger *slog)
 
 	if (!slog) {
 		err = -ENOMEM;
-		sassy_error("Logs are not initialized!\n");
+		asguard_error("Logs are not initialized!\n");
 		goto error;
 	}
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log_%s",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/log_%s",
 		 slog->ifindex, slog->instance_id, slog->name);
 
 
-	proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL, &sassy_log_ops, slog);
+	proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL, &asguard_log_ops, slog);
 		
 	return 0;
 
 error:
-	sassy_error(" error code: %d for %s\n", err, __FUNCTION__);
+	asguard_error(" error code: %d for %s\n", err, __FUNCTION__);
 	return err;
 }
 
 
-int init_logger(struct sassy_logger *slog) 
+int init_logger(struct asguard_logger *slog) 
 {
 	int err;
 	int i;
@@ -210,7 +210,7 @@ int init_logger(struct sassy_logger *slog)
 
 	if (!slog) {
 		err = -EINVAL;
-		sassy_error("logger device is NULL %s\n", __FUNCTION__);
+		asguard_error("logger device is NULL %s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -218,7 +218,7 @@ int init_logger(struct sassy_logger *slog)
 	
 	if (!slog->events) {
 		err = -ENOMEM;
-		sassy_error(
+		asguard_error(
 			"Could not allocate memory for leader election logs items\n");
 		goto error;
 	}
@@ -235,16 +235,16 @@ error:
 	return err;
 }
 
-void remove_logger_ifaces(struct sassy_logger *slog)
+void remove_logger_ifaces(struct asguard_logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log_%s",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/log_%s",
 			 slog->ifindex, slog->instance_id, slog->name);
 	
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/ctrl_%s",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/ctrl_%s",
 			 slog->ifindex, slog->instance_id, slog->name);
 
 	remove_proc_entry(name_buf, NULL);

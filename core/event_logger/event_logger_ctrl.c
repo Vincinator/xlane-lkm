@@ -6,67 +6,67 @@
 #include <linux/init.h>
 
 #include <linux/kernel.h>
-#include <sassy/sassy.h>
-#include <sassy/logger.h>
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
 
-static ssize_t sassy_event_ctrl_write(struct file *file,
+static ssize_t asguard_event_ctrl_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
 				   loff_t *data)
 {
 	int err;
-	struct sassy_logger *slog =
-		(struct sassy_logger *)PDE_DATA(file_inode(file));
+	struct asguard_logger *slog =
+		(struct asguard_logger *)PDE_DATA(file_inode(file));
 	char kernel_buffer[SASSY_NUMBUF];
 	int logging_state = -1;
 	size_t size;
 
 	size = min(sizeof(kernel_buffer) - 1, count);
 
-	sassy_error("Write init count=%lu %s\n", count, __FUNCTION__);
+	asguard_error("Write init count=%lu %s\n", count, __FUNCTION__);
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __FUNCTION__);
 		goto error;
 	}
 
 	kernel_buffer[size] = '\0';
 	err = kstrtoint(kernel_buffer, 10, &logging_state);
 	if (err) {
-		sassy_dbg("Error converting input buffer: %s, todevid: 0x%x\n",
+		asguard_dbg("Error converting input buffer: %s, todevid: 0x%x\n",
 		       kernel_buffer, logging_state);
 		goto error;
 	}
 
 	switch (logging_state) {
 	case 0:
-		sassy_log_stop(slog);
+		asguard_log_stop(slog);
 		break;
 	case 1:
-		sassy_log_start(slog);
+		asguard_log_start(slog);
 		break;
 	case 2:
-		sassy_log_reset(slog);
+		asguard_log_reset(slog);
 		break;
 	default:
-		sassy_error("Invalid input: %d - %s\n",
+		asguard_error("Invalid input: %d - %s\n",
 			    logging_state, __FUNCTION__);
 		err = -EINVAL;
 		goto error;
 	}
-	sassy_dbg("Leader Election Logger state changed successfully.%s\n",
+	asguard_dbg("Leader Election Logger state changed successfully.%s\n",
 		  __FUNCTION__);
 	return count;
 error:
-	sassy_error("Leader Election Logger control operation failed.%s\n", __FUNCTION__);
+	asguard_error("Leader Election Logger control operation failed.%s\n", __FUNCTION__);
 	return err;
 }
 
-static int sassy_event_ctrl_show(struct seq_file *m, void *v)
+static int asguard_event_ctrl_show(struct seq_file *m, void *v)
 {
-	struct sassy_logger *slog =
-		(struct sassy_logger *)m->private;
+	struct asguard_logger *slog =
+		(struct asguard_logger *)m->private;
 
 	if (!slog)
 		return -ENODEV;
@@ -76,32 +76,32 @@ static int sassy_event_ctrl_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-static int sassy_event_ctrl_open(struct inode *inode, struct file *file)
+static int asguard_event_ctrl_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, sassy_event_ctrl_show,
+	return single_open(file, asguard_event_ctrl_show,
 			   PDE_DATA(file_inode(file)));
 }
 
 
-static const struct file_operations sassy_event_ctrl_ops = {
+static const struct file_operations asguard_event_ctrl_ops = {
 	.owner = THIS_MODULE,
-	.open = sassy_event_ctrl_open,
-	.write = sassy_event_ctrl_write,
+	.open = asguard_event_ctrl_open,
+	.write = asguard_event_ctrl_write,
 	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
 
-void clear_logger(struct sassy_logger *slog)
+void clear_logger(struct asguard_logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 	
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/log_%s",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/log_%s",
 			 slog->ifindex, slog->instance_id, slog->name);
 
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/ctrl_%s",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/ctrl_%s",
 			 slog->ifindex, slog->instance_id, slog->name);
 
 	remove_proc_entry(name_buf, NULL);
@@ -110,19 +110,19 @@ void clear_logger(struct sassy_logger *slog)
 }
 EXPORT_SYMBOL(clear_logger);
 
-void init_logger_ctrl(struct sassy_logger *slog)
+void init_logger_ctrl(struct asguard_logger *slog)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
 	if (!slog) {
-		sassy_error("ins or Logs are not initialized!\n");
+		asguard_error("ins or Logs are not initialized!\n");
 		return -ENOMEM;
 	}
 	
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/ctrl_%s",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/ctrl_%s",
 			 slog->ifindex, slog->instance_id, slog->name);
 
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_event_ctrl_ops, slog);
+	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_event_ctrl_ops, slog);
 	
 	return 0;
 }

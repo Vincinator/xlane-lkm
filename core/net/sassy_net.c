@@ -14,8 +14,8 @@
 
 #include <linux/compiler.h>
 
-#include <sassy/sassy.h>
-#include <sassy/logger.h>
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
 
 #define UDP_LENGTH sizeof(struct udphdr)
 #define IP_LENGTH sizeof(struct iphdr)
@@ -25,14 +25,14 @@
 #define IP_HEADER_VERSION 4
 #define IP_HEADER_LENGTH 5
 
-void sassy_hex_to_ip(char *retval, u32 dst_ip)
+void asguard_hex_to_ip(char *retval, u32 dst_ip)
 {
 	sprintf(retval, "%d.%d.%d.%d", ((dst_ip & 0xff000000) >> 24),
 		((dst_ip & 0x00ff0000) >> 16), ((dst_ip & 0x0000ff00) >> 8),
 		((dst_ip & 0x000000ff)));
 }
 
-struct net_device *sassy_get_netdevice(int ifindex)
+struct net_device *asguard_get_netdevice(int ifindex)
 {
 	struct net_device *ndev = NULL;
 
@@ -45,15 +45,15 @@ struct net_device *sassy_get_netdevice(int ifindex)
 		ndev = next_net_device(ndev);
 	}
 
-	sassy_error("Netdevice is NULL %s\n", __FUNCTION__);
+	asguard_error("Netdevice is NULL %s\n", __FUNCTION__);
 	return NULL;
 }
-EXPORT_SYMBOL(sassy_get_netdevice);
+EXPORT_SYMBOL(asguard_get_netdevice);
 
 /*
  * Converts an IP address from dotted numbers string to hex.
  */
-u32 sassy_ip_convert(const char *str)
+u32 asguard_ip_convert(const char *str)
 {
 	unsigned int byte0;
 	unsigned int byte1;
@@ -65,12 +65,12 @@ u32 sassy_ip_convert(const char *str)
 
 	return -EINVAL;
 }
-EXPORT_SYMBOL(sassy_ip_convert);
+EXPORT_SYMBOL(asguard_ip_convert);
 
 /*
  * Converts an MAC address to hex char array
  */
-unsigned char *sassy_convert_mac(const char *str)
+unsigned char *asguard_convert_mac(const char *str)
 {
 	unsigned int tmp_data[6];
 	unsigned char *bytestring_mac =
@@ -87,7 +87,7 @@ unsigned char *sassy_convert_mac(const char *str)
 
 	return NULL;
 }
-EXPORT_SYMBOL(sassy_convert_mac);
+EXPORT_SYMBOL(asguard_convert_mac);
 
 inline struct sk_buff *prepare_heartbeat_skb(struct net_device *dev)
 {
@@ -95,7 +95,7 @@ inline struct sk_buff *prepare_heartbeat_skb(struct net_device *dev)
 	struct sk_buff *skb = alloc_skb(skb_size, GFP_ATOMIC);
 
 	if (!skb) {
-		sassy_error("Could not allocate SKB");
+		asguard_error("Could not allocate SKB");
 		return NULL;
 	}
 
@@ -120,7 +120,7 @@ inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
 
 	eth = (struct ethhdr *)skb_put(skb, ETH_HLEN);
 	if (!eth) {
-		sassy_error("Could not get ethhdr from skb (%s)\n",
+		asguard_error("Could not get ethhdr from skb (%s)\n",
 			    __FUNCTION__);
 		return;
 	}
@@ -139,7 +139,7 @@ inline void add_L3_header(struct sk_buff *skb, u32 src_ip, u32 dst_ip)
 	ipv4 = (struct iphdr *)skb_put(skb, sizeof(struct iphdr));
 
 	if (!ipv4) {
-		sassy_error("Could not get ipv4 Header from skb (%s)\n",
+		asguard_error("Could not get ipv4 Header from skb (%s)\n",
 			    __FUNCTION__);
 		return;
 	}
@@ -175,12 +175,12 @@ inline void add_L4_header(struct sk_buff *skb)
 	}
 }
 
-inline void add_payload(struct sk_buff *skb, struct sassy_payload *payload)
+inline void add_payload(struct sk_buff *skb, struct asguard_payload *payload)
 {
 	void *data = (void *)skb_put(skb, SASSY_PAYLOAD_BYTES);
 
 	if (!data) {
-		sassy_error("Could not get data ptr to skb data\n (%s)",
+		asguard_error("Could not get data ptr to skb data\n (%s)",
 			    __FUNCTION__);
 		return;
 	}
@@ -199,8 +199,8 @@ int is_ip_local(struct net_device *dev,	u32 ip_addr)
 EXPORT_SYMBOL(is_ip_local);
 
 
-struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
-							struct sassy_payload *payload)
+struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr,
+							struct asguard_payload *payload)
 {
 	struct sk_buff *nomination_pkt = NULL;
 	struct pminfo *spminfo = &sdev->pminfo;
@@ -209,14 +209,14 @@ struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 	u32 local_ipaddr;
 
 	if (!spminfo) {
-		sassy_error("spminfo is invalid\n");
+		asguard_error("spminfo is invalid\n");
 		return NULL;
 	}
 
 	nomination_pkt = prepare_heartbeat_skb(dev);
 
 	if (!nomination_pkt) {
-		sassy_error("Could not compose packet (%s)\n",
+		asguard_error("Could not compose packet (%s)\n",
 			    __FUNCTION__);
 		return NULL;
 	}
@@ -233,7 +233,7 @@ struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
 		       payload,
 		       SASSY_PAYLOAD_BYTES, 0);
 
-	sassy_dbg("Composed packet\n");
+	asguard_dbg("Composed packet\n");
 #endif 
 
 	return nomination_pkt;
@@ -252,7 +252,7 @@ int compare_mac(unsigned char *m1, unsigned char *m2)
 	return 0;
 }
 
-void get_cluster_ids(struct sassy_device *sdev, unsigned char *remote_mac, int *lid, int *cid)
+void get_cluster_ids(struct asguard_device *sdev, unsigned char *remote_mac, int *lid, int *cid)
 {
 	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
@@ -282,7 +282,7 @@ void send_pkt(struct net_device *ndev, struct sk_buff *skb)
 	HARD_TX_LOCK(ndev, txq, smp_processor_id());
 
 	if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
-		sassy_error("Device Busy unlocking.\n");
+		asguard_error("Device Busy unlocking.\n");
 		goto unlock;
 	}
 
@@ -293,7 +293,7 @@ unlock:
 EXPORT_SYMBOL(send_pkt);
 
 
-int send_pkts(struct sassy_device *sdev, struct sk_buff **skbs, int num_pkts)
+int send_pkts(struct asguard_device *sdev, struct sk_buff **skbs, int num_pkts)
 {
 	int i;
 

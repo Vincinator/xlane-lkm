@@ -1,10 +1,10 @@
-#include <sassy/logger.h>
-#include <sassy/sassy.h>
-#include <sassy/payload_helper.h>
+#include <asguard/logger.h>
+#include <asguard/asguard.h>
+#include <asguard/payload_helper.h>
 
 #include "include/consensus_helper.h"
 #include "include/leader.h"
-#include <sassy/consensus.h>
+#include <asguard/consensus.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][LE][LEADER]"
@@ -41,7 +41,7 @@ void update_commit_idx(struct consensus_priv *priv)
 	int N, current_N, i;
 
 	if(!priv){
-		sassy_error("priv is NULL!\n");
+		asguard_error("priv is NULL!\n");
 		return;
 	}
 
@@ -53,7 +53,7 @@ void update_commit_idx(struct consensus_priv *priv)
 		current_N = priv->sm_log.match_index[i];
 
 		if(current_N >= MAX_CONSENSUS_LOG){
-			sassy_error("current_N is invalid\n");
+			asguard_error("current_N is invalid\n");
 			return;
 		}
 
@@ -67,7 +67,7 @@ void update_commit_idx(struct consensus_priv *priv)
 
 	if(N > priv->sm_log.commit_idx){
 		priv->sm_log.commit_idx = N;
-		sassy_dbg("found new commit_idx %d", N);
+		asguard_dbg("found new commit_idx %d", N);
 
 		write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, rdtsc());
 	}
@@ -79,7 +79,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	struct sassy_device *sdev = priv->sdev;
+	struct asguard_device *sdev = priv->sdev;
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3;
@@ -103,7 +103,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		if(param2 == 1){
 			// append rpc success!
-			//sassy_dbg("Received Reply with State=success param3=%d\n",param3);
+			//asguard_dbg("Received Reply with State=success param3=%d\n",param3);
 			// update match Index for follower with <remote_lid> 
 			
 			// Asguard can potentially send multiple appendEntries RPCs, and after each RPC
@@ -121,7 +121,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		} else {
 			// append rpc failed!
-			sassy_dbg("Received Reply with State=failed.. param3=%d\n", param3);
+			asguard_dbg("Received Reply with State=failed.. param3=%d\n", param3);
 
 			// decrement nextIndex for follower with <remote_lid>
 			priv->sm_log.next_index[remote_lid] = param3 + 1;
@@ -136,7 +136,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		if(param1 > priv->term){
 #if 1
 			if(sdev->verbose >= 2)
-				sassy_dbg("Received message from new leader with higher or equal term=%u\n", param1);
+				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, LEADER_ACCEPT_NEW_LEADER, rdtsc());
@@ -145,10 +145,10 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		} else {
 #if 1
 			if(sdev->verbose >= 2)
-				sassy_dbg("Received LEAD from leader with lower or equal term=%u\n", param1);
+				asguard_dbg("Received LEAD from leader with lower or equal term=%u\n", param1);
 	
 			// Ignore this LEAD message, continue to send LEAD messages 
-			sassy_log_le("%s, %llu, %d: Cluster node %d also claims to be leader in term %u.\n",
+			asguard_log_le("%s, %llu, %d: Cluster node %d also claims to be leader in term %u.\n",
 				nstate_string(priv->nstate),
 				rdtsc(),
 				priv->term,
@@ -159,7 +159,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	
 		break;
 	default:
-		sassy_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, opcode);
+		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, opcode);
 
 	}
 
@@ -175,7 +175,7 @@ int stop_leader(struct proto_instance *ins)
 int start_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
-	struct sassy_payload *pkt_payload;
+	struct asguard_payload *pkt_payload;
 	struct pminfo *spminfo = &priv->sdev->pminfo;
 	int hb_passive_ix, i;
 	

@@ -9,62 +9,62 @@
 #define SASSY_PACKET_PAYLOAD_SIZE 32
 
 #define RX_CYCLE_SIZE                                                          \
-	1 /* How many packets per remote host to hold in sassy memory */
+	1 /* How many packets per remote host to hold in asguard memory */
 
 /* 
  * The size of payload does not exceed the SASSY_PACKET_PAYLOAD_SIZE value.
- * This is true for all sassy packet types!
+ * This is true for all asguard packet types!
  */
 typedef enum {
 	SASSY_HB_TYPE = 0, /* Used by failure detector logic */
 	SASSY_CONSENSUS_TYPE = 1, /* Used by consensus logic */
 	SASSY_RAW_TYPE = 2, /* Unspecified payload structure */
-} sassy_packet_type;
+} asguard_packet_type;
 
 /*
- * Represents a single sassy packet
+ * Represents a single asguard packet
  */
-struct sassy_packet {
-	sassy_packet_type
+struct asguard_packet {
+	asguard_packet_type
 		ptype; /* Tells Logic Layer how to interpret the payload */
-	u8 payload[SASSY_PACKET_PAYLOAD_SIZE]; /* Byte addressable array of tasty sassy packet payload*/
+	u8 payload[SASSY_PACKET_PAYLOAD_SIZE]; /* Byte addressable array of tasty asguard packet payload*/
 };
 
 /*  Packet Buffer for one remote host */
-struct sassy_rx_buffer {
-	struct sassy_packet packets[RX_CYCLE_SIZE];
+struct asguard_rx_buffer {
+	struct asguard_packet packets[RX_CYCLE_SIZE];
 	int next_index;
 };
 
 /*
- * Table that maps (implicitly) rhostid (by array index) to struct sassy_rx_buffer
+ * Table that maps (implicitly) rhostid (by array index) to struct asguard_rx_buffer
  */
-struct sassy_rx_table {
-	struct sassy_rx_buffer **rhost_buffers;
+struct asguard_rx_table {
+	struct asguard_rx_buffer **rhost_buffers;
 };
 
 /*
  * Each NIC port gets a unique table. 
  * This struct holds references to all tables.
- * ifindex of NIC PORT corresponds to array position of struct sassy_rx_table *tables. 
+ * ifindex of NIC PORT corresponds to array position of struct asguard_rx_table *tables. 
  */
-struct sassy_core {
+struct asguard_core {
 	/* NIC independent Data */
-	struct sassy_rx_table **
+	struct asguard_rx_table **
 		rx_tables; /* Each NIC port (identified by ifindex) has a own table */
 
 	/* NIC specific Data */
-	struct sassy_device **sdevices;
+	struct asguard_device **sdevices;
 };
 
-//void init_sassy_proto_info_interfaces(void);
-//void clean_sassy_proto_info_interfaces(void);
+//void init_asguard_proto_info_interfaces(void);
+//void clean_asguard_proto_info_interfaces(void);
 
-void init_proto_selector(struct sassy_device *sdev);
-void remove_proto_selector(struct sassy_device *sdev);
+void init_proto_selector(struct asguard_device *sdev);
+void remove_proto_selector(struct asguard_device *sdev);
 
-struct sassy_core *sassy_core(void);
+struct asguard_core *asguard_core(void);
 
-int register_protocol_instance(struct sassy_device *sdev, int instance_id, int protocol_id);
-void clear_protocol_instances(struct sassy_device *sdev);
+int register_protocol_instance(struct asguard_device *sdev, int instance_id, int protocol_id);
+void clear_protocol_instances(struct asguard_device *sdev);
 #endif /* _SASSY_DEV_H_ */

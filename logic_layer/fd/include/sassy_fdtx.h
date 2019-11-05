@@ -1,9 +1,9 @@
 #pragma once
-#include <sassy/sassy.h>
+#include <asguard/asguard.h>
 
-#include "sassy_fd.h"
+#include "asguard_fd.h"
 
-int sassy_bypass_init_class(struct sassy_device *sdev);
-void sassy_clean_class(struct sassy_device *sdev);
-int sassy_setup_chardev(struct sassy_device *sdev, struct sassy_fd_priv *priv);
+int asguard_bypass_init_class(struct asguard_device *sdev);
+void asguard_clean_class(struct asguard_device *sdev);
+int asguard_setup_chardev(struct asguard_device *sdev, struct asguard_fd_priv *priv);
 

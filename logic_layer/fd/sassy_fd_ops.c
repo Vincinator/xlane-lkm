@@ -1,34 +1,34 @@
-#include <sassy/logger.h>
-#include <sassy/sassy.h>
+#include <asguard/logger.h>
+#include <asguard/asguard.h>
 
-#include "include/sassy_fd.h"
-#include "include/sassy_fdtx.h"
+#include "include/asguard_fd.h"
+#include "include/asguard_fdtx.h"
 
 
 int fd_init(struct proto_instance *ins)
 {
 	int err = 0;
-	struct sassy_fd_priv *priv = 
-		(struct sassy_fd_priv *)ins->proto_data;
+	struct asguard_fd_priv *priv = 
+		(struct asguard_fd_priv *)ins->proto_data;
 
-	struct sassy_device *sdev = priv->sdev;
+	struct asguard_device *sdev = priv->sdev;
 
-	err = sassy_bypass_init_class(sdev);
+	err = asguard_bypass_init_class(sdev);
 
 	if (err)
 		goto error;
 
-	err = sassy_setup_chardev(sdev, priv);
+	err = asguard_setup_chardev(sdev, priv);
 
 	if (err)
 		goto error;
 
 	priv->num_procs = 0;
 
-	sassy_dbg("fd init\n");
+	asguard_dbg("fd init\n");
 	return 0;
 error:
-	sassy_error("failed to init chardevs for FD protocol\n");
+	asguard_error("failed to init chardevs for FD protocol\n");
 	return err;
 }
 
@@ -37,7 +37,7 @@ int fd_init_payload(void *payload)
 	struct fd_payload *fd_p = (struct fd_payload *)payload;
 	int i;
 
-	sassy_dbg("initializing FD payload\n");
+	asguard_dbg("initializing FD payload\n");
 
 	fd_p->protocol_id = SASSY_PROTO_FD;
 	fd_p->message = 0;
@@ -53,38 +53,38 @@ int fd_init_payload(void *payload)
 
 int fd_start(struct proto_instance *ins)
 {
-	struct sassy_fd_priv *priv = 
-		(struct sassy_fd_priv *)ins->proto_data;
+	struct asguard_fd_priv *priv = 
+		(struct asguard_fd_priv *)ins->proto_data;
 
-	sassy_dbg("fd start\n");
+	asguard_dbg("fd start\n");
 	return 0;
 }
 
 int fd_stop(struct proto_instance *ins)
 {
-	struct sassy_fd_priv *priv = 
-		(struct sassy_fd_priv *)ins->proto_data;
-	sassy_dbg("fd stop\n");
+	struct asguard_fd_priv *priv = 
+		(struct asguard_fd_priv *)ins->proto_data;
+	asguard_dbg("fd stop\n");
 	return 0;
 }
 
 int fd_clean(struct proto_instance *ins)
 {
-	struct sassy_fd_priv *priv = 
-		(struct sassy_fd_priv *)ins->proto_data;
-	struct sassy_device *sdev = priv->sdev;
+	struct asguard_fd_priv *priv = 
+		(struct asguard_fd_priv *)ins->proto_data;
+	struct asguard_device *sdev = priv->sdev;
 
-	sassy_clean_class(sdev);
-	sassy_dbg("fd clean\n");
+	asguard_clean_class(sdev);
+	asguard_dbg("fd clean\n");
 	return 0;
 }
 
 int fd_info(struct proto_instance *ins)
 {
-	struct sassy_fd_priv *priv = 
-		(struct sassy_fd_priv *)ins->proto_data;
+	struct asguard_fd_priv *priv = 
+		(struct asguard_fd_priv *)ins->proto_data;
 
-	sassy_dbg("fd info\n");
+	asguard_dbg("fd info\n");
 	return 0;
 }
 
@@ -95,9 +95,9 @@ int fd_info(struct proto_instance *ins)
 int fd_us_update(struct proto_instance *ins, void *payload)
 {
 	int i;
-	struct sassy_fd_priv *priv = 
-		(struct sassy_fd_priv *)ins->proto_data;
-	struct sassy_device *sdev = priv->sdev;
+	struct asguard_fd_priv *priv = 
+		(struct asguard_fd_priv *)ins->proto_data;
+	struct asguard_device *sdev = priv->sdev;
 
 	struct fd_payload *cur_p = (struct fd_payload *)payload;
 
@@ -109,10 +109,10 @@ int fd_us_update(struct proto_instance *ins, void *payload)
 		(struct fd_aliveness_counters *)priv->tx_buf;
 
 	if (sdev->verbose >= 3)
-		sassy_dbg("fd us update\n");
+		asguard_dbg("fd us update\n");
 
 	if (!us_counters) {
-		sassy_error("aliveness counter buffer is uninitialized.\n");
+		asguard_error("aliveness counter buffer is uninitialized.\n");
 		return -ENODEV;
 	}
 
@@ -124,7 +124,7 @@ int fd_us_update(struct proto_instance *ins, void *payload)
 
 		if (sdev->verbose) {
 			if (us_counters->ac[i] != last_counters->ac[i])
-				sassy_dbg("proc: %d state alive!\n",
+				asguard_dbg("proc: %d state alive!\n",
 					  cur_p->pinfo[i].pid);
 		}
 		last_counters->ac[i] = us_counters->ac[i];
@@ -139,7 +139,7 @@ int fd_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 	//print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
 	//                payload, SASSY_PAYLOAD_BYTES, 0);
 
-	//sassy_dbg("SRC MAC=%pM", remote_mac);
+	//asguard_dbg("SRC MAC=%pM", remote_mac);
 
 }
 

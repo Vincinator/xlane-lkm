@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sassy/sassy.h>
+#include <asguard/asguard.h>
 #include <linux/cdev.h>
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -14,12 +14,12 @@ struct fd_aliveness_counters {
 	u8 ac[MAX_PROCESSES_PER_HOST];
 };
 
-struct sassy_fd_priv {
+struct asguard_fd_priv {
 	int num_procs;
 
 	// parent
 	struct proto_instance *ins;
-	struct sassy_device *sdev;
+	struct asguard_device *sdev;
 
 	/* Character Device to mmap FD aliveness counter memory to user space */
 	struct device *tx_device;
@@ -43,7 +43,7 @@ struct fd_payload {
 	u16 offset;
 	u8 message; /* short message bundled with this hb */
 	u8 alive_rp; /* Number of alive processes */
-	struct sassy_process_info pinfo[MAX_PROCESSES_PER_HOST];
+	struct asguard_process_info pinfo[MAX_PROCESSES_PER_HOST];
 };
 
 

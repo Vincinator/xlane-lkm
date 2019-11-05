@@ -8,7 +8,7 @@
 #include <linux/ktime.h>
 #include <linux/time.h>
 
-#include <sassy/logger.h>
+#include <asguard/logger.h>
 
 
 #define MAX_SASSY_PROC_NAME 256
@@ -42,7 +42,7 @@
 #define SASSY_HEADER_BYTES 64 // TODO: this should be more than enough for UDP/ipv4
 #define SASSY_PKT_BYTES SASSY_PAYLOAD_BYTES + SASSY_HEADER_BYTES
 
-int sassy_core_register_nic(int ifindex);
+int asguard_core_register_nic(int ifindex);
 
 #define SASSY_NUM_TS_LOG_TYPES 8
 #define TIMESTAMP_ARRAY_LIMIT	100000
@@ -99,25 +99,25 @@ enum tsstate {
     SASSY_TS_LOG_FULL,
 };
 
-struct sassy_timestamp_item {
+struct asguard_timestamp_item {
 	uint64_t timestamp_tcs;
 	//ktime_t correlation_id;
 	int target_id; /* Host target id to which the heartbeat was send (if TX) */
 };
 
-struct sassy_timestamp_logs {
-	struct sassy_timestamp_item *timestamp_items; /* Size is defined with TIMESTAMP_ARRAY_LIMIT macro*/
+struct asguard_timestamp_logs {
+	struct asguard_timestamp_item *timestamp_items; /* Size is defined with TIMESTAMP_ARRAY_LIMIT macro*/
 	int current_timestamps; /* How many timestamps are set in the timestamp */
 	struct proc_dir_entry	*proc_dir;
 	char *name;
 };
 
-struct sassy_stats {
+struct asguard_stats {
 	/* Array of timestamp logs
 	 * - Each item corresponds to one timestamping type
-	 * - Each item is a pointer to a sassy_timestamp_logs struct
+	 * - Each item is a pointer to a asguard_timestamp_logs struct
 	 */
-	struct sassy_timestamp_logs **timestamp_logs;
+	struct asguard_timestamp_logs **timestamp_logs;
 	int timestamp_amount; /* how many different timestamps types are tracked*/
 };
 
@@ -178,7 +178,7 @@ struct logger_event {
 
 
 
-struct sassy_logger {
+struct asguard_logger {
 
 	int ifindex; 
 
@@ -200,21 +200,21 @@ enum w_state {
 	WARMING_UP = 1,
 };
 
-enum sassy_rx_state {
+enum asguard_rx_state {
 	SASSY_RX_DISABLED = 0,
 	SASSY_RX_ENABLED = 1,
 };
 
-enum sassy_protocol_type {
+enum asguard_protocol_type {
 	SASSY_PROTO_ECHO = 0,
 	SASSY_PROTO_FD = 1,
 	SASSY_PROTO_CONSENSUS = 2,
 
 };
 
-typedef enum sassy_protocol_type sassy_protocol_t;
+typedef enum asguard_protocol_type asguard_protocol_t;
 
-enum sassy_pacemaker_test_state {
+enum asguard_pacemaker_test_state {
 	SASSY_PM_TEST_UNINIT = 0,
 	SASSY_PM_TEST_INIT = 1,
 };
@@ -227,7 +227,7 @@ enum pmstate {
 
 typedef enum pmstate pmstate_t;
 
-struct sassy_process_info {
+struct asguard_process_info {
 	u8 pid; /* Process ID on remote host */
 	u8 ps; /* Status of remote process */
 };
@@ -250,7 +250,7 @@ struct protocol_payload {
 };
 
 
-struct sassy_payload {
+struct asguard_payload {
 	
 	/* The number of protocols that are included in this payload.
 	 * If 0, then this payload is interpreted as "noop" operation 
@@ -265,14 +265,14 @@ struct sassy_payload {
 	 * must include the offset to the next protocol payload as u16 directly after the first value.
 	 * 
 	 * TODO: Check on creation if protocol fits in the payload (MAX_SASSY_PAYLOAD_BYTES). 
-	 * If protocol payload does not fit in the sassy payload, 
-	 * then the protocol payload is queued to be stored in the next sassy payload.
+	 * If protocol payload does not fit in the asguard payload, 
+	 * then the protocol payload is queued to be stored in the next asguard payload.
 	 */
 	char proto_data[MAX_SASSY_PAYLOAD_BYTES - 1];
 };
 
 
-struct sassy_packet_data {
+struct asguard_packet_data {
 	struct node_addr naddr;
 
 	u8 protocol_id;
@@ -282,7 +282,7 @@ struct sassy_packet_data {
 	 * even when a new version is currently written.
 	 *
 	 * The hb_active_ix member of this struct tells which index can be used by the pacemaker */
-	struct sassy_payload *pkt_payload[2];
+	struct asguard_payload *pkt_payload[2];
 
 	int hb_active_ix;
 
@@ -294,31 +294,31 @@ struct sassy_packet_data {
 	spinlock_t lock;
 };
 
-struct sassy_mlx5_con_info {
+struct asguard_mlx5_con_info {
 	int ix;
 	int cqn;
 	void *c; /* mlx5 channel */
 };
 
-struct sassy_pacemaker_test_data {
-	enum sassy_pacemaker_test_state state;
+struct asguard_pacemaker_test_data {
+	enum asguard_pacemaker_test_state state;
 	int active_processes; /* Number of active processes */
-	struct sassy_process_info pinfos[MAX_PROCESSES_PER_HOST];
+	struct asguard_process_info pinfos[MAX_PROCESSES_PER_HOST];
 };
 
-struct sassy_pm_target_info {
+struct asguard_pm_target_info {
 	int target_id;
 	int alive;	// 0 if not alive
 
 	/* Params used to build the SKB for TX */
-	struct sassy_packet_data pkt_data;
+	struct asguard_packet_data pkt_data;
 
 	/* Data for transmitting the packet  */
 	struct sk_buff *skb;
 	struct netdev_queue *txq;
 };
 
-struct sassy_test_procfile_container {
+struct asguard_test_procfile_container {
 	struct pminfo *spminfo;
 	int procid;
 };
@@ -334,10 +334,10 @@ struct pminfo {
 	// 2.4 GHz (must be fixed)
 	uint64_t hbi;
 
-	struct sassy_pm_target_info pm_targets[MAX_REMOTE_SOURCES];
+	struct asguard_pm_target_info pm_targets[MAX_REMOTE_SOURCES];
 
 	/* Test Data */
-	struct sassy_pacemaker_test_data tdata;
+	struct asguard_pacemaker_test_data tdata;
 
 	struct hrtimer pm_timer;
 
@@ -345,20 +345,20 @@ struct pminfo {
 
 struct proto_instance;
 
-struct sassy_device {
+struct asguard_device {
 	int ifindex; /* corresponds to ifindex of net_device */
-	int sassy_id;
+	int asguard_id;
 	int fire;
 
 	u32 cluster_id;
 
 	int verbose; /* Prints more information when set to 1 during RX/TX to dmesg*/
 
-	enum sassy_rx_state rx_state; 
+	enum asguard_rx_state rx_state; 
 	enum tsstate ts_state; 
 	enum w_state warmup_state;
 
-	struct sassy_stats *stats;
+	struct asguard_stats *stats;
 
 	struct net_device *ndev;
 
@@ -370,7 +370,7 @@ struct sassy_device {
 	struct proto_instance **protos; // array of ptrs to protocol instances
 };
 
-struct sassy_protocol_ctrl_ops {
+struct asguard_protocol_ctrl_ops {
 	int (*init_ctrl)(void);
 
 	/* Initializes data and user space interfaces */
@@ -401,13 +401,13 @@ struct proto_instance {
 
 	u16 instance_id;
 
-	enum sassy_protocol_type proto_type;
+	enum asguard_protocol_type proto_type;
 	
-	struct sassy_logger logger;
+	struct asguard_logger logger;
 
 	char *name;
 
-	struct sassy_protocol_ctrl_ops ctrl_ops;
+	struct asguard_protocol_ctrl_ops ctrl_ops;
 
 	void *proto_data;
 
@@ -416,125 +416,125 @@ struct proto_instance {
 
 
 
-struct sk_buff *sassy_setup_hb_packet(struct pminfo *spminfo,
+struct sk_buff *asguard_setup_hb_packet(struct pminfo *spminfo,
 				      int host_number);
-//void sassy_setup_skbs(struct pminfo *spminfo);
+//void asguard_setup_skbs(struct pminfo *spminfo);
 void pm_state_transition_to(struct pminfo *spminfo,
 			    enum pmstate state);
 const char *pm_state_string(pmstate_t state);
 
-int sassy_pm_reset(struct pminfo *spminfo);
-int sassy_pm_stop(struct pminfo *spminfo);
-int sassy_pm_start_loop(void *data);
-int sassy_pm_start_timer(void *data);
+int asguard_pm_reset(struct pminfo *spminfo);
+int asguard_pm_stop(struct pminfo *spminfo);
+int asguard_pm_start_loop(void *data);
+int asguard_pm_start_timer(void *data);
 
-void init_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);
-void clean_sassy_pm_ctrl_interfaces(struct sassy_device *sdev);
+void init_asguard_pm_ctrl_interfaces(struct asguard_device *sdev);
+void clean_asguard_pm_ctrl_interfaces(struct asguard_device *sdev);
 
-void sassy_hex_to_ip(char *retval, u32 dst_ip);
+void asguard_hex_to_ip(char *retval, u32 dst_ip);
 
 /*
  * Converts an IP address from dotted numbers string to hex.
  */
-u32 sassy_ip_convert(const char *str);
+u32 asguard_ip_convert(const char *str);
 
 /*
  * Converts an MAC address to hex char array
  */
-unsigned char *sassy_convert_mac(const char *str);
+unsigned char *asguard_convert_mac(const char *str);
 
-struct sk_buff *compose_skb(struct sassy_device *sdev, struct node_addr *naddr,
-									struct sassy_payload *payload);
+struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr,
+									struct asguard_payload *payload);
 
-struct net_device *sassy_get_netdevice(int ifindex);
+struct net_device *asguard_get_netdevice(int ifindex);
 
-int sassy_mlx5_con_register_device(int ifindex);
+int asguard_mlx5_con_register_device(int ifindex);
 
 /* c is void ptr to  struct mlx5e_channel *c  */
-int sassy_mlx5_con_register_channel(int sassy_id, int ix, int cqn, void *c);
-int sassy_mlx5_con_check_cqn(int sassy_id, int cqn);
-int sassy_mlx5_con_check_ix(int sassy_id, int ix);
+int asguard_mlx5_con_register_channel(int asguard_id, int ix, int cqn, void *c);
+int asguard_mlx5_con_check_cqn(int asguard_id, int cqn);
+int asguard_mlx5_con_check_ix(int asguard_id, int ix);
 
-int sassy_mlx5_post_optimistical_timestamp(int sassy_id, uint64_t cycle_ts);
-int sassy_mlx5_post_payload(int sassy_id, void *va, u32 frag_size, u16 headroom,
+int asguard_mlx5_post_optimistical_timestamp(int asguard_id, uint64_t cycle_ts);
+int asguard_mlx5_post_payload(int asguard_id, void *va, u32 frag_size, u16 headroom,
 			    u32 cqe_bcnt);
 
-int sassy_core_register_remote_host(int sassy_id, u32 ip, char *mac,
+int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 				    int protocol_id, int cluster_id);
 
-int sassy_validate_sassy_device(int sassy_id);
-void sassy_reset_remote_host_counter(int sassy_id);
+int asguard_validate_asguard_device(int asguard_id);
+void asguard_reset_remote_host_counter(int asguard_id);
 
-void sassy_post_payload(int sassy_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt);
+void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt);
 
-const char *sassy_get_protocol_name(enum sassy_protocol_type protocol_type);
+const char *asguard_get_protocol_name(enum asguard_protocol_type protocol_type);
 
-struct proto_instance *generate_protocol_instance(struct sassy_device *sdev, int protocol_id);
+struct proto_instance *generate_protocol_instance(struct asguard_device *sdev, int protocol_id);
 
-void clean_sassy_ctrl_interfaces(struct sassy_device *sdev);
-void init_sassy_ctrl_interfaces(struct sassy_device *sdev);
+void clean_asguard_ctrl_interfaces(struct asguard_device *sdev);
+void init_asguard_ctrl_interfaces(struct asguard_device *sdev);
 
-void sassy_post_ts(int sassy_id, uint64_t cycles);
+void asguard_post_ts(int asguard_id, uint64_t cycles);
 
-void *sassy_mlx5_get_channel(int sassy_id);
+void *asguard_mlx5_get_channel(int asguard_id);
 
 
-void ts_state_transition_to(struct sassy_device *sdev,
+void ts_state_transition_to(struct asguard_device *sdev,
 			    enum tsstate state);
 
-int sassy_ts_stop(struct sassy_device *sdev);
-int sassy_ts_start(struct sassy_device *sdev);
-int sassy_reset_stats(struct sassy_device *sdev);
+int asguard_ts_stop(struct asguard_device *sdev);
+int asguard_ts_start(struct asguard_device *sdev);
+int asguard_reset_stats(struct asguard_device *sdev);
 
-int sassy_le_log_stop(struct sassy_device *sdev);
-int sassy_le_log_start(struct sassy_device *sdev);
-int sassy_le_log_reset(struct sassy_device *sdev);
+int asguard_le_log_stop(struct asguard_device *sdev);
+int asguard_le_log_start(struct asguard_device *sdev);
+int asguard_le_log_reset(struct asguard_device *sdev);
 
-int sassy_write_timestamp(struct sassy_device *sdev,
+int asguard_write_timestamp(struct asguard_device *sdev,
 				int logid, uint64_t cycles, int target_id);
 
 const char *ts_state_string(enum tsstate state);
-int init_timestamping(struct sassy_device *sdev);
-int init_le_logging(struct sassy_device *sdev);
-void init_sassy_ts_ctrl_interfaces(struct sassy_device *sdev);
-void init_log_ctrl_interfaces(struct sassy_device *sdev);
-int sassy_clean_timestamping(struct sassy_device *sdev);
+int init_timestamping(struct asguard_device *sdev);
+int init_le_logging(struct asguard_device *sdev);
+void init_asguard_ts_ctrl_interfaces(struct asguard_device *sdev);
+void init_log_ctrl_interfaces(struct asguard_device *sdev);
+int asguard_clean_timestamping(struct asguard_device *sdev);
 
-int write_log(struct sassy_logger *slog, int type, uint64_t tcs);
+int write_log(struct asguard_logger *slog, int type, uint64_t tcs);
 
-struct sassy_device *get_sdev(int devid);
+struct asguard_device *get_sdev(int devid);
 
 void send_pkt(struct net_device *ndev, struct sk_buff *skb);
-int send_pkts(struct sassy_device *sdev, struct sk_buff **skbs, int num_pkts);
+int send_pkts(struct asguard_device *sdev, struct sk_buff **skbs, int num_pkts);
 
 int is_ip_local(struct net_device *dev,	u32 ip_addr);
 
-struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev);
-struct proto_instance *get_fd_proto_instance(struct sassy_device *sdev);
-struct proto_instance *get_echo_proto_instance(struct sassy_device *sdev);
+struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev);
+struct proto_instance *get_fd_proto_instance(struct asguard_device *sdev);
+struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev);
 
-void get_cluster_ids(struct sassy_device *sdev, unsigned char *remote_mac, int *lid, int *cid);
-//void set_le_noop(struct sassy_device *sdev, unsigned char *pkt);
+void get_cluster_ids(struct asguard_device *sdev, unsigned char *remote_mac, int *lid, int *cid);
+//void set_le_noop(struct asguard_device *sdev, unsigned char *pkt);
 void set_le_term(unsigned char *pkt, u32 term);
 int compare_mac(unsigned char *m1, unsigned char *m2);
 
-void init_log_ctrl_base(struct sassy_device *sdev);
-void init_logger_ctrl(struct sassy_logger *slog);
+void init_log_ctrl_base(struct asguard_device *sdev);
+void init_logger_ctrl(struct asguard_logger *slog);
 
 
-int init_logger(struct sassy_logger *slog);
-void clear_logger(struct sassy_logger *slog);
+int init_logger(struct asguard_logger *slog);
+void clear_logger(struct asguard_logger *slog);
 
-int sassy_log_stop(struct sassy_logger *slog);
-int sassy_log_start(struct sassy_logger *slog);
-int sassy_log_reset(struct sassy_logger *slog);
+int asguard_log_stop(struct asguard_logger *slog);
+int asguard_log_start(struct asguard_logger *slog);
+int asguard_log_reset(struct asguard_logger *slog);
 
 const char *logger_state_string(enum logger_state state);
-char *le_state_name(struct sassy_device *sdev);
-void set_all_targets_dead(struct sassy_device *sdev);
-void remove_logger_ifaces(struct sassy_logger *slog);
+char *le_state_name(struct asguard_device *sdev);
+void set_all_targets_dead(struct asguard_device *sdev);
+void remove_logger_ifaces(struct asguard_logger *slog);
 
-void init_proto_instance_ctrl(struct sassy_device *sdev);
-void remove_proto_instance_ctrl(struct sassy_device *sdev);
+void init_proto_instance_ctrl(struct asguard_device *sdev);
+void remove_proto_instance_ctrl(struct asguard_device *sdev);
 
 #endif /* _SASSY_H_ */

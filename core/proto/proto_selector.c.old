@@ -1,12 +1,12 @@
 /*
- * selecting protocol for sassy device
+ * selecting protocol for asguard device
  */
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 
-#include <sassy/sassy.h>
-#include <sassy/logger.h>
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
 
 #include <linux/list.h>
 
@@ -18,7 +18,7 @@
 
 #include <linux/err.h>
 
-#include "../sassy_core.h"
+#include "../asguard_core.h"
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
@@ -33,23 +33,23 @@ static ssize_t proto_selector_write(struct file *file,
 {
 	int err;
 	char kernel_buffer[MAX_PROCFS_BUF];
-	struct sassy_device *sdev =
-		(struct sassy_device *)PDE_DATA(file_inode(file));
-	struct sassy_protocol *sproto = NULL;
+	struct asguard_device *sdev =
+		(struct asguard_device *)PDE_DATA(file_inode(file));
+	struct asguard_protocol *sproto = NULL;
 	long new_protocol = -1;
 
 	if (!sdev)
 		return -ENODEV;
 
 	if (count == 0) {
-		sassy_error("sassy device is NULL.\n");
+		asguard_error("asguard device is NULL.\n");
 		return -EINVAL;
 	}
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __FUNCTION__);
 		return err;
 	}
 
@@ -58,7 +58,7 @@ static ssize_t proto_selector_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_protocol);
 
 	if (err) {
-		sassy_error(" Error converting input%s\n", __FUNCTION__);
+		asguard_error(" Error converting input%s\n", __FUNCTION__);
 		return err;
 	}
 
@@ -66,17 +66,17 @@ static ssize_t proto_selector_write(struct file *file,
 
 
 	if (!sproto) {
-		sassy_error("Could not find protocol\n");
+		asguard_error("Could not find protocol\n");
 		return count;
 	}
 
 	if (sdev->pminfo.state == SASSY_PM_EMITTING) {
-		sassy_error("Stop pacemaker first!\n");
+		asguard_error("Stop pacemaker first!\n");
 		return count;
 	}
 
 	if (sdev->proto) {
-		sassy_error("Stop and Clean previous protocol\n");
+		asguard_error("Stop and Clean previous protocol\n");
 		sdev->proto->ctrl_ops.stop(sdev);
 		sdev->proto->ctrl_ops.clean(sdev);
 		kfree(sdev->proto); // free old protocol data
@@ -89,18 +89,18 @@ static ssize_t proto_selector_write(struct file *file,
 	/* Initialize Logger*/
     
     strncpy(sdev->le_logger.name, "le", MAX_LOGGER_NAME);
-    score->sdevices[sassy_id]->le_logger.ifindex = ifindex;
-    init_logger(&score->sdevices[sassy_id]->le_logger);
+    score->sdevices[asguard_id]->le_logger.ifindex = ifindex;
+    init_logger(&score->sdevices[asguard_id]->le_logger);
 	return count;
 }
 
 static int proto_selector_show(struct seq_file *m, void *v)
 {
-	struct sassy_device *sdev =
-		(struct sassy_device *)m->private;
+	struct asguard_device *sdev =
+		(struct asguard_device *)m->private;
 
 	if (!sdev) {
-		sassy_error(" sdev is NULL %s!\n", __FUNCTION__);
+		asguard_error(" sdev is NULL %s!\n", __FUNCTION__);
 		return -EINVAL;
 	}
 	if (!sdev->proto) {
@@ -109,7 +109,7 @@ static int proto_selector_show(struct seq_file *m, void *v)
 	}
 
 	seq_printf(m, "sdev uses protocol %s with id %d\n",
-		   sassy_get_protocol_name(sdev->proto->proto_type),
+		   asguard_get_protocol_name(sdev->proto->proto_type),
 		   sdev->proto->proto_type);
 
 	return 0;
@@ -131,14 +131,14 @@ static const struct file_operations proto_selector_ops = {
 };
 
 
-static void __clear_previous_le_proto(struct sassy_device *sdev)
+static void __clear_previous_le_proto(struct asguard_device *sdev)
 {
 	if (sdev->le_proto && sdev->pminfo.state != SASSY_PM_EMITTING) {
-		sassy_dbg("Stop and Clean le protocol\n");
+		asguard_dbg("Stop and Clean le protocol\n");
 		sdev->le_proto->ctrl_ops.stop(sdev);
 		sdev->le_proto->ctrl_ops.clean(sdev);
 	} else {
-		sassy_dbg("Leader election protocol was not loaded, or PM is emitting! \n");
+		asguard_dbg("Leader election protocol was not loaded, or PM is emitting! \n");
 	}
 
 }
@@ -149,22 +149,22 @@ static ssize_t proto_le_selector_write(struct file *file,
 {
 	int err;
 	char kernel_buffer[MAX_PROCFS_BUF];
-	struct sassy_device *sdev =
-		(struct sassy_device *)PDE_DATA(file_inode(file));
+	struct asguard_device *sdev =
+		(struct asguard_device *)PDE_DATA(file_inode(file));
 	long new_protocol = -1;
 
 	if (!sdev)
 		return -ENODEV;
 
 	if (count == 0) {
-		sassy_error("sassy device is NULL.\n");
+		asguard_error("asguard device is NULL.\n");
 		return -EINVAL;
 	}
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __FUNCTION__);
 		return err;
 	}
 
@@ -173,19 +173,19 @@ static ssize_t proto_le_selector_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_protocol);
 	
 	if (err) {
-		sassy_error(" Error converting input%s\n", __FUNCTION__);
+		asguard_error(" Error converting input%s\n", __FUNCTION__);
 		return err;
 	}
 
 	if (sdev->pminfo.state == SASSY_PM_EMITTING) {
-		sassy_error("Stop pacemaker first!\n");
+		asguard_error("Stop pacemaker first!\n");
 		return -ENODEV;
 	}
 
 	switch(new_protocol){
 		case 0: // Stop (if initialized)
 			if(!consensus_is_alive(sdev)){
-				sassy_dbg("Leader Election is not running\n");
+				asguard_dbg("Leader Election is not running\n");
 				break;
 			}
 
@@ -194,7 +194,7 @@ static ssize_t proto_le_selector_write(struct file *file,
 			break;
 		case 1: // Start (if initialized)
 			if(consensus_is_alive(sdev)){
-				sassy_dbg("Leader Election is already running\n");
+				asguard_dbg("Leader Election is already running\n");
 				break;
 			}
 
@@ -210,10 +210,10 @@ static ssize_t proto_le_selector_write(struct file *file,
 			break;
 
 		default:
-			sassy_error("Invalid Input.\n");
-			sassy_error("Valid inputs are:\n");
-			sassy_error("     0 for clearing leader election protocol\n");
-			sassy_error("     1 for initializing leader election protocol\n");
+			asguard_error("Invalid Input.\n");
+			asguard_error("Valid inputs are:\n");
+			asguard_error("     0 for clearing leader election protocol\n");
+			asguard_error("     1 for initializing leader election protocol\n");
 			break;
 	}
 	return count;
@@ -221,11 +221,11 @@ static ssize_t proto_le_selector_write(struct file *file,
 
 static int proto_le_selector_show(struct seq_file *m, void *v)
 {
-	struct sassy_device *sdev =
-		(struct sassy_device *)m->private;
+	struct asguard_device *sdev =
+		(struct asguard_device *)m->private;
 
 	if (!sdev) {
-		sassy_error(" sdev is NULL %s!\n", __FUNCTION__);
+		asguard_error(" sdev is NULL %s!\n", __FUNCTION__);
 		return -EINVAL;
 	}
 	if (!sdev->le_proto) {
@@ -253,36 +253,36 @@ static const struct file_operations proto_le_selector_ops = {
 	.release = single_release,
 };
 
-void init_proto_selector(struct sassy_device *sdev)
+void init_proto_selector(struct asguard_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf),
-		"sassy/%d/protocol", sdev->ifindex);
+		"asguard/%d/protocol", sdev->ifindex);
 
 	proc_create_data(name_buf, 0707, NULL, &proto_selector_ops,
 			 sdev);
 
 	snprintf(name_buf, sizeof(name_buf),
-		"sassy/%d/le_protocol", sdev->ifindex);
+		"asguard/%d/le_protocol", sdev->ifindex);
 
 	proc_create_data(name_buf, 0707, NULL, &proto_le_selector_ops,
 			 sdev);
 
-	sassy_dbg(" added proto selector\n");
+	asguard_dbg(" added proto selector\n");
 }
 
-void remove_proto_selector(struct sassy_device *sdev)
+void remove_proto_selector(struct asguard_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf),
-		"sassy/%d/protocol", sdev->ifindex);
+		"asguard/%d/protocol", sdev->ifindex);
 
 	remove_proc_entry(name_buf, NULL);
 
 	snprintf(name_buf, sizeof(name_buf),
-		"sassy/%d/le_protocol", sdev->ifindex);
+		"asguard/%d/le_protocol", sdev->ifindex);
 
 	remove_proc_entry(name_buf, NULL);
 }

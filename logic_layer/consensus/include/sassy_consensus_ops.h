@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sassy/sassy.h>
+#include <asguard/asguard.h>
 
 int consensus_init(struct proto_instance *ins);
 int consensus_start(struct proto_instance *ins);

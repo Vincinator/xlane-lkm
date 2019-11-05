@@ -1,12 +1,12 @@
 /*
- * selecting protocol for sassy device
+ * selecting protocol for asguard device
  */
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 
-#include <sassy/sassy.h>
-#include <sassy/logger.h>
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
 
 #include <linux/list.h>
 
@@ -18,7 +18,7 @@
 
 #include <linux/err.h>
 
-#include "../sassy_core.h"
+#include "../asguard_core.h"
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PROTO INSTANCE CTRL]"
@@ -30,8 +30,8 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 	int err;
 	char kernel_buffer[SASSY_TARGETS_BUF];
 	char *search_str;
-	struct sassy_device *sdev =
-		(struct sassy_device *)PDE_DATA(file_inode(file));
+	struct asguard_device *sdev =
+		(struct asguard_device *)PDE_DATA(file_inode(file));
 	size_t size = min(sizeof(kernel_buffer) - 1, count);
 	char *input_str;
 	static const char delimiters[] = " ,;()";
@@ -39,7 +39,7 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 	int instance_id, protocol_id;
 
 	if (!sdev) {
-		sassy_error(" Could not find sassy device!\n");
+		asguard_error(" Could not find asguard device!\n");
 		return -ENODEV;
 	}
 	
@@ -49,7 +49,7 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -71,12 +71,12 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 				
 				// clear all existing protocols and exit
 				clear_protocol_instances(sdev);
-				sassy_dbg("cleared all instances\n");
+				asguard_dbg("cleared all instances\n");
 				return count;
 			}
 			
 
-			sassy_dbg("instance id: %s\n", input_str);
+			asguard_dbg("instance id: %s\n", input_str);
 			state = 1;
 		} else if (state == 1) {
 			err = kstrtoint(input_str, 10, &protocol_id);
@@ -92,19 +92,19 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 
 		} 
 	}
-	sassy_dbg("Created a new protocol instance  of type %d with instance id %d\n",
+	asguard_dbg("Created a new protocol instance  of type %d with instance id %d\n",
 			  protocol_id, instance_id);
 	return count;
 error:
 
-	sassy_error("Error during parsing of input.%s\n", __FUNCTION__);
+	asguard_error("Error during parsing of input.%s\n", __FUNCTION__);
 	return err;
 }
 
 static int proto_instance_ctrl_show(struct seq_file *m, void *v)
 {
-	struct sassy_device *sdev =
-		(struct sassy_device *)m->private;
+	struct asguard_device *sdev =
+		(struct asguard_device *)m->private;
 
 	int i;
 
@@ -115,11 +115,11 @@ static int proto_instance_ctrl_show(struct seq_file *m, void *v)
 
 	for (i = 0; i < sdev->num_of_proto_instances; i++) {
 		if(!sdev->protos[i]) {
-			sassy_dbg("Proto init error detected! proto with idx %d\n", i);
+			asguard_dbg("Proto init error detected! proto with idx %d\n", i);
 			continue;
 		}
 		seq_printf(m, "Instance ID: %d\n", sdev->protos[i]->instance_id);
-		seq_printf(m, "Protocol Type: %s\n", sassy_get_protocol_name(sdev->protos[i]->proto_type));
+		seq_printf(m, "Protocol Type: %s\n", asguard_get_protocol_name(sdev->protos[i]->proto_type));
 		seq_printf(m, "---\n");
 	}
 
@@ -141,16 +141,16 @@ static const struct file_operations proto_instance_ctrl_ops = {
 	.release = single_release,
 };
 
-void init_proto_instance_ctrl(struct sassy_device *sdev)
+void init_proto_instance_ctrl(struct asguard_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances",
 		 sdev->ifindex);
 
 	proc_mkdir(name_buf, NULL);
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/ctrl",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/ctrl",
 		 sdev->ifindex);
 
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &proto_instance_ctrl_ops,
@@ -160,15 +160,15 @@ void init_proto_instance_ctrl(struct sassy_device *sdev)
 EXPORT_SYMBOL(init_proto_instance_ctrl);
 
 
-void remove_proto_instance_ctrl(struct sassy_device *sdev)
+void remove_proto_instance_ctrl(struct asguard_device *sdev)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/ctrl",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/ctrl",
 		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances",
 		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 }

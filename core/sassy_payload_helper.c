@@ -1,6 +1,6 @@
-#include <sassy/sassy.h>
-#include <sassy/payload_helper.h>
-#include <sassy/consensus.h>
+#include <asguard/asguard.h>
+#include <asguard/payload_helper.h>
+#include <asguard/consensus.h>
 
 
 
@@ -8,7 +8,7 @@
  * 
  * If less than n protocols are included, a NULL ptr is returned
  */
-char *sassy_get_proto(struct sassy_payload *spay, int n) 
+char *asguard_get_proto(struct asguard_payload *spay, int n) 
 {
 	int i;
 	char *cur_proto;
@@ -17,7 +17,7 @@ char *sassy_get_proto(struct sassy_payload *spay, int n)
 	cur_proto = spay->proto_data;
 
 	if(spay->protocols_included < n) {
-		sassy_error("only %d protocols are included, requested %d",spay->protocols_included, n);
+		asguard_error("only %d protocols are included, requested %d",spay->protocols_included, n);
 		return NULL;
 	}
 
@@ -29,17 +29,17 @@ char *sassy_get_proto(struct sassy_payload *spay, int n)
 
 	return cur_proto;
 }
-EXPORT_SYMBOL(sassy_get_proto);
+EXPORT_SYMBOL(asguard_get_proto);
 
 
 /* Protocol offsets and protocols_included must be correct before calling this method. 
  *
- * Sets protocol id and reserves space in the sassy payload,
+ * Sets protocol id and reserves space in the asguard payload,
  * if the required space is available.
  * 
  * returns a pointer to the start of that protocol payload memory area.
  */
-char *sassy_reserve_proto(u16 instance_id, struct sassy_payload *spay, u16 proto_size)
+char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 proto_size)
 {
 	int i;
 	char *cur_proto;
@@ -61,7 +61,7 @@ char *sassy_reserve_proto(u16 instance_id, struct sassy_payload *spay, u16 proto
 	}
 
 	if (unlikely(proto_offset + proto_size > MAX_SASSY_PAYLOAD_BYTES)) {
-		sassy_error("Not enough space in sassy payload for protocol\n");
+		asguard_error("Not enough space in asguard payload for protocol\n");
 		return NULL;
 	}
 
@@ -71,13 +71,13 @@ char *sassy_reserve_proto(u16 instance_id, struct sassy_payload *spay, u16 proto
 	*pid = instance_id;
 	*poff = proto_size;
 
-	//sassy_dbg("pid: %hu, poff: %hu", *pid, *poff);
+	//asguard_dbg("pid: %hu, poff: %hu", *pid, *poff);
 
 	spay->protocols_included++;
 
 	return cur_proto;
 }
-EXPORT_SYMBOL(sassy_reserve_proto);
+EXPORT_SYMBOL(asguard_reserve_proto);
 
 
 int _check_target_id(struct consensus_priv *priv, int target_id)
@@ -91,7 +91,7 @@ int _check_target_id(struct consensus_priv *priv, int target_id)
 
 	return 1;
 error:
-	sassy_dbg("Target ID is not valid: %d\n", target_id);
+	asguard_dbg("Target ID is not valid: %d\n", target_id);
 	return 0;
 }
 
@@ -145,23 +145,23 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 {
 
 	if(idx < 0){
-		sassy_dbg("idx < 0 %d\n", idx);
+		asguard_dbg("idx < 0 %d\n", idx);
 		return 0;
 	}
 
 	if(idx > cur_priv->sm_log.last_idx){
-		sassy_dbg("idx > cur_priv->sm_log.last_id %d\n", idx);
+		asguard_dbg("idx > cur_priv->sm_log.last_id %d\n", idx);
 
 		return -1;
 	}
 
 	if(idx > MAX_CONSENSUS_LOG){
-		sassy_dbg("BUG! idx > MAX_CONSENSUS_LOG. %d\n", idx);
+		asguard_dbg("BUG! idx > MAX_CONSENSUS_LOG. %d\n", idx);
 		return -1;
 	}
 
 	if(!cur_priv->sm_log.entries[idx]){
-		sassy_dbg("BUG! entries is null at index %d\n", idx);
+		asguard_dbg("BUG! entries is null at index %d\n", idx);
 		return -1;
 	}
 
@@ -169,7 +169,7 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 }
 
 
-void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spay, int instance_id, int target_id)
+void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id)
 {
 	s32 match_index, next_index, cur_index;
 	s32 prev_log_idx, prev_log_term, leader_commit_idx;
@@ -177,7 +177,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	char *pkt_payload_sub;
 
 	// if(unlikely(_log_is_faulty(cur_priv))) {
-	// 	sassy_dbg("Log is faulty or not initialized.\n");
+	// 	asguard_dbg("Log is faulty or not initialized.\n");
 	// 	return;
 	// }
 
@@ -186,14 +186,14 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 	next_index = _get_next_idx(cur_priv, target_id); 
 
 	if(next_index == -1){
-		sassy_dbg("Invalid target id resulted in invalid next_index!\n");
+		asguard_dbg("Invalid target id resulted in invalid next_index!\n");
 		return;
 	}
-//	sassy_dbg("PREP AE: cur_index=%d, next_index=%d\n", cur_index, next_index);
+//	asguard_dbg("PREP AE: cur_index=%d, next_index=%d\n", cur_index, next_index);
 	prev_log_term = _get_prev_log_term(cur_priv, next_index - 1 );
 
 	if(prev_log_term == -1){
-		sassy_error("BUG! - prev_log_term is invalid\n");
+		asguard_error("BUG! - prev_log_term is invalid\n");
 		return;
 	}
 
@@ -216,13 +216,13 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 		// .. with the append reply.
 		cur_priv->sm_log.next_index[target_id] += num_entries;
 
-		 sassy_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d, num_entries=%d\n", 
+		 asguard_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d, num_entries=%d\n", 
 		 	cur_index, next_index, match_index, prev_log_term, num_entries);
 	}
 
-	// reserve space in sassy heartbeat for consensus LEAD
+	// reserve space in asguard heartbeat for consensus LEAD
 	pkt_payload_sub =
-		sassy_reserve_proto(instance_id, spay,
+		asguard_reserve_proto(instance_id, spay,
 						SASSY_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
 	if(!pkt_payload_sub)
@@ -240,9 +240,9 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct sassy_payload *spa
 }
 EXPORT_SYMBOL(setup_append_msg);
 
-/* Must be called after the sassy packet has been emitted. 
+/* Must be called after the asguard packet has been emitted. 
  */
-void invalidate_proto_data(struct sassy_device *sdev, struct sassy_payload *spay, int target_id)
+void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay, int target_id)
 {
 	struct consensus_priv *cur_priv;	
 	int i;

@@ -1,12 +1,11 @@
 EXTRA_CFLAGS += -I$(src)/../common/
 
-obj-m := sassy_core.o sassy_core_ctrl.o pm.o net.o proto.o sassy_payload_helper.o
-obj-m += event_logger/event_logger.o event_logger/event_logger_ctrl.o 
-pm-objs := pm/sassy_pm.o pm/sassy_pm_ctrl.o
-net-objs := net/sassy_net.o
+obj-m := asguard_core.o
 
-proto-objs := proto/proto_mgmt.o proto/proto_instance_ctrl.o 
-
-
-obj-m += ts/
+asguard_core-objs := asguard_core.o asguard_core_ctrl.o pm.o net.o proto.o asguard_payload_helper.o
+asguard_core-objs += event_logger/event_logger.o event_logger/event_logger_ctrl.o 
+asguard_core-objs += pm/asguard_pm.o pm/asguard_pm_ctrl.o
+asguard_core-objs += net/asguard_net.o
+asguard_core-objs += proto/proto_mgmt.o proto/proto_instance_ctrl.o 
+asguard_core-objs += ts/asguard_ts.o ts/asguard_ts_ctrl.o
 

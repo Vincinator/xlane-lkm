@@ -10,7 +10,7 @@ obj-m += logic_layer/echo/
 obj-m += logic_layer/consensus/
 
 all:
-	make -C /home/dsp/sassy-kernel-src M=$(PWD) modules
+	make -C /home/dsp/asguard-kernel-src M=$(PWD) modules
 
 clean:
-	make -C /home/dsp/sassy-kernel-src M=$(PWD) clean
+	make -C /home/dsp/asguard-kernel-src M=$(PWD) clean

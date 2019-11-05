@@ -9,18 +9,18 @@
 #include <linux/uaccess.h>
 #include <linux/mm_types.h>
 
-#include <sassy/sassy.h>
-#include <sassy/logger.h>
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
 
 
 #include <asm/page.h>
 #include <linux/fs.h>
 #include <linux/mm.h>
 
-#include "include/sassy_fdtx.h"
-#include "include/sassy_fd.h"
+#include "include/asguard_fdtx.h"
+#include "include/asguard_fd.h"
 
-#define DEVNAME "sassy_fd_tx_mem"
+#define DEVNAME "asguard_fd_tx_mem"
 
 #define SASSY_MEMBLOCK_SIZE 512 /* Size in Bytes to be read at once */
 
@@ -28,16 +28,16 @@
  * Used for minor device number generation
  */
 #define SASSY_MAX_DEVICES 16
-static unsigned int sassy_bypass_major;
-static struct class *sassy_bypass_class;
+static unsigned int asguard_bypass_major;
+static struct class *asguard_bypass_class;
 
 
 /* Allocates pages and sets the PG_reserved bit for each allocated page*/
-static char *sassy_alloc_mmap_buffer(void)
+static char *asguard_alloc_mmap_buffer(void)
 {
 	char *page = (char *)get_zeroed_page(GFP_KERNEL);
 
-	sassy_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __FUNCTION__);
 
 	if (!page)
 		goto error;
@@ -46,43 +46,43 @@ static char *sassy_alloc_mmap_buffer(void)
 
 	return page;
 error:
-	sassy_error("Failed in %s\n", __FUNCTION__);
+	asguard_error("Failed in %s\n", __FUNCTION__);
 	return page;
 }
 
-static void sassy_free_mmap_buffer(void *page)
+static void asguard_free_mmap_buffer(void *page)
 {
-	sassy_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __FUNCTION__);
 
 	ClearPageReserved(virt_to_page(page));
 	free_page((unsigned long)page);
 }
 
-static int sassy_bypass_open(struct inode *inode, struct file *filp)
+static int asguard_bypass_open(struct inode *inode, struct file *filp)
 {
-	struct sassy_fd_priv *sdev =
-		container_of(inode->i_cdev, struct sassy_fd_priv, cdev_tx);
+	struct asguard_fd_priv *sdev =
+		container_of(inode->i_cdev, struct asguard_fd_priv, cdev_tx);
 
-	sassy_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __FUNCTION__);
 
 	filp->private_data = sdev;
 
 	return 0;
 }
 
-static int sassy_bypass_release(struct inode *inode, struct file *filp)
+static int asguard_bypass_release(struct inode *inode, struct file *filp)
 {
-	sassy_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __FUNCTION__);
 	return 0;
 }
 
-static ssize_t sassy_bypass_read(struct file *filp, char __user *buf, size_t count,
+static ssize_t asguard_bypass_read(struct file *filp, char __user *buf, size_t count,
 			  loff_t *f_pos)
 {
-	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
+	struct asguard_fd_priv *priv = (struct asguard_fd_priv *)filp->private_data;
 	ssize_t ret = 0;
 
-	sassy_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __FUNCTION__);
 
 	BUG_ON(priv == NULL);
 
@@ -114,13 +114,13 @@ out:
 	return ret;
 }
 
-static ssize_t sassy_bypass_write(struct file *filp, const char __user *buf,
+static ssize_t asguard_bypass_write(struct file *filp, const char __user *buf,
 				size_t count, loff_t *f_pos)
 {
-	struct sassy_fd_priv *priv = (struct sassy_fd_priv *)filp->private_data;
+	struct asguard_fd_priv *priv = (struct asguard_fd_priv *)filp->private_data;
 	ssize_t ret = 0;
 
-	sassy_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __FUNCTION__);
 
 	if (mutex_lock_killable(&priv->tx_mutex))
 		return -EINTR;
@@ -151,23 +151,23 @@ out:
 
 static void bypass_vma_open(struct vm_area_struct *vma)
 {
-	sassy_dbg("Bypass VMA open, virt %lx, phys %lx\n",
+	asguard_dbg("Bypass VMA open, virt %lx, phys %lx\n",
 		  vma->vm_start, vma->vm_pgoff << PAGE_SHIFT);
 }
 
 static void bypass_vma_close(struct vm_area_struct *vma)
 {
-	sassy_dbg("Simple VMA close.\n");
+	asguard_dbg("Simple VMA close.\n");
 }
 
 static vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 {
 	struct page *page;
-	struct sassy_fd_priv *priv;
+	struct asguard_fd_priv *priv;
 
-	sassy_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __FUNCTION__);
 
-	priv = (struct sassy_fd_priv *)vmf->vma->vm_private_data;
+	priv = (struct asguard_fd_priv *)vmf->vma->vm_private_data;
 	if (priv->tx_buf) {
 		page = virt_to_page(priv->tx_buf);
 		get_page(page);
@@ -182,15 +182,15 @@ static struct vm_operations_struct bypass_vm_ops = {
 	.close = bypass_vma_close,
 };
 
-static int sassy_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
+static int asguard_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 {
-	struct sassy_fd_priv *priv = filp->private_data;
+	struct asguard_fd_priv *priv = filp->private_data;
 	int ret;
 
-	sassy_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __FUNCTION__);
 
 	if (!priv) {
-		sassy_error(
+		asguard_error(
 			"private data of file struct is faulty\n");
 		return -ENODEV;
 	}
@@ -201,7 +201,7 @@ static int sassy_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 			      vma->vm_end - vma->vm_start, vma->vm_page_prot);
 
 	if (ret < 0) {
-		sassy_error("Mapping of kernel memory failed\n");
+		asguard_error("Mapping of kernel memory failed\n");
 		return -EIO;
 	}
 	vma->vm_ops = &bypass_vm_ops;
@@ -214,22 +214,22 @@ static int sassy_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 
 static const struct file_operations bypass_fileops = {
 	.owner = THIS_MODULE,
-	.open = sassy_bypass_open,
-	.release = sassy_bypass_release,
-	.write = sassy_bypass_write,
-	.read = sassy_bypass_read,
-	.mmap = sassy_bypass_mmap
+	.open = asguard_bypass_open,
+	.release = asguard_bypass_release,
+	.write = asguard_bypass_write,
+	.read = asguard_bypass_read,
+	.mmap = asguard_bypass_mmap
 };
 
-int sassy_setup_chardev(struct sassy_device *sdev, struct sassy_fd_priv *priv)
+int asguard_setup_chardev(struct asguard_device *sdev, struct asguard_fd_priv *priv)
 {
 	int ret = 0;
 	dev_t devno;
 
-	BUG_ON(sdev == NULL || sassy_bypass_class == NULL);
-	sassy_dbg("Enter: %s\n", __FUNCTION__);
+	BUG_ON(sdev == NULL || asguard_bypass_class == NULL);
+	asguard_dbg("Enter: %s\n", __FUNCTION__);
 
-	devno = MKDEV(sassy_bypass_major, sdev->ifindex);
+	devno = MKDEV(asguard_bypass_major, sdev->ifindex);
 
 	mutex_init(&priv->tx_mutex);
 
@@ -238,25 +238,25 @@ int sassy_setup_chardev(struct sassy_device *sdev, struct sassy_fd_priv *priv)
 
 	ret = cdev_add(&priv->cdev_tx, devno, 1);
 	if (ret) {
-		sassy_error("Failed to to add %s%d (error %d)\n",
+		asguard_error("Failed to to add %s%d (error %d)\n",
 			    DEVNAME, sdev->ifindex, ret);
 		goto cdev_error;
 	}
 
-	priv->tx_device = device_create(sassy_bypass_class, NULL, devno, NULL,
+	priv->tx_device = device_create(asguard_bypass_class, NULL, devno, NULL,
 					DEVNAME "%d", sdev->ifindex);
 
 	if (IS_ERR(priv->tx_device)) {
-		sassy_error("Failed to create device %d\n",
+		asguard_error("Failed to create device %d\n",
 			    sdev->ifindex);
 		ret = PTR_ERR(priv->tx_device);
 		goto device_create_error;
 	}
 
-	priv->tx_buf = sassy_alloc_mmap_buffer();
+	priv->tx_buf = asguard_alloc_mmap_buffer();
 
 	if (IS_ERR(priv->tx_buf)) {
-		sassy_error("Failed to allocate ubuf memory\n");
+		asguard_error("Failed to allocate ubuf memory\n");
 		ret = PTR_ERR(priv->tx_buf);
 		goto ubuf_error;
 	}
@@ -271,40 +271,40 @@ cdev_error:
 	return ret;
 }
 
-void sassy_clean_class(struct sassy_device *sdev)
+void asguard_clean_class(struct asguard_device *sdev)
 {
-	device_destroy(sassy_bypass_class, MKDEV(sassy_bypass_major, sdev->ifindex));
+	device_destroy(asguard_bypass_class, MKDEV(asguard_bypass_major, sdev->ifindex));
 
-	class_destroy(sassy_bypass_class);
+	class_destroy(asguard_bypass_class);
 
-	unregister_chrdev_region(MKDEV(sassy_bypass_major, 0),
+	unregister_chrdev_region(MKDEV(asguard_bypass_major, 0),
 				 SASSY_MAX_DEVICES);
 }
 
-int sassy_bypass_init_class(struct sassy_device *sdev)
+int asguard_bypass_init_class(struct asguard_device *sdev)
 {
 	int err = 0;
 	dev_t dev = 0;
 
-	sassy_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __FUNCTION__);
 
 	err = alloc_chrdev_region(&dev, 0, SASSY_MAX_DEVICES, DEVNAME);
 	if (err < 0) {
-		sassy_error("alloc_chrdev_region() failed in %s\n",
+		asguard_error("alloc_chrdev_region() failed in %s\n",
 			    __FUNCTION__);
 		return err;
 	}
 
-	sassy_bypass_major = MAJOR(dev);
-	sassy_bypass_class = class_create(THIS_MODULE, DEVNAME);
-	if (IS_ERR(sassy_bypass_class)) {
-		err = PTR_ERR(sassy_bypass_class);
+	asguard_bypass_major = MAJOR(dev);
+	asguard_bypass_class = class_create(THIS_MODULE, DEVNAME);
+	if (IS_ERR(asguard_bypass_class)) {
+		err = PTR_ERR(asguard_bypass_class);
 		goto error;
 	}
 
 	return 0;
 error:
-	sassy_error("Error in %s, cleaning up now\n", __FUNCTION__);
-	sassy_clean_class(sdev);
+	asguard_error("Error in %s, cleaning up now\n", __FUNCTION__);
+	asguard_clean_class(sdev);
 	return err;
 }

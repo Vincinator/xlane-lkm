@@ -2,9 +2,9 @@
  * SASSY protocol registration and removal
  */
 
-#include "../sassy_core.h"
-#include <sassy/sassy.h>
-#include <sassy/logger.h>
+#include "../asguard_core.h"
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
 #include <linux/list.h>
 #include <linux/kernel.h>
 #include <linux/proc_fs.h>
@@ -23,10 +23,10 @@
 static LIST_HEAD(available_protocols_l);
 
 
-struct proto_instance *generate_protocol_instance(struct sassy_device *sdev, int protocol_id)
+struct proto_instance *generate_protocol_instance(struct asguard_device *sdev, int protocol_id)
 {
 	struct proto_instance *sproto;
-	enum sassy_protocol_type proto_type = (enum sassy_protocol_type)protocol_id;
+	enum asguard_protocol_type proto_type = (enum asguard_protocol_type)protocol_id;
 
 	sproto = NULL;
 	
@@ -47,7 +47,7 @@ struct proto_instance *generate_protocol_instance(struct sassy_device *sdev, int
 
 			break;
 		default:
-			sassy_error("not a known protocol id\n");
+			asguard_error("not a known protocol id\n");
 			break;
 	}
 	

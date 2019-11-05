@@ -1,7 +1,7 @@
-#include <sassy/logger.h>
-#include <sassy/sassy.h>
-#include <sassy/consensus.h>
-#include <sassy/payload_helper.h>
+#include <asguard/logger.h>
+#include <asguard/asguard.h>
+#include <asguard/consensus.h>
+#include <asguard/payload_helper.h>
 
 
 #include <linux/kernel.h>
@@ -9,7 +9,7 @@
 #include <linux/random.h>
 #include <linux/timer.h>
 
-#include "include/sassy_consensus_ops.h"
+#include "include/asguard_consensus_ops.h"
 #include "include/candidate.h"
 #include "include/follower.h"
 #include "include/leader.h"
@@ -23,8 +23,8 @@ void testcase_stop_timer(struct consensus_priv *priv)
 {
 	priv->test_data.running = 0;
 
-	sassy_dbg("Timer will be stopped directly after next timeout\n");
-	sassy_dbg("Actions of next timeout will not be performed.\n");
+	asguard_dbg("Timer will be stopped directly after next timeout\n");
+	asguard_dbg("Actions of next timeout will not be performed.\n");
 
 }
 
@@ -60,7 +60,7 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
 	return 0;
 
 error:
-	sassy_error("Evaluation Crashed errorcode=%d\n", err);
+	asguard_error("Evaluation Crashed errorcode=%d\n", err);
 	return err;
 
 }
@@ -72,12 +72,12 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 			container_of(timer, struct consensus_test_container, timer);
 
 	struct consensus_priv *priv = test_data->priv;
-	struct sassy_device *sdev = priv->sdev;
+	struct asguard_device *sdev = priv->sdev;
 	u32 rand_value, rand_id;
 	ktime_t currtime, interval;
 	struct sm_command *cur_cmd;
 	struct pminfo *spminfo = &sdev->pminfo;
-	struct sassy_payload *spay;
+	struct asguard_payload *spay;
 	int err = 0;
 	int i, tar, hb_passive_idx;
 
@@ -91,7 +91,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	if(priv->nstate != LEADER)
 		return HRTIMER_RESTART; // nothing to do, node is not a leader.
 
-	sassy_dbg("Incoming Client requests.. \n");
+	asguard_dbg("Incoming Client requests.. \n");
 	
 	// write x random entries to local log (if node is leader)
 	for(i = 0; i < test_data->x; i++){
@@ -115,7 +115,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 
 	return HRTIMER_RESTART;
 error:
-	sassy_error("Evaluation Crashed errorcode=%d\n", err);
+	asguard_error("Evaluation Crashed errorcode=%d\n", err);
 	return HRTIMER_NORESTART;
 
 }
@@ -145,13 +145,13 @@ void testcase_X_requests_per_sec(struct consensus_priv *priv, int x)
 	priv->test_data.x = x;
 
 	if(x < 0)  {
-		sassy_dbg("Invalid Input \n");
+		asguard_dbg("Invalid Input \n");
 		return;
 	}
 
 	// start hrtimer!
 	_init_testcase_timeout(&priv->test_data);
 
-	sassy_dbg("Appending %d consensus requests every second, if node is currently the leader\n", x);
+	asguard_dbg("Appending %d consensus requests every second, if node is currently the leader\n", x);
 
 }

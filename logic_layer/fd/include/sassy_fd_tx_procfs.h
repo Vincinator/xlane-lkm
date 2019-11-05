@@ -1,7 +1,7 @@
 #pragma once 
 
-#include <sassy/sassy.h>
+#include <asguard/asguard.h>
 
-void init_sassy_fdus_interfaces(struct sassy_device *sdev);
-void clean_sassy_fdus_interfaces(struct sassy_device *sdev);
+void init_asguard_fdus_interfaces(struct asguard_device *sdev);
+void clean_asguard_fdus_interfaces(struct asguard_device *sdev);
 
