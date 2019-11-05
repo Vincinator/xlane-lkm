@@ -1,16 +1,16 @@
 # Core SASSY Components
-obj-y := core/
+obj-m := core/
 
 # NIC Integration
-obj-y += connection_layer/mlx5/
+obj-m += connection_layer/mlx5/
 
 # In-Kernel Applications
-obj-y += logic_layer/fd/
-obj-y += logic_layer/echo/
-obj-y += logic_layer/consensus/
+obj-m += logic_layer/fd/
+obj-m += logic_layer/echo/
+obj-m += logic_layer/consensus/
 
 all:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+	make -C /home/dsp/sassy-kernel-src M=$(PWD) modules
 
 clean:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+	make -C /home/dsp/sassy-kernel-src M=$(PWD) clean
