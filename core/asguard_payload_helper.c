@@ -1,6 +1,9 @@
+
+
 #include <asguard/asguard.h>
 #include <asguard/payload_helper.h>
 #include <asguard/consensus.h>
+#include <asguard/logger.h>
 
 
 /* Returns a pointer to the <n>th protocol of <spay>

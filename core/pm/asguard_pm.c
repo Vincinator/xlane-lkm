@@ -1,4 +1,3 @@
-#include <asguard/logger.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/kthread.h>
@@ -19,6 +18,7 @@
 #include <linux/ktime.h>
 #include <linux/time.h>
 
+#include <asguard/logger.h>
 #include <asguard/asguard.h>
 #include <asguard/payload_helper.h>
 
