@@ -14,7 +14,7 @@ else
 EXTRA_CFLAGS+=-I$(src)/../../common/
 EXTRA_CFLAGS+=-I$(src)/include/
 
-obj-y := sassy_app_echo.o sassy_echo_ops.o sassy_echo.o
+obj-m := sassy_app_echo.o sassy_echo_ops.o sassy_echo.o
 
 
 endif

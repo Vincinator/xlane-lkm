@@ -11,7 +11,7 @@ clean:
 
 else
 
-obj-y := fd/
-obj-y += echo/
-obj-y += consensus/
+obj-m := fd/
+obj-m += echo/
+obj-m += consensus/
 endif

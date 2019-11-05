@@ -13,7 +13,7 @@ clean:
 else
 EXTRA_CFLAGS+=-I$(src)/../../common/
 
-obj-y := sassymlx5.o
+obj-m := sassymlx5.o
 sassymlx5-objs := mlx5_con.o
 
 endif
