@@ -1,8 +1,7 @@
 #pragma once
 
-#include <asguard/asguard.h>
-#include <asguard/consensus.h>
-
+#include "logger.h"
+#include "asguard.h"
 
 #ifndef offsetof
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)

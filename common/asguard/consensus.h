@@ -1,7 +1,7 @@
 #pragma once
 
-#include <asguard/logger.h>
-#include <asguard/asguard.h>
+#include "logger.h"
+#include "asguard.h"
 
 #define MAX_NODE_ID 10
 

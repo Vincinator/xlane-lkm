@@ -8,8 +8,7 @@
 #include <linux/ktime.h>
 #include <linux/time.h>
 
-#include <asguard/logger.h>
-
+#include "logger.h"
 
 #define MAX_ASGUARD_PROC_NAME 256
 
