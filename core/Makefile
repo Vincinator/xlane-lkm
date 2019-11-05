@@ -1,4 +1,3 @@
-EXTRA_CFLAGS += -I$(src)/../common/
 
 obj-m := asguard_core.o
 

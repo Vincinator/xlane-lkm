@@ -1,5 +1,5 @@
 /*
- * SASSY protocol registration and removal
+ * ASGUARD protocol registration and removal
  */
 
 #include "../asguard_core.h"
@@ -18,7 +18,7 @@
 //#include "available_info/avail_protos_mgmt.h"
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][CORE]"
+#define LOG_PREFIX "[ASGUARD][CORE]"
 
 static LIST_HEAD(available_protocols_l);
 
@@ -33,13 +33,13 @@ struct proto_instance *generate_protocol_instance(struct asguard_device *sdev, i
 
 	switch(proto_type)
 	{
-		case SASSY_PROTO_FD:
+		case ASGUARD_PROTO_FD:
 			sproto = get_fd_proto_instance(sdev);
 			break;
-		case SASSY_PROTO_ECHO:
+		case ASGUARD_PROTO_ECHO:
 			sproto = get_echo_proto_instance(sdev);
 			break;
-		case SASSY_PROTO_CONSENSUS:
+		case ASGUARD_PROTO_CONSENSUS:
 			
 
 			sproto = get_consensus_proto_instance(sdev);

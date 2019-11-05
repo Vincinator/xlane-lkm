@@ -23,7 +23,7 @@
 #include <asguard/payload_helper.h>
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][PACEMAKER]"
+#define LOG_PREFIX "[ASGUARD][PACEMAKER]"
 
 static struct task_struct *heartbeat_task;
 
@@ -31,7 +31,7 @@ static inline bool
 
 asguard_pacemaker_is_alive(struct pminfo *spminfo)
 {
-	return spminfo->state == SASSY_PM_EMITTING;
+	return spminfo->state == ASGUARD_PM_EMITTING;
 }
 
 static inline bool can_fire(uint64_t prev_time, uint64_t cur_time, uint64_t interval)
@@ -42,12 +42,12 @@ static inline bool can_fire(uint64_t prev_time, uint64_t cur_time, uint64_t inte
 const char *pm_state_string(pmstate_t state)
 {
 	switch (state) {
-	case SASSY_PM_UNINIT:
-		return "SASSY_PM_UNINIT";
-	case SASSY_PM_READY:
-		return "SASSY_PM_READY";
-	case SASSY_PM_EMITTING:
-		return "SASSY_PM_EMITTING";
+	case ASGUARD_PM_UNINIT:
+		return "ASGUARD_PM_UNINIT";
+	case ASGUARD_PM_READY:
+		return "ASGUARD_PM_READY";
+	case ASGUARD_PM_EMITTING:
+		return "ASGUARD_PM_EMITTING";
 	default:
 		return "UNKNOWN STATE";
 	}
@@ -116,11 +116,11 @@ static inline void asguard_update_skb_payload(struct sk_buff *skb, void *payload
 	unsigned char *data_ptr;
 
 	tail_ptr = skb_tail_pointer(skb);
-	data_ptr = (tail_ptr - SASSY_PAYLOAD_BYTES);
+	data_ptr = (tail_ptr - ASGUARD_PAYLOAD_BYTES);
 
 	// TODO: directly write in skb, and use skb dual-buffer!?
 	// TODO: check if the skb memory is moved/freed by the NIC
-	memcpy(data_ptr, payload, SASSY_PAYLOAD_BYTES);
+	memcpy(data_ptr, payload, ASGUARD_PAYLOAD_BYTES);
 }
 
 static inline int _emit_pkts(struct asguard_device *sdev,
@@ -157,11 +157,11 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		// if (sdev->verbose >= 4)
 		// 	print_hex_dump(KERN_DEBUG,
 		// 		"TX Payload: ", DUMP_PREFIX_NONE,
-		// 		16, 1, pkt_payload, SASSY_PAYLOAD_BYTES, 0);
+		// 		16, 1, pkt_payload, ASGUARD_PAYLOAD_BYTES, 0);
 
 		asguard_send_hb(ndev, spminfo->pm_targets[i].skb);
 
-		// if (ts_state == SASSY_TS_RUNNING) {
+		// if (ts_state == ASGUARD_TS_RUNNING) {
 		// 	asguard_write_timestamp(sdev, 0, rdtsc(), i);
 		// 	asguard_write_timestamp(sdev, 4, ktime_get(), i);
 		// }
@@ -184,7 +184,7 @@ static int _validate_pm(struct asguard_device *sdev,
 		return -ENODEV;
 	}
 
-	if (spminfo->state != SASSY_PM_READY) {
+	if (spminfo->state != ASGUARD_PM_READY) {
 		asguard_error("Pacemaker is not in ready state!\n");
 		return -EPERM;
 	}
@@ -212,7 +212,7 @@ static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminf
 {
 	asguard_setup_hb_skbs(sdev);
 
-	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
+	pm_state_transition_to(spminfo, ASGUARD_PM_EMITTING);
 
 	sdev->warmup_state = WARMING_UP;
 
@@ -275,7 +275,7 @@ static int asguard_pm_loop(void *data)
 		local_bh_enable();
 		local_irq_restore(flags);
 	
-		// if (sdev->ts_state == SASSY_TS_RUNNING)
+		// if (sdev->ts_state == ASGUARD_TS_RUNNING)
 		// 	asguard_write_timestamp(sdev, 0, rdtsc(), 42);
 
 	}
@@ -335,7 +335,7 @@ int asguard_pm_start_timer(void *data)
 	if (err)
 		return err;
 
-	pm_state_transition_to(spminfo, SASSY_PM_EMITTING);
+	pm_state_transition_to(spminfo, ASGUARD_PM_EMITTING);
 
 	interval = ktime_set(0, 100000000);
 
@@ -385,7 +385,7 @@ int asguard_pm_start_loop(void *data)
 
 int asguard_pm_stop(struct pminfo *spminfo)
 {
-	pm_state_transition_to(spminfo, SASSY_PM_READY);
+	pm_state_transition_to(spminfo, ASGUARD_PM_READY);
 
 	return 0;
 }
@@ -401,7 +401,7 @@ int asguard_pm_reset(struct pminfo *spminfo)
 		return -ENODEV;
 	}
 
-	if (spminfo->state == SASSY_PM_EMITTING) {
+	if (spminfo->state == ASGUARD_PM_EMITTING) {
 		asguard_error(
 			"Can not reset targets when pacemaker is running\n");
 		return -EPERM;

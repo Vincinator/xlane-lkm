@@ -178,7 +178,7 @@ static const struct file_operations asguard_log_ops = {
 static int init_logger_out(struct asguard_logger *slog)
 {
 	int err;
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 
 	if (!slog) {
@@ -237,7 +237,7 @@ error:
 
 void remove_logger_ifaces(struct asguard_logger *slog)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/log_%s",
 			 slog->ifindex, slog->instance_id, slog->name);

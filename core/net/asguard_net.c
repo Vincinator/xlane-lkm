@@ -91,7 +91,7 @@ EXPORT_SYMBOL(asguard_convert_mac);
 
 inline struct sk_buff *prepare_heartbeat_skb(struct net_device *dev)
 {
-	uint16_t skb_size = SASSY_PAYLOAD_BYTES + LL_RESERVED_SPACE(dev);
+	uint16_t skb_size = ASGUARD_PAYLOAD_BYTES + LL_RESERVED_SPACE(dev);
 	struct sk_buff *skb = alloc_skb(skb_size, GFP_ATOMIC);
 
 	if (!skb) {
@@ -154,7 +154,7 @@ inline void add_L3_header(struct sk_buff *skb, u32 src_ip, u32 dst_ip)
 	ipv4->saddr = htonl(src_ip);
 	ipv4->daddr = htonl(dst_ip);
 	ipv4->tot_len =
-		htons((u16)(SASSY_PAYLOAD_BYTES + IP_LENGTH + UDP_LENGTH));
+		htons((u16)(ASGUARD_PAYLOAD_BYTES + IP_LENGTH + UDP_LENGTH));
 	ipv4->check = 0;
 
 	skb_set_transport_header(skb,
@@ -170,14 +170,14 @@ inline void add_L4_header(struct sk_buff *skb)
 		udp->source = htons((u16)1111);
 		;
 		udp->dest = htons((u16)319);
-		udp->len = htons((u16)SASSY_PAYLOAD_BYTES);
+		udp->len = htons((u16)ASGUARD_PAYLOAD_BYTES);
 		udp->check = 0;
 	}
 }
 
 inline void add_payload(struct sk_buff *skb, struct asguard_payload *payload)
 {
-	void *data = (void *)skb_put(skb, SASSY_PAYLOAD_BYTES);
+	void *data = (void *)skb_put(skb, ASGUARD_PAYLOAD_BYTES);
 
 	if (!data) {
 		asguard_error("Could not get data ptr to skb data\n (%s)",
@@ -185,10 +185,10 @@ inline void add_payload(struct sk_buff *skb, struct asguard_payload *payload)
 		return;
 	}
 
-	memcpy(data, payload, SASSY_PAYLOAD_BYTES);
+	memcpy(data, payload, ASGUARD_PAYLOAD_BYTES);
 
 //	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1, data,
-//		       SASSY_PAYLOAD_BYTES, 0);
+//		       ASGUARD_PAYLOAD_BYTES, 0);
 }
 
 int is_ip_local(struct net_device *dev,	u32 ip_addr)
@@ -231,7 +231,7 @@ struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr
 #if 1
 	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
 		       payload,
-		       SASSY_PAYLOAD_BYTES, 0);
+		       ASGUARD_PAYLOAD_BYTES, 0);
 
 	asguard_dbg("Composed packet\n");
 #endif 

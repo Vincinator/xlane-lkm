@@ -10,11 +10,11 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Distributed Systems Group");
-MODULE_DESCRIPTION("SASSY app echo");
+MODULE_DESCRIPTION("ASGUARD app echo");
 MODULE_VERSION("0.01");
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][PROTO][ECHO]"
+#define LOG_PREFIX "[ASGUARD][PROTO][ECHO]"
 
 static const struct asguard_protocol_ctrl_ops echo_ops = {
 	.init = echo_init,
@@ -43,7 +43,7 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 	if(!ins)
 		goto error;
 
-	ins->proto_type = SASSY_PROTO_ECHO;
+	ins->proto_type = ASGUARD_PROTO_ECHO;
 	ins->ctrl_ops = echo_ops;
 	ins->name = "echo";
 	ins->logger.name = "echo";

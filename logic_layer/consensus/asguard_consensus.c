@@ -18,7 +18,7 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Distributed Systems Group");
-MODULE_DESCRIPTION("SASSY consensus");
+MODULE_DESCRIPTION("ASGUARD consensus");
 MODULE_VERSION("0.01");
 
 // Default Values for timeouts
@@ -29,7 +29,7 @@ MODULE_VERSION("0.01");
 
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][CONSENSUS]"
+#define LOG_PREFIX "[ASGUARD][CONSENSUS]"
 
 const char *nstate_string(enum node_state state)
 {
@@ -256,7 +256,7 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 	if(!ins)
 		goto error;
 	
-	ins->proto_type = SASSY_PROTO_CONSENSUS;
+	ins->proto_type = ASGUARD_PROTO_CONSENSUS;
 	ins->ctrl_ops = consensus_ops;
 	ins->name = "consensus";
 

@@ -1,25 +1,25 @@
-#ifndef _SASSY_LOGGER_H_
-#define _SASSY_LOGGER_H_
+#ifndef _ASGUARD_LOGGER_H_
+#define _ASGUARD_LOGGER_H_
 
 #include <linux/types.h>
 
 
-#define SASSY_DEBUG 1
+#define ASGUARD_DEBUG 1
 
 #define MAX_LOGGER_NAME 16
 #define LOGGER_EVENT_LIMIT 10000
 
 
 #ifndef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][UNKNOWN MODULE]"
+#define LOG_PREFIX "[ASGUARD][UNKNOWN MODULE]"
 #endif
 
 #define LOG_LE_PREFIX "[LEADER ELECTION][LOG]"
 
 /* 
- * Prefixes NIC device ID and SASSY Context (e.g. [SASSY][NIC4][CONSENSUS])
+ * Prefixes NIC device ID and ASGUARD Context (e.g. [ASGUARD][NIC4][CONSENSUS])
  */
-#if SASSY_DEBUG
+#if ASGUARD_DEBUG
 	#define asguard_dbg(format, arg...)						\
 	({														\
 		if (1)												\
@@ -43,4 +43,4 @@
 
 
 
-#endif  /* _SASSY_LOGGER_H_ */
+#endif  /* _ASGUARD_LOGGER_H_ */

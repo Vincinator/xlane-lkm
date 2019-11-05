@@ -13,7 +13,7 @@
 
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][LE][FOLLOWER]"
+#define LOG_PREFIX "[ASGUARD][LE][FOLLOWER]"
 
 
 static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
@@ -72,7 +72,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
      	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
 
 	pkt_payload_sub = 
- 		asguard_reserve_proto(ins->instance_id, pkt_payload, SASSY_PROTO_CON_PAYLOAD_SZ);
+ 		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
 	
 
  	if(!pkt_payload_sub) {
@@ -129,7 +129,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 	}
 
 	// check if entries would exceed pkt
-	if((num_entries * AE_ENTRY_SIZE + SASSY_PROTO_CON_AE_BASE_SZ) > pkt_size) {
+	if((num_entries * AE_ENTRY_SIZE + ASGUARD_PROTO_CON_AE_BASE_SZ) > pkt_size) {
 		err = -EINVAL;
 		asguard_dbg("Claimed num of log entries would exceed packet size!\n");
 		goto error;
@@ -236,7 +236,7 @@ int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max
 	if(prev_log_idx > MAX_CONSENSUS_LOG)
 		return 1;
 
-	if(pkt_size < 0 || pkt_size > SASSY_PROTO_CON_AE_BASE_SZ + (max_entries_per_pkt * AE_ENTRY_SIZE))
+	if(pkt_size < 0 || pkt_size > ASGUARD_PROTO_CON_AE_BASE_SZ + (max_entries_per_pkt * AE_ENTRY_SIZE))
 		return 1;
 
 	return 0;

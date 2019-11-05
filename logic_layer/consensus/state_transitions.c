@@ -43,7 +43,7 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
      	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
 
 	pkt_payload_sub = 
- 		asguard_reserve_proto(ins->instance_id, pkt_payload, SASSY_PROTO_CON_PAYLOAD_SZ);
+ 		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
 
  	if(!pkt_payload_sub) {
  		asguard_error("Sassy packet full! This error is not handled - not implemented\n");

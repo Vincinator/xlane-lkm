@@ -16,7 +16,7 @@ static ssize_t asguard_le_config_write(struct file *file,
 		(struct consensus_priv *)PDE_DATA(file_inode(file));
 
 	int err;
-	char kernel_buffer[SASSY_TARGETS_BUF];
+	char kernel_buffer[ASGUARD_TARGETS_BUF];
 	char *search_str;
 	size_t size = min(sizeof(kernel_buffer) - 1, count);
 	char *input_str;
@@ -132,7 +132,7 @@ static const struct file_operations asguard_le_config_ops = {
 
 void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/le_config",
 			 priv->sdev->ifindex, priv->ins->instance_id);
@@ -145,7 +145,7 @@ EXPORT_SYMBOL(init_le_config_ctrl_interfaces);
 
 void remove_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/le_config",
 			 priv->sdev->ifindex, priv->ins->instance_id);

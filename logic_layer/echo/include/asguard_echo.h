@@ -15,11 +15,11 @@ enum echo_logger_events {
 };
 
 enum echo_opcode {
-	SASSY_PING = 0,
-	SASSY_PONG = 1,
+	ASGUARD_PING = 0,
+	ASGUARD_PONG = 1,
 };
 
-/* MUST not exceed SASSY_PAYLOAD_BYTES in size! */
+/* MUST not exceed ASGUARD_PAYLOAD_BYTES in size! */
 struct echo_payload {
 	u16 protocol_id; 		// must be the first element
 	u16 offset;

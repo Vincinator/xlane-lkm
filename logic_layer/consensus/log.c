@@ -9,7 +9,7 @@
 #include <asguard/consensus.h>
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][RSM]"
+#define LOG_PREFIX "[ASGUARD][RSM]"
 
 
 int apply_log_to_sm(struct consensus_priv *priv)

@@ -37,7 +37,7 @@ struct asguard_fd_priv {
 	struct fd_aliveness_counters last_counter_values;
 };
 
-/* MUST not exceed SASSY_PAYLOAD_BYTES in size! */
+/* MUST not exceed ASGUARD_PAYLOAD_BYTES in size! */
 struct fd_payload {
 	u16 protocol_id; 		// must be the first element
 	u16 offset;

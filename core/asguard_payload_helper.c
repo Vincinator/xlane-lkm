@@ -60,7 +60,7 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 		proto_offset += cur_offset;
 	}
 
-	if (unlikely(proto_offset + proto_size > MAX_SASSY_PAYLOAD_BYTES)) {
+	if (unlikely(proto_offset + proto_size > MAX_ASGUARD_PAYLOAD_BYTES)) {
 		asguard_error("Not enough space in asguard payload for protocol\n");
 		return NULL;
 	}
@@ -223,7 +223,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 	// reserve space in asguard heartbeat for consensus LEAD
 	pkt_payload_sub =
 		asguard_reserve_proto(instance_id, spay,
-						SASSY_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
+						ASGUARD_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
 	if(!pkt_payload_sub)
 		return;
@@ -253,7 +253,7 @@ void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for(i = 0; i < sdev->num_of_proto_instances; i++){
 		
-		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == SASSY_PROTO_CONSENSUS){
+		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == ASGUARD_PROTO_CONSENSUS){
 	 		
 	 		// get corresponding local instance data for consensus
 			cur_priv = 

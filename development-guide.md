@@ -1,22 +1,22 @@
-This is a brief introduction on the development process of SASSY itself. 
+This is a brief introduction on the development process of ASGUARD itself. 
 
 ### Development Environement
-This section provides a jump start for SASSY and Linux Kernel Development. 
+This section provides a jump start for ASGUARD and Linux Kernel Development. 
 We will setup the required tools and briefly explain the development process.
 
 Edit your sources however you like. However, you can also use a ansible playbook
 to bootstrap a working development enviroment with all required editing, testing and evaluation tools. 
 
-The file can be found in this Repository: [SASSY-Eval](https://github.com/Distributed-Systems-Programming-Group/SASSY-Eval)
+The file can be found in this Repository: [ASGUARD-Eval](https://github.com/Distributed-Systems-Programming-Group/ASGUARD-Eval)
 
 
 ### Development Process
 #### version control 
 Master branch must always contain the latest compilable sources. 
-The master branch can be used to evaluate and demonstrate the latest working SASSY version.
+The master branch can be used to evaluate and demonstrate the latest working ASGUARD version.
 
 In order to achieve this simple goal, we use feature, bug and refactor branches. 
-- feature branch: adds new functionality to SASSY (high priority)
+- feature branch: adds new functionality to ASGUARD (high priority)
 - bug branch: ~~adds a new bug~~ fixes a existing bug (high priority)
 - refactor branch: improve code quality (very low priority)
 - doodle branch: try out stuff 
@@ -41,8 +41,8 @@ Merge your changes if required. Test master branch.
 
 ### Specification Documents
 
-The specification documents of each SASSY component provide a
-brief description on how SASSY works (high level).
+The specification documents of each ASGUARD component provide a
+brief description on how ASGUARD works (high level).
 For low level details, please refer to the source code. 
 The specification documents have the single purpose to give a 
-brief introduction to the responibilities of that described SASSY component.
+brief introduction to the responibilities of that described ASGUARD component.

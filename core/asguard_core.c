@@ -16,11 +16,11 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Distributed Systems Group");
-MODULE_DESCRIPTION("SASSY Connection Core");
+MODULE_DESCRIPTION("ASGUARD Connection Core");
 MODULE_VERSION("0.01");
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][CORE]"
+#define LOG_PREFIX "[ASGUARD][CORE]"
 
 static int ifindex=-1;
 module_param(ifindex, int, 0660);
@@ -56,11 +56,11 @@ EXPORT_SYMBOL(asguard_core);
 const char *asguard_get_protocol_name(enum asguard_protocol_type protocol_type)
 {
 	switch (protocol_type) {
-	case SASSY_PROTO_FD:
+	case ASGUARD_PROTO_FD:
 		return "Failure Detector";
-	case SASSY_PROTO_ECHO:
+	case ASGUARD_PROTO_ECHO:
 		return "Echo";
-	case SASSY_PROTO_CONSENSUS:
+	case ASGUARD_PROTO_CONSENSUS:
 		return "Consensus";
 	default:
 		return "Unknown Protocol!";
@@ -72,7 +72,7 @@ void asguard_post_ts(int asguard_id, uint64_t cycles)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 
-	if (sdev->ts_state == SASSY_TS_RUNNING)
+	if (sdev->ts_state == ASGUARD_TS_RUNNING)
 		asguard_write_timestamp(sdev, 1, cycles, asguard_id);
 }
 EXPORT_SYMBOL(asguard_post_ts);
@@ -165,7 +165,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	
 	//asguard_dbg("Payload size: %d, state: %d %s %i", cqe_bcnt, sdev->pminfo.state, __FUNCTION__, __LINE__);
 
-    if (unlikely(sdev->pminfo.state != SASSY_PM_EMITTING))
+    if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
     	return;
 
 	if(sdev->warmup_state == WARMING_UP){
@@ -239,7 +239,7 @@ EXPORT_SYMBOL(asguard_reset_remote_host_counter);
 /* Called by Connection Layer Glue (e.g. mlx5_con.c) */
 int asguard_core_register_nic(int ifindex,  int asguard_id)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 	int asguard_id;
 	int i;
 
@@ -268,8 +268,8 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->pminfo.num_of_targets = 0;
 //	score->sdevices[asguard_id]->proto = NULL;
 	score->sdevices[asguard_id]->verbose = 0;
-	score->sdevices[asguard_id]->rx_state = SASSY_RX_DISABLED;
-	score->sdevices[asguard_id]->ts_state = SASSY_TS_UNINIT;
+	score->sdevices[asguard_id]->rx_state = ASGUARD_RX_DISABLED;
+	score->sdevices[asguard_id]->ts_state = ASGUARD_TS_UNINIT;
 	
 	score->sdevices[asguard_id]->num_of_proto_instances = 0;
 	score->sdevices[asguard_id]->fire = 0;
@@ -306,7 +306,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 
 	/* Initialize Component States*/
 	pm_state_transition_to(&score->sdevices[asguard_id]->pminfo,
-			       SASSY_PM_UNINIT);
+			       ASGUARD_PM_UNINIT);
 
 	return asguard_id;
 }
@@ -315,7 +315,7 @@ EXPORT_SYMBOL(asguard_core_register_nic);
 static int asguard_core_remove_nic(int asguard_id)
 {
 	int i;
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	if (asguard_validate_asguard_device(asguard_id))
 		return -1;
@@ -419,7 +419,7 @@ void clear_protocol_instances(struct asguard_device *sdev)
 	}
 
 	// If pacemaker is running, do not clear the protocols!
-	if(sdev->pminfo.state == SASSY_PM_EMITTING){
+	if(sdev->pminfo.state == ASGUARD_PM_EMITTING){
 		asguard_error("Can not clear protocol instances while pacemaker is running!\n");
 		return;
 	}

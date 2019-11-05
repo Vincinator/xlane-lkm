@@ -13,7 +13,7 @@ static ssize_t asguard_ts_ctrl_write(struct file *file,
 	int err;
 	struct asguard_device *sdev =
 		(struct asguard_device *)PDE_DATA(file_inode(file));
-	char kernel_buffer[SASSY_NUMBUF];
+	char kernel_buffer[ASGUARD_NUMBUF];
 	int timestamping_state = -1;
 	size_t size;
 
@@ -23,14 +23,14 @@ static ssize_t asguard_ts_ctrl_write(struct file *file,
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		asguard_error("[SASSY] Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("[ASGUARD] Copy from user failed%s\n", __FUNCTION__);
 		goto error;
 	}
 
 	kernel_buffer[size] = '\0';
 	err = kstrtoint(kernel_buffer, 10, &timestamping_state);
 	if (err) {
-		asguard_dbg("[SASSY] Error converting input buffer: %s, todevid: 0x%x\n",
+		asguard_dbg("[ASGUARD] Error converting input buffer: %s, todevid: 0x%x\n",
 		       kernel_buffer, timestamping_state);
 		goto error;
 	}
@@ -46,16 +46,16 @@ static ssize_t asguard_ts_ctrl_write(struct file *file,
 		asguard_reset_stats(sdev);
 		break;
 	default:
-		asguard_error("[SASSY] Invalid input: %d - %s\n",
+		asguard_error("[ASGUARD] Invalid input: %d - %s\n",
 			    timestamping_state, __FUNCTION__);
 		err = -EINVAL;
 		goto error;
 	}
-	asguard_dbg("[SASSY] Timestamping state changed successfully.%s\n",
+	asguard_dbg("[ASGUARD] Timestamping state changed successfully.%s\n",
 		  __FUNCTION__);
 	return count;
 error:
-	asguard_error("[SASSY] Timestamping control failed.%s\n", __FUNCTION__);
+	asguard_error("[ASGUARD] Timestamping control failed.%s\n", __FUNCTION__);
 	return err;
 }
 
@@ -90,7 +90,7 @@ static const struct file_operations asguard_ts_ctrl_ops = {
 
 void init_asguard_ts_ctrl_interfaces(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/ts", sdev->ifindex);
 	proc_mkdir(name_buf, NULL);
@@ -104,7 +104,7 @@ void init_asguard_ts_ctrl_interfaces(struct asguard_device *sdev)
 			 sdev);
 
 	asguard_dbg(
-		"[SASSY] Timestamping ctrl interfaces created for device (%d)\n",
+		"[ASGUARD] Timestamping ctrl interfaces created for device (%d)\n",
 		sdev->ifindex);
 }
 

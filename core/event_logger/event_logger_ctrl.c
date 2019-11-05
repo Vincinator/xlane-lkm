@@ -16,7 +16,7 @@ static ssize_t asguard_event_ctrl_write(struct file *file,
 	int err;
 	struct asguard_logger *slog =
 		(struct asguard_logger *)PDE_DATA(file_inode(file));
-	char kernel_buffer[SASSY_NUMBUF];
+	char kernel_buffer[ASGUARD_NUMBUF];
 	int logging_state = -1;
 	size_t size;
 
@@ -94,7 +94,7 @@ static const struct file_operations asguard_event_ctrl_ops = {
 
 void clear_logger(struct asguard_logger *slog)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 	
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/log_%s",
 			 slog->ifindex, slog->instance_id, slog->name);
@@ -112,7 +112,7 @@ EXPORT_SYMBOL(clear_logger);
 
 void init_logger_ctrl(struct asguard_logger *slog)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	if (!slog) {
 		asguard_error("ins or Logs are not initialized!\n");

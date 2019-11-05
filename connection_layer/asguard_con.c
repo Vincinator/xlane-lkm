@@ -9,11 +9,11 @@ static int device_counter;
 
 static int asguard_generate_next_id(void)
 {
-	if (device_counter >= SASSY_MLX5_DEVICES_LIMIT) {
+	if (device_counter >= ASGUARD_MLX5_DEVICES_LIMIT) {
 		asguard_error(
 			"Reached Limit of maximum connected mlx5 devices.\n");
 		asguard_error("Limit=%d, device_counter=%d\n",
-			    SASSY_MLX5_DEVICES_LIMIT, device_counter);
+			    ASGUARD_MLX5_DEVICES_LIMIT, device_counter);
 		return -1;
 	}
 

@@ -17,7 +17,7 @@ static ssize_t asguard_eval_ctrl_write(struct file *file,
 		(struct consensus_priv *)PDE_DATA(file_inode(file));
 	struct asguard_device *sdev =
 		(struct asguard_device *)PDE_DATA(file_inode(file));
-	char kernel_buffer[SASSY_NUMBUF];
+	char kernel_buffer[ASGUARD_NUMBUF];
 	int eval_selection = -3;
 	size_t size;
 	int err;
@@ -97,7 +97,7 @@ static const struct file_operations asguard_eval_ctrl_ops = {
 
 void init_eval_ctrl_interfaces(struct consensus_priv *priv)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/consensus_eval_ctrl",
 			 priv->sdev->ifindex, priv->ins->instance_id);
@@ -110,7 +110,7 @@ EXPORT_SYMBOL(init_eval_ctrl_interfaces);
 
 void remove_eval_ctrl_interfaces(struct consensus_priv *priv)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/consensus_eval_ctrl",
 			 priv->sdev->ifindex, priv->ins->instance_id);

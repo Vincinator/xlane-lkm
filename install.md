@@ -1,4 +1,4 @@
-We use ansible playbooks to build, install and test SASSY. The playbooks can be found at the [SASSY-Eval](https://github.com/Distributed-Systems-Programming-Group/SASSY-Eval) Repository.
+We use ansible playbooks to build, install and test ASGUARD. The playbooks can be found at the [ASGUARD-Eval](https://github.com/Distributed-Systems-Programming-Group/ASGUARD-Eval) Repository.
 
 The inventory file must be adapted to your target environment. 
 Adapt username and ip addresses in the inventory files. 

@@ -10,11 +10,11 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Distributed Systems Group");
-MODULE_DESCRIPTION("SASSY app failure detector");
+MODULE_DESCRIPTION("ASGUARD app failure detector");
 MODULE_VERSION("0.01");
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][PROTOCOL][FD]"
+#define LOG_PREFIX "[ASGUARD][PROTOCOL][FD]"
 
 static struct asguard_fd_priv fd_priv;
 
@@ -47,7 +47,7 @@ struct proto_instance *get_fd_proto_instance(struct asguard_device *sdev)
 	if(!ins)
 		goto error;
 
-	ins->proto_type = SASSY_PROTO_FD;
+	ins->proto_type = ASGUARD_PROTO_FD;
 	ins->ctrl_ops = fd_ops;
 	ins->name = "fd";
 	ins->logger.name = "fd";

@@ -16,7 +16,7 @@
 
 void set_echo_opcode(unsigned char *pkt, enum echo_opcode opcode)
 {
-	SET_ECHO_PAYLOAD(pkt, protocol_id, SASSY_PROTO_ECHO);
+	SET_ECHO_PAYLOAD(pkt, protocol_id, ASGUARD_PROTO_ECHO);
 	SET_ECHO_PAYLOAD(pkt, opcode, opcode);
 }
 

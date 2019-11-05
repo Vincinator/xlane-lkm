@@ -21,7 +21,7 @@
 #include "../asguard_core.h"
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][CORE]"
+#define LOG_PREFIX "[ASGUARD][CORE]"
 
 /* Only used for debugging. The goal is to load all protocols and select based on the protocol id in the payload.
  * For now, we use only one protocol at a time - to eliminate potential error sources.
@@ -70,7 +70,7 @@ static ssize_t proto_selector_write(struct file *file,
 		return count;
 	}
 
-	if (sdev->pminfo.state == SASSY_PM_EMITTING) {
+	if (sdev->pminfo.state == ASGUARD_PM_EMITTING) {
 		asguard_error("Stop pacemaker first!\n");
 		return count;
 	}
@@ -133,7 +133,7 @@ static const struct file_operations proto_selector_ops = {
 
 static void __clear_previous_le_proto(struct asguard_device *sdev)
 {
-	if (sdev->le_proto && sdev->pminfo.state != SASSY_PM_EMITTING) {
+	if (sdev->le_proto && sdev->pminfo.state != ASGUARD_PM_EMITTING) {
 		asguard_dbg("Stop and Clean le protocol\n");
 		sdev->le_proto->ctrl_ops.stop(sdev);
 		sdev->le_proto->ctrl_ops.clean(sdev);
@@ -177,7 +177,7 @@ static ssize_t proto_le_selector_write(struct file *file,
 		return err;
 	}
 
-	if (sdev->pminfo.state == SASSY_PM_EMITTING) {
+	if (sdev->pminfo.state == ASGUARD_PM_EMITTING) {
 		asguard_error("Stop pacemaker first!\n");
 		return -ENODEV;
 	}
@@ -255,7 +255,7 @@ static const struct file_operations proto_le_selector_ops = {
 
 void init_proto_selector(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf),
 		"asguard/%d/protocol", sdev->ifindex);
@@ -274,7 +274,7 @@ void init_proto_selector(struct asguard_device *sdev)
 
 void remove_proto_selector(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf),
 		"asguard/%d/protocol", sdev->ifindex);

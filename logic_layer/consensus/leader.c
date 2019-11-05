@@ -7,7 +7,7 @@
 #include <asguard/consensus.h>
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][LE][LEADER]"
+#define LOG_PREFIX "[ASGUARD][LE][LEADER]"
 
 void initialze_indices(struct consensus_priv *priv)
 {

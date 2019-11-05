@@ -1,24 +1,24 @@
-#ifndef _SASSY_DEV_H_
-#define _SASSY_DEV_H_
+#ifndef _ASGUARD_DEV_H_
+#define _ASGUARD_DEV_H_
 
 #include <linux/types.h>
 
 #define MAX_PROTOCOLS 4
 
 #define MAX_NIC_DEVICES 8
-#define SASSY_PACKET_PAYLOAD_SIZE 32
+#define ASGUARD_PACKET_PAYLOAD_SIZE 32
 
 #define RX_CYCLE_SIZE                                                          \
 	1 /* How many packets per remote host to hold in asguard memory */
 
 /* 
- * The size of payload does not exceed the SASSY_PACKET_PAYLOAD_SIZE value.
+ * The size of payload does not exceed the ASGUARD_PACKET_PAYLOAD_SIZE value.
  * This is true for all asguard packet types!
  */
 typedef enum {
-	SASSY_HB_TYPE = 0, /* Used by failure detector logic */
-	SASSY_CONSENSUS_TYPE = 1, /* Used by consensus logic */
-	SASSY_RAW_TYPE = 2, /* Unspecified payload structure */
+	ASGUARD_HB_TYPE = 0, /* Used by failure detector logic */
+	ASGUARD_CONSENSUS_TYPE = 1, /* Used by consensus logic */
+	ASGUARD_RAW_TYPE = 2, /* Unspecified payload structure */
 } asguard_packet_type;
 
 /*
@@ -27,7 +27,7 @@ typedef enum {
 struct asguard_packet {
 	asguard_packet_type
 		ptype; /* Tells Logic Layer how to interpret the payload */
-	u8 payload[SASSY_PACKET_PAYLOAD_SIZE]; /* Byte addressable array of tasty asguard packet payload*/
+	u8 payload[ASGUARD_PACKET_PAYLOAD_SIZE]; /* Byte addressable array of tasty asguard packet payload*/
 };
 
 /*  Packet Buffer for one remote host */
@@ -67,4 +67,4 @@ struct asguard_core *asguard_core(void);
 
 int register_protocol_instance(struct asguard_device *sdev, int instance_id, int protocol_id);
 void clear_protocol_instances(struct asguard_device *sdev);
-#endif /* _SASSY_DEV_H_ */
+#endif /* _ASGUARD_DEV_H_ */

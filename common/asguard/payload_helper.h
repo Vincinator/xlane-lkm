@@ -93,16 +93,16 @@ typedef int(*handle_payload_fun)(struct asguard_device *,
 								 unsigned char *remote_mac,
 								 void *payload);
 
-#define SASSY_PROTO_CON_AE_BASE_SZ 20
+#define ASGUARD_PROTO_CON_AE_BASE_SZ 20
 #define CONLOG_ENTRY_SIZE 8
 
-#define SASSY_PROTO_CON_PAYLOAD_SZ 17
-#define SASSY_CON_METADATA_SZ 23
-#define SASSY_CON_LOGCMD_SZ 8
+#define ASGUARD_PROTO_CON_PAYLOAD_SZ 17
+#define ASGUARD_CON_METADATA_SZ 23
+#define ASGUARD_CON_LOGCMD_SZ 8
 
 // TODO: correct payload sizes!!
-#define SASSY_PROTO_FD_PAYLOAD_SZ 2
-#define SASSY_PROTO_ECHO_PAYLOAD_SZ 2
+#define ASGUARD_PROTO_FD_PAYLOAD_SZ 2
+#define ASGUARD_PROTO_ECHO_PAYLOAD_SZ 2
 
 
 int get_proto_offset(char *cur);

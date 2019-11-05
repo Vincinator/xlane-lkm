@@ -22,12 +22,12 @@
 
 #define DEVNAME "asguard_fd_tx_mem"
 
-#define SASSY_MEMBLOCK_SIZE 512 /* Size in Bytes to be read at once */
+#define ASGUARD_MEMBLOCK_SIZE 512 /* Size in Bytes to be read at once */
 
 /* Determines how many NIC devices are supported in parallel.
  * Used for minor device number generation
  */
-#define SASSY_MAX_DEVICES 16
+#define ASGUARD_MAX_DEVICES 16
 static unsigned int asguard_bypass_major;
 static struct class *asguard_bypass_class;
 
@@ -95,8 +95,8 @@ static ssize_t asguard_bypass_read(struct file *filp, char __user *buf, size_t c
 	if (*f_pos + count > PAGE_SIZE)
 		count = PAGE_SIZE - *f_pos;
 
-	if (count > SASSY_MEMBLOCK_SIZE)
-		count = SASSY_MEMBLOCK_SIZE;
+	if (count > ASGUARD_MEMBLOCK_SIZE)
+		count = ASGUARD_MEMBLOCK_SIZE;
 
 	if (copy_to_user((void __user *)buf, &(priv->tx_buf[*f_pos]), count) != 0) {
 		ret = -EFAULT;
@@ -104,7 +104,7 @@ static ssize_t asguard_bypass_read(struct file *filp, char __user *buf, size_t c
 	}
 #if 1
 	print_hex_dump(KERN_DEBUG, "Aliveness Counter: ", DUMP_PREFIX_NONE, 16,
-		       1, priv->tx_buf, SASSY_PAYLOAD_BYTES, 0);
+		       1, priv->tx_buf, ASGUARD_PAYLOAD_BYTES, 0);
 #endif
 	*f_pos += count;
 	ret = count;
@@ -133,8 +133,8 @@ static ssize_t asguard_bypass_write(struct file *filp, const char __user *buf,
 	if (*f_pos + count > PAGE_SIZE)
 		count = PAGE_SIZE - *f_pos;
 
-	if (count > SASSY_MEMBLOCK_SIZE)
-		count = SASSY_MEMBLOCK_SIZE;
+	if (count > ASGUARD_MEMBLOCK_SIZE)
+		count = ASGUARD_MEMBLOCK_SIZE;
 
 	if (copy_from_user(&(priv->tx_buf[*f_pos]), (void  __user *) buf, count) != 0) {
 		ret = -EFAULT;
@@ -278,7 +278,7 @@ void asguard_clean_class(struct asguard_device *sdev)
 	class_destroy(asguard_bypass_class);
 
 	unregister_chrdev_region(MKDEV(asguard_bypass_major, 0),
-				 SASSY_MAX_DEVICES);
+				 ASGUARD_MAX_DEVICES);
 }
 
 int asguard_bypass_init_class(struct asguard_device *sdev)
@@ -288,7 +288,7 @@ int asguard_bypass_init_class(struct asguard_device *sdev)
 
 	asguard_dbg("Enter: %s\n", __FUNCTION__);
 
-	err = alloc_chrdev_region(&dev, 0, SASSY_MAX_DEVICES, DEVNAME);
+	err = alloc_chrdev_region(&dev, 0, ASGUARD_MAX_DEVICES, DEVNAME);
 	if (err < 0) {
 		asguard_error("alloc_chrdev_region() failed in %s\n",
 			    __FUNCTION__);

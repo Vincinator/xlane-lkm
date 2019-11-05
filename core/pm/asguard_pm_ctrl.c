@@ -83,11 +83,11 @@ static int asguard_hb_ctrl_proc_show(struct seq_file *m, void *v)
 	if (!spminfo)
 		return -ENODEV;
 
-	if (spminfo->state == SASSY_PM_EMITTING)
+	if (spminfo->state == ASGUARD_PM_EMITTING)
 		seq_puts(m, "emitting");
-	else if (spminfo->state == SASSY_PM_UNINIT)
+	else if (spminfo->state == ASGUARD_PM_UNINIT)
 		seq_puts(m, "uninit");
-	else if (spminfo->state == SASSY_PM_READY)
+	else if (spminfo->state == ASGUARD_PM_READY)
 		seq_puts(m, "ready");
 
 	return 0;
@@ -104,7 +104,7 @@ static ssize_t asguard_cpumgmt_write(struct file *file,
 				   loff_t *data)
 {
 	int err;
-	char kernel_buffer[SASSY_NUMBUF];
+	char kernel_buffer[ASGUARD_NUMBUF];
 	int tocpu = -1;
 	struct pminfo *spminfo =
 		(struct pminfo *)PDE_DATA(file_inode(file));
@@ -136,7 +136,7 @@ static ssize_t asguard_cpumgmt_write(struct file *file,
 		return -ENODEV;
 
 	spminfo->active_cpu = tocpu;
-	pm_state_transition_to(spminfo, SASSY_PM_READY);
+	pm_state_transition_to(spminfo, ASGUARD_PM_READY);
 
 	return count;
 error:
@@ -238,7 +238,7 @@ static ssize_t asguard_payload_write(struct file *file,
 				   loff_t *data)
 {
 	int ret = 0;
-	char kernel_buffer[SASSY_TARGETS_BUF];
+	char kernel_buffer[ASGUARD_TARGETS_BUF];
 	struct pminfo *spminfo =
 		(struct pminfo *)PDE_DATA(file_inode(file));
 	size_t size = min(sizeof(kernel_buffer) - 1, count);
@@ -313,7 +313,7 @@ static int asguard_payload_show(struct seq_file *m, void *v)
 		seq_printf(m, "%s:\n", current_ip);
 		seq_hex_dump(m, "	", DUMP_PREFIX_OFFSET, 32, 1,
 			     spminfo->pm_targets[i].pkt_data.pkt_payload,
-			     SASSY_PAYLOAD_BYTES, false);
+			     ASGUARD_PAYLOAD_BYTES, false);
 	}
 
 out:
@@ -334,7 +334,7 @@ static ssize_t asguard_target_write(struct file *file,
 				  loff_t *data)
 {
 	int err;
-	char kernel_buffer[SASSY_TARGETS_BUF];
+	char kernel_buffer[ASGUARD_TARGETS_BUF];
 	char *search_str;
 	struct pminfo *spminfo =
 		(struct pminfo *)PDE_DATA(file_inode(file));
@@ -369,7 +369,7 @@ static ssize_t asguard_target_write(struct file *file,
 
 	kernel_buffer[size] = '\0';
 	if (spminfo->num_of_targets < 0 ||
-	    spminfo->num_of_targets > SASSY_TARGETS_BUF) {
+	    spminfo->num_of_targets > ASGUARD_TARGETS_BUF) {
 		asguard_error("num_of_targets is invalid! Have you set the target hosts?\n");
 		return -EINVAL;
 	}
@@ -380,7 +380,7 @@ static ssize_t asguard_target_write(struct file *file,
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
 		if (!input_str || strlen(input_str) <= 0)
 			continue;
-		if (i > SASSY_TARGETS_BUF) {
+		if (i > ASGUARD_TARGETS_BUF) {
 			asguard_error(
 				"Target buffer full! Not all targets are applied, increase buffer in asguard source.\n");
 			break;
@@ -517,7 +517,7 @@ static int asguard_test_ctrl_show(struct seq_file *m, void *v)
 	if (!spminfo)
 		return -ENODEV;
 
-	if (spminfo->tdata.state == SASSY_PM_TEST_UNINIT)
+	if (spminfo->tdata.state == ASGUARD_PM_TEST_UNINIT)
 		seq_printf(m, "Not Initialized\n");
 	else
 		seq_printf(m, "active dummy user space processes: %d",
@@ -589,7 +589,7 @@ static const struct file_operations asguard_test_ctrl_ops = {
 
 void init_asguard_pm_ctrl_interfaces(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker",
 		 sdev->ifindex);
@@ -627,7 +627,7 @@ EXPORT_SYMBOL(init_asguard_pm_ctrl_interfaces);
 
 void clean_asguard_pm_ctrl_interfaces(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/payload",
 		 sdev->ifindex);

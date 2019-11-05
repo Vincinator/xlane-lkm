@@ -21,14 +21,14 @@
 #include "../asguard_core.h"
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][PROTO INSTANCE CTRL]"
+#define LOG_PREFIX "[ASGUARD][PROTO INSTANCE CTRL]"
 
 static ssize_t proto_instance_ctrl_write(struct file *file,
 				    const char __user *user_buffer,
 				    size_t count, loff_t *data)
 {
 	int err;
-	char kernel_buffer[SASSY_TARGETS_BUF];
+	char kernel_buffer[ASGUARD_TARGETS_BUF];
 	char *search_str;
 	struct asguard_device *sdev =
 		(struct asguard_device *)PDE_DATA(file_inode(file));
@@ -143,7 +143,7 @@ static const struct file_operations proto_instance_ctrl_ops = {
 
 void init_proto_instance_ctrl(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances",
 		 sdev->ifindex);
@@ -162,7 +162,7 @@ EXPORT_SYMBOL(init_proto_instance_ctrl);
 
 void remove_proto_instance_ctrl(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/ctrl",
 		 sdev->ifindex);

@@ -43,11 +43,11 @@ static ssize_t asguard_rx_ctrl_write(struct file *file,
 	}
 
 	if (new_state == 0) {
-		sdev->rx_state = SASSY_RX_DISABLED;
+		sdev->rx_state = ASGUARD_RX_DISABLED;
 		asguard_dbg("RX disabled\n");
 
 	} else {
-		sdev->rx_state = SASSY_RX_ENABLED;
+		sdev->rx_state = ASGUARD_RX_ENABLED;
 		asguard_dbg("RX enabled\n");
 	}
 	return count;
@@ -149,7 +149,7 @@ static const struct file_operations asguard_verbose_ctrl_ops = {
 
 void init_asguard_ctrl_interfaces(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/rx_ctrl", sdev->ifindex);
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL,
@@ -163,7 +163,7 @@ EXPORT_SYMBOL(init_asguard_ctrl_interfaces);
 
 void clean_asguard_ctrl_interfaces(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/rx_ctrl", sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);

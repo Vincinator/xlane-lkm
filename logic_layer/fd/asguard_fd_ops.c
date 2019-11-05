@@ -39,7 +39,7 @@ int fd_init_payload(void *payload)
 
 	asguard_dbg("initializing FD payload\n");
 
-	fd_p->protocol_id = SASSY_PROTO_FD;
+	fd_p->protocol_id = ASGUARD_PROTO_FD;
 	fd_p->message = 0;
 	fd_p->alive_rp = 0;
 
@@ -136,8 +136,8 @@ int fd_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 		    void *payload)
 {
 	// .. Test only ..
-	//print_hex_dump(KERN_DEBUG, "SASSY HB: ", DUMP_PREFIX_NONE, 16, 1,
-	//                payload, SASSY_PAYLOAD_BYTES, 0);
+	//print_hex_dump(KERN_DEBUG, "ASGUARD HB: ", DUMP_PREFIX_NONE, 16, 1,
+	//                payload, ASGUARD_PAYLOAD_BYTES, 0);
 
 	//asguard_dbg("SRC MAC=%pM", remote_mac);
 

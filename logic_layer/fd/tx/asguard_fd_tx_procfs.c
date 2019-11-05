@@ -46,11 +46,11 @@ static ssize_t asguard_fdus_reg_write(struct file *file,
 	}
 
 	if (new_state == 0) {
-		sdev->rx_state = SASSY_RX_DISABLED;
+		sdev->rx_state = ASGUARD_RX_DISABLED;
 		asguard_dbg("RX disabled\n");
 
 	} else {
-		sdev->rx_state = SASSY_RX_ENABLED;
+		sdev->rx_state = ASGUARD_RX_ENABLED;
 		asguard_dbg("RX enabled\n");
 	}
 	return count;
@@ -86,7 +86,7 @@ static const struct file_operations asguard_fdus_reg_ops = {
 
 void init_asguard_fdus_interfaces(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/fd", sdev->ifindex);
 	proc_mkdir(name_buf, NULL);
@@ -100,7 +100,7 @@ EXPORT_SYMBOL(init_asguard_fdus_interfaces);
 
 void clean_asguard_fdus_interfaces(struct asguard_device *sdev)
 {
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/fd/register_proc",
 		 sdev->ifindex);

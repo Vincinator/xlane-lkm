@@ -8,11 +8,11 @@
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Distributed Systems Group");
-MODULE_DESCRIPTION("SASSY MLX5 Connection");
+MODULE_DESCRIPTION("ASGUARD MLX5 Connection");
 MODULE_VERSION("0.01");
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][CON][MLX5]"
+#define LOG_PREFIX "[ASGUARD][CON][MLX5]"
 
 /* Initialized in asguard_mlx5_con_init*/
 static struct asguard_mlx5_con_info **infos;
@@ -69,7 +69,7 @@ EXPORT_SYMBOL(asguard_mlx5_post_payload);
 
 int asguard_mlx5_con_check_ix(int asguard_id, int ix)
 {
-	if (asguard_id < 0 || asguard_id >= SASSY_MLX5_DEVICES_LIMIT) {
+	if (asguard_id < 0 || asguard_id >= ASGUARD_MLX5_DEVICES_LIMIT) {
 		asguard_error("asguard_id was %d in %s\n", asguard_id, __FUNCTION__);
 		return 0;
 	}
@@ -80,7 +80,7 @@ EXPORT_SYMBOL(asguard_mlx5_con_check_ix);
 
 int asguard_mlx5_con_check_cqn(int asguard_id, int cqn)
 {
-	if (asguard_id < 0 || asguard_id >= SASSY_MLX5_DEVICES_LIMIT) {
+	if (asguard_id < 0 || asguard_id >= ASGUARD_MLX5_DEVICES_LIMIT) {
 		asguard_error("asguard_id was %d in %s\n", asguard_id, __FUNCTION__);
 		return 0;
 	}
@@ -102,7 +102,7 @@ EXPORT_SYMBOL(asguard_mlx5_get_channel);
 int asguard_mlx5_con_register_channel(int asguard_id, int ix, int cqn, void *c)
 {
 
-	if (asguard_id < 0 || asguard_id >= SASSY_MLX5_DEVICES_LIMIT) {
+	if (asguard_id < 0 || asguard_id >= ASGUARD_MLX5_DEVICES_LIMIT) {
 		asguard_error("asguard_id was %d in %s\n", asguard_id, __FUNCTION__);
 		return 0;
 	}
@@ -120,7 +120,7 @@ EXPORT_SYMBOL(asguard_mlx5_con_register_channel);
 static int __init asguard_mlx5_con_init(void)
 {
 
-	infos = kmalloc_array(SASSY_MLX5_DEVICES_LIMIT,
+	infos = kmalloc_array(ASGUARD_MLX5_DEVICES_LIMIT,
 			      sizeof(struct asguard_mlx5_con_info *), GFP_KERNEL);
 
 	return 0;

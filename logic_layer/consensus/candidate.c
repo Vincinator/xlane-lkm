@@ -15,7 +15,7 @@
 #include <asguard/consensus.h>
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[SASSY][LE][CANDIDATE]"
+#define LOG_PREFIX "[ASGUARD][LE][CANDIDATE]"
 
 #define CANDIDATURE_RETRY_LIMIT 100
 

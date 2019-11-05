@@ -1,5 +1,5 @@
-#ifndef _SASSY_H_
-#define _SASSY_H_
+#ifndef _ASGUARD_H_
+#define _ASGUARD_H_
 
 #include <linux/list.h>
 #include <linux/spinlock_types.h>
@@ -11,13 +11,13 @@
 #include <asguard/logger.h>
 
 
-#define MAX_SASSY_PROC_NAME 256
+#define MAX_ASGUARD_PROC_NAME 256
 
 #define MAX_PROCFS_BUF 512
 
 
-#define SASSY_TARGETS_BUF 512
-#define SASSY_NUMBUF 13
+#define ASGUARD_TARGETS_BUF 512
+#define ASGUARD_NUMBUF 13
 
 #define MAX_REMOTE_SOURCES 16
 
@@ -31,20 +31,20 @@
 
 #define MAX_PROCESSES_PER_HOST 16
 
-#define SASSY_MLX5_DEVICES_LIMIT                                               \
-	5 /* Number of allowed mlx5 devices that can connect to SASSY */
+#define ASGUARD_MLX5_DEVICES_LIMIT                                               \
+	5 /* Number of allowed mlx5 devices that can connect to ASGUARD */
 #define MAX_CPU_NUMBER 55
 
 
-#define MAX_SASSY_PAYLOAD_BYTES 1400 // asuming an ethernet mtu of ~1500 bytes
+#define MAX_ASGUARD_PAYLOAD_BYTES 1400 // asuming an ethernet mtu of ~1500 bytes
 
-#define SASSY_PAYLOAD_BYTES 1000
-#define SASSY_HEADER_BYTES 64 // TODO: this should be more than enough for UDP/ipv4
-#define SASSY_PKT_BYTES SASSY_PAYLOAD_BYTES + SASSY_HEADER_BYTES
+#define ASGUARD_PAYLOAD_BYTES 1000
+#define ASGUARD_HEADER_BYTES 64 // TODO: this should be more than enough for UDP/ipv4
+#define ASGUARD_PKT_BYTES ASGUARD_PAYLOAD_BYTES + ASGUARD_HEADER_BYTES
 
 int asguard_core_register_nic(int ifindex);
 
-#define SASSY_NUM_TS_LOG_TYPES 8
+#define ASGUARD_NUM_TS_LOG_TYPES 8
 #define TIMESTAMP_ARRAY_LIMIT	100000
 #define LE_EVENT_LOG_LIMIT 		100000
 
@@ -93,10 +93,10 @@ enum hb_interval {
 };
 
 enum tsstate {
-    SASSY_TS_RUNNING,
-    SASSY_TS_READY, 	/* Initialized but not active*/
-    SASSY_TS_UNINIT,
-    SASSY_TS_LOG_FULL,
+    ASGUARD_TS_RUNNING,
+    ASGUARD_TS_READY, 	/* Initialized but not active*/
+    ASGUARD_TS_UNINIT,
+    ASGUARD_TS_LOG_FULL,
 };
 
 struct asguard_timestamp_item {
@@ -201,28 +201,28 @@ enum w_state {
 };
 
 enum asguard_rx_state {
-	SASSY_RX_DISABLED = 0,
-	SASSY_RX_ENABLED = 1,
+	ASGUARD_RX_DISABLED = 0,
+	ASGUARD_RX_ENABLED = 1,
 };
 
 enum asguard_protocol_type {
-	SASSY_PROTO_ECHO = 0,
-	SASSY_PROTO_FD = 1,
-	SASSY_PROTO_CONSENSUS = 2,
+	ASGUARD_PROTO_ECHO = 0,
+	ASGUARD_PROTO_FD = 1,
+	ASGUARD_PROTO_CONSENSUS = 2,
 
 };
 
 typedef enum asguard_protocol_type asguard_protocol_t;
 
 enum asguard_pacemaker_test_state {
-	SASSY_PM_TEST_UNINIT = 0,
-	SASSY_PM_TEST_INIT = 1,
+	ASGUARD_PM_TEST_UNINIT = 0,
+	ASGUARD_PM_TEST_INIT = 1,
 };
 
 enum pmstate {
-	SASSY_PM_UNINIT = 0,
-	SASSY_PM_READY = 1,
-	SASSY_PM_EMITTING = 2,
+	ASGUARD_PM_UNINIT = 0,
+	ASGUARD_PM_READY = 1,
+	ASGUARD_PM_EMITTING = 2,
 };
 
 typedef enum pmstate pmstate_t;
@@ -264,11 +264,11 @@ struct asguard_payload {
 	 * TODO: Protocols with a variable payload size (e.g. consensus lead)
 	 * must include the offset to the next protocol payload as u16 directly after the first value.
 	 * 
-	 * TODO: Check on creation if protocol fits in the payload (MAX_SASSY_PAYLOAD_BYTES). 
+	 * TODO: Check on creation if protocol fits in the payload (MAX_ASGUARD_PAYLOAD_BYTES). 
 	 * If protocol payload does not fit in the asguard payload, 
 	 * then the protocol payload is queued to be stored in the next asguard payload.
 	 */
-	char proto_data[MAX_SASSY_PAYLOAD_BYTES - 1];
+	char proto_data[MAX_ASGUARD_PAYLOAD_BYTES - 1];
 };
 
 
@@ -365,7 +365,7 @@ struct asguard_device {
 
 	struct net_device *ndev;
 
-	/* SASSY CTRL Structures */
+	/* ASGUARD CTRL Structures */
 	struct pminfo pminfo;
 
 	int instance_id_mapping[MAX_PROTO_INSTANCES];
@@ -523,4 +523,4 @@ void remove_logger_ifaces(struct asguard_logger *slog);
 void init_proto_instance_ctrl(struct asguard_device *sdev);
 void remove_proto_instance_ctrl(struct asguard_device *sdev);
 
-#endif /* _SASSY_H_ */
+#endif /* _ASGUARD_H_ */

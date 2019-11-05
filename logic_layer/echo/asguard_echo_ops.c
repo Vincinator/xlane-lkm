@@ -66,14 +66,14 @@ int echo_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 	get_cluster_ids(epriv->sdev, remote_mac, &remote_lid, &rcluster_id);
 	
 	switch(opcode){
-		case SASSY_PING:
+		case ASGUARD_PING:
 			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
 			write_log(&ins->logger, LOG_ECHO_RX_PING, rdtsc());
 
 			// reply back to sender
-			setup_echo_msg(&epriv->sdev->pminfo, remote_lid, tx_ts, SASSY_PONG);
+			setup_echo_msg(&epriv->sdev->pminfo, remote_lid, tx_ts, ASGUARD_PONG);
 			break;
-		case SASSY_PONG:
+		case ASGUARD_PONG:
 			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
 
 			write_log(&ins->logger, LOG_ECHO_PINGPONG_LATENCY, rdtsc() - tx_ts);

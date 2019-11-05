@@ -13,14 +13,14 @@
 const char *ts_state_string(enum tsstate state)
 {
 	switch (state) {
-	case SASSY_TS_RUNNING:
-		return "SASSY_TS_RUNNING";
-	case SASSY_TS_READY:
-		return "SASSY_TS_READY";
-	case SASSY_TS_UNINIT:
-		return "SASSY_TS_UNINIT";
-	case SASSY_TS_LOG_FULL:
-		return "SASSY_TS_LOG_FULL";
+	case ASGUARD_TS_RUNNING:
+		return "ASGUARD_TS_RUNNING";
+	case ASGUARD_TS_READY:
+		return "ASGUARD_TS_READY";
+	case ASGUARD_TS_UNINIT:
+		return "ASGUARD_TS_UNINIT";
+	case ASGUARD_TS_LOG_FULL:
+		return "ASGUARD_TS_LOG_FULL";
 	default:
 		return "UNKNOWN STATE";
 	}
@@ -90,7 +90,7 @@ int asguard_write_timestamp(struct asguard_device *sdev,
 		       __FUNCTION__);
 
 		asguard_ts_stop(sdev);
-		ts_state_transition_to(sdev, SASSY_TS_LOG_FULL);
+		ts_state_transition_to(sdev, ASGUARD_TS_LOG_FULL);
 		return -ENOMEM;
 	}
 
@@ -104,22 +104,22 @@ EXPORT_SYMBOL(asguard_write_timestamp);
 
 int asguard_ts_stop(struct asguard_device *sdev)
 {
-	if (sdev->ts_state != SASSY_TS_RUNNING)
+	if (sdev->ts_state != ASGUARD_TS_RUNNING)
 		return -EPERM;
 
-	ts_state_transition_to(sdev, SASSY_TS_READY);
+	ts_state_transition_to(sdev, ASGUARD_TS_READY);
 	return 0;
 }
 
 int asguard_ts_start(struct asguard_device *sdev)
 {
 
-	if (sdev->ts_state != SASSY_TS_READY) {
+	if (sdev->ts_state != ASGUARD_TS_READY) {
 		asguard_error(" asguard is not in ready state. %s\n", __FUNCTION__);
 		goto error;
 	}
 
-	ts_state_transition_to(sdev, SASSY_TS_RUNNING);
+	ts_state_transition_to(sdev, ASGUARD_TS_RUNNING);
 	return 0;
 
 error:
@@ -139,7 +139,7 @@ int asguard_reset_stats(struct asguard_device *sdev)
 		goto error;
 	}
 
-	if (sdev->ts_state == SASSY_TS_RUNNING) {
+	if (sdev->ts_state == ASGUARD_TS_RUNNING) {
 		asguard_error(
 			" can not clear stats when timestamping is active.%s\n",
 			__FUNCTION__);
@@ -147,7 +147,7 @@ int asguard_reset_stats(struct asguard_device *sdev)
 		goto error;
 	}
 
-	if (sdev->ts_state != SASSY_TS_READY) {
+	if (sdev->ts_state != ASGUARD_TS_READY) {
 		asguard_error(
 			"can not clear stats, asguard timestamping is in an undefined state.%s\n",
 			__FUNCTION__);
@@ -177,8 +177,8 @@ int asguard_clean_timestamping(struct asguard_device *sdev)
 {
 	int err;
 	int i;
-	char name_buf[MAX_SASSY_PROC_NAME];
-	int log_types = SASSY_NUM_TS_LOG_TYPES;
+	char name_buf[MAX_ASGUARD_PROC_NAME];
+	int log_types = ASGUARD_NUM_TS_LOG_TYPES;
 
 	if (!sdev->stats) {
 		err = -EINVAL;
@@ -215,7 +215,7 @@ int asguard_clean_timestamping(struct asguard_device *sdev)
 	kfree(sdev->stats->timestamp_logs);
 	kfree(sdev->stats);
 
-	ts_state_transition_to(sdev, SASSY_TS_UNINIT);
+	ts_state_transition_to(sdev, ASGUARD_TS_UNINIT);
 	asguard_dbg(" cleanup done%s\n", __FUNCTION__);
 	return 0;
 error:
@@ -227,7 +227,7 @@ error:
 static int init_log_ctrl(struct asguard_device *sdev, int logid)
 {
 	int err;
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	if (sdev->verbose)
 		asguard_dbg(" Init TS log with id: %d\n", logid);
@@ -266,7 +266,7 @@ error:
 int init_timestamping(struct asguard_device *sdev)
 {
 	int err;
-	int log_types = SASSY_NUM_TS_LOG_TYPES;
+	int log_types = ASGUARD_NUM_TS_LOG_TYPES;
 	int i;
 
 	if (sdev->verbose)
@@ -333,7 +333,7 @@ int init_timestamping(struct asguard_device *sdev)
 		init_log_ctrl(sdev, i);
 	}
 
-	ts_state_transition_to(sdev, SASSY_TS_READY);
+	ts_state_transition_to(sdev, ASGUARD_TS_READY);
 
 	return 0;
 

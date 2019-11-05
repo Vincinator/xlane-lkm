@@ -17,7 +17,7 @@ int consensus_init(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	priv->ctimer_init = 0;
 	priv->ftimer_init = 0;
@@ -143,7 +143,7 @@ int consensus_clean(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 	u32 i;
-	char name_buf[MAX_SASSY_PROC_NAME];
+	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 
 	if(consensus_is_alive(priv)){

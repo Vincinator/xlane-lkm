@@ -1,4 +1,4 @@
-This repository contains the SASSY project.
+This repository contains the ASGUARD project.
 
 	## #Source Tree Structure
 
@@ -16,12 +16,12 @@ This repository contains the SASSY project.
 │   │─── Netronome Agilio CX smartNIC
 │   │   │ 
 │   │   │ Specification Document
-│   │   │ SASSY Driver Source
+│   │   │ ASGUARD Driver Source
 │   │
 │   └─── Mellanox ConnectX 4 LX
 │       │
 │       │ Specification Document
-│       │ SASSY Driver Source
+│       │ ASGUARD Driver Source
 │   
 └─── Logic Layer
     │

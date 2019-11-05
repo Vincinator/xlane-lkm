@@ -1,7 +1,7 @@
 EXTRA_CFLAGS += -I$(src)/common/
 
 
-# Core SASSY Components
+# Core ASGUARD Components
 obj-m := core/
 
 # NIC Integration
