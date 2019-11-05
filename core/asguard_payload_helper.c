@@ -1,8 +1,8 @@
 
 
+#include <asguard/consensus.h>
 #include <asguard/asguard.h>
 #include <asguard/payload_helper.h>
-#include <asguard/consensus.h>
 #include <asguard/logger.h>
 
 

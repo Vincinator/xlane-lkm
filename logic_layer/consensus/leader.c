@@ -9,6 +9,9 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][LE][LEADER]"
 
+struct consensus_priv;
+
+
 void initialze_indices(struct consensus_priv *priv)
 {
 	int i;
