@@ -1,3 +1,3 @@
-obj-m := fd/
-obj-m += echo/
-obj-m += consensus/
+# obj-m := fd/
+# obj-m += echo/
+obj-m := consensus/
