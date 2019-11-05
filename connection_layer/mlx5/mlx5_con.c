@@ -47,8 +47,8 @@ EXPORT_SYMBOL(asguard_mlx5_con_register_device);
 int asguard_mlx5_post_optimistical_timestamp(int asguard_id, uint64_t cycle_ts)
 {
 
-	if(infos[asguard_id].asguard_post_ts != NULL)
-		infos[asguard_id].asguard_post_ts(asguard_id, cycle_ts);
+	if(infos[asguard_id]->asguard_post_ts != NULL)
+		infos[asguard_id]->asguard_post_ts(asguard_id, cycle_ts);
 
 	return 0;
 }
@@ -59,8 +59,8 @@ int asguard_mlx5_post_payload(int asguard_id, void *va, u32 frag_size, u16 headr
 {
 	u8 *payload = (u8 *)va;
 
-	if(infos[asguard_id].asguard_post_payload != NULL)
-		infos[asguard_id].asguard_post_payload(asguard_id, payload + headroom + 6,
+	if(infos[asguard_id]->asguard_post_payload != NULL)
+		infos[asguard_id]->asguard_post_payload(asguard_id, payload + headroom + 6,
 			   payload + headroom + 6 + 6 + 14 + 4 + 8 + 4, cqe_bcnt);
 
 	return 0;

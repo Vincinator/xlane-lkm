@@ -2,7 +2,7 @@
 obj-m := core/
 
 # NIC Integration
-obj-m += connection_layer/mlx5/
+#obj-m += connection_layer/mlx5/
 
 # In-Kernel Applications
 #obj-m += logic_layer/fd/
