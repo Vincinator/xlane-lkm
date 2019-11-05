@@ -121,7 +121,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		} else {
 			// append rpc failed!
-			//sassy_dbg("Received Reply with State=failed\n");
+			sassy_dbg("Received Reply with State=failed.. param3=%d\n", param3);
 
 			// decrement nextIndex for follower with <remote_lid>
 			priv->sm_log.next_index[remote_lid] = param3 + 1;
