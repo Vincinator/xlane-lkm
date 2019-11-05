@@ -9,6 +9,8 @@
 
 #include "asguard_core.h"
 #include <asguard/asguard.h>
+#include <asguard/asguard_con.h>
+
 #include <asguard/logger.h>
 #include <asguard/payload_helper.h>
 
