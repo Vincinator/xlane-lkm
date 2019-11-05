@@ -1,62 +1,6 @@
+.tmp_versions/
+*.mod.c
+*.mod.o
+*.o
+.cache.mk
 *.symvers
-*.cache.mk
-*modules.order
-*ko
-*cmd
-.**.a *.asn1.[ch] *.bin *.bz2 *.c.[012] *
-		.*
-			*.dt.yaml *.dtb *.dtb.S *.dwo *.elf *.gcno *.gz *.i
-				 *.ko *.lex.c *.ll *.lst *.lz4 *.lzma *.lzo
-					 *.mod.c *.o *.o.*
-			*.order *.patch *.s *.so *.so.dbg *.su *.symtypes *.tab
-				 .[ch] *
-			.tar *.xz Module.symvers modules.builtin
-
-#
-#Top - level generic files
-#
-		/ tags / TAGS / linux / vmlinux / vmlinux .32 / vmlinux -
-	gdb.py / vmlinuz / System.map /
-		Module.markers
-
-#
-#Generated include files
-#
-			include /
-		config include / generated include / ksym arch/*/include/generated
-
-# stgit generated dirs
-patches-*
-
-# quilt's files
-patches
-series
-
-# cscope files
-cscope.*
-ncscope.*
-
-# gnu global files
-GPATH
-GRTAGS
-GSYMS
-GTAGS
-
-# id-utils files
-ID
-
-*.orig
-*~
-\#*#
-
-#
-# Leavings from module signing
-#
-extra_certificates
-signing_key.pem
-signing_key.priv
-signing_key.x509
-x509.genkey
-
-# Kconfig presets
-all.config
