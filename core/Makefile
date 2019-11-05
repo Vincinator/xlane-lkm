@@ -1,6 +1,6 @@
 EXTRA_CFLAGS += -I$(src)/../common/
 
-obj-m := asguard_core.o
+obj-m := asguard.o
 
 asguard_core-objs := asguard_core.o asguard_core_ctrl.o pm.o net.o proto.o asguard_payload_helper.o
 asguard_core-objs += event_logger/event_logger.o event_logger/event_logger_ctrl.o 
