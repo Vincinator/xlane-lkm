@@ -1,3 +1,6 @@
+EXTRA_CFLAGS += -I$(src)/common/
+
+
 # Core SASSY Components
 obj-m := core/
 
