@@ -3,12 +3,12 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 
-#include <sassy/sassy.h>
-#include <sassy/logger.h>
-#include <sassy/consensus.h>
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
+#include <asguard/consensus.h>
 
-// /proc/sassy/<ifindex/some_blah_
-static ssize_t sassy_le_config_write(struct file *file,
+// /proc/asguard/<ifindex/some_blah_
+static ssize_t asguard_le_config_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
 				   loff_t *data)
 {
@@ -32,7 +32,7 @@ static ssize_t sassy_le_config_write(struct file *file,
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		sassy_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __FUNCTION__);
 		goto error;
 	}
 
@@ -47,7 +47,7 @@ static ssize_t sassy_le_config_write(struct file *file,
 		err = kstrtoint(input_str, 10, &tmp);
 
 		if(err) {
-			sassy_error("error converting '%s' to an integer", input_str);
+			asguard_error("error converting '%s' to an integer", input_str);
 			goto error;
 		}
 
@@ -70,14 +70,14 @@ static ssize_t sassy_le_config_write(struct file *file,
 	}
 
 	if(!(fmin_tmp < fmax_tmp && cmin_tmp < cmax_tmp)){
-		sassy_error("Invalid Ranges! Must assure that fmin < fmax and cmin < cmax \n");
-		sassy_error("input order: fmin, fmax, cmin, cmax, max_entries_per_pkt_tmp  \n");
+		asguard_error("Invalid Ranges! Must assure that fmin < fmax and cmin < cmax \n");
+		asguard_error("input order: fmin, fmax, cmin, cmax, max_entries_per_pkt_tmp  \n");
 		goto error;
 	}
 
 	if(!(max_entries_per_pkt_tmp > 0 && max_entries_per_pkt_tmp < MAX_AE_ENTRIES_PER_PKT)) {
-		sassy_error("Invalid for entries per consensus payload!\n");
-		sassy_error("Must be in (0,%d) interval!\n", MAX_AE_ENTRIES_PER_PKT);
+		asguard_error("Invalid for entries per consensus payload!\n");
+		asguard_error("Must be in (0,%d) interval!\n", MAX_AE_ENTRIES_PER_PKT);
 		goto error;
 	}
 
@@ -90,12 +90,12 @@ static ssize_t sassy_le_config_write(struct file *file,
 
 	return count;
 error:
-	sassy_error("Error during parsing of input.%s\n", __FUNCTION__);
+	asguard_error("Error during parsing of input.%s\n", __FUNCTION__);
 	return err;
 
 }
 
-static int sassy_le_config_show(struct seq_file *m, void *v)
+static int asguard_le_config_show(struct seq_file *m, void *v)
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)m->private;
@@ -114,17 +114,17 @@ static int sassy_le_config_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-static int sassy_le_config_open(struct inode *inode, struct file *file)
+static int asguard_le_config_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, sassy_le_config_show,
+	return single_open(file, asguard_le_config_show,
 			   PDE_DATA(file_inode(file)));
 }
 
 
-static const struct file_operations sassy_le_config_ops = {
+static const struct file_operations asguard_le_config_ops = {
 	.owner = THIS_MODULE,
-	.open = sassy_le_config_open,
-	.write = sassy_le_config_write,
+	.open = asguard_le_config_open,
+	.write = asguard_le_config_write,
 	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
@@ -134,10 +134,10 @@ void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/le_config",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/le_config",
 			 priv->sdev->ifindex, priv->ins->instance_id);
 	
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &sassy_le_config_ops, priv);
+	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_le_config_ops, priv);
 	
 
 }
@@ -147,7 +147,7 @@ void remove_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d/le_config",
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/le_config",
 			 priv->sdev->ifindex, priv->ins->instance_id);
 	
 	remove_proc_entry(name_buf, NULL);

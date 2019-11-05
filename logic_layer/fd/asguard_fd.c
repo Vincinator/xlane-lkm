@@ -1,12 +1,12 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
-#include <sassy/logger.h>
-#include <sassy/sassy.h>
+#include <asguard/logger.h>
+#include <asguard/asguard.h>
 #include <linux/slab.h>
 
-#include "include/sassy_fd_ops.h"
-#include "include/sassy_fd.h"
+#include "include/asguard_fd_ops.h"
+#include "include/asguard_fd.h"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
@@ -16,9 +16,9 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][PROTOCOL][FD]"
 
-static struct sassy_fd_priv fd_priv;
+static struct asguard_fd_priv fd_priv;
 
-static const struct sassy_protocol_ctrl_ops fd_ops = {
+static const struct asguard_protocol_ctrl_ops fd_ops = {
 	.init = fd_init,
 	.start = fd_start,
 	.stop = fd_stop,
@@ -31,16 +31,16 @@ static const struct sassy_protocol_ctrl_ops fd_ops = {
 
 };
 
-static int __init sassy_fd_init(void)
+static int __init asguard_fd_init(void)
 {
 
 	return 0;
 }
 
-struct proto_instance *get_fd_proto_instance(struct sassy_device *sdev)
+struct proto_instance *get_fd_proto_instance(struct asguard_device *sdev)
 {
 	struct proto_instance *ins;
-	struct sassy_fd_priv *fpriv; 
+	struct asguard_fd_priv *fpriv; 
 
 	ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
 
@@ -55,23 +55,23 @@ struct proto_instance *get_fd_proto_instance(struct sassy_device *sdev)
 
 	ins->proto_data = (void *)&fd_priv;
 
-	fpriv = (struct sassy_fd_priv *)ins->proto_data;
+	fpriv = (struct asguard_fd_priv *)ins->proto_data;
 
 	fpriv->sdev = sdev;
 	fpriv->ins = ins;
 
 	return ins;
 error:
-	sassy_dbg("Error in %s", __FUNCTION__);
+	asguard_dbg("Error in %s", __FUNCTION__);
 	return NULL;
 }
 EXPORT_SYMBOL(get_fd_proto_instance);
 
-static void __exit sassy_fd_exit(void)
+static void __exit asguard_fd_exit(void)
 {
 	
-	sassy_dbg("exit\n");
+	asguard_dbg("exit\n");
 }
 
-module_init(sassy_fd_init);
-module_exit(sassy_fd_exit);
+module_init(asguard_fd_init);
+module_exit(asguard_fd_exit);

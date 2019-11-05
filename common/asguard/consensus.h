@@ -1,7 +1,7 @@
 #pragma once
 
-#include <sassy/logger.h>
-#include <sassy/sassy.h>
+#include <asguard/logger.h>
+#include <asguard/asguard.h>
 
 #define MAX_NODE_ID 10
 
@@ -106,7 +106,7 @@ struct consensus_test_container {
 
 struct consensus_priv {
 
-	struct sassy_device *sdev;
+	struct asguard_device *sdev;
 
 	struct proto_instance *ins;
 
@@ -155,7 +155,7 @@ struct consensus_priv {
 	int votes;
 
 	struct state_machine_cmd_log sm_log;
-	struct sassy_logger throughput_logger;
+	struct asguard_logger throughput_logger;
 
 };
 

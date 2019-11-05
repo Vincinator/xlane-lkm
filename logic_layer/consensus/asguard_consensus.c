@@ -1,20 +1,20 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
-#include <sassy/logger.h>
+#include <asguard/logger.h>
 
 #include <linux/random.h>
 #include <linux/timer.h>
 
-#include <sassy/sassy.h>
+#include <asguard/asguard.h>
 #include <linux/slab.h>
 
-#include <sassy/payload_helper.h>
+#include <asguard/payload_helper.h>
 
 #include "include/log.h"
 #include "include/consensus_helper.h"
-#include "include/sassy_consensus_ops.h"
-#include <sassy/consensus.h>
+#include "include/asguard_consensus_ops.h"
+#include <asguard/consensus.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Vincent Riesop");
@@ -81,7 +81,7 @@ void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum 
 	if(opcode == APPEND && verbose < 4)
 		return;
 
-	sassy_log_le("%s, %llu, %d: %s from %d with term %d\n",
+	asguard_log_le("%s, %llu, %d: %s from %d with term %d\n",
 					nstate_string(nstate),
 					ts,
 					term,
@@ -138,14 +138,14 @@ void set_ae_data(unsigned char *pkt,
 		return;
 
 	if(first_idx > priv->sm_log.last_idx ){
-		sassy_error("Nothing to send, first_idx > priv->sm_log.last_idx %d, %d", first_idx, priv->sm_log.last_idx);
+		asguard_error("Nothing to send, first_idx > priv->sm_log.last_idx %d, %d", first_idx, priv->sm_log.last_idx);
 		*included_entries = 0;
 		return;
 	}
 
 	//check if num_of_entries would exceed actual entries
 	if((first_idx + (num_of_entries - 1) )> priv->sm_log.last_idx){
-		sassy_error("BUG! can not send more entries than available... %d, %d, %d\n",
+		asguard_error("BUG! can not send more entries than available... %d, %d, %d\n",
 					first_idx, num_of_entries, priv->sm_log.last_idx);
 		*included_entries = 0;
 		return;
@@ -156,12 +156,12 @@ void set_ae_data(unsigned char *pkt,
 	for(i = first_idx; i < first_idx + num_of_entries; i++){
 		
 		if(!entries[i]){
-			sassy_dbg("BUG! - entries at %d is null", i);
+			asguard_dbg("BUG! - entries at %d is null", i);
 			return;
 		}
 
 		if(!entries[i]->cmd){
-			sassy_dbg("BUG! - entries cmd at %d is null", i);
+			asguard_dbg("BUG! - entries cmd at %d is null", i);
 			return;
 		}
 
@@ -180,7 +180,7 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 	if(priv->term < param1) {
 		if (priv->voted == param1) {
 #if 1
-		sassy_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
+		asguard_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
 #endif	
 			return 0;
 		} else {		
@@ -190,7 +190,7 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 
 			// Safety Check during development & Debugging..
 			if(priv->sm_log.entries[priv->sm_log.last_idx] == NULL){
-				sassy_dbg("BUG! Log is faulty can not grant any votes. /n");
+				asguard_dbg("BUG! Log is faulty can not grant any votes. /n");
 				return 0;
 			}
 
@@ -226,7 +226,7 @@ void set_le_opcode(unsigned char *pkt, enum le_opcode opco, s32 p1, s32 p2, s32 
 
 }
 
-static const struct sassy_protocol_ctrl_ops consensus_ops = {
+static const struct asguard_protocol_ctrl_ops consensus_ops = {
 	.init = consensus_init,
 	.start = consensus_start,
 	.stop = consensus_stop,
@@ -239,13 +239,13 @@ static const struct sassy_protocol_ctrl_ops consensus_ops = {
 };
 
 
-static int __init sassy_consensus_init(void)
+static int __init asguard_consensus_init(void)
 {
-	sassy_dbg("init consensus protocol\n");
+	asguard_dbg("init consensus protocol\n");
 	return 0;
 }
 
-struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
+struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 {
 	struct consensus_priv *cpriv;
 	struct proto_instance *ins;
@@ -284,16 +284,16 @@ struct proto_instance *get_consensus_proto_instance(struct sassy_device *sdev)
 	
 	return ins;
 error:
-	sassy_dbg("Error in %s", __FUNCTION__);
+	asguard_dbg("Error in %s", __FUNCTION__);
 	return NULL;
 }
 EXPORT_SYMBOL(get_consensus_proto_instance);
 
-static void __exit sassy_consensus_exit(void)
+static void __exit asguard_consensus_exit(void)
 {
 	
-	sassy_dbg("exit consensus protocol\n");
+	asguard_dbg("exit consensus protocol\n");
 }
 
-module_init(sassy_consensus_init);
-module_exit(sassy_consensus_exit);
+module_init(asguard_consensus_init);
+module_exit(asguard_consensus_exit);

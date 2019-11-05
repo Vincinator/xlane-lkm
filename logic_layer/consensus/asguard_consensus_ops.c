@@ -1,12 +1,12 @@
-#include <sassy/logger.h>
-#include <sassy/sassy.h>
+#include <asguard/logger.h>
+#include <asguard/asguard.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
 
 #include <linux/proc_fs.h>
 
-#include <sassy/consensus.h>
-#include "include/sassy_consensus_ops.h"
+#include <asguard/consensus.h>
+#include "include/asguard_consensus_ops.h"
 #include "include/candidate.h"
 #include "include/follower.h"
 #include "include/leader.h"
@@ -43,18 +43,18 @@ int consensus_init(struct proto_instance *ins)
 	
 
 	if(!priv->throughput_logger.events){
-		sassy_dbg("Not enough memory for throughput_logger of size %d", MAX_THROUGPUT_LOGGER_EVENTS);
+		asguard_dbg("Not enough memory for throughput_logger of size %d", MAX_THROUGPUT_LOGGER_EVENTS);
 		//BUG();
 	}
 
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
 	
 	if(!priv->sm_log.entries){
-		sassy_dbg("Not enough memory for log of size %d", MAX_CONSENSUS_LOG);
+		asguard_dbg("Not enough memory for log of size %d", MAX_CONSENSUS_LOG);
 		//BUG();
 	}
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d", 
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d", 
 			 priv->sdev->ifindex, ins->instance_id);
 	
 	proc_mkdir(name_buf, NULL);	
@@ -86,10 +86,10 @@ int consensus_start(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	sassy_dbg("consensus start\n");
+	asguard_dbg("consensus start\n");
 
 	if(consensus_is_alive(priv)){
-		sassy_dbg("Consensus is already running!\n");
+		asguard_dbg("Consensus is already running!\n");
 		return 0;
 	}
 
@@ -105,7 +105,7 @@ int consensus_start(struct proto_instance *ins)
 	return 0;
 
 error:
-	sassy_error(" %s failed\n", __FUNCTION__);
+	asguard_error(" %s failed\n", __FUNCTION__);
 	return err;
 }
 
@@ -117,7 +117,7 @@ int consensus_stop(struct proto_instance *ins)
 	if(!consensus_is_alive(priv))
 		return 0;
 	
-	sassy_dbg("consensus stop\n");
+	asguard_dbg("consensus stop\n");
 
 	switch(priv->nstate) {
 		case FOLLOWER:
@@ -147,11 +147,11 @@ int consensus_clean(struct proto_instance *ins)
 
 
 	if(consensus_is_alive(priv)){
-		sassy_dbg("Consensus is running, stop it first.\n");
+		asguard_dbg("Consensus is running, stop it first.\n");
 		return 0;
 	}
 
-	sassy_dbg("cleaning consensus\n");
+	asguard_dbg("cleaning consensus\n");
 
 	le_state_transition_to(priv, LE_UNINIT);
 
@@ -163,12 +163,12 @@ int consensus_clean(struct proto_instance *ins)
 
 	clear_logger(&priv->throughput_logger);
 
-	snprintf(name_buf, sizeof(name_buf), "sassy/%d/proto_instances/%d", 
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d", 
 		 priv->sdev->ifindex, ins->instance_id);
 	
 	remove_proc_entry(name_buf, NULL);	
 
-	sassy_dbg("Cleaning %d entries from sm log\n", priv->sm_log.last_idx);
+	asguard_dbg("Cleaning %d entries from sm log\n", priv->sm_log.last_idx);
 
 	if(priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
 		for(i = 0; i < priv->sm_log.last_idx; i++) {
@@ -176,7 +176,7 @@ int consensus_clean(struct proto_instance *ins)
 				kfree(priv->sm_log.entries[i]);
 		}
 	} else {
-		sassy_dbg("last_idx is -1, no logs to clean.\n");
+		asguard_dbg("last_idx is -1, no logs to clean.\n");
 	}
 
 	kfree(priv->sm_log.entries);
@@ -187,14 +187,14 @@ int consensus_clean(struct proto_instance *ins)
 
 int consensus_info(struct proto_instance *ins)
 {
-	sassy_dbg("consensus info\n");
+	asguard_dbg("consensus info\n");
 	return 0;
 }
 
 
 int consensus_us_update(struct proto_instance *ins, void *payload)
 {
-	sassy_dbg("consensus update\n");
+	asguard_dbg("consensus update\n");
 
 
 	return 0;
@@ -216,13 +216,13 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 
 	// safety check during debugging and development
 	if(!ins){
-		sassy_dbg("proto instance is null!\n");
+		asguard_dbg("proto instance is null!\n");
 		return 0;
 	}
 	
 	// safety check during debugging and development
 	if(!priv){
-		sassy_dbg("private consensus data is null!\n");
+		asguard_dbg("private consensus data is null!\n");
 		return 0;
 	}
 
@@ -243,7 +243,7 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 		leader_process_pkt(ins, remote_lid, rcluster_id, payload);
 		break;
 	default:
-		sassy_error("Unknown state - BUG\n");
+		asguard_error("Unknown state - BUG\n");
 		break;
 	}
 	return 0;

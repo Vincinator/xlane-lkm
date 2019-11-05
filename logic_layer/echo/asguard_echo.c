@@ -1,17 +1,17 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
-#include <sassy/logger.h>
+#include <asguard/logger.h>
 
 #include <linux/random.h>
 #include <linux/timer.h>
 
-#include <sassy/sassy.h>
+#include <asguard/asguard.h>
 #include <linux/slab.h>
 
-#include <sassy/payload_helper.h>
+#include <asguard/payload_helper.h>
 
-#include "include/sassy_echo.h"
+#include "include/asguard_echo.h"
 
 
 void set_echo_opcode(unsigned char *pkt, enum echo_opcode opcode)
@@ -27,7 +27,7 @@ void set_echo_tx_ts(unsigned char *pkt, uint64_t ts)
 
 int setup_echo_msg(struct pminfo *spminfo, u32 target_id, uint64_t ts, enum echo_opcode opcode)
 {
-	struct sassy_payload *pkt_payload;
+	struct asguard_payload *pkt_payload;
 	int hb_passive_ix;
 
 	hb_passive_ix =
