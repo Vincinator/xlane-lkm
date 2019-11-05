@@ -19,30 +19,30 @@ static struct asguard_mlx5_con_info **infos;
 static int mlx5_devices;
 
 
-int asguard_mlx5_con_register_device(int ifindex)
-{
-	int asguard_id = asguard_core_register_nic(ifindex);
+// int asguard_mlx5_con_register_device(int ifindex)
+// {
+// 	int asguard_id = asguard_core_register_nic(ifindex);
 
-	if (asguard_id < 0) {
-		return -1;
-	}
+// 	if (asguard_id < 0) {
+// 		return -1;
+// 	}
 
-	infos[asguard_id] =
-		kmalloc(sizeof(struct asguard_mlx5_con_info), GFP_KERNEL);
+// 	infos[asguard_id] =
+// 		kmalloc(sizeof(struct asguard_mlx5_con_info), GFP_KERNEL);
 
-	if (!infos[asguard_id]) {
-		asguard_error("Allocation error in function %s\n", __FUNCTION__);
-		return -1;
-	}
+// 	if (!infos[asguard_id]) {
+// 		asguard_error("Allocation error in function %s\n", __FUNCTION__);
+// 		return -1;
+// 	}
 	
-	asguard_dbg("Register MLX5 Device with ifindex=%d\n", ifindex);
-	asguard_dbg("Assigned asguard_id (%d) to ifindex (%d)\n", asguard_id,
-		  ifindex);
+// 	asguard_dbg("Register MLX5 Device with ifindex=%d\n", ifindex);
+// 	asguard_dbg("Assigned asguard_id (%d) to ifindex (%d)\n", asguard_id,
+// 		  ifindex);
 
-	mlx5_devices++;
-	return asguard_id;
-}
-EXPORT_SYMBOL(asguard_mlx5_con_register_device);
+// 	mlx5_devices++;
+// 	return asguard_id;
+// }
+// EXPORT_SYMBOL(asguard_mlx5_con_register_device);
 
 int asguard_mlx5_post_optimistical_timestamp(int asguard_id, uint64_t cycle_ts)
 {
