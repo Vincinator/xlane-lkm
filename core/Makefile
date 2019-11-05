@@ -9,3 +9,9 @@ asguard_core-objs += net/asguard_net.o
 asguard_core-objs += proto/proto_mgmt.o proto/proto_instance_ctrl.o 
 asguard_core-objs += ts/asguard_ts.o ts/asguard_ts_ctrl.o
 
+
+all:
+	make -C /home/dsp/asguard-kernel-src M=$(PWD) modules
+
+clean:
+	make -C /home/dsp/asguard-kernel-src M=$(PWD) clean%
