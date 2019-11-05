@@ -451,20 +451,6 @@ struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr
 
 struct net_device *asguard_get_netdevice(int ifindex);
 
-int asguard_mlx5_con_register_device(int ifindex);
-
-/* c is void ptr to  struct mlx5e_channel *c  */
-int asguard_mlx5_con_register_channel(int asguard_id, int ix, int cqn, void *c);
-int asguard_mlx5_con_check_cqn(int asguard_id, int cqn);
-int asguard_mlx5_con_check_ix(int asguard_id, int ix);
-
-int asguard_mlx5_post_optimistical_timestamp(int asguard_id, uint64_t cycle_ts);
-int asguard_mlx5_post_payload(int asguard_id, void *va, u32 frag_size, u16 headroom,
-			    u32 cqe_bcnt);
-
-int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
-				    int protocol_id, int cluster_id);
-
 int asguard_validate_asguard_device(int asguard_id);
 void asguard_reset_remote_host_counter(int asguard_id);
 
@@ -478,9 +464,6 @@ void clean_asguard_ctrl_interfaces(struct asguard_device *sdev);
 void init_asguard_ctrl_interfaces(struct asguard_device *sdev);
 
 void asguard_post_ts(int asguard_id, uint64_t cycles);
-
-void *asguard_mlx5_get_channel(int asguard_id);
-
 
 void ts_state_transition_to(struct asguard_device *sdev,
 			    enum tsstate state);

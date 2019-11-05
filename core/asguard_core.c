@@ -20,6 +20,10 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[SASSY][CORE]"
 
+static int ifindex=-1;
+module_param(ifindex, int, 0660);
+
+
 static struct asguard_core *score;
 
 
@@ -231,18 +235,13 @@ EXPORT_SYMBOL(asguard_reset_remote_host_counter);
 
 
 /* Called by Connection Layer Glue (e.g. mlx5_con.c) */
-int asguard_core_register_nic(int ifindex)
+int asguard_core_register_nic(int ifindex,  int asguard_id)
 {
 	char name_buf[MAX_SASSY_PROC_NAME];
 	int asguard_id;
 	int i;
 
 	asguard_dbg("register nic at asguard core\n");
-
-	asguard_id = asguard_generate_next_id();
-
-	if (asguard_id < 0)
-		return -1;
 
 	score->rx_tables[asguard_id] =
 		kmalloc(sizeof(struct asguard_rx_table), GFP_KERNEL);
@@ -512,8 +511,20 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 }
 EXPORT_SYMBOL(asguard_core_register_remote_host);
 
+
 static int __init asguard_connection_core_init(void)
 {
+	int err = -EINVAL;
+
+	if(ifindex < 0){
+		asguard_error("ifindex parameter is missing\n");
+		goto err;
+	}
+
+	err = register_asguard_at_nic(ifindex, asguard_post_ts, asguard_post_payload);
+	
+	if(err)
+		goto error;
 
 	score = kmalloc(sizeof(struct asguard_core), GFP_KERNEL);
 
@@ -540,9 +551,15 @@ static int __init asguard_connection_core_init(void)
 
 	proc_mkdir("asguard", NULL);
 
+	asguard_core_register_nic(ifindex, get_asguard_id_by_ifindex(ifindex));
+
 	//init_asguard_proto_info_interfaces();
 
 	return 0;
+error:
+	asguard_error("Could not initialize asguard - aborting init./n");
+	return err;
+
 }
 
 
