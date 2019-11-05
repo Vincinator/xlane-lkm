@@ -243,6 +243,11 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	int asguard_id;
 	int i;
 
+	if(asguard_id < 0 || ifindex < 0){
+		sassy_error("Invalid parameter. asguard_id=%d, ifindex=%d",asguard_id, ifindex);
+		return -EINVAL;
+	}
+
 	asguard_dbg("register nic at asguard core\n");
 
 	score->rx_tables[asguard_id] =
