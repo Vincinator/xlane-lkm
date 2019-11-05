@@ -522,7 +522,7 @@ static int __init asguard_connection_core_init(void)
 
 	if(ifindex < 0){
 		asguard_error("ifindex parameter is missing\n");
-		goto err;
+		goto error;
 	}
 
 	err = register_asguard_at_nic(ifindex, asguard_post_ts, asguard_post_payload);
