@@ -10,7 +10,7 @@ obj-m += connection_layer/mlx5/
 obj-m += logic_layer/consensus/
 
 all:
-	rm -R build
+	rm -Rf build
 	mkdir build
 	make -C /home/dsp/asguard-kernel-src M=$(PWD) modules
 	cp core/asguard_core.ko build/
@@ -18,5 +18,6 @@ all:
 	cp logic_layer/consensus/asguard_consensus.ko build/
 
 clean:
-	rm -R build
+	rm -Rf build
 	make -C /home/dsp/asguard-kernel-src M=$(PWD) clean
+
