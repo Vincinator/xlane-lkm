@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _ASGUARD_PHELP_H_
+#define _ASGUARD_PHELP_H_
 
 #include "logger.h"
 #include "asguard.h"
@@ -109,3 +110,6 @@ char *asguard_get_proto(struct asguard_payload *spay, int n);
 char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 proto_size);
 void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id);
 void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay, int i);
+
+
+#endif  /* _ASGUARD_PHELP_H_ */

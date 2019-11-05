@@ -3,7 +3,6 @@
 #include <asguard/consensus.h>
 
 
-
 /* Returns a pointer to the <n>th protocol of <spay>
  * 
  * If less than n protocols are included, a NULL ptr is returned
@@ -167,7 +166,6 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 
 	return cur_priv->sm_log.entries[idx]->term;
 }
-
 
 void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id)
 {

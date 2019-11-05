@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _ASGUARD_CONSENSU_H_
+#define _ASGUARD_CONSENSU_H_
+
 
 #include "logger.h"
 #include "asguard.h"
@@ -206,3 +208,5 @@ void remove_eval_ctrl_interfaces(struct consensus_priv *priv);
 
 
 int consensus_is_alive(struct consensus_priv *sdev);
+
+#endif /* _ASGUARD_CONSENSU_H_ */
