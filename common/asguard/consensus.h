@@ -1,9 +1,8 @@
-#ifndef _ASGUARD_CONSENSU_H_
-#define _ASGUARD_CONSENSU_H_
+#ifndef _ASGUARD_CONSENSUS_H_
+#define _ASGUARD_CONSENSUS_H_
 
-
-#include "logger.h"
-#include "asguard.h"
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
 
 #define MAX_NODE_ID 10
 
@@ -209,4 +208,4 @@ void remove_eval_ctrl_interfaces(struct consensus_priv *priv);
 
 int consensus_is_alive(struct consensus_priv *sdev);
 
-#endif /* _ASGUARD_CONSENSU_H_ */
+#endif /* _ASGUARD_CONSENSUS_H_ */

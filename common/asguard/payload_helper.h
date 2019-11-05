@@ -1,8 +1,8 @@
 #ifndef _ASGUARD_PHELP_H_
 #define _ASGUARD_PHELP_H_
 
-#include "logger.h"
-#include "asguard.h"
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
 
 #ifndef offsetof
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
