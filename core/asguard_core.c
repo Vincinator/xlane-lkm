@@ -426,8 +426,6 @@ void clear_protocol_instances(struct asguard_device *sdev)
 		
 		asguard_dbg("Cleaning proto with id=%d\n",i);
 
-
-
 		if(!sdev->protos[i])
 			continue;
 
