@@ -584,12 +584,14 @@ static void __exit asguard_connection_core_exit(void)
 {
 	int i;
 
-	// Stop running asguard processes
-	for(i = 0; i < device_counter; i++)
-		asguard_stop(i);
+
+
+	// // Stop running asguard processes
+	// for(i = 0; i < device_counter; i++)
+	// 	asguard_stop(i);
 	
-	for (i = 0; i < device_counter; i++)
-		asguard_core_remove_nic(i);
+	// for (i = 0; i < device_counter; i++)
+	// 	asguard_core_remove_nic(i);
 
 	// TODO: free all asguard core components!
 
