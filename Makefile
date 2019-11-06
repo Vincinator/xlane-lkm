@@ -16,10 +16,12 @@ obj-m := core/
 #obj-m += logic_layer/echo/
 obj-m += logic_layer/consensus/
 
+ASGUARD_MODULES_WORKING_DIR = $(shell pwd)
+
 all:
 	rm -Rf build
 	mkdir build
-	make -C $(ASGUARD_KERNEL_SRC) M="." modules
+	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) modules
 	cp core/asguard_core.ko build/
 	cp connection_layer/mlx5/asguard_mlx5.ko build/
 	cp logic_layer/consensus/asguard_consensus.ko build/
