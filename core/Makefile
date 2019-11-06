@@ -17,7 +17,7 @@ asguard-objs += pm/asguard_pm.o pm/asguard_pm_ctrl.o
 
 
 all:
-	make -C $(ASGUARD_KERNEL_SRC) M=$(PWD) modules
+	make -C $(ASGUARD_KERNEL_SRC) M=$(src) modules
 
 clean:
-	make -C $(ASGUARD_KERNEL_SRC) M=$(PWD) clean
+	make -C $(ASGUARD_KERNEL_SRC) M=$(src) clean
