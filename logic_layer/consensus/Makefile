@@ -6,7 +6,7 @@ asguard_consensus-objs := asguard_consensus_ops.o state_transitions.o leader.o f
 asguard_core-objs += asguard_consensus_request_gen.o log.o asguard_consensus_eval_ctrl.o
 
 all:
-	make -C /home/dsp/asguard-kernel-src M=$(PWD) modules
+	make -C $(ASGUARD_KERNEL_SRC) M=$(PWD) modules
 
 clean:
-	make -C /home/dsp/asguard-kernel-src M=$(PWD) clean
+	make -C $(ASGUARD_KERNEL_SRC) M=$(PWD) clean

@@ -1,3 +1,8 @@
+ifndef ASGUARD_KERNEL_SRC
+$(error ASGUARD_KERNEL_SRC is not set)
+endif
+
+
 EXTRA_CFLAGS += -I$(src)/../common/
 
 
@@ -12,7 +17,7 @@ asguard-objs += pm/asguard_pm.o pm/asguard_pm_ctrl.o
 
 
 all:
-	make -C /home/dsp/asguard-kernel-src M=$(PWD) modules
+	make -C $(ASGUARD_KERNEL_SRC) M=$(PWD) modules
 
 clean:
-	make -C /home/dsp/asguard-kernel-src M=$(PWD) clean
+	make -C $(ASGUARD_KERNEL_SRC) M=$(PWD) clean
