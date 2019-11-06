@@ -1,5 +1,9 @@
-EXTRA_CFLAGS += -I$(src)/common/
+ifndef ASGUARD_KERNEL_SRC
+$(error ASGUARD_KERNEL_SRC is not set)
+endif
 
+
+EXTRA_CFLAGS += -I$(src)/common/
 
 # Core ASGUARD Components
 obj-m := core/

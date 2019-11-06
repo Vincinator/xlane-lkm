@@ -22,7 +22,7 @@ MODULE_VERSION("0.01");
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][CORE]"
 
-static int ifindex=-1;
+static int ifindex = -1;
 module_param(ifindex, int, 0660);
 
 
@@ -101,7 +101,7 @@ struct proto_instance *get_proto_instance(struct asguard_device *sdev, u16 proto
 	if (unlikely(idx < 0 || idx >= MAX_PROTO_INSTANCES)) {
 		return NULL;
 	}
-	
+
 	return sdev->protos[idx];
 }
 
@@ -187,9 +187,8 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 				return;
 
 		// Starting all protocols 
-		for(i = 0; i < sdev->num_of_proto_instances; i++){
-				
-			if(sdev->protos != NULL && sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL){
+		for (i = 0; i < sdev->num_of_proto_instances; i++) {
+			if (sdev->protos != NULL && sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL) {
 				asguard_dbg("starting instance %d", i);
 				sdev->protos[i]->ctrl_ops.start(sdev->protos[i]);
 			} else {
@@ -197,14 +196,14 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 			}
 		}
 
-		asguard_dbg("Warmup done! \n");
+		asguard_dbg("Warmup done!\n");
 		sdev->warmup_state = WARMED_UP;
 		return;
 	}
+	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
-    received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
-
-	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload), received_proto_instances, cqe_bcnt);
+	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload),
+		received_proto_instances, cqe_bcnt);
 
 }
 EXPORT_SYMBOL(asguard_post_payload);

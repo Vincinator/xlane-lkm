@@ -6,9 +6,11 @@
 #include <linux/init.h>
 
 #include <linux/kernel.h>
+#include <linux/types.h>
 
 #include <asguard/asguard.h>
 #include <asguard/logger.h>
+
 
 static ssize_t asguard_rx_ctrl_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
