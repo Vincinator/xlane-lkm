@@ -26,4 +26,4 @@ all:
 
 clean:
 	rm -Rf build
-	make -C $(ASGUARD_KERNEL_SRC) M="." clean
+	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) clean
