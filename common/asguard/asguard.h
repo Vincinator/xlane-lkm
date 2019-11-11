@@ -22,7 +22,7 @@
 
 #define MIN_HB_CYCLES 1000
 #define MAX_HB_CYCLES 1000000000
-						
+
 #define CYCLES_PER_1MS 2400000
 #define CYCLES_PER_5MS 12000000
 #define CYCLES_PER_10MS 24000000
@@ -44,8 +44,8 @@
 int asguard_core_register_nic(int ifindex, int asguard_id);
 
 #define ASGUARD_NUM_TS_LOG_TYPES 8
-#define TIMESTAMP_ARRAY_LIMIT	100000
-#define LE_EVENT_LOG_LIMIT 		100000
+#define TIMESTAMP_ARRAY_LIMIT 100000
+#define LE_EVENT_LOG_LIMIT 100000
 
 #define MAX_PROTOS_PER_PKT 2
 
@@ -55,8 +55,8 @@ int asguard_core_register_nic(int ifindex, int asguard_id);
 #define DEFAULT_HB_INTERVAL CYC_1MS
 
 
-/* 
- * Each heartbeat contains one of the following operations 
+/*
+ * Each heartbeat contains one of the following operations
  *
  * NOOP: 			This heartbeat does not contain an update
  *					for the leader election
@@ -65,7 +65,7 @@ int asguard_core_register_nic(int ifindex, int asguard_id);
  *					itself to become the new leader of the cluster
  *			   		for the given TERM (parameter1).
  *
- * VOTE(TERM,ID): 	The sender voted for the node with 
+ * VOTE(TERM,ID): 	The sender voted for the node with
  *					the given ID (parameter2) to become
  *					the new leader in the TERM (parameter1).
  *
@@ -128,7 +128,7 @@ enum le_event_type {
 	FOLLOWER_ACCEPT_NEW_LEADER = 2,
 	CANDIDATE_ACCEPT_NEW_LEADER = 3,
 	LEADER_ACCEPT_NEW_LEADER = 4,
-	
+
 	FOLLOWER_BECOME_CANDIDATE = 5,
 	CANDIDATE_BECOME_LEADER = 6,
 
@@ -156,8 +156,8 @@ struct le_event_logs {
 
 	/* Last valid log entry in the le_event array */
 	int current_entries;
-	
-	struct proc_dir_entry	*proc_dir;	
+
+	struct proc_dir_entry	*proc_dir;
 	char *name;
 
 };
@@ -172,14 +172,14 @@ enum logger_state {
 struct logger_event {
 	uint64_t timestamp_tcs;
 	int type;
-	uint64_t accu_random_timeouts; 
+	uint64_t accu_random_timeouts;
 };
 
 
 
 struct asguard_logger {
 
-	int ifindex; 
+	int ifindex;
 
 	u16 instance_id;
 
@@ -191,7 +191,7 @@ struct asguard_logger {
 
 	/* Size is defined by LOGGER_EVENT_LIMIT */
 	struct logger_event *events;
-	
+
 };
 
 enum w_state {
@@ -211,8 +211,6 @@ enum asguard_protocol_type {
 
 };
 
-typedef enum asguard_protocol_type asguard_protocol_t;
-
 enum asguard_pacemaker_test_state {
 	ASGUARD_PM_TEST_UNINIT = 0,
 	ASGUARD_PM_TEST_INIT = 1,
@@ -224,8 +222,6 @@ enum pmstate {
 	ASGUARD_PM_EMITTING = 2,
 };
 
-typedef enum pmstate pmstate_t;
-
 struct asguard_process_info {
 	u8 pid; /* Process ID on remote host */
 	u8 ps; /* Status of remote process */
@@ -235,7 +231,7 @@ struct node_addr {
 	int cluster_id;
 	u32 dst_ip;
 	unsigned char dst_mac[6];
-}; 
+};
 
 
 struct log_entry {
@@ -244,27 +240,27 @@ struct log_entry {
 };
 
 struct protocol_payload {
-	u8 protocol_id; 
+	u8 protocol_id;
 	char data[]; // implicitly specified via protocol_id
 };
 
 
 struct asguard_payload {
-	
+
 	/* The number of protocols that are included in this payload.
-	 * If 0, then this payload is interpreted as "noop" operation 
+	 * If 0, then this payload is interpreted as "noop" operation
 	 * 		 .. for all local proto instances
 	 */
 	u16 protocols_included;
 
-	/* Pointer to the first protocol payload.  
+	/* Pointer to the first protocol payload.
 	 *
 	 * TODO: The first value of the protocol payload must be a protocol id of type u8.
 	 * TODO: Protocols with a variable payload size (e.g. consensus lead)
 	 * must include the offset to the next protocol payload as u16 directly after the first value.
-	 * 
-	 * TODO: Check on creation if protocol fits in the payload (MAX_ASGUARD_PAYLOAD_BYTES). 
-	 * If protocol payload does not fit in the asguard payload, 
+	 *
+	 * TODO: Check on creation if protocol fits in the payload (MAX_ASGUARD_PAYLOAD_BYTES).
+	 * If protocol payload does not fit in the asguard payload,
 	 * then the protocol payload is queued to be stored in the next asguard payload.
 	 */
 	char proto_data[MAX_ASGUARD_PAYLOAD_BYTES - 1];
@@ -276,7 +272,7 @@ struct asguard_packet_data {
 
 	u8 protocol_id;
 
-	/* pacemaker MUST copy in every loop. 
+	/* pacemaker MUST copy in every loop.
 	 * Thus, we need a copy of pkt_payload to continue the copy in the pacemaker
 	 * even when a new version is currently written.
 	 *
@@ -298,7 +294,7 @@ struct asguard_packet_data {
 // 	int cqn;
 // 	void *c; /* mlx5 channel */
 
-// 	void (*asguard_post_ts)(int, uint64_t); 
+// 	void (*asguard_post_ts)(int, uint64_t);
 // 	void (*asguard_post_payload)(int, unsigned char *, void *, u32);
 // };
 
@@ -356,8 +352,8 @@ struct asguard_device {
 
 	int verbose; /* Prints more information when set to 1 during RX/TX to dmesg*/
 
-	enum asguard_rx_state rx_state; 
-	enum tsstate ts_state; 
+	enum asguard_rx_state rx_state;
+	enum tsstate ts_state;
 	enum w_state warmup_state;
 
 	struct asguard_stats *stats;
@@ -404,7 +400,7 @@ struct proto_instance {
 	u16 instance_id;
 
 	enum asguard_protocol_type proto_type;
-	
+
 	struct asguard_logger logger;
 
 	char *name;
@@ -423,7 +419,7 @@ struct sk_buff *asguard_setup_hb_packet(struct pminfo *spminfo,
 //void asguard_setup_skbs(struct pminfo *spminfo);
 void pm_state_transition_to(struct pminfo *spminfo,
 			    enum pmstate state);
-const char *pm_state_string(pmstate_t state);
+const char *pm_state_string(enum pmstate state);
 
 int asguard_pm_reset(struct pminfo *spminfo);
 int asguard_pm_stop(struct pminfo *spminfo);

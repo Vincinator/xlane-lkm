@@ -25,9 +25,7 @@ MODULE_VERSION("0.01");
 static int ifindex = -1;
 module_param(ifindex, int, 0660);
 
-
 static struct asguard_core *score;
-
 
 struct asguard_device *get_sdev(int devid)
 {
@@ -364,7 +362,7 @@ void clear_protocol_instances(struct asguard_device *sdev)
 int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 				    int protocol_id, int cluster_id)
 {
-	struct asguard_rx_table *rxt;
+	struct asguard_rx_table const *rxt;
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct asguard_pm_target_info *pmtarget;
 	int ifindex;
@@ -483,8 +481,6 @@ void asguard_stop(int asguard_id)
 static void __exit asguard_connection_core_exit(void)
 {
 	int i;
-
-
 
 	// // Stop running asguard processes
 	// for(i = 0; i < device_counter; i++)

@@ -39,7 +39,7 @@ static inline bool can_fire(uint64_t prev_time, uint64_t cur_time, uint64_t inte
 	return (cur_time - prev_time) >= interval;
 }
 
-const char *pm_state_string(pmstate_t state)
+const char *pm_state_string(enum pmstate state)
 {
 	switch (state) {
 	case ASGUARD_PM_UNINIT:
