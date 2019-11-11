@@ -7,6 +7,7 @@ EXTRA_CFLAGS += -I$(src)/common/
 
 # Core ASGUARD Components
 obj-m := core/
+obj-y += tests/core/kunit_basic_test.o
 
 # NIC Integration
 #obj-m += connection_layer/mlx5/
