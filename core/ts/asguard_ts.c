@@ -77,7 +77,7 @@ int asguard_write_timestamp(struct asguard_device *sdev,
 	struct asguard_timestamp_logs *logs;
 
 
-	if(!sdev||! sdev->stats||!sdev->stats->timestamp_logs[logid]){
+	if (!sdev||! sdev->stats||!sdev->stats->timestamp_logs[logid]) {
 		asguard_dbg("Nullptr error in %s\n", __FUNCTION__);
 		return 0;
 	}
@@ -131,7 +131,7 @@ int asguard_reset_stats(struct asguard_device *sdev)
 	int err;
 	int i;
 
-	if(sdev == NULL||sdev->stats == NULL) {
+	if (sdev == NULL||sdev->stats == NULL) {
 		asguard_error(
 			"can not clear stats, nullptr error.%s\n",
 			__FUNCTION__);
@@ -156,8 +156,8 @@ int asguard_reset_stats(struct asguard_device *sdev)
 	}
 
 	/* Reset, not free so timestamping can continue directly.*/
-	for (i = 0; i < sdev->stats->timestamp_amount; i++){
-		if(!sdev->stats->timestamp_logs[i]){
+	for (i = 0; i < sdev->stats->timestamp_amount; i++) {
+		if (!sdev->stats->timestamp_logs[i]) {
 			asguard_error( "BUG! timestamp_log index does not exist. %s\n",__FUNCTION__);
 			err = -EPERM;
 			goto error;

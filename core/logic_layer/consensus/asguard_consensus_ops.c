@@ -42,14 +42,14 @@ int consensus_init(struct proto_instance *ins)
 	priv->throughput_logger.events = kmalloc_array(MAX_THROUGPUT_LOGGER_EVENTS, sizeof(struct logger_event *), GFP_KERNEL);
 	
 
-	if(!priv->throughput_logger.events){
+	if (!priv->throughput_logger.events) {
 		asguard_dbg("Not enough memory for throughput_logger of size %d", MAX_THROUGPUT_LOGGER_EVENTS);
 		//BUG();
 	}
 
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
 	
-	if(!priv->sm_log.entries){
+	if (!priv->sm_log.entries) {
 		asguard_dbg("Not enough memory for log of size %d", MAX_CONSENSUS_LOG);
 		//BUG();
 	}
@@ -88,7 +88,7 @@ int consensus_start(struct proto_instance *ins)
 
 	asguard_dbg("consensus start\n");
 
-	if(consensus_is_alive(priv)){
+	if (consensus_is_alive(priv)) {
 		asguard_dbg("Consensus is already running!\n");
 		return 0;
 	}
@@ -114,7 +114,7 @@ int consensus_stop(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	if(!consensus_is_alive(priv))
+	if (!consensus_is_alive(priv))
 		return 0;
 	
 	asguard_dbg("consensus stop\n");
@@ -146,7 +146,7 @@ int consensus_clean(struct proto_instance *ins)
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 
-	if(consensus_is_alive(priv)){
+	if (consensus_is_alive(priv)) {
 		asguard_dbg("Consensus is running, stop it first.\n");
 		return 0;
 	}
@@ -170,9 +170,9 @@ int consensus_clean(struct proto_instance *ins)
 
 	asguard_dbg("Cleaning %d entries from sm log\n", priv->sm_log.last_idx);
 
-	if(priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
+	if (priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
 		for(i = 0; i < priv->sm_log.last_idx; i++) {
-			if(priv->sm_log.entries[i] != NULL)
+			if (priv->sm_log.entries[i] != NULL)
 				kfree(priv->sm_log.entries[i]);
 		}
 	} else {
@@ -211,24 +211,24 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 	
 	
 	
-	if(!consensus_is_alive(priv))
+	if (!consensus_is_alive(priv))
 		return 0;
 
 	// safety check during debugging and development
-	if(!ins){
+	if (!ins) {
 		asguard_dbg("proto instance is null!\n");
 		return 0;
 	}
 	
 	// safety check during debugging and development
-	if(!priv){
+	if (!priv) {
 		asguard_dbg("private consensus data is null!\n");
 		return 0;
 	}
 
 	get_cluster_ids(priv->sdev, remote_mac, &remote_lid, &rcluster_id);
 	
-	if(remote_lid == -1 || rcluster_id == -1)
+	if (remote_lid == -1 || rcluster_id == -1)
 		return -1;
 	
 
@@ -252,6 +252,6 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 int consensus_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 	       uint64_t ts)
 {
-	// if(consensus_is_alive(sdev))
+	// if (consensus_is_alive(sdev))
 	// 	return 0;
 }

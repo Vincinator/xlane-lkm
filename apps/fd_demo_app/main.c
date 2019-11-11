@@ -38,7 +38,7 @@ int asguard_ulib_setup(int ifindex) {
         size = 512;
         printf(" status %d, size %d\n", status, pagesize);
 
-        if (status < 0){
+        if (status < 0) {
                 printf(" fstat failed for file %s", name_buf);
                 return -1;
         }
@@ -57,7 +57,7 @@ int asguard_ulib_setup(int ifindex) {
 // TODO: memory protection mechanism - process can only write to its assigned memory
 //			... however, this is just a prototype to show the mechanics. 
 int asguard_update_status(int procid, uint64_t status) {
-        if (!shared_mem_page){
+        if (!shared_mem_page) {
                 printf(" Update status failed, shared mem page not available\n");
                 return -EFAULT;
         }
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     
     printf("Started Demo! Application.\n");
 
-    if (argc != 3){
+    if (argc != 3) {
     	printf("sudo ./fd_app <procid> <devid>\n");
     	return -1;
     }
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
     // Get aliveness counter;
     asguard_ulib_setup(devid);
 
-    while(running){
+    while(running) {
 
 	    if (counter >= 255)
 	    	counter = 0;

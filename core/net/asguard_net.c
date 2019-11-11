@@ -246,7 +246,7 @@ int compare_mac(unsigned char *m1, unsigned char *m2)
 	int i;
 
 	for(i = 0; i < 6; i ++)
-		if(m1[i] != m2[i])
+		if (m1[i] != m2[i])
 			return -1;
 	
 	return 0;
@@ -263,7 +263,7 @@ void get_cluster_ids(struct asguard_device *sdev, unsigned char *remote_mac, int
 
 	for(i = 0; i < spminfo->num_of_targets; i++) {
 		cur_mac = spminfo->pm_targets[i].pkt_data.naddr.dst_mac;
-		if(compare_mac(cur_mac, remote_mac) == 0){
+		if (compare_mac(cur_mac, remote_mac) == 0) {
 			*cid = spminfo->pm_targets[i].pkt_data.naddr.cluster_id;
 			*lid = i;
 			// return; // exiting here, would increase the jitter. Finish the loop..
@@ -304,7 +304,7 @@ int send_pkts(struct asguard_device *sdev, struct sk_buff **skbs, int num_pkts)
 	}
 
 	for (i = 0; i < num_pkts; i++) {
-		if(!skbs[i])
+		if (!skbs[i])
 			continue;
 		send_pkt(sdev->ndev, skbs[i]);
 	}

@@ -22,7 +22,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ftimer);
 	// struct asguard_device *sdev = priv->sdev;
 
-	if(priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
+	if (priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
 		return HRTIMER_NORESTART;
 
 	write_log(&priv->ins->logger, FOLLOWER_TIMEOUT, rdtsc());
@@ -39,7 +39,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 
 	write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
 
-	if (err){
+	if (err) {
 		asguard_dbg("Error occured during the transition to candidate role\n");
 		return HRTIMER_NORESTART;
 	}
@@ -75,7 +75,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
  		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
 	
 
- 	if(!pkt_payload_sub) {
+ 	if (!pkt_payload_sub) {
  		asguard_error("Sassy packet full! This error is not handled - not implemented\n");
  		return -1;
  	}
@@ -84,7 +84,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	
 	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
 
-	if(append_success)
+	if (append_success)
 		write_log(&ins->logger, REPLY_APPEND_SUCCESS, rdtsc());
 	else
 		write_log(&ins->logger, REPLY_APPEND_FAIL, rdtsc());
@@ -122,14 +122,14 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 
 	new_last = log->last_idx + num_entries;
 
-	if(new_last >= MAX_CONSENSUS_LOG) {
+	if (new_last >= MAX_CONSENSUS_LOG) {
 		asguard_dbg("Local log is full!\n");
 		err = -ENOMEM;
 		goto error;
 	}
 
 	// check if entries would exceed pkt
-	if((num_entries * AE_ENTRY_SIZE + ASGUARD_PROTO_CON_AE_BASE_SZ) > pkt_size) {
+	if ((num_entries * AE_ENTRY_SIZE + ASGUARD_PROTO_CON_AE_BASE_SZ) > pkt_size) {
 		err = -EINVAL;
 		asguard_dbg("Claimed num of log entries would exceed packet size!\n");
 		goto error;
@@ -137,11 +137,11 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	for(i = log->last_idx + 1; i <= new_last; i++){
+	for(i = log->last_idx + 1; i <= new_last; i++) {
  		
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
-		if(!cur_cmd){
+		if (!cur_cmd) {
 			err = -ENOMEM;
 			asguard_dbg("Out of Memory\n");
 			goto error;
@@ -154,7 +154,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		
 		err = append_command(&priv->sm_log, cur_cmd, priv->term);
 
-		if(err){
+		if (err) {
 			// kfree(cur_cmd); // free memory of failed log entry.. others from this loop (?)
 			goto error;
 		}
@@ -172,12 +172,12 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 {
 	int i;
 
-	if(log->last_idx < 0 ){
+	if (log->last_idx < 0 ) {
 		asguard_dbg("Log already empty.");
 		return;
 	}
 
-	if(start_idx > log->last_idx ){
+	if (start_idx > log->last_idx ) {
 		asguard_dbg("No Items at index of %d", start_idx);
 		return;
 	}
@@ -196,29 +196,29 @@ u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, 
 {
 	struct sm_log_entry *entry;
 
-	if(prev_log_idx == -1){
+	if (prev_log_idx == -1) {
 		asguard_dbg("prev log idx is -1\n");
 		return 0;
 	}
 
-	if(prev_log_idx < -1){
+	if (prev_log_idx < -1) {
 		asguard_dbg("prev log idx is invalid! %d\n", prev_log_idx);
 		return 1;
 	}
 
-	if(prev_log_idx > log->last_idx ){
+	if (prev_log_idx > log->last_idx ) {
 		asguard_dbg("Entry at index %d does not exist\n", prev_log_idx);
 		return 1;
 	}
 	
 	entry = log->entries[prev_log_idx];
 
-	if(entry == NULL) {
+	if (entry == NULL) {
 		asguard_dbg("BUG! Entry is NULL at index %d", prev_log_idx);
 		return 1;
 	}
 
-	if(entry->term != prev_log_term) {
+	if (entry->term != prev_log_term) {
 		asguard_dbg("prev_log_term does not match %d != %d", entry->term, prev_log_term);
 		
 		// Delete entries from prev_log_idx to last_idx
@@ -233,10 +233,10 @@ u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, 
 int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_entries_per_pkt)
 {
 
-	if(prev_log_idx > MAX_CONSENSUS_LOG)
+	if (prev_log_idx > MAX_CONSENSUS_LOG)
 		return 1;
 
-	if(pkt_size < 0 || pkt_size > ASGUARD_PROTO_CON_AE_BASE_SZ + (max_entries_per_pkt * AE_ENTRY_SIZE))
+	if (pkt_size < 0 || pkt_size > ASGUARD_PROTO_CON_AE_BASE_SZ + (max_entries_per_pkt * AE_ENTRY_SIZE))
 		return 1;
 
 	return 0;
@@ -252,7 +252,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
-	if(num_entries == 0){
+	if (num_entries == 0) {
 		// no reply if nothing to append!
 		return;
 	}
@@ -262,32 +262,32 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
 	// TODO: wait until lock is released!
-	if(priv->sm_log.lock){
+	if (priv->sm_log.lock) {
 		asguard_dbg("Too fast! sm log is still locked..\n");
 		goto reply_false;
 	}
 
 	priv->sm_log.lock = 1;
 
-	if(_check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx, priv->max_entries_per_pkt)){
+	if (_check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx, priv->max_entries_per_pkt)) {
 		asguard_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
 				  pkt_size, *prev_log_term, *prev_log_idx);
 		goto reply_false_unlock;
 	}
 
-	if(_check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)){
+	if (_check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)) {
 		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n", 
 				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
 		goto reply_false_unlock;
 	}
 
-	if(num_entries < 0 || num_entries > priv->max_entries_per_pkt){
+	if (num_entries < 0 || num_entries > priv->max_entries_per_pkt) {
 		asguard_dbg("invalid num_entries=%d\n", num_entries);
 		goto reply_false_unlock;
 	}
 
 	// append entries and if it fails, reply false
-	if(append_commands(priv, pkt, num_entries, pkt_size)){
+	if (append_commands(priv, pkt, num_entries, pkt_size)) {
 		asguard_dbg("append commands failed\n");
 		goto reply_false_unlock;
 	}
@@ -296,19 +296,19 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
 
 	// check if leader_commit_idx is out of bounds
-	if(*leader_commit_idx < -1 || *leader_commit_idx > MAX_CONSENSUS_LOG) {
+	if (*leader_commit_idx < -1 || *leader_commit_idx > MAX_CONSENSUS_LOG) {
 		asguard_dbg("Out of bounds: leader_commit_idx=%d", *leader_commit_idx);
 		goto reply_false_unlock;
 	}
 
 	// check if leader_commit_idx points to a valid entry
-	if(*leader_commit_idx > priv->sm_log.last_idx){
+	if (*leader_commit_idx > priv->sm_log.last_idx) {
 		asguard_dbg("Not referencing a valid log entry: leader_commit_idx=%d", *leader_commit_idx);
 		goto reply_false_unlock;
 	}
 
 	// Check if commit index must be updated
-	if(*leader_commit_idx > priv->sm_log.commit_idx) {
+	if (*leader_commit_idx > priv->sm_log.commit_idx) {
 		asguard_dbg("Nothing to update! leader_commit_idx=%d, priv->sm_log.commit_idx= %d", *leader_commit_idx, priv->sm_log.commit_idx);
 
 		// min(leader_commit_idx, last_idx)
@@ -347,7 +347,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 #endif
 
-	switch(opcode){
+	switch(opcode) {
 		// param1 interpreted as term 
 		// param2 interpreted as candidateID
 		// param3 interpreted as lastLogIndex of Candidate
@@ -359,7 +359,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
-	 	if(check_handle_nomination(priv, param1, param2, param3, param4)){
+	 	if (check_handle_nomination(priv, param1, param2, param3, param4)) {
 		 	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 			reset_ftimeout(ins);
 		 }
@@ -371,10 +371,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		/* Received a LEAD operation from a node with a higher term, 
 		 * thus this node is accepting the node as new leader.
 		 */
-		if(param1 > priv->term){
+		if (param1 > priv->term) {
 
 #if 1
-			if(sdev->verbose >= 2)
+			if (sdev->verbose >= 2)
 				asguard_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 #endif
 
@@ -392,11 +392,11 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 * from a node that is currently not the follower (Ignore and let 
 		 * the timeout continue to go down).
 		 */
-		else if(param1 == priv->term) {
+		else if (param1 == priv->term) {
 
-			if(priv->leader_id == remote_lid){
+			if (priv->leader_id == remote_lid) {
 #if 0
-				if(sdev->verbose >= 5)
+				if (sdev->verbose >= 5)
 					asguard_dbg("Received message from known leader term=%u\n", param1);
 #endif
 
@@ -405,7 +405,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			}else {
 #if 1
-				if(sdev->verbose >= 2)
+				if (sdev->verbose >= 2)
 					asguard_dbg("Received message from new leader term=%u\n", param1);
 #endif
 				// Ignore this LEAD message, let the ftimer continue.. because: "this is not my leader!"
@@ -416,7 +416,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 */
 		else {
 #if 1
-			if(sdev->verbose >= 2)
+			if (sdev->verbose >= 2)
 				asguard_dbg("Received APPEND from leader with lower term=%u\n", param1);
 #endif
 			// Ignore this LEAD message, let the ftimer continue. 
@@ -437,7 +437,7 @@ void init_timeout(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	if(priv->ftimer_init == 1) {
+	if (priv->ftimer_init == 1) {
 		reset_ftimeout(ins);
 		return;
 	}
@@ -488,7 +488,7 @@ int stop_follower(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	if(priv->ftimer_init == 0)
+	if (priv->ftimer_init == 0)
 		return 0;
 
 	priv->ftimer_init = 0;
@@ -504,7 +504,7 @@ int start_follower(struct proto_instance *ins)
 	
 	err = setup_le_broadcast_msg(ins, NOOP);
 
-	if(err)
+	if (err)
 		goto error;
 
 	priv->votes = 0;

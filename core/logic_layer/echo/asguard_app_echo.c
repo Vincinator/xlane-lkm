@@ -29,7 +29,7 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 	struct asguard_echo_priv *epriv; 
 	ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
 
-	if(!ins)
+	if (!ins)
 		goto error;
 
 	ins->proto_type = ASGUARD_PROTO_ECHO;
@@ -39,7 +39,7 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 	ins->logger.ifindex = sdev->ifindex;
 	ins->proto_data = kmalloc(sizeof(struct asguard_echo_priv), GFP_KERNEL);
 
-	if(!ins->proto_data)
+	if (!ins->proto_data)
 		goto error;
 
 	epriv = (struct asguard_echo_priv *)ins->proto_data;
@@ -56,8 +56,3 @@ error:
 	return NULL;
 }
 EXPORT_SYMBOL(get_echo_proto_instance);
-
-static void __exit asguard_app_echo_exit(void)
-{
-	asguard_dbg("exit\n");
-}

@@ -182,9 +182,9 @@ static ssize_t proto_le_selector_write(struct file *file,
 		return -ENODEV;
 	}
 
-	switch(new_protocol){
+	switch(new_protocol) {
 		case 0: // Stop (if initialized)
-			if(!consensus_is_alive(sdev)){
+			if (!consensus_is_alive(sdev)) {
 				asguard_dbg("Leader Election is not running\n");
 				break;
 			}
@@ -193,7 +193,7 @@ static ssize_t proto_le_selector_write(struct file *file,
 
 			break;
 		case 1: // Start (if initialized)
-			if(consensus_is_alive(sdev)){
+			if (consensus_is_alive(sdev)) {
 				asguard_dbg("Leader Election is already running\n");
 				break;
 			}
@@ -202,7 +202,7 @@ static ssize_t proto_le_selector_write(struct file *file,
 			
 			break;
 		case 2: // Reset data
-			if(consensus_is_alive(sdev))
+			if (consensus_is_alive(sdev))
 				sdev->le_proto->ctrl_ops.stop(sdev);
 			
 			sdev->le_proto->ctrl_ops.clean(sdev);

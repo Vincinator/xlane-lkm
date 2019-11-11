@@ -18,7 +18,7 @@ char *asguard_get_proto(struct asguard_payload *spay, int n)
 
 	cur_proto = spay->proto_data;
 
-	if(spay->protocols_included < n) {
+	if (spay->protocols_included < n) {
 		asguard_error("only %d protocols are included, requested %d",spay->protocols_included, n);
 		return NULL;
 	}
@@ -85,10 +85,10 @@ EXPORT_SYMBOL(asguard_reserve_proto);
 int _check_target_id(struct consensus_priv *priv, int target_id)
 {
 
-	if(target_id < 0)
+	if (target_id < 0)
 		goto error;
 
-	if(target_id > priv->sdev->pminfo.num_of_targets)
+	if (target_id > priv->sdev->pminfo.num_of_targets)
 		goto error;
 
 	return 1;
@@ -101,7 +101,7 @@ s32 _get_match_idx(struct consensus_priv *priv, int target_id)
 {
 	s32 match_index;
 
-	if(_check_target_id(priv, target_id))
+	if (_check_target_id(priv, target_id))
 		match_index = priv->sm_log.match_index[target_id];
 	else
 		match_index = -1;
@@ -113,7 +113,7 @@ s32 _get_next_idx(struct consensus_priv *priv, int target_id)
 {
 	s32 next_index;
 
-	if(_check_target_id(priv, target_id))
+	if (_check_target_id(priv, target_id))
 		next_index = priv->sm_log.next_index[target_id];
 	else
 		next_index = 0;
@@ -123,7 +123,7 @@ s32 _get_next_idx(struct consensus_priv *priv, int target_id)
 
 s32 _get_last_idx_safe(struct consensus_priv *priv)
 {
-	if(priv->sm_log.last_idx < -1)
+	if (priv->sm_log.last_idx < -1)
 		priv->sm_log.last_idx = -1; // repair last index!
 
 	return priv->sm_log.last_idx;
@@ -132,10 +132,10 @@ s32 _get_last_idx_safe(struct consensus_priv *priv)
 int _log_is_faulty(struct consensus_priv *priv) 
 {
 
-	if(!priv)
+	if (!priv)
 		return 1;
 
-	if(!priv->sm_log.entries)
+	if (!priv->sm_log.entries)
 		return 1;
 
 	//  if required add more consistency checks here..
@@ -146,23 +146,23 @@ int _log_is_faulty(struct consensus_priv *priv)
 s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 {
 
-	if(idx < 0){
+	if (idx < 0) {
 		asguard_dbg("idx < 0 %d\n", idx);
 		return 0;
 	}
 
-	if(idx > cur_priv->sm_log.last_idx){
+	if (idx > cur_priv->sm_log.last_idx) {
 		asguard_dbg("idx > cur_priv->sm_log.last_id %d\n", idx);
 
 		return -1;
 	}
 
-	if(idx > MAX_CONSENSUS_LOG){
+	if (idx > MAX_CONSENSUS_LOG) {
 		asguard_dbg("BUG! idx > MAX_CONSENSUS_LOG. %d\n", idx);
 		return -1;
 	}
 
-	if(!cur_priv->sm_log.entries[idx]){
+	if (!cur_priv->sm_log.entries[idx]) {
 		asguard_dbg("BUG! entries is null at index %d\n", idx);
 		return -1;
 	}
@@ -177,7 +177,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 	s32 num_entries = 0;
 	char *pkt_payload_sub;
 
-	// if(unlikely(_log_is_faulty(cur_priv))) {
+	// if (unlikely(_log_is_faulty(cur_priv))) {
 	// 	asguard_dbg("Log is faulty or not initialized.\n");
 	// 	return;
 	// }
@@ -186,21 +186,21 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 	cur_index = _get_last_idx_safe(cur_priv);
 	next_index = _get_next_idx(cur_priv, target_id); 
 
-	if(next_index == -1){
+	if (next_index == -1) {
 		asguard_dbg("Invalid target id resulted in invalid next_index!\n");
 		return;
 	}
 //	asguard_dbg("PREP AE: cur_index=%d, next_index=%d\n", cur_index, next_index);
 	prev_log_term = _get_prev_log_term(cur_priv, next_index - 1 );
 
-	if(prev_log_term == -1){
+	if (prev_log_term == -1) {
 		asguard_error("BUG! - prev_log_term is invalid\n");
 		return;
 	}
 
 	leader_commit_idx = cur_priv->sm_log.commit_idx;
 
-	if(cur_index >= next_index){
+	if (cur_index >= next_index) {
 		// Facts:
 		//	- cur_index >= next_index
 		//  - Must include entries in next consensus append message
@@ -226,7 +226,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 		asguard_reserve_proto(instance_id, spay,
 						ASGUARD_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
-	if(!pkt_payload_sub)
+	if (!pkt_payload_sub)
 		return;
 
 	set_ae_data(pkt_payload_sub, 
@@ -252,15 +252,15 @@ void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *
 	spay->protocols_included = 0;
 	
 	// iterate through consensus protocols and include LEAD messages if node is leader
-	for(i = 0; i < sdev->num_of_proto_instances; i++){
+	for(i = 0; i < sdev->num_of_proto_instances; i++) {
 		
-		if(sdev->protos[i] != NULL && sdev->protos[i]->proto_type == ASGUARD_PROTO_CONSENSUS){
+		if (sdev->protos[i] != NULL && sdev->protos[i]->proto_type == ASGUARD_PROTO_CONSENSUS) {
 	 		
 	 		// get corresponding local instance data for consensus
 			cur_priv = 
 				(struct consensus_priv *)sdev->protos[i]->proto_data;
 	 		
-	 		if(cur_priv->nstate != LEADER)
+	 		if (cur_priv->nstate != LEADER)
 	 			continue;
 
 	 		// TODO: optimize append calls that do not contain any log updates

@@ -60,13 +60,13 @@ int asguard_log_stop(struct asguard_logger *slog)
 {
 	int err;
 
-	if(!slog) {
+	if (!slog) {
 		asguard_error("logger is not initialized, can not stop logger.\n");
 		err = -EPERM;
 		goto error;
 	}
 
-	if (slog->state == LOGGER_UNINIT){
+	if (slog->state == LOGGER_UNINIT) {
 		err = -EPERM;
 		goto error;
 	}
@@ -82,7 +82,7 @@ int asguard_log_start(struct asguard_logger *slog)
 {
 	int err;
 
-	if(!slog) {
+	if (!slog) {
 		asguard_error("logger is not initialized, can not start logger.\n");
 		err = -EPERM;
 		goto error;
@@ -105,7 +105,7 @@ int asguard_log_reset(struct asguard_logger *slog)
 	int err;
 	int i;
 
-	if(!slog) {
+	if (!slog) {
 		asguard_error("logger is not initialized properly! Can not clear logs.\n");
 		err = -EPERM;
 		goto error;
@@ -151,7 +151,7 @@ static int asguard_log_show(struct seq_file *m, void *v)
 
 	//BUG_ON(!slog);
 
-	for (i = 0; i < slog->current_entries; i++){
+	for (i = 0; i < slog->current_entries; i++) {
 		seq_printf(m, "%d, %llu\n", 
 				slog->events[i].type, 
 				slog->events[i].timestamp_tcs);

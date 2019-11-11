@@ -82,9 +82,9 @@ void set_all_targets_dead(struct asguard_device *sdev)
 	struct pminfo *spminfo = &sdev->pminfo;
 	int i;
 
-	for(i = 0; i < spminfo->num_of_targets; i++) {
+	for (i = 0; i < spminfo->num_of_targets; i++)
 		spminfo->pm_targets[i].alive = 0;
-	}
+
 }
 EXPORT_SYMBOL(set_all_targets_dead);
 
@@ -92,15 +92,13 @@ struct proto_instance *get_proto_instance(struct asguard_device *sdev, u16 proto
 {
 	int idx;
 
-	if (unlikely(proto_id < 0 || proto_id > MAX_PROTO_INSTANCES)) {
+	if (unlikely(proto_id < 0 || proto_id > MAX_PROTO_INSTANCES))
 		return NULL;
-	}
-	
+
 	idx = sdev->instance_id_mapping[proto_id];
-	
-	if (unlikely(idx < 0 || idx >= MAX_PROTO_INSTANCES)) {
+
+	if (unlikely(idx < 0 || idx >= MAX_PROTO_INSTANCES))
 		return NULL;
-	}
 
 	return sdev->protos[idx];
 }
@@ -111,43 +109,31 @@ void _handle_sub_payloads(struct asguard_device *sdev, unsigned char *remote_mac
 	u16 cur_proto_id;
 	u16 cur_offset;
 	struct proto_instance *cur_ins;
-	
 
-	/* bcnt <= 0: 
+
+	/* bcnt <= 0:
 	 *		no payload left to handle
 	 *
 	 * instances <= 0:
 	 *		all included instances were handled
 	 */
-	if(instances <= 0 || bcnt <= 0){
+	if (instances <= 0 || bcnt <= 0)
 		return;
-	}
-
-	// if(sdev->verbose >= 3)
-	// 	asguard_dbg("recursion. instances %d bcnt %d", instances, bcnt);
 
 	cur_proto_id = GET_PROTO_TYPE_VAL(payload);
-	
-	// if(sdev->verbose >= 3)
-	// 	asguard_dbg("cur_proto_id %d", cur_proto_id);
-	
 	cur_offset = GET_PROTO_OFFSET_VAL(payload);
-	
-	// if(sdev->verbose >= 3)
-	// 	asguard_dbg("cur_offset %d", cur_offset);
-
 	cur_ins = get_proto_instance(sdev, cur_proto_id);
-	
+
 	// check if instance for the given protocol id exists
-	if(!cur_ins) {
-		if(sdev->verbose >= 3)
+	if (!cur_ins) {
+		if (sdev->verbose >= 3)
 			asguard_dbg("No instance for protocol id %d were found\n", cur_proto_id);
 	} else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
 	}
-	
+
 	// handle next payload
-	_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances -1, bcnt - cur_offset);
+	_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances - 1, bcnt - cur_offset);
 }
 
 
@@ -161,104 +147,19 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
 		return;
-	}	
-	
+	}
+
 	//asguard_dbg("Payload size: %d, state: %d %s %i", cqe_bcnt, sdev->pminfo.state, __FUNCTION__, __LINE__);
+	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
+		return;
 
-    if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
-    	return;
-
-	if(sdev->warmup_state == WARMING_UP){
-	
+	if(sdev->warmup_state == WARMING_UP)
 		get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
-		
-		if(remote_lid == -1 || rcluster_id == -1)
-			return;
 
-		if(spminfo->pm_targets[remote_lid].alive == 0){
-			spminfo->pm_targets[remote_lid].alive = 1;
-		}
-
-		// asguard_dbg("Received Message from node %d\n", rcluster_id);
-
-		// Do not start Leader Election until all targets have send a message to this node.
-		for(i = 0; i < spminfo->num_of_targets; i++)
-			if(!spminfo->pm_targets[i].alive)
-				return;
-
-		// Starting all protocols 
-		for (i = 0; i < sdev->num_of_proto_instances; i++) {
-			if (sdev->protos != NULL && sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL) {
-				asguard_dbg("starting instance %d", i);
-				sdev->protos[i]->ctrl_ops.start(sdev->protos[i]);
-			} else {
-				asguard_dbg("protocol instance %d not initialized", i);
-			}
-		}
-
-		asguard_dbg("Warmup done!\n");
-		sdev->warmup_state = WARMED_UP;
-		return;
-	}
-	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
-
-	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload),
-		received_proto_instances, cqe_bcnt);
-
-}
-EXPORT_SYMBOL(asguard_post_payload);
-
-void asguard_reset_remote_host_counter(int asguard_id)
-{
-	int i;
-	struct asguard_rx_table *rxt;
-	struct asguard_device *sdev = get_sdev(asguard_id);
-	struct asguard_pm_target_info *pmtarget;
-
-	rxt = score->rx_tables[asguard_id];
-
-	if (!rxt)
-		return;
-
-	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
-		pmtarget = &sdev->pminfo.pm_targets[i];
-
-		kfree(pmtarget->pkt_data.pkt_payload[0]);
-		kfree(pmtarget->pkt_data.pkt_payload[1]);
-		kfree(rxt->rhost_buffers[i]);
-	}
-
-	sdev->pminfo.num_of_targets = 0;
-
-	asguard_dbg("reset number of targets to 0\n");
-}
-EXPORT_SYMBOL(asguard_reset_remote_host_counter);
-
-
-/* Called by Connection Layer Glue (e.g. mlx5_con.c) */
-int asguard_core_register_nic(int ifindex,  int asguard_id)
-{
-	char name_buf[MAX_ASGUARD_PROC_NAME];
-	int i;
-
-	if(asguard_id<0||ifindex < 0){
-		asguard_error("Invalid parameter. asguard_id=%d, ifindex=%d",asguard_id, ifindex);
-		return -EINVAL;
-	}
-
-	asguard_dbg("register nic at asguard core\n");
-
-	score->rx_tables[asguard_id] =
-		kmalloc(sizeof(struct asguard_rx_table), GFP_KERNEL);
-	score->rx_tables[asguard_id]->rhost_buffers =
-		kmalloc_array(MAX_REMOTE_SOURCES,
-			      sizeof(struct asguard_rx_buffer *),
-						GFP_KERNEL);
 
 	/* Allocate each rhost ring buffer*/
 	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
 		score->rx_tables[asguard_id]->rhost_buffers[i] =
-			kmalloc(sizeof(struct asguard_rx_buffer),
 				GFP_KERNEL);
 	}
 
@@ -273,16 +174,16 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->verbose = 0;
 	score->sdevices[asguard_id]->rx_state = ASGUARD_RX_DISABLED;
 	score->sdevices[asguard_id]->ts_state = ASGUARD_TS_UNINIT;
-	
+
 	score->sdevices[asguard_id]->num_of_proto_instances = 0;
 	score->sdevices[asguard_id]->fire = 0;
 	for(i = 0; i < MAX_PROTO_INSTANCES; i ++)
 		score->sdevices[asguard_id]->instance_id_mapping[i] = -1;
 
-	score->sdevices[asguard_id]->protos = 
+	score->sdevices[asguard_id]->protos =
 				kmalloc_array(MAX_PROTO_INSTANCES, sizeof(struct proto_instance *), GFP_KERNEL);
 
-	if(!score->sdevices[asguard_id]->protos){
+	if (!score->sdevices[asguard_id]->protos) {
 		asguard_error("ERROR! Not enough memory for protocol instance array\n");
 	}
 
@@ -370,12 +271,12 @@ int asguard_validate_asguard_device(int asguard_id)
 }
 EXPORT_SYMBOL(asguard_validate_asguard_device);
 
-int register_protocol_instance(struct asguard_device *sdev, int instance_id, int protocol_id) 
+int register_protocol_instance(struct asguard_device *sdev, int instance_id, int protocol_id)
 {
 
 	int idx = sdev->num_of_proto_instances;
 	int ret;
-	
+
 
 	if (idx > MAX_PROTO_INSTANCES) {
 		ret = -EPERM;
@@ -386,21 +287,21 @@ int register_protocol_instance(struct asguard_device *sdev, int instance_id, int
 	}
 
 	sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
-	
-	if(!sdev->protos[idx]) {
+
+	if (!sdev->protos[idx]) {
 		asguard_dbg("Could not allocate memory for new protocol instance!\n");
 		ret = -ENOMEM;
 		goto error;
 	}
-	
+
 	sdev->instance_id_mapping[instance_id] = idx;
-	
+
 	sdev->protos[idx]->instance_id = instance_id;
-	
+
 	sdev->num_of_proto_instances++;
-	
+
 	sdev->protos[idx]->ctrl_ops.init(sdev->protos[idx]);
-	
+
 	return 0;
 error:
 	asguard_error("Could not register new protocol instance %d\n", ret);
@@ -411,7 +312,7 @@ void clear_protocol_instances(struct asguard_device *sdev)
 {
 	int idx, i;
 
-	if(!sdev){
+	if (!sdev) {
 		asguard_error("SDEV is NULL - can not clear instances. \n");
 		return;
 	}
@@ -422,21 +323,21 @@ void clear_protocol_instances(struct asguard_device *sdev)
 	}
 
 	// If pacemaker is running, do not clear the protocols!
-	if(sdev->pminfo.state == ASGUARD_PM_EMITTING){
+	if (sdev->pminfo.state == ASGUARD_PM_EMITTING) {
 		asguard_error("Can not clear protocol instances while pacemaker is running!\n");
 		return;
 	}
 
 	for(i = 0; i < sdev->num_of_proto_instances; i++) {
-		
+
 		asguard_dbg("Cleaning proto with id=%d\n",i);
 
-		if(!sdev->protos[i])
+		if (!sdev->protos[i])
 			continue;
 
 		asguard_dbg("protocol instance exists\n");
 
-		if(sdev->protos[i]->ctrl_ops.clean != NULL){
+		if (sdev->protos[i]->ctrl_ops.clean != NULL) {
 			asguard_dbg(" Call clean function of protocol\n");
 			sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
 			asguard_dbg(" Clean of Protocol done\n");
@@ -445,7 +346,7 @@ void clear_protocol_instances(struct asguard_device *sdev)
 
 		// timer are not finished yet!?
 		kfree(sdev->protos[i]->proto_data);
-		
+
 
 		kfree(sdev->protos[i]);
 
@@ -501,7 +402,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 
 	pmtarget->pkt_data.pkt_payload[0] =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
-		
+
 	pmtarget->pkt_data.pkt_payload[1] =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
@@ -519,14 +420,14 @@ static int __init asguard_connection_core_init(void)
 {
 	int err = -EINVAL;
 
-	if(ifindex < 0){
+	if (ifindex < 0) {
 		asguard_error("ifindex parameter is missing\n");
 		goto error;
 	}
 
 	err = register_asguard_at_nic(ifindex, asguard_post_ts, asguard_post_payload);
-	
-	if(err)
+
+	if (err)
 		goto error;
 
 	score = kmalloc(sizeof(struct asguard_core), GFP_KERNEL);
@@ -588,7 +489,7 @@ static void __exit asguard_connection_core_exit(void)
 	// // Stop running asguard processes
 	// for(i = 0; i < device_counter; i++)
 	// 	asguard_stop(i);
-	
+
 	// for (i = 0; i < device_counter; i++)
 	// 	asguard_core_remove_nic(i);
 

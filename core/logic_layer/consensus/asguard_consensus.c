@@ -61,7 +61,7 @@ const char *opcode_string(enum le_opcode opcode)
 
 int consensus_is_alive(struct consensus_priv *priv)
 {
-	if(priv->state != LE_RUNNING)
+	if (priv->state != LE_RUNNING)
 		return 0;
 
 	return 1;
@@ -71,10 +71,10 @@ EXPORT_SYMBOL(consensus_is_alive);
 void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm)
 {
 
-	if(opcode == NOOP && verbose < 4)
+	if (opcode == NOOP && verbose < 4)
 		return;
 
-	if(opcode == APPEND && verbose < 4)
+	if (opcode == APPEND && verbose < 4)
 		return;
 
 	asguard_log_le("%s, %llu, %d: %s from %d with term %d\n",
@@ -131,17 +131,17 @@ void set_ae_data(unsigned char *pkt,
 	*leader_commit_idx = in_leaderCommitIdx;
 
 	// done if there are no entries to include
-	if(num_of_entries == 0)
+	if (num_of_entries == 0)
 		return;
 
-	if(first_idx > priv->sm_log.last_idx ){
+	if (first_idx > priv->sm_log.last_idx ) {
 		asguard_error("Nothing to send, first_idx > priv->sm_log.last_idx %d, %d", first_idx, priv->sm_log.last_idx);
 		*included_entries = 0;
 		return;
 	}
 
 	//check if num_of_entries would exceed actual entries
-	if((first_idx + (num_of_entries - 1) )> priv->sm_log.last_idx){
+	if ((first_idx + (num_of_entries - 1) )> priv->sm_log.last_idx) {
 		asguard_error("BUG! can not send more entries than available... %d, %d, %d\n",
 					first_idx, num_of_entries, priv->sm_log.last_idx);
 		*included_entries = 0;
@@ -150,14 +150,14 @@ void set_ae_data(unsigned char *pkt,
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	for(i = first_idx; i < first_idx + num_of_entries; i++){
+	for(i = first_idx; i < first_idx + num_of_entries; i++) {
 		
-		if(!entries[i]){
+		if (!entries[i]) {
 			asguard_dbg("BUG! - entries at %d is null", i);
 			return;
 		}
 
-		if(!entries[i]->cmd){
+		if (!entries[i]->cmd) {
 			asguard_dbg("BUG! - entries cmd at %d is null", i);
 			return;
 		}
@@ -174,7 +174,7 @@ void set_ae_data(unsigned char *pkt,
 int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2, u32 param3, u32 param4)
 {
 
-	if(priv->term < param1) {
+	if (priv->term < param1) {
 		if (priv->voted == param1) {
 #if 1
 		asguard_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
@@ -182,19 +182,19 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 			return 0;
 		} else {		
 			// if local log is empty, just grant the vote!
-			if(priv->sm_log.last_idx == -1)
+			if (priv->sm_log.last_idx == -1)
 				return 1;
 
 			// Safety Check during development & Debugging..
-			if(priv->sm_log.entries[priv->sm_log.last_idx] == NULL){
+			if (priv->sm_log.entries[priv->sm_log.last_idx] == NULL) {
 				asguard_dbg("BUG! Log is faulty can not grant any votes. /n");
 				return 0;
 			}
 
 			// candidates log is at least as up to date as the local log!
-			if(param3 >= priv->sm_log.last_idx)
+			if (param3 >= priv->sm_log.last_idx)
 				// Terms of previous log item must match with lastLogTerm of Candidate
-				if(priv->sm_log.entries[priv->sm_log.last_idx]->term == param4)
+				if (priv->sm_log.entries[priv->sm_log.last_idx]->term == param4)
 					return 1;
 		}
 	}
@@ -244,7 +244,7 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 	ins = kmalloc (sizeof(struct proto_instance), GFP_KERNEL);
 	
 
-	if(!ins)
+	if (!ins)
 		goto error;
 	
 	ins->proto_type = ASGUARD_PROTO_CONSENSUS;

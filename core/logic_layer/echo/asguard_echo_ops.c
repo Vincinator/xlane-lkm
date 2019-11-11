@@ -6,8 +6,8 @@
 
 int echo_init(struct proto_instance *ins)
 {
-	struct asguard_echo_priv *epriv = 
-			(struct asguard_echo_priv *)ins->proto_data;
+	// struct asguard_echo_priv *epriv = 
+	// 		(struct asguard_echo_priv *)ins->proto_data;
 
 	asguard_dbg("echo init");
 
@@ -37,8 +37,8 @@ int echo_us_update(struct proto_instance *ins)
 
 int echo_clean(struct proto_instance *ins)
 {
-	struct asguard_echo_priv *epriv =
-		(struct asguard_echo_priv *)ins->proto_data;
+	// struct asguard_echo_priv *epriv =
+	// 	(struct asguard_echo_priv *)ins->proto_data;
 
 	asguard_dbg("echo clean");
 	//clear_logger(epriv);
@@ -65,7 +65,7 @@ int echo_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 	tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
 	get_cluster_ids(epriv->sdev, remote_mac, &remote_lid, &rcluster_id);
 	
-	switch(opcode){
+	switch(opcode) {
 		case ASGUARD_PING:
 			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
 			write_log(&ins->logger, LOG_ECHO_RX_PING, rdtsc());
@@ -97,8 +97,8 @@ int echo_init_payload(void *payload)
 int echo_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 		 uint64_t ts)
 {
-	struct asguard_echo_priv *epriv = 
-		(struct asguard_echo_priv *)ins->proto_data;
+	// struct asguard_echo_priv *epriv = 
+	// 	(struct asguard_echo_priv *)ins->proto_data;
 
 	asguard_dbg("SRC MAC=%pM", remote_mac);
 	asguard_dbg("echo post optimistical ts");

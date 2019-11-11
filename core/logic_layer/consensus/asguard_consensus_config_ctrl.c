@@ -46,7 +46,7 @@ static ssize_t asguard_le_config_write(struct file *file,
 
 		err = kstrtoint(input_str, 10, &tmp);
 
-		if(err) {
+		if (err) {
 			asguard_error("error converting '%s' to an integer", input_str);
 			goto error;
 		}
@@ -60,22 +60,22 @@ static ssize_t asguard_le_config_write(struct file *file,
 		} else if (state == 2) {
 			cmin_tmp = tmp;
 			state = 3;
-		} else if (state == 3){
+		} else if (state == 3) {
 			cmax_tmp = tmp;
 			state = 4;
-		}else if (state == 4){
+		}else if (state == 4) {
 			max_entries_per_pkt_tmp = tmp;
 			break;
 		} 
 	}
 
-	if(!(fmin_tmp < fmax_tmp && cmin_tmp < cmax_tmp)){
+	if (!(fmin_tmp < fmax_tmp && cmin_tmp < cmax_tmp)) {
 		asguard_error("Invalid Ranges! Must assure that fmin < fmax and cmin < cmax \n");
 		asguard_error("input order: fmin, fmax, cmin, cmax, max_entries_per_pkt_tmp  \n");
 		goto error;
 	}
 
-	if(!(max_entries_per_pkt_tmp > 0 && max_entries_per_pkt_tmp < MAX_AE_ENTRIES_PER_PKT)) {
+	if (!(max_entries_per_pkt_tmp > 0 && max_entries_per_pkt_tmp < MAX_AE_ENTRIES_PER_PKT)) {
 		asguard_error("Invalid for entries per consensus payload!\n");
 		asguard_error("Must be in (0,%d) interval!\n", MAX_AE_ENTRIES_PER_PKT);
 		goto error;

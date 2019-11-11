@@ -34,15 +34,15 @@ class build_host_task(object):
         chan.exec_command(self.task)
 
        # stdin, stdout, stderr = chan.exec_command(self.task)
-        
+
         print_info(self.user + "@" + self.target_ip + ": \n  > " + self.task)
-        
+
         for line in f.readlines():
             output= output + "  < " + line
         if output!="":
             print_success(output)
         else:
-            print("There was no output for this command")   
-              
+            print("There was no output for this command")
+
         self.ssh.close()
 

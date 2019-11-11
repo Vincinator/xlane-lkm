@@ -16,7 +16,7 @@ void initialze_indices(struct consensus_priv *priv)
 {
 	int i;
 
-	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		// initialize to leader last log index + 1
 		priv->sm_log.next_index[i] = priv->sm_log.last_idx + 1;
 		priv->sm_log.match_index[i] = 0;
@@ -31,8 +31,8 @@ int _is_potential_commit_idx(struct consensus_priv *priv, int N)
 
 	double_majority = priv->sdev->pminfo.num_of_targets + 1;
 
-	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
-		if(priv->sm_log.match_index[i] >= N) {
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
+		if (priv->sm_log.match_index[i] >= N) {
 			hits++;
 		}
 	}
@@ -43,7 +43,7 @@ void update_commit_idx(struct consensus_priv *priv)
 {
 	int N, current_N, i;
 
-	if(!priv){
+	if (!priv) {
 		asguard_error("priv is NULL!\n");
 		return;
 	}
@@ -51,24 +51,24 @@ void update_commit_idx(struct consensus_priv *priv)
 	N = priv->sm_log.match_index[0];
 
 	// each match_index is a potential new commit_idx candidate
-	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 
 		current_N = priv->sm_log.match_index[i];
 
-		if(current_N >= MAX_CONSENSUS_LOG){
+		if (current_N >= MAX_CONSENSUS_LOG) {
 			asguard_error("current_N is invalid\n");
 			return;
 		}
 
-		if(priv->sm_log.entries[current_N]->term == priv->term)
+		if (priv->sm_log.entries[current_N]->term == priv->term)
 			// majority of match_index[j] >= N and sm_log.entries[N]->term == currentTerm
-			if(_is_potential_commit_idx(priv, current_N))
-				if(current_N > N){
+			if (_is_potential_commit_idx(priv, current_N))
+				if (current_N > N) {
 					N = current_N;
 				}
 	}
 
-	if(N > priv->sm_log.commit_idx){
+	if (N > priv->sm_log.commit_idx) {
 		priv->sm_log.commit_idx = N;
 		asguard_dbg("found new commit_idx %d", N);
 
@@ -88,7 +88,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	s32 param1, param2, param3;
 	s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 	
-	switch(opcode){
+	switch(opcode) {
 	case VOTE:
 		break;
 	case NOMI:
@@ -104,7 +104,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		// check if success
 
-		if(param2 == 1){
+		if (param2 == 1) {
 			// append rpc success!
 			//asguard_dbg("Received Reply with State=success param3=%d\n",param3);
 			// update match Index for follower with <remote_lid> 
@@ -136,9 +136,9 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	case APPEND:
 		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
-		if(param1 > priv->term){
+		if (param1 > priv->term) {
 #if 1
-			if(sdev->verbose >= 2)
+			if (sdev->verbose >= 2)
 				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
 			accept_leader(ins, remote_lid, rcluster_id, param1);
@@ -147,7 +147,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		} else {
 #if 1
-			if(sdev->verbose >= 2)
+			if (sdev->verbose >= 2)
 				asguard_dbg("Received LEAD from leader with lower or equal term=%u\n", param1);
 	
 			// Ignore this LEAD message, continue to send LEAD messages 
@@ -184,7 +184,7 @@ int start_leader(struct proto_instance *ins)
 	
 	initialze_indices(priv);
 
-	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		hb_passive_ix =
 		     !!!spminfo->pm_targets[i].pkt_data.hb_active_ix;
 

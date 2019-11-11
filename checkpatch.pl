@@ -460,7 +460,7 @@ our $zero_initializer = qr{(?:(?:0[xX])?0+$Int_type?|NULL|false)\b};
 
 our $logFunctions = qr{(?x:
 	printk(?:_ratelimited|_once|_deferred_once|_deferred|)|
-	(?:[a-z0-9]+_){1,2}(?:printk|emerg|alert|crit|err|warning|warn|notice|info|debug|dbg|vdbg|devel|cont|WARN)(?:_ratelimited|_once|)|
+	(?:[a-z0-9]+_) {1,2}(?:printk|emerg|alert|crit|err|warning|warn|notice|info|debug|dbg|vdbg|devel|cont|WARN)(?:_ratelimited|_once|)|
 	TP_printk|
 	WARN(?:_RATELIMIT|_ONCE|)|
 	panic|
@@ -817,7 +817,7 @@ sub build_types {
 }
 build_types();
 
-our $Typecast	= qr{\s*(\(\s*$NonptrType\s*\)){0,1}\s*};
+our $Typecast	= qr{\s*(\(\s*$NonptrType\s*\)) {0,1}\s*};
 
 # Using $balanced_parens, $LvalOrFunc, or $FuncArg
 # requires at least perl version v5.10.0
@@ -828,7 +828,7 @@ our $LvalOrFunc	= qr{((?:[\&\*]\s*)?$Lval)\s*($balanced_parens{0,1})\s*};
 our $FuncArg = qr{$Typecast{0,1}($LvalOrFunc|$Constant|$String)};
 
 our $declaration_macros = qr{(?x:
-	(?:$Storage\s+)?(?:[A-Z_][A-Z0-9]*_){0,2}(?:DEFINE|DECLARE)(?:_[A-Z0-9]+){1,6}\s*\(|
+	(?:$Storage\s+)?(?:[A-Z_][A-Z0-9]*_) {0,2}(?:DEFINE|DECLARE)(?:_[A-Z0-9]+) {1,6}\s*\(|
 	(?:$Storage\s+)?[HLP]?LIST_HEAD\s*\(|
 	(?:$Storage\s+)?${Type}\s+uninitialized_var\s*\(|
 	(?:SKCIPHER_REQUEST|SHASH_DESC|AHASH_REQUEST)_ON_STACK\s*\(
@@ -2728,7 +2728,7 @@ sub process {
 		     $line =~ /^\s*\[\s*\d+\.\d{6,6}\s*\]/ ||
 					# timestamp
 		     $line =~ /^\s*\[\<[0-9a-fA-F]{8,}\>\]/) ||
-		     $line =~ /^(?:\s+\w+:\s+[0-9a-fA-F]+){3,3}/ ||
+		     $line =~ /^(?:\s+\w+:\s+[0-9a-fA-F]+) {3,3}/ ||
 		     $line =~ /^\s*\#\d+\s*\[[0-9a-fA-F]+\]\s*\w+ at [0-9a-fA-F]+/) {
 					# stack dump address styles
 			$commit_log_possible_stack_dump = 1;
@@ -4150,7 +4150,7 @@ sub process {
 			    $fix) {
 				fix_delete_line($fixlinenr, $rawline);
 				my $fixed_line = $rawline;
-				$fixed_line =~ /(^..*$Type\s*$Ident\(.*\)\s*){(.*)$/;
+				$fixed_line =~ /(^..*$Type\s*$Ident\(.*\)\s*) {(.*)$/;
 				my $line1 = $1;
 				my $line2 = $2;
 				fix_insert_line($fixlinenr, ltrim($line1));
@@ -4180,12 +4180,12 @@ sub process {
 		}
 
 # missing space after union, struct or enum definition
-		if ($line =~ /^.\s*(?:typedef\s+)?(enum|union|struct)(?:\s+$Ident){1,2}[=\{]/) {
+		if ($line =~ /^.\s*(?:typedef\s+)?(enum|union|struct)(?:\s+$Ident) {1,2}[=\{]/) {
 			if (WARN("SPACING",
 				 "missing space after $1 definition\n" . $herecurr) &&
 			    $fix) {
 				$fixed[$fixlinenr] =~
-				    s/^(.\s*(?:typedef\s+)?(?:enum|union|struct)(?:\s+$Ident){1,2})([=\{])/$1 $2/;
+				    s/^(.\s*(?:typedef\s+)?(?:enum|union|struct)(?:\s+$Ident) {1,2})([=\{])/$1 $2/;
 			}
 		}
 
@@ -4817,11 +4817,11 @@ sub process {
 
 # if statements using unnecessary parentheses - ie: if ((foo == bar))
 		if ($perl_version_ok &&
-		    $line =~ /\bif\s*((?:\(\s*){2,})/) {
+		    $line =~ /\bif\s*((?:\(\s*) {2,})/) {
 			my $openparens = $1;
 			my $count = $openparens =~ tr@\(@\(@;
 			my $msg = "";
-			if ($line =~ /\bif\s*(?:\(\s*){$count,$count}$LvalOrFunc\s*($Compare)\s*$LvalOrFunc(?:\s*\)){$count,$count}/) {
+			if ($line =~ /\bif\s*(?:\(\s*) {$count,$count}$LvalOrFunc\s*($Compare)\s*$LvalOrFunc(?:\s*\)) {$count,$count}/) {
 				my $comp = $4;	#Not $1 because of $LvalOrFunc
 				$msg = " - maybe == should be = ?" if ($comp eq "==");
 				WARN("UNNECESSARY_PARENTHESES",
@@ -5756,7 +5756,7 @@ sub process {
 		}
 
 # warn about #ifdefs in C files
-#		if ($line =~ /^.\s*\#\s*if(|n)def/ && ($realfile =~ /\.c$/)) {
+#		if ($line =~ /^.\s*\#\s*if (|n)def/ && ($realfile =~ /\.c$/)) {
 #			print "#ifdef in C files should be avoided\n";
 #			print "$herecurr";
 #			$clean = 0;
@@ -6331,7 +6331,7 @@ sub process {
 			if (WARN("ONE_SEMICOLON",
 				 "Statements terminations use 1 semicolon\n" . $herecurr) &&
 			    $fix) {
-				$fixed[$fixlinenr] =~ s/(\s*;\s*){2,}$/;/g;
+				$fixed[$fixlinenr] =~ s/(\s*;\s*) {2,}$/;/g;
 			}
 		}
 
@@ -6624,7 +6624,7 @@ sub process {
 				my $skip_args = "";
 				if ($arg_pos > 1) {
 					$arg_pos--;
-					$skip_args = "(?:\\s*$FuncArg\\s*,\\s*){$arg_pos,$arg_pos}";
+					$skip_args = "(?:\\s*$FuncArg\\s*,\\s*) {$arg_pos,$arg_pos}";
 				}
 				my $test = "\\b$func\\s*\\(${skip_args}($FuncArg(?:\\|\\s*$FuncArg)*)\\s*[,\\)]";
 				if ($stat =~ /$test/) {

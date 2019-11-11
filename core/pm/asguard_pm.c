@@ -228,7 +228,7 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 
 	// Stopping all protocols 
 	for(i = 0; i < sdev->num_of_proto_instances; i++)
-		if(sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL)
+		if (sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL)
 			sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
 
 }
@@ -296,7 +296,7 @@ static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 
 	ktime_t currtime, interval;
 
-	if (!asguard_pacemaker_is_alive(spminfo)){
+	if (!asguard_pacemaker_is_alive(spminfo)) {
 		return HRTIMER_NORESTART;
 	}
 

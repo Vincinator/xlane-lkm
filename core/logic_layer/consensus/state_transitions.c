@@ -45,7 +45,7 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 	pkt_payload_sub = 
  		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
 
- 	if(!pkt_payload_sub) {
+ 	if (!pkt_payload_sub) {
  		asguard_error("Sassy packet full! This error is not handled - not implemented\n");
  		return -1;
  	}
@@ -69,12 +69,12 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 	s32 last_log_idx = priv->sm_log.last_idx;
 	s32 last_log_term;
 
-	if(priv->sm_log.last_idx == -1)
+	if (priv->sm_log.last_idx == -1)
 		last_log_term = priv->term;
 	else
 		last_log_term = priv->sm_log.entries[priv->sm_log.last_idx]->term;
 
-	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		setup_le_msg(ins, &priv->sdev->pminfo, opcode, (u32) i, term, candidate_id, last_log_idx, last_log_term);
 	}
 	return 0;
@@ -117,7 +117,7 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 	priv->votes = 0; // start with 0 votes on every transition
 	
 	// Stop old timeouts 
-	switch(state){
+	switch(state) {
 		case FOLLOWER:
 			stop_follower(ins);
 			break;

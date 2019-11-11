@@ -31,7 +31,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	struct asguard_device *sdev = priv->sdev;
 	ktime_t timeout;
 
-	if(priv->ctimer_init == 0 || priv->nstate != CANDIDATE)
+	if (priv->ctimer_init == 0 || priv->nstate != CANDIDATE)
 		return HRTIMER_NORESTART;
 
 	priv->c_retries++;
@@ -45,7 +45,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	 * Option 3: Unreachable, retry only manually - shutdown leader election.
 	 *
 	 */
-	if(priv->c_retries >= CANDIDATURE_RETRY_LIMIT){
+	if (priv->c_retries >= CANDIDATURE_RETRY_LIMIT) {
 #if 1
 		asguard_log_le("%s, %llu, %d: reached maximum of candidature retries\n",
 			nstate_string(priv->nstate),
@@ -112,7 +112,7 @@ void init_ctimeout(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 	
-	if(priv->ctimer_init == 1) {
+	if (priv->ctimer_init == 1) {
 		reset_ctimeout(ins);
 		return;
 	}
@@ -206,7 +206,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 #if 1
 	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
 #endif
-	switch(opcode){
+	switch(opcode) {
 	case VOTE:
 		accept_vote(ins, remote_lid, pkt);
 		break;
@@ -221,7 +221,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
-		if(check_handle_nomination(priv, param1, param2, param3, param4)){
+		if (check_handle_nomination(priv, param1, param2, param3, param4)) {
 		  	node_transition(ins, FOLLOWER);
 		  	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}
@@ -232,10 +232,10 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	case APPEND:
 		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
-		if(param1 >= priv->term){
+		if (param1 >= priv->term) {
 
 #if 1
-			if(sdev->verbose >= 2)
+			if (sdev->verbose >= 2)
 				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
 			accept_leader(ins, remote_lid, rcluster_id, param1);
@@ -244,7 +244,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		} else {
 #if 1
 
-			if(sdev->verbose >= 2)
+			if (sdev->verbose >= 2)
 				asguard_dbg("Received LEAD from leader with lower term=%u\n", param1);
 #endif
 			// Ignore this LEAD message, continue to wait for votes 
@@ -265,7 +265,7 @@ int stop_candidate(struct proto_instance *ins)
 	struct consensus_priv *priv = 
 		(struct consensus_priv *)ins->proto_data;
 
-	if(priv->ctimer_init == 0)
+	if (priv->ctimer_init == 0)
 		return 0;
 
 	priv->ctimer_init = 0;

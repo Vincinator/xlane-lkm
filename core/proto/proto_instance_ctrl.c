@@ -64,10 +64,10 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 			err = kstrtoint(input_str, 10, &instance_id);
 			
 
-			if(err)
+			if (err)
 				goto error;
 
-			if(instance_id == -1) {
+			if (instance_id == -1) {
 				
 				// clear all existing protocols and exit
 				clear_protocol_instances(sdev);
@@ -81,13 +81,13 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 		} else if (state == 1) {
 			err = kstrtoint(input_str, 10, &protocol_id);
 
-			if(err)
+			if (err)
 				goto error;
 			
 			err = register_protocol_instance(sdev, instance_id, protocol_id);
 			
 
-			if(err)
+			if (err)
 				goto error;
 
 		} 
@@ -114,7 +114,7 @@ static int proto_instance_ctrl_show(struct seq_file *m, void *v)
 	seq_printf(m, "Total Instances: %d\n", sdev->num_of_proto_instances);
 
 	for (i = 0; i < sdev->num_of_proto_instances; i++) {
-		if(!sdev->protos[i]) {
+		if (!sdev->protos[i]) {
 			asguard_dbg("Proto init error detected! proto with idx %d\n", i);
 			continue;
 		}

@@ -39,13 +39,13 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
 	err = 0;
 	u32 rand_value, rand_id;
 
-	for(i = 0; i < MAX_CONSENSUS_LOG; i++){
+	for(i = 0; i < MAX_CONSENSUS_LOG; i++) {
 
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
-		if(!cur_cmd){
+		if (!cur_cmd) {
 			err = -ENOMEM;
 			goto error;
 		}
@@ -53,7 +53,7 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
 		cur_cmd->sm_logvar_value = rand_value;
 		err = append_command(&priv->sm_log, cur_cmd, priv->term);
 		
-		if(err)
+		if (err)
 			goto error;
 	}
 
@@ -88,19 +88,19 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	interval = ktime_set(1, 0);
 	hrtimer_forward(timer, currtime, interval);
 
-	if(priv->nstate != LEADER)
+	if (priv->nstate != LEADER)
 		return HRTIMER_RESTART; // nothing to do, node is not a leader.
 
 	asguard_dbg("Incoming Client requests.. \n");
 	
 	// write x random entries to local log (if node is leader)
-	for(i = 0; i < test_data->x; i++){
+	for(i = 0; i < test_data->x; i++) {
 
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
-		if(!cur_cmd){
+		if (!cur_cmd) {
 			err = -ENOMEM;
 			goto error;
 		}
@@ -109,7 +109,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 		err = append_command(&priv->sm_log, cur_cmd, priv->term);
 		write_log(&priv->ins->logger, CONSENSUS_REQUEST, rdtsc());
 
-		if(err)
+		if (err)
 			goto error;
 	}
 
@@ -144,7 +144,7 @@ void testcase_X_requests_per_sec(struct consensus_priv *priv, int x)
 	priv->test_data.priv = priv;
 	priv->test_data.x = x;
 
-	if(x < 0)  {
+	if (x < 0)  {
 		asguard_dbg("Invalid Input \n");
 		return;
 	}

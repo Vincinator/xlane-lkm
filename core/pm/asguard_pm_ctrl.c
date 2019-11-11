@@ -198,7 +198,7 @@ static ssize_t asguard_hbi_write(struct file *file,
 		goto error;
 	}
 
-	if( new_hbi < MIN_HB_CYCLES || new_hbi > MAX_HB_CYCLES){
+	if ( new_hbi < MIN_HB_CYCLES || new_hbi > MAX_HB_CYCLES) {
 		asguard_error("Invalid heartbeat interval! range is %d to %d, but got %ld",
 					 MIN_HB_CYCLES, MAX_HB_CYCLES, new_hbi);
 		err = -EINVAL;
@@ -414,11 +414,11 @@ static ssize_t asguard_target_write(struct file *file,
 
 		
 			state = 3;
-		} else if (state == 3){
+		} else if (state == 3) {
 			err = kstrtoint(input_str, 10, &cluster_id);
 
 
-			if(is_ip_local(sdev->ndev, current_ip)){
+			if (is_ip_local(sdev->ndev, current_ip)) {
 				sdev->cluster_id = cluster_id;
 			} else {
 				asguard_core_register_remote_host(sdev->asguard_id,
@@ -427,7 +427,7 @@ static ssize_t asguard_target_write(struct file *file,
 				i++;
 			}
 			state = 0;
-			if(current_mac)
+			if (current_mac)
 				kfree(current_mac);
 		}
 	}

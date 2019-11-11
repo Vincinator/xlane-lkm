@@ -21,7 +21,7 @@ ASGUARD_MODULES_WORKING_DIR = $(shell pwd)
 all:
 	rm -Rf build
 	mkdir build
-	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) CFLAGS+=${CFLAGS} modules
+	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) modules
 	cp core/asguard.ko build/
 
 clean:

@@ -33,7 +33,7 @@ struct proto_instance *get_fd_proto_instance(struct asguard_device *sdev)
 
 	ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
 
-	if(!ins)
+	if (!ins)
 		goto error;
 
 	ins->proto_type = ASGUARD_PROTO_FD;
