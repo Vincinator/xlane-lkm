@@ -52,6 +52,9 @@ FOREACH(i RANGE ${count})
     ADD_TEST(${test_name} ${test_name})
 ENDFOREACH()
 
+add_custom_target(check ${CMAKE_COMMAND} -E env CTEST_OUTPUT_ON_FAILURE=1
+                  ${CMAKE_CTEST_COMMAND} -C $<CONFIG> --verbose
+                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # ADD_EXECUTABLE(almost-calc-sum ${SOURCES})
 
