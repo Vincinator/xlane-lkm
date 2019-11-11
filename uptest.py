@@ -45,6 +45,15 @@ def compile(warnings):
         cur_task = build_host_task(build_host_ip, build_host_user, priv_key_path, t)
         cur_task.run()
 
+def test():
+    tasks = [
+        "cd asguard-test-src && git pull",
+        "export ASGUARD_KERNEL_SRC=~/asguard-kernel-src && cd asguard-test-src/tests && cmake . && make && make check",
+    ]
+
+    for t in tasks:
+        cur_task = build_host_task(build_host_ip, build_host_user, priv_key_path, t)
+        cur_task.run()
 
 def main():
     setup_logger("uptest.log")
@@ -52,7 +61,10 @@ def main():
 
     parser.add_argument('--compile', choices=['errors', 'warnings'],
                         help='Compile asguard on build server and print output')
-  
+
+    parser.add_argument('--test', choices=['all', 'consensus'],
+                        help='Runs UnitTests on remote build server')
+
     parser.add_argument('--upload', type=str,
                         help='Create a new commit and push to GitHub')
 
@@ -67,6 +79,10 @@ def main():
             compile(False)
         if args.compile == 'warnings':
             compile(True)
+
+    if args.test is not None:
+        if args.test == 'consensus' or args.test == 'all':
+            test()
 
     if show_help:
         parser.print_help()

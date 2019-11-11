@@ -49,7 +49,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 
 void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remote_lid, int rcluster_id, int param1, int append_success, u32 logged_idx)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 	struct asguard_payload *pkt_payload;
 	char *pkt_payload_sub;
@@ -71,9 +71,9 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	pkt_payload =
      	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
 
-	pkt_payload_sub = 
+	pkt_payload_sub =
  		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
-	
+
 
  	if (!pkt_payload_sub) {
  		asguard_error("Sassy packet full! This error is not handled - not implemented\n");
@@ -81,7 +81,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
  	}
 
 	set_le_opcode((unsigned char*)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx, 0);
-	
+
 	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
 
 	if (append_success)
@@ -92,7 +92,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 }
 void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32 param1, s32 param2)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 #if 1
 
@@ -138,7 +138,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
 	for(i = log->last_idx + 1; i <= new_last; i++) {
- 		
+
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
 		if (!cur_cmd) {
@@ -151,7 +151,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		cur_ptr++;
 		cur_cmd->sm_logvar_value = *cur_ptr;
 		cur_ptr++;
-		
+
 		err = append_command(&priv->sm_log, cur_cmd, priv->term);
 
 		if (err) {
@@ -168,7 +168,7 @@ error:
 	return err;
 }
 
-void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx) 
+void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx)
 {
 	int i;
 
@@ -188,11 +188,10 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 
 	log->last_idx = start_idx - 1;
 
-
 }
 
 
-u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, s32 prev_log_idx) 
+u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, s32 prev_log_idx)
 {
 	struct sm_log_entry *entry;
 
@@ -210,7 +209,7 @@ u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, 
 		asguard_dbg("Entry at index %d does not exist\n", prev_log_idx);
 		return 1;
 	}
-	
+
 	entry = log->entries[prev_log_idx];
 
 	if (entry == NULL) {
@@ -220,13 +219,13 @@ u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, 
 
 	if (entry->term != prev_log_term) {
 		asguard_dbg("prev_log_term does not match %d != %d", entry->term, prev_log_term);
-		
+
 		// Delete entries from prev_log_idx to last_idx
 		remove_from_log_until_last(log, prev_log_idx);
 		return 1;
 	}
 
-	return 0; 
+	return 0;
 }
 
 
@@ -241,6 +240,7 @@ int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max
 
 	return 0;
 }
+EXPORT_SYMBOL(_check_append_rpc);
 
 void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id)
 {
@@ -276,7 +276,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	}
 
 	if (_check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)) {
-		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n", 
+		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
 				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
 		goto reply_false_unlock;
 	}
@@ -335,10 +335,10 @@ reply_false:
 
 int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 	struct asguard_device *sdev = priv->sdev;
-	
+
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
 
@@ -348,13 +348,13 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 #endif
 
 	switch(opcode) {
-		// param1 interpreted as term 
+		// param1 interpreted as term
 		// param2 interpreted as candidateID
 		// param3 interpreted as lastLogIndex of Candidate
 		// param4 interpreted as lastLogTerm of Candidate
 	case VOTE:
 		break;
-	case NOMI:	
+	case NOMI:
 	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
@@ -363,12 +363,12 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 			reset_ftimeout(ins);
 		 }
-		break;	
+		break;
 	case NOOP:
 		break;
 	case APPEND:
 	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-		/* Received a LEAD operation from a node with a higher term, 
+		/* Received a LEAD operation from a node with a higher term,
 		 * thus this node is accepting the node as new leader.
 		 */
 		if (param1 > priv->term) {
@@ -384,12 +384,12 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
-		} 
+		}
 
 		/* Received a LEAD operation from a node with the same term,
-		 * thus, this node has to check whether it is already following 
-		 * that node (continue to follow), or if it is a LEAD operation 
-		 * from a node that is currently not the follower (Ignore and let 
+		 * thus, this node has to check whether it is already following
+		 * that node (continue to follow), or if it is a LEAD operation
+		 * from a node that is currently not the follower (Ignore and let
 		 * the timeout continue to go down).
 		 */
 		else if (param1 == priv->term) {
@@ -419,7 +419,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received APPEND from leader with lower term=%u\n", param1);
 #endif
-			// Ignore this LEAD message, let the ftimer continue. 
+			// Ignore this LEAD message, let the ftimer continue.
 		}
 		break;
 	default:
@@ -433,8 +433,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 void init_timeout(struct proto_instance *ins)
 {
 	int ftime_ns;
-	ktime_t timeout;	
-	struct consensus_priv *priv = 
+	ktime_t timeout;
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
 	if (priv->ftimer_init == 1) {
@@ -448,7 +448,7 @@ void init_timeout(struct proto_instance *ins)
 	priv->ftimer_init = 1;
 
 	priv->ftimer.function = &_handle_follower_timeout;
-	
+
 	priv->accu_rand = timeout; // first rand timeout of this follower
 
 #if 0
@@ -465,7 +465,7 @@ void init_timeout(struct proto_instance *ins)
 void reset_ftimeout(struct proto_instance *ins)
 {
 	ktime_t timeout;
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
 	 timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
@@ -473,7 +473,7 @@ void reset_ftimeout(struct proto_instance *ins)
 	 hrtimer_cancel(&priv->ftimer);
 	 hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
 	 hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
-	
+
 #if 0
 	asguard_log_le("%s, %llu, %d: reset follower timeout occured.\n",
 			nstate_string(priv->nstate),
@@ -485,7 +485,7 @@ void reset_ftimeout(struct proto_instance *ins)
 
 int stop_follower(struct proto_instance *ins)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
 	if (priv->ftimer_init == 0)
@@ -499,9 +499,9 @@ int stop_follower(struct proto_instance *ins)
 int start_follower(struct proto_instance *ins)
 {
 	int err;
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 			(struct consensus_priv *)ins->proto_data;
-	
+
 	err = setup_le_broadcast_msg(ins, NOOP);
 
 	if (err)

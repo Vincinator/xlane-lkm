@@ -4,3 +4,12 @@
 *.o
 .cache.mk
 *.symvers
+*.log
+Testing/
+CMakeFiles/
+*.cmake
+__pycache__/
+.vscode/
+CMakeCache.txt
+hello_world
+test_follower

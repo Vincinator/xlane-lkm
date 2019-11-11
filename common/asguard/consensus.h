@@ -30,8 +30,8 @@ enum le_state {
  * then the follower transitions to candidate state.
  *
  * A candidate proposes itself to all other nodes as new leader.
- * Other followers vote for the candidate if they did not vote for any other 
- * candidate in the same term yet. 
+ * Other followers vote for the candidate if they did not vote for any other
+ * candidate in the same term yet.
  *
  * Once elected, the candidate becomes the new leader and sends heartbeats to all followers.
  *
@@ -59,9 +59,9 @@ struct sm_log_entry {
 	/* The command for the state machine.
 	 * Contains the required information to change the state machine.
 	 *
-	 * A ordered set of commands applied to the state machine will 
+	 * A ordered set of commands applied to the state machine will
 	 * transition the state machine to a common state (shared across the cluster).
-	 */ 
+	 */
 	struct sm_command *cmd;
 };
 
@@ -78,7 +78,7 @@ struct state_machine_cmd_log {
 	 */
 	s32 last_idx;
 
-	/* Index of the last commited entry in the entries array 
+	/* Index of the last commited entry in the entries array
 	 */
 	s32 commit_idx;
 
@@ -122,7 +122,7 @@ struct consensus_priv {
 
 	u32 node_id;
 
-	/* index of array is node_id, 
+	/* index of array is node_id,
 	 * value at index of array is index to pm_targets
 	 */
 	int cluster_mapping[MAX_NODE_ID];
@@ -132,7 +132,7 @@ struct consensus_priv {
 	uint64_t accu_rand;
 
 	/* last term this node has voted in. Initialized with -1*/
-	u32 voted; 
+	u32 voted;
 
 	u32 started_log;
 
@@ -176,13 +176,13 @@ ktime_t get_rnd_timeout_candidate_plus(int plus);
 
 void set_le_opcode(unsigned char *pkt, enum le_opcode opcode, s32 p1, s32 p2, s32 p3, s32 p4);
 
-void set_ae_data(unsigned char *pkt, 
-				 s32 in_term, 
+void set_ae_data(unsigned char *pkt,
+				 s32 in_term,
 				 s32 in_leaderid,
 				 s32 in_prevLogIndex,
 				 s32 in_prevLogTerm,
 				 s32 in_leaderCommitIdx,
-				 struct consensus_priv *priv, 
+				 struct consensus_priv *priv,
 				 s32 num_of_entries);
 
 
@@ -207,5 +207,6 @@ void remove_eval_ctrl_interfaces(struct consensus_priv *priv);
 
 
 int consensus_is_alive(struct consensus_priv *sdev);
+int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_entries_per_pkt);
 
 #endif /* _ASGUARD_CONSENSUS_H_ */

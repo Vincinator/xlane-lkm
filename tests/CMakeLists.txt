@@ -16,6 +16,11 @@ LIST(APPEND tests_names "hello_world")
 LIST(APPEND tests_flags " ")
 LIST(APPEND tests_categories "core")
 
+LIST(APPEND tests_names "test_follower")
+LIST(APPEND tests_flags " ")
+LIST(APPEND tests_categories "raft")
+
+
 # LIST(APPEND tests_names "tests_processes")
 # LIST(APPEND tests_flags "-Wl,--wrap,popen -Wl,--wrap,fgets -Wl,--wrap,pclose")
 
@@ -36,7 +41,7 @@ FOREACH(i RANGE ${count})
 
     ADD_EXECUTABLE(${test_name} ${test_cat}/${test_name}.c)
     FIND_PACKAGE(CMOCKA REQUIRED)
-    INCLUDE_DIRECTORIES(${LIBCMOCKA_INCLUDE_DIR})
+    INCLUDE_DIRECTORIES(${LIBCMOCKA_INCLUDE_DIR} ../common/)
     TARGET_LINK_LIBRARIES(
         ${test_name}
         ${LIBCMOCKA_LIBRARIES}
