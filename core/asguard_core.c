@@ -11,7 +11,6 @@
 #include <asguard/asguard.h>
 #include <asguard_con/asguard_con.h>
 
-
 #include <asguard/logger.h>
 #include <asguard/payload_helper.h>
 
@@ -26,7 +25,9 @@ MODULE_VERSION("0.01");
 static int ifindex = -1;
 module_param(ifindex, int, 0660);
 
+
 static struct asguard_core *score;
+
 
 struct asguard_device *get_sdev(int devid)
 {
@@ -81,9 +82,9 @@ void set_all_targets_dead(struct asguard_device *sdev)
 	struct pminfo *spminfo = &sdev->pminfo;
 	int i;
 
-	for (i = 0; i < spminfo->num_of_targets; i++)
+	for(i = 0; i < spminfo->num_of_targets; i++) {
 		spminfo->pm_targets[i].alive = 0;
-
+	}
 }
 EXPORT_SYMBOL(set_all_targets_dead);
 
@@ -91,13 +92,15 @@ struct proto_instance *get_proto_instance(struct asguard_device *sdev, u16 proto
 {
 	int idx;
 
-	if (unlikely(proto_id < 0 || proto_id > MAX_PROTO_INSTANCES))
+	if (unlikely(proto_id < 0 || proto_id > MAX_PROTO_INSTANCES)) {
 		return NULL;
+	}
 
 	idx = sdev->instance_id_mapping[proto_id];
 
-	if (unlikely(idx < 0 || idx >= MAX_PROTO_INSTANCES))
+	if (unlikely(idx < 0 || idx >= MAX_PROTO_INSTANCES)) {
 		return NULL;
+	}
 
 	return sdev->protos[idx];
 }
@@ -116,24 +119,37 @@ void _handle_sub_payloads(struct asguard_device *sdev, unsigned char *remote_mac
 	 * instances <= 0:
 	 *		all included instances were handled
 	 */
-	if (instances <= 0 || bcnt <= 0)
+	if(instances <= 0 || bcnt <= 0){
 		return;
+	}
+
+	// if(sdev->verbose >= 3)
+	// 	asguard_dbg("recursion. instances %d bcnt %d", instances, bcnt);
 
 	cur_proto_id = GET_PROTO_TYPE_VAL(payload);
+
+	// if(sdev->verbose >= 3)
+	// 	asguard_dbg("cur_proto_id %d", cur_proto_id);
+
 	cur_offset = GET_PROTO_OFFSET_VAL(payload);
+
+	// if(sdev->verbose >= 3)
+	// 	asguard_dbg("cur_offset %d", cur_offset);
+
 	cur_ins = get_proto_instance(sdev, cur_proto_id);
 
 	// check if instance for the given protocol id exists
-	if (!cur_ins) {
-		if (sdev->verbose >= 3)
+	if(!cur_ins) {
+		if(sdev->verbose >= 3)
 			asguard_dbg("No instance for protocol id %d were found\n", cur_proto_id);
 	} else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
 	}
 
 	// handle next payload
-	_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances - 1, bcnt - cur_offset);
+	_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances -1, bcnt - cur_offset);
 }
+
 
 void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
 {
@@ -191,7 +207,6 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 }
 EXPORT_SYMBOL(asguard_post_payload);
-
 
 void asguard_reset_remote_host_counter(int asguard_id)
 {
@@ -372,7 +387,7 @@ int register_protocol_instance(struct asguard_device *sdev, int instance_id, int
 
 	sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
 
-	if (!sdev->protos[idx]) {
+	if(!sdev->protos[idx]) {
 		asguard_dbg("Could not allocate memory for new protocol instance!\n");
 		ret = -ENOMEM;
 		goto error;
@@ -396,7 +411,7 @@ void clear_protocol_instances(struct asguard_device *sdev)
 {
 	int idx, i;
 
-	if (!sdev) {
+	if(!sdev){
 		asguard_error("SDEV is NULL - can not clear instances. \n");
 		return;
 	}
@@ -407,7 +422,7 @@ void clear_protocol_instances(struct asguard_device *sdev)
 	}
 
 	// If pacemaker is running, do not clear the protocols!
-	if (sdev->pminfo.state == ASGUARD_PM_EMITTING) {
+	if(sdev->pminfo.state == ASGUARD_PM_EMITTING){
 		asguard_error("Can not clear protocol instances while pacemaker is running!\n");
 		return;
 	}
@@ -416,12 +431,12 @@ void clear_protocol_instances(struct asguard_device *sdev)
 
 		asguard_dbg("Cleaning proto with id=%d\n",i);
 
-		if (!sdev->protos[i])
+		if(!sdev->protos[i])
 			continue;
 
 		asguard_dbg("protocol instance exists\n");
 
-		if (sdev->protos[i]->ctrl_ops.clean != NULL) {
+		if(sdev->protos[i]->ctrl_ops.clean != NULL){
 			asguard_dbg(" Call clean function of protocol\n");
 			sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
 			asguard_dbg(" Clean of Protocol done\n");
@@ -448,7 +463,7 @@ void clear_protocol_instances(struct asguard_device *sdev)
 int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 				    int protocol_id, int cluster_id)
 {
-	struct asguard_rx_table const *rxt;
+	struct asguard_rx_table *rxt;
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct asguard_pm_target_info *pmtarget;
 	int ifindex;
@@ -504,14 +519,14 @@ static int __init asguard_connection_core_init(void)
 {
 	int err = -EINVAL;
 
-	if (ifindex < 0) {
+	if(ifindex < 0){
 		asguard_error("ifindex parameter is missing\n");
 		goto error;
 	}
 
 	err = register_asguard_at_nic(ifindex, asguard_post_ts, asguard_post_payload);
 
-	if (err)
+	if(err)
 		goto error;
 
 	score = kmalloc(sizeof(struct asguard_core), GFP_KERNEL);
@@ -568,6 +583,8 @@ static void __exit asguard_connection_core_exit(void)
 {
 	int i;
 
+
+
 	// // Stop running asguard processes
 	// for(i = 0; i < device_counter; i++)
 	// 	asguard_stop(i);
@@ -585,4 +602,3 @@ static void __exit asguard_connection_core_exit(void)
 
 module_init(asguard_connection_core_init);
 module_exit(asguard_connection_core_exit);
-
