@@ -23,7 +23,6 @@ all:
 	mkdir build
 	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) modules
 	cp core/asguard.ko build/
-	cp logic_layer/consensus/asguard_consensus.ko build/
 
 clean:
 	rm -Rf build
