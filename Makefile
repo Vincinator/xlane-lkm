@@ -14,7 +14,7 @@ obj-m := core/
 # In-Kernel Applications
 #obj-m += logic_layer/fd/
 #obj-m += logic_layer/echo/
-obj-m += logic_layer/consensus/
+#obj-m += logic_layer/consensus/
 
 ASGUARD_MODULES_WORKING_DIR = $(shell pwd)
 
