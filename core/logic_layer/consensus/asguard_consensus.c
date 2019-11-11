@@ -39,6 +39,8 @@ const char *nstate_string(enum node_state state)
 		return "Unknown State ";
 	}
 }
+EXPORT_SYMBOL(nstate_string);
+
 const char *opcode_string(enum le_opcode opcode)
 {
 	switch (opcode) {
@@ -59,7 +61,6 @@ const char *opcode_string(enum le_opcode opcode)
 
 int consensus_is_alive(struct consensus_priv *priv)
 {
-
 	if(priv->state != LE_RUNNING)
 		return 0;
 
@@ -90,6 +91,7 @@ ktime_t get_rnd_timeout(int min, int max)
 	return ktime_set(0, min +
 			prandom_u32_max(max - min));
 }
+EXPORT_SYMBOL(get_rnd_timeout);
 
 void set_ae_data(unsigned char *pkt, 
 				 s32 in_term, 
@@ -197,6 +199,7 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 		}
 	}
 }
+EXPORT_SYMBOL(check_handle_nomination);
 
 void set_le_opcode(unsigned char *pkt, enum le_opcode opco, s32 p1, s32 p2, s32 p3, s32 p4)
 {
