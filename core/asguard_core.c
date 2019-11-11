@@ -158,7 +158,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	/* Allocate each rhost ring buffer*/
 	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
 		score->rx_tables[asguard_id]->rhost_buffers[i] =
-				GFP_KERNEL);
+			kmalloc(sizeof(struct asguard_rx_buffer), GFP_KERNEL);
 	}
 
 	score->sdevices[asguard_id] =
