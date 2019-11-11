@@ -34,10 +34,10 @@ struct proto_instance *generate_protocol_instance(struct asguard_device *sdev, i
 	switch(proto_type)
 	{
 		case ASGUARD_PROTO_FD:
-			sproto = get_fd_proto_instance(sdev);
+			// sproto = get_fd_proto_instance(sdev);
 			break;
 		case ASGUARD_PROTO_ECHO:
-			sproto = get_echo_proto_instance(sdev);
+			//sproto = get_echo_proto_instance(sdev);
 			break;
 		case ASGUARD_PROTO_CONSENSUS:
 			

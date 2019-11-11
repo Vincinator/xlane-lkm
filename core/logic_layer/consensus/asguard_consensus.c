@@ -16,11 +16,6 @@
 #include "include/asguard_consensus_ops.h"
 #include <asguard/consensus.h>
 
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Distributed Systems Group");
-MODULE_DESCRIPTION("ASGUARD consensus");
-MODULE_VERSION("0.01");
-
 // Default Values for timeouts
 #define MIN_FTIMEOUT_NS 10000000
 #define MAX_FTIMEOUT_NS 20000000
@@ -238,13 +233,6 @@ static const struct asguard_protocol_ctrl_ops consensus_ops = {
 	.us_update = consensus_us_update,
 };
 
-
-static int __init asguard_consensus_init(void)
-{
-	asguard_dbg("init consensus protocol\n");
-	return 0;
-}
-
 struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 {
 	struct consensus_priv *cpriv;
@@ -289,11 +277,3 @@ error:
 }
 EXPORT_SYMBOL(get_consensus_proto_instance);
 
-static void __exit asguard_consensus_exit(void)
-{
-	
-	asguard_dbg("exit consensus protocol\n");
-}
-
-module_init(asguard_consensus_init);
-module_exit(asguard_consensus_exit);

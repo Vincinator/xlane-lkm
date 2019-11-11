@@ -28,4 +28,3 @@ all:
 clean:
 	rm -Rf build
 	make -C $(ASGUARD_KERNEL_SRC) M="." clean
-

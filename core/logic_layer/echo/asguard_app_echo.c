@@ -8,11 +8,6 @@
 #include "include/asguard_echo_ops.h"
 #include "include/asguard_echo.h"
 
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Distributed Systems Group");
-MODULE_DESCRIPTION("ASGUARD app echo");
-MODULE_VERSION("0.01");
-
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][PROTO][ECHO]"
 
@@ -27,12 +22,6 @@ static const struct asguard_protocol_ctrl_ops echo_ops = {
 	.init_payload = echo_init_payload,
 
 };
-
-static int __init asguard_app_echo_init(void)
-{
-	asguard_dbg("init\n");
-	return 0;
-}
 
 struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 {
@@ -72,7 +61,3 @@ static void __exit asguard_app_echo_exit(void)
 {
 	asguard_dbg("exit\n");
 }
-
-module_init(asguard_app_echo_init);
-module_exit(asguard_app_echo_exit);
-

@@ -8,11 +8,6 @@
 #include "include/asguard_fd_ops.h"
 #include "include/asguard_fd.h"
 
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Distributed Systems Group");
-MODULE_DESCRIPTION("ASGUARD app failure detector");
-MODULE_VERSION("0.01");
-
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][PROTOCOL][FD]"
 
@@ -30,12 +25,6 @@ static const struct asguard_protocol_ctrl_ops fd_ops = {
 	.us_update = fd_us_update,
 
 };
-
-static int __init asguard_fd_init(void)
-{
-
-	return 0;
-}
 
 struct proto_instance *get_fd_proto_instance(struct asguard_device *sdev)
 {
@@ -66,12 +55,3 @@ error:
 	return NULL;
 }
 EXPORT_SYMBOL(get_fd_proto_instance);
-
-static void __exit asguard_fd_exit(void)
-{
-	
-	asguard_dbg("exit\n");
-}
-
-module_init(asguard_fd_init);
-module_exit(asguard_fd_exit);
