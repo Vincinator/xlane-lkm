@@ -10,7 +10,7 @@
 static void test_become_follower(void **state) {
     (void) state; /* unused */
 
-    _check_append_rpc(10, 1, 1, 23);
+    check_append_rpc(10, 1, 1, 23);
 
 }
 /* A test case that does nothing and succeeds. */

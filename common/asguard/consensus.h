@@ -207,6 +207,6 @@ void remove_eval_ctrl_interfaces(struct consensus_priv *priv);
 
 
 int consensus_is_alive(struct consensus_priv *sdev);
-int _check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_entries_per_pkt);
+int check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_entries_per_pkt);
 
 #endif /* _ASGUARD_CONSENSUS_H_ */
