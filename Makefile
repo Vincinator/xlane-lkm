@@ -39,6 +39,6 @@ EXTRA_CFLAGS += -I$(src)/common/
 
 # Core ASGUARD Components
 obj-m := core/
-obj-m += tests/raft/kunit_follower.o
+obj-$(CONFIG_ASGUARD_FOLLOWER_TEST) += tests/raft/kunit_follower.o
 
 endif
