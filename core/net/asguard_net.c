@@ -32,6 +32,7 @@ void asguard_hex_to_ip(char *retval, u32 dst_ip)
 		((dst_ip & 0x000000ff)));
 }
 
+#ifndef CONFIG_KUNIT
 struct net_device *asguard_get_netdevice(int ifindex)
 {
 	struct net_device *ndev = NULL;
@@ -49,7 +50,13 @@ struct net_device *asguard_get_netdevice(int ifindex)
 	return NULL;
 }
 EXPORT_SYMBOL(asguard_get_netdevice);
-
+#else
+struct net_device *asguard_get_netdevice(int ifindex)
+{
+	return NULL;
+}
+EXPORT_SYMBOL(asguard_get_netdevice);
+#endif
 /*
  * Converts an IP address from dotted numbers string to hex.
  */
@@ -89,6 +96,7 @@ unsigned char *asguard_convert_mac(const char *str)
 }
 EXPORT_SYMBOL(asguard_convert_mac);
 
+#ifndef CONFIG_KUNIT
 inline struct sk_buff *prepare_heartbeat_skb(struct net_device *dev)
 {
 	uint16_t skb_size = ASGUARD_PAYLOAD_BYTES + LL_RESERVED_SPACE(dev);
@@ -111,6 +119,12 @@ inline struct sk_buff *prepare_heartbeat_skb(struct net_device *dev)
 
 	return skb;
 }
+#else
+inline struct sk_buff *prepare_heartbeat_skb(struct net_device *dev)
+{
+	return NULL;
+}
+#endif
 
 inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
 {
@@ -234,7 +248,7 @@ struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr
 		       ASGUARD_PAYLOAD_BYTES, 0);
 
 	asguard_dbg("Composed packet\n");
-#endif 
+#endif
 
 	return nomination_pkt;
 }
@@ -248,7 +262,7 @@ int compare_mac(unsigned char *m1, unsigned char *m2)
 	for(i = 0; i < 6; i ++)
 		if (m1[i] != m2[i])
 			return -1;
-	
+
 	return 0;
 }
 
@@ -257,7 +271,7 @@ void get_cluster_ids(struct asguard_device *sdev, unsigned char *remote_mac, int
 	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
 	unsigned char *cur_mac = NULL;
-	
+
 	*lid = -1;
 	*cid = -1;
 
