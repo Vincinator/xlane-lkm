@@ -47,15 +47,12 @@ FOREACH(i RANGE ${count})
 
     ADD_EXECUTABLE(${test_name} ${test_cat}/${test_name}.c)
     FIND_PACKAGE(CMOCKA REQUIRED)
-    INCLUDE_DIRECTORIES(${LIBCMOCKA_INCLUDE_DIR} ../common/
-                $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/
+    INCLUDE_DIRECTORIES(${LIBCMOCKA_INCLUDE_DIR}
+                $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include
+                $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/generated
                 $ENV{ASGUARD_KERNEL_SRC}/include/
-                $ENV{ASGUARD_KERNEL_SRC}/include/generated/
-                $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/asm/
-                $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/generated/
-                $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/generated/asm/
-                $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/generated/uapi
-                $ENV{ASGUARD_KERNEL_SRC}/arch/x86/
+                $ENV{ASGUARD_KERNEL_SRC}/net/asguard_drv/common/
+                ../common/
                 )
     TARGET_LINK_LIBRARIES(
         ${test_name}
