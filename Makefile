@@ -1,3 +1,6 @@
+ifeq ($(KERNELRELEASE),)
+
+
 ifndef ASGUARD_KERNEL_SRC
 $(error ASGUARD_KERNEL_SRC is not set)
 endif
@@ -28,3 +31,12 @@ all:
 clean:
 	rm -Rf build
 	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) clean
+
+else
+
+EXTRA_CFLAGS += -I$(src)/common/
+
+# Core ASGUARD Components
+obj-m := core/
+
+endif

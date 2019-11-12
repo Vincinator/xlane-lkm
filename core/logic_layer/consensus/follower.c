@@ -137,7 +137,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	for(i = log->last_idx + 1; i <= new_last; i++) {
+	for (i = log->last_idx + 1; i <= new_last; i++) {
 
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
@@ -172,19 +172,18 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 {
 	int i;
 
-	if (log->last_idx < 0 ) {
+	if (log->last_idx < 0) {
 		asguard_dbg("Log already empty.");
 		return;
 	}
 
-	if (start_idx > log->last_idx ) {
+	if (start_idx > log->last_idx) {
 		asguard_dbg("No Items at index of %d", start_idx);
 		return;
 	}
 
-	for(i = start_idx; i <= log->last_idx; i++) {
+	for (i = start_idx; i <= log->last_idx; i++)
 		kfree(log->entries[i]);
-	}
 
 	log->last_idx = start_idx - 1;
 
@@ -205,7 +204,7 @@ u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, 
 		return 1;
 	}
 
-	if (prev_log_idx > log->last_idx ) {
+	if (prev_log_idx > log->last_idx) {
 		asguard_dbg("Entry at index %d does not exist\n", prev_log_idx);
 		return 1;
 	}

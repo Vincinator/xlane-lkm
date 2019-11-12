@@ -1,5 +1,11 @@
 #include <kunit/test.h>
 
+
+int misc_example_add(int left, int right)
+{
+        return left + right;
+}
+
 /* Define the test cases. */
 
 static void misc_example_add_test_basic(struct kunit *test)
