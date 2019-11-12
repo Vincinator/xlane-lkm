@@ -231,7 +231,7 @@ u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, 
 int check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_entries_per_pkt)
 {
 
-	if (prev_log_idx > MAX_CONSENSUS_LOG)
+	if (prev_log_idx >= MAX_CONSENSUS_LOG)
 		return 1;
 
 	if (pkt_size < 0 || pkt_size > ASGUARD_PROTO_CON_AE_BASE_SZ + (max_entries_per_pkt * AE_ENTRY_SIZE))
