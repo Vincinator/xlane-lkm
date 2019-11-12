@@ -51,6 +51,7 @@ FOREACH(i RANGE ${count})
                 $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include
                 $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/generated
                 $ENV{ASGUARD_KERNEL_SRC}/include/
+                $ENV{ASGUARD_KERNEL_SRC}/usr/include/
                 $ENV{ASGUARD_KERNEL_SRC}/net/asguard_drv/common/
                 ../common/
                 )
