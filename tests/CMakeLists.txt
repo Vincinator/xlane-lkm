@@ -56,8 +56,6 @@ FOREACH(i RANGE ${count})
                 $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/generated/asm/
                 $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/generated/uapi
                 $ENV{ASGUARD_KERNEL_SRC}/arch/x86/
-                $ENV{ASGUARD_KERNEL_SRC}/include/uapi/asm-generic
-
                 )
     TARGET_LINK_LIBRARIES(
         ${test_name}
