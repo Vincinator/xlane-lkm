@@ -93,13 +93,13 @@ ktime_t get_rnd_timeout(int min, int max)
 }
 EXPORT_SYMBOL(get_rnd_timeout);
 
-void set_ae_data(unsigned char *pkt, 
-				 s32 in_term, 
+void set_ae_data(unsigned char *pkt,
+				 s32 in_term,
 				 s32 in_leader_id,
 				 s32 first_idx,
 				 s32 in_prevLogTerm,
 				 s32 in_leaderCommitIdx,
-				 struct consensus_priv *priv, 
+				 struct consensus_priv *priv,
 				 s32 num_of_entries)
 {
 	struct sm_log_entry **entries = priv->sm_log.entries;
@@ -151,7 +151,7 @@ void set_ae_data(unsigned char *pkt,
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
 	for(i = first_idx; i < first_idx + num_of_entries; i++) {
-		
+
 		if (!entries[i]) {
 			asguard_dbg("BUG! - entries at %d is null", i);
 			return;
@@ -178,9 +178,9 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 		if (priv->voted == param1) {
 #if 1
 		asguard_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
-#endif	
+#endif
 			return 0;
-		} else {		
+		} else {
 			// if local log is empty, just grant the vote!
 			if (priv->sm_log.last_idx == -1)
 				return 1;
@@ -215,7 +215,7 @@ void set_le_opcode(unsigned char *pkt, enum le_opcode opco, s32 p1, s32 p2, s32 
 
 	param2 = GET_CON_PROTO_PARAM2_PTR(pkt);
 	*param2 = (s32) p2;
-	
+
 	param3 = GET_CON_PROTO_PARAM3_PTR(pkt);
 	*param3 = (s32) p3;
 
@@ -242,11 +242,11 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 	struct proto_instance *ins;
 
 	ins = kmalloc (sizeof(struct proto_instance), GFP_KERNEL);
-	
+
 
 	if (!ins)
 		goto error;
-	
+
 	ins->proto_type = ASGUARD_PROTO_CONSENSUS;
 	ins->ctrl_ops = consensus_ops;
 	ins->name = "consensus";
@@ -262,7 +262,7 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 
 
 	ins->proto_data = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
-	
+
 	cpriv = (struct consensus_priv *)ins->proto_data;
 	cpriv->state = LE_UNINIT;
 	cpriv->ft_min = MIN_FTIMEOUT_NS;
@@ -272,7 +272,7 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 	cpriv->max_entries_per_pkt = MAX_AE_ENTRIES_PER_PKT;
 	cpriv->sdev = sdev;
 	cpriv->ins = ins;
-	
+
 	return ins;
 error:
 	asguard_dbg("Error in %s", __FUNCTION__);
