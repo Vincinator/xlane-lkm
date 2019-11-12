@@ -7,3 +7,7 @@ menuconfig ASGUARD
 	default y
 	help
 	  This enables the network submodule ASGUARD
+
+config ASGUARD_FOLLOWER_TEST
+        bool "Follower test"
+        depends on ASGUARD && KUNIT
