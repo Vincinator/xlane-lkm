@@ -25,8 +25,6 @@ static void asguard_test_check_append_rpc(struct kunit *test)
 
 }
 
-
-
 static struct kunit_case asguard_raft_follower_test_cases[] = {
     KUNIT_CASE(asguard_test_check_append_rpc),
     {}
@@ -34,6 +32,21 @@ static struct kunit_case asguard_raft_follower_test_cases[] = {
 
 static struct kunit_suite asguard_raft_follower_test_suite = {
     .name = "asguard_raft_follower",
+    .test_cases = asguard_raft_follower_test_cases,
+};
+
+int asguard_raft_follower_init(struct kunit *test){
+
+}
+
+void asguard_raft_follower_exit(struct kunit *test){
+
+}
+
+static struct kunit_suite asguard_raft_follower_test_suite = {
+    .name = "asguard_raft_follower",
+    .init = asguard_raft_follower_init,
+    .exit = asguard_raft_follower_exit,
     .test_cases = asguard_raft_follower_test_cases,
 };
 kunit_test_suite(asguard_raft_follower_test_suite);
