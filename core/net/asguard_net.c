@@ -312,6 +312,7 @@ void get_cluster_ids(struct asguard_device *sdev, unsigned char *remote_mac, int
 	}
 }
 
+#ifndef CONFIG_KUNIT
 void send_pkt(struct net_device *ndev, struct sk_buff *skb)
 {
 	int ret;
@@ -332,7 +333,13 @@ unlock:
 	HARD_TX_UNLOCK(ndev, txq);
 }
 EXPORT_SYMBOL(send_pkt);
+#else
+void send_pkt(struct net_device *ndev, struct sk_buff *skb)
+{
 
+}
+EXPORT_SYMBOL(send_pkt);
+#endif
 
 int send_pkts(struct asguard_device *sdev, struct sk_buff **skbs, int num_pkts)
 {

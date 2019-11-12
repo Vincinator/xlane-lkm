@@ -74,7 +74,7 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 	// BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
-		
+
 		hb_active_ix =
 		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
 
@@ -139,7 +139,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 	}
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
- 
+
 		// Always update payload to avoid jitter!
 		hb_active_ix =
 		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
@@ -165,12 +165,12 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		// 	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
 		// 	asguard_write_timestamp(sdev, 4, ktime_get(), i);
 		// }
-		
+
 
 		// Protocols have been emitted, do not sent them again ..
 		// .. and free the reservations for new protocols
 		invalidate_proto_data(sdev, pkt_payload, i);
-		
+
 
 	}
 	return 0;
@@ -226,24 +226,25 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 
 	put_cpu();
 
-	// Stopping all protocols 
+	// Stopping all protocols
 	for(i = 0; i < sdev->num_of_proto_instances; i++)
 		if (sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL)
 			sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
 
 }
 
+#ifndef CONFIG_KUNIT
 static int asguard_pm_loop(void *data)
 {
 	uint64_t prev_time, cur_time;
 	struct asguard_device *sdev = (struct asguard_device *) data;
 	struct pminfo *spminfo = &sdev->pminfo;
-	uint64_t interval = spminfo->hbi;	
+	uint64_t interval = spminfo->hbi;
 	unsigned long flags;
 	int err;
 
 	__prepare_pm_loop(sdev, spminfo);
-	
+
 	prev_time = RDTSC_ASGUARD;
 
 	while (asguard_pacemaker_is_alive(spminfo)) {
@@ -259,7 +260,7 @@ static int asguard_pm_loop(void *data)
 		sdev->fire = !sdev->fire;
 
 		prev_time = cur_time;
-		
+
 		local_irq_save(flags);
 		local_bh_disable();
 
@@ -274,7 +275,7 @@ static int asguard_pm_loop(void *data)
 
 		local_bh_enable();
 		local_irq_restore(flags);
-	
+
 		// if (sdev->ts_state == ASGUARD_TS_RUNNING)
 		// 	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, 42);
 
@@ -284,7 +285,14 @@ static int asguard_pm_loop(void *data)
 
 	return 0;
 }
+#else
+static int asguard_pm_loop(void *data)
+{
 
+}
+#endif
+
+#ifndef CONFIG_KUNIT
 static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 {
 	unsigned long flags;
@@ -319,6 +327,12 @@ static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 	put_cpu();
 	return HRTIMER_RESTART;
 }
+#else
+static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
+{
+
+}
+#endif
 
 int asguard_pm_start_timer(void *data)
 {
