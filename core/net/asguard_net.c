@@ -126,6 +126,7 @@ inline struct sk_buff *prepare_heartbeat_skb(struct net_device *dev)
 }
 #endif
 
+#ifndef CONFIG_KUNIT
 inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
 {
 	struct ethhdr *eth = NULL;
@@ -143,7 +144,13 @@ inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
 	memcpy(eth->h_source, src_mac, ETH_ALEN);
 	memcpy(eth->h_dest, dst_mac, ETH_ALEN);
 }
+#else
+inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
+{
+}
+#endif
 
+#ifndef CONFIG_KUNIT
 inline void add_L3_header(struct sk_buff *skb, u32 src_ip, u32 dst_ip)
 {
 	struct iphdr *ipv4 = NULL;
@@ -174,7 +181,14 @@ inline void add_L3_header(struct sk_buff *skb, u32 src_ip, u32 dst_ip)
 	skb_set_transport_header(skb,
 				 sizeof(struct ethhdr) + sizeof(struct iphdr));
 }
+#else
+inline void add_L3_header(struct sk_buff *skb, u32 src_ip, u32 dst_ip)
+{
 
+}
+#endif
+
+#ifndef CONFIG_KUNIT
 inline void add_L4_header(struct sk_buff *skb)
 {
 	struct udphdr *udp = NULL;
@@ -188,7 +202,14 @@ inline void add_L4_header(struct sk_buff *skb)
 		udp->check = 0;
 	}
 }
+#else
+inline void add_L4_header(struct sk_buff *skb)
+{
 
+}
+#endif
+
+#ifndef CONFIG_KUNIT
 inline void add_payload(struct sk_buff *skb, struct asguard_payload *payload)
 {
 	void *data = (void *)skb_put(skb, ASGUARD_PAYLOAD_BYTES);
@@ -204,6 +225,12 @@ inline void add_payload(struct sk_buff *skb, struct asguard_payload *payload)
 //	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1, data,
 //		       ASGUARD_PAYLOAD_BYTES, 0);
 }
+#else
+inline void add_payload(struct sk_buff *skb, struct asguard_payload *payload)
+{
+
+}
+#endif
 
 int is_ip_local(struct net_device *dev,	u32 ip_addr)
 {
