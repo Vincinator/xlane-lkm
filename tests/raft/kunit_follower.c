@@ -1,5 +1,7 @@
 #include <kunit/test.h>
 #include <asguard/consensus.h>
+#include <asguard/asguard.h>
+#include <asguard/logger.h>
 
 
 static void asguard_test_check_append_rpc(struct kunit *test)

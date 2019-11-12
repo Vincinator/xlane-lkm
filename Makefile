@@ -10,8 +10,8 @@ EXTRA_CFLAGS += -I$(src)/common/
 
 # Core ASGUARD Components
 obj-m := core/
-obj-y += tests/core/kunit_basic_test.o
-obj-y += tests/raft/kunit_follower.o
+obj-m += tests/core/kunit_basic_test.o
+obj-m += tests/raft/kunit_follower.o
 
 # NIC Integration
 #obj-m += connection_layer/mlx5/
@@ -39,5 +39,6 @@ EXTRA_CFLAGS += -I$(src)/common/
 
 # Core ASGUARD Components
 obj-m := core/
+obj-m += tests/raft/kunit_follower.o
 
 endif
