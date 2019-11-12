@@ -50,7 +50,6 @@ FOREACH(i RANGE ${count})
     INCLUDE_DIRECTORIES(${LIBCMOCKA_INCLUDE_DIR} ../common/
                 $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/
                 $ENV{ASGUARD_KERNEL_SRC}/include/
-                $ENV{ASGUARD_KERNEL_SRC}/include_headers/include/
                 $ENV{ASGUARD_KERNEL_SRC}/include/generated/
                 $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/asm/
                 $ENV{ASGUARD_KERNEL_SRC}/arch/x86/include/generated/
