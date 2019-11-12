@@ -38,7 +38,7 @@ else
 EXTRA_CFLAGS += -I$(src)/../common/
 
 
-obj-m := asguard.o
+obj-$(CONFIG_ASGUARD_MODULE) := asguard.o
 
 asguard-objs := asguard_core.o asguard_core_ctrl.o
 asguard-objs += event_logger/event_logger.o event_logger/event_logger_ctrl.o
