@@ -87,7 +87,7 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u
 #if 1
 	asguard_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
 			nstate_string(priv->nstate),
-			rdtsc(),
+			RDTSC_ASGUARD,
 			priv->term,
 			cluster_id,
 			term);
@@ -148,7 +148,7 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 #if 1
 	asguard_log_le("%s, %llu, %d: transition to state %s\n",
 				nstate_string(priv->nstate),
-				rdtsc(),
+				RDTSC_ASGUARD,
 				priv->term,
 				nstate_string(state));
 #endif

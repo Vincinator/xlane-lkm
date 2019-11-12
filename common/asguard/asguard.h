@@ -1,6 +1,13 @@
 #ifndef _ASGUARD_H_
 #define _ASGUARD_H_
 
+#ifndef CONFIG_KUNIT
+#define RDTSC_ASGUARD rdtsc()
+#else
+#define RDTSC_ASGUARD 0
+#endif
+
+
 #include <linux/list.h>
 #include <linux/spinlock_types.h>
 
@@ -13,6 +20,7 @@
 #define MAX_ASGUARD_PROC_NAME 256
 
 #define MAX_PROCFS_BUF 512
+
 
 
 #define ASGUARD_TARGETS_BUF 512

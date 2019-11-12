@@ -22,7 +22,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
 	applying = log->commit_idx - log->last_applied;
 
 
-	write_log(&priv->throughput_logger, applying, rdtsc());
+	write_log(&priv->throughput_logger, applying, RDTSC_ASGUARD);
 
 //	asguard_dbg("Added %d commands to State Machine. \n", applying);
 

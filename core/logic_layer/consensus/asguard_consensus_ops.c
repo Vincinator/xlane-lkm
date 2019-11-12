@@ -15,7 +15,7 @@
 
 int consensus_init(struct proto_instance *ins)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
@@ -40,7 +40,7 @@ int consensus_init(struct proto_instance *ins)
 	priv->throughput_logger.name = "consensus_throughput";
 
 	priv->throughput_logger.events = kmalloc_array(MAX_THROUGPUT_LOGGER_EVENTS, sizeof(struct logger_event *), GFP_KERNEL);
-	
+
 
 	if (!priv->throughput_logger.events) {
 		asguard_dbg("Not enough memory for throughput_logger of size %d", MAX_THROUGPUT_LOGGER_EVENTS);
@@ -48,28 +48,28 @@ int consensus_init(struct proto_instance *ins)
 	}
 
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
-	
+
 	if (!priv->sm_log.entries) {
 		asguard_dbg("Not enough memory for log of size %d", MAX_CONSENSUS_LOG);
 		//BUG();
 	}
 
-	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d", 
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
 			 priv->sdev->ifindex, ins->instance_id);
-	
-	proc_mkdir(name_buf, NULL);	
+
+	proc_mkdir(name_buf, NULL);
 
 	// requires "proto_instances/%d"
 	init_le_config_ctrl_interfaces(priv);
-	
+
 	// requires "proto_instances/%d"
 	init_eval_ctrl_interfaces(priv);
-	
+
 	// requires "proto_instances/%d"
 	init_logger(&ins->logger);
 
 	init_logger(&priv->throughput_logger);
-	
+
 	return 0;
 }
 
@@ -83,7 +83,7 @@ int consensus_start(struct proto_instance *ins)
 {
 	int err;
 
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
 	asguard_dbg("consensus start\n");
@@ -97,11 +97,11 @@ int consensus_start(struct proto_instance *ins)
 
 	err = node_transition(ins, FOLLOWER);
 
-	write_log(&ins->logger, START_CONSENSUS, rdtsc());
+	write_log(&ins->logger, START_CONSENSUS, RDTSC_ASGUARD);
 
 	if (err)
 		goto error;
-	
+
 	return 0;
 
 error:
@@ -111,12 +111,12 @@ error:
 
 int consensus_stop(struct proto_instance *ins)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
 	if (!consensus_is_alive(priv))
 		return 0;
-	
+
 	asguard_dbg("consensus stop\n");
 
 	switch(priv->nstate) {
@@ -134,13 +134,13 @@ int consensus_stop(struct proto_instance *ins)
 	le_state_transition_to(priv, LE_READY);
 
 	set_all_targets_dead(priv->sdev);
-	
+
 	return 0;
 }
 
 int consensus_clean(struct proto_instance *ins)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 	u32 i;
 	char name_buf[MAX_ASGUARD_PROC_NAME];
@@ -163,10 +163,10 @@ int consensus_clean(struct proto_instance *ins)
 
 	clear_logger(&priv->throughput_logger);
 
-	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d", 
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
 		 priv->sdev->ifindex, ins->instance_id);
-	
-	remove_proc_entry(name_buf, NULL);	
+
+	remove_proc_entry(name_buf, NULL);
 
 	asguard_dbg("Cleaning %d entries from sm log\n", priv->sm_log.last_idx);
 
@@ -203,14 +203,14 @@ int consensus_us_update(struct proto_instance *ins, void *payload)
 int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 		    void *payload)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 	int remote_lid, rcluster_id;
 	int err, i;
 	struct pminfo *spminfo = &priv->sdev->pminfo;
-	
-	
-	
+
+
+
 	if (!consensus_is_alive(priv))
 		return 0;
 
@@ -219,7 +219,7 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 		asguard_dbg("proto instance is null!\n");
 		return 0;
 	}
-	
+
 	// safety check during debugging and development
 	if (!priv) {
 		asguard_dbg("private consensus data is null!\n");
@@ -227,10 +227,10 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 	}
 
 	get_cluster_ids(priv->sdev, remote_mac, &remote_lid, &rcluster_id);
-	
+
 	if (remote_lid == -1 || rcluster_id == -1)
 		return -1;
-	
+
 
 	switch (priv->nstate) {
 	case FOLLOWER:

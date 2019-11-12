@@ -25,19 +25,19 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	if (priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
 		return HRTIMER_NORESTART;
 
-	write_log(&priv->ins->logger, FOLLOWER_TIMEOUT, rdtsc());
+	write_log(&priv->ins->logger, FOLLOWER_TIMEOUT, RDTSC_ASGUARD);
 
 #if 1
 
 	asguard_log_le("%s, %llu, %d: Follower timer timed out\n",
 			nstate_string(priv->nstate),
-			rdtsc(),
+			RDTSC_ASGUARD,
 			priv->term);
 #endif
 
 	err = node_transition(priv->ins, CANDIDATE);
 
-	write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, rdtsc());
+	write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, RDTSC_ASGUARD);
 
 	if (err) {
 		asguard_dbg("Error occured during the transition to candidate role\n");
@@ -58,7 +58,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 #if 1
 	asguard_log_le("%s, %llu, %d: REPLY APPEND append_success=%d, param1=%d,logged_idx=%d \n",
 			nstate_string(priv->nstate),
-			rdtsc(),
+			RDTSC_ASGUARD,
 			priv->term,
 			append_success,
 			param1,
@@ -85,9 +85,9 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
 
 	if (append_success)
-		write_log(&ins->logger, REPLY_APPEND_SUCCESS, rdtsc());
+		write_log(&ins->logger, REPLY_APPEND_SUCCESS, RDTSC_ASGUARD);
 	else
-		write_log(&ins->logger, REPLY_APPEND_FAIL, rdtsc());
+		write_log(&ins->logger, REPLY_APPEND_FAIL, RDTSC_ASGUARD);
 
 }
 void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32 param1, s32 param2)
@@ -98,7 +98,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 
 	asguard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
 			nstate_string(priv->nstate),
-			rdtsc(),
+			RDTSC_ASGUARD,
 			priv->term,
 			rcluster_id,
 			param1);
@@ -108,7 +108,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 	priv->voted = param1;
 	priv->sdev->fire = 1;
 
-	write_log(&ins->logger, VOTE_FOR_CANDIDATE, rdtsc());
+	write_log(&ins->logger, VOTE_FOR_CANDIDATE, RDTSC_ASGUARD);
 
 }
 
@@ -343,7 +343,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 
 #if 1
-	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
+	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
 #endif
 
 	switch(opcode) {
@@ -378,7 +378,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 #endif
 
 			accept_leader(ins, remote_lid, rcluster_id, param1);
-			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, rdtsc());
+			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 			reset_ftimeout(ins);
 
 			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
@@ -453,7 +453,7 @@ void init_timeout(struct proto_instance *ins)
 #if 0
 	asguard_log_le("%s, %llu, %d: Init follower timeout to %lld ms. \n",
 		nstate_string(priv->nstate),
-		rdtsc(),
+		RDTSC_ASGUARD,
 		priv->term,
 		ktime_to_ms(timeout));
 #endif
@@ -476,7 +476,7 @@ void reset_ftimeout(struct proto_instance *ins)
 #if 0
 	asguard_log_le("%s, %llu, %d: reset follower timeout occured.\n",
 			nstate_string(priv->nstate),
-			rdtsc(),
+			RDTSC_ASGUARD,
 			priv->term,
 			ktime_to_ms(timeout));
 #endif

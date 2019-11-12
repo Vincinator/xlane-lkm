@@ -35,7 +35,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 		return HRTIMER_NORESTART;
 
 	priv->c_retries++;
-	write_log(&priv->ins->logger, CANDIDATE_TIMEOUT, rdtsc());
+	write_log(&priv->ins->logger, CANDIDATE_TIMEOUT, RDTSC_ASGUARD);
 	
 	/* The candidate can not get a majority from the cluster.
 	 * Probably less than the required majority of nodes are alive. 
@@ -49,7 +49,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 #if 1
 		asguard_log_le("%s, %llu, %d: reached maximum of candidature retries\n",
 			nstate_string(priv->nstate),
-			rdtsc());
+			RDTSC_ASGUARD);
 #endif
 		// (Option 1)
 		//node_transition(sdev, FOLLOWER);
@@ -72,7 +72,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 #if 1
 	asguard_log_le("%s, %llu, %d: Restart candidate timer with %lld ms timeout - Candidature retry %d.\n",
 			nstate_string(priv->nstate),
-			rdtsc(),
+			RDTSC_ASGUARD,
 			priv->term,
 			ktime_to_ms(timeout),
 			priv->c_retries);
@@ -97,7 +97,7 @@ void reset_ctimeout(struct proto_instance *ins)
 #if 1
 	asguard_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
 			nstate_string(priv->nstate),
-			rdtsc(),
+			RDTSC_ASGUARD,
 			priv->term,
 			ktime_to_ms(timeout));
 #endif
@@ -128,7 +128,7 @@ void init_ctimeout(struct proto_instance *ins)
 #if 1
 	asguard_log_le("%s, %llu, %d: Init Candidate timeout to %lld ms.\n",
 		nstate_string(priv->nstate),
-		rdtsc(),
+		RDTSC_ASGUARD,
 		priv->term,
 		 ktime_to_ms(timeout));
 #endif
@@ -161,20 +161,20 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 #if 1
 	asguard_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
 					nstate_string(priv->nstate),
-					rdtsc(),
+					RDTSC_ASGUARD,
 					priv->term,
 					priv->votes,
 					priv->sdev->pminfo.num_of_targets + 1);
 #endif
 
-	write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, rdtsc());
+	write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, RDTSC_ASGUARD);
 
 	if (priv->votes * 2 >= (priv->sdev->pminfo.num_of_targets + 1)) {
 
 #if 1
 		asguard_log_le("%s, %llu, %d: got majority with %d from %d possible votes \n",
 				nstate_string(priv->nstate),
-				rdtsc(),
+				RDTSC_ASGUARD,
 				priv->term,
 				priv->votes,
 				priv->sdev->pminfo.num_of_targets);
@@ -182,7 +182,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 
 		// DEBUG: Check if Leader code has an issue..
 		err = node_transition(ins, LEADER);
-		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, rdtsc());
+		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, RDTSC_ASGUARD);
 		priv->accu_rand = 0;
 
 		if (err) {
@@ -204,7 +204,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
 #if 1
-	log_le_rx(sdev->verbose, priv->nstate, rdtsc(), priv->term, opcode, rcluster_id, param1);
+	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
 #endif
 	switch(opcode) {
 	case VOTE:
@@ -239,7 +239,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
 			accept_leader(ins, remote_lid, rcluster_id, param1);
-			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, rdtsc());
+			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 
 		} else {
 #if 1

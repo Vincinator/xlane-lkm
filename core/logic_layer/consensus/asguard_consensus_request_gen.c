@@ -107,7 +107,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 		cur_cmd->sm_logvar_id = rand_id;
 		cur_cmd->sm_logvar_value = rand_value;
 		err = append_command(&priv->sm_log, cur_cmd, priv->term);
-		write_log(&priv->ins->logger, CONSENSUS_REQUEST, rdtsc());
+		write_log(&priv->ins->logger, CONSENSUS_REQUEST, RDTSC_ASGUARD);
 
 		if (err)
 			goto error;

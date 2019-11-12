@@ -162,7 +162,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		asguard_send_hb(ndev, spminfo->pm_targets[i].skb);
 
 		// if (ts_state == ASGUARD_TS_RUNNING) {
-		// 	asguard_write_timestamp(sdev, 0, rdtsc(), i);
+		// 	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
 		// 	asguard_write_timestamp(sdev, 4, ktime_get(), i);
 		// }
 		
@@ -244,11 +244,11 @@ static int asguard_pm_loop(void *data)
 
 	__prepare_pm_loop(sdev, spminfo);
 	
-	prev_time = rdtsc();
+	prev_time = RDTSC_ASGUARD;
 
 	while (asguard_pacemaker_is_alive(spminfo)) {
 
-		cur_time = rdtsc();
+		cur_time = RDTSC_ASGUARD;
 
 		// if (!can_fire(prev_time, cur_time, interval))
 		// 	continue;
@@ -276,7 +276,7 @@ static int asguard_pm_loop(void *data)
 		local_irq_restore(flags);
 	
 		// if (sdev->ts_state == ASGUARD_TS_RUNNING)
-		// 	asguard_write_timestamp(sdev, 0, rdtsc(), 42);
+		// 	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, 42);
 
 	}
 

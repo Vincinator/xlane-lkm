@@ -68,7 +68,7 @@ int echo_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 	switch(opcode) {
 		case ASGUARD_PING:
 			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
-			write_log(&ins->logger, LOG_ECHO_RX_PING, rdtsc());
+			write_log(&ins->logger, LOG_ECHO_RX_PING, RDTSC_ASGUARD);
 
 			// reply back to sender
 			setup_echo_msg(&epriv->sdev->pminfo, remote_lid, tx_ts, ASGUARD_PONG);
@@ -76,7 +76,7 @@ int echo_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
 		case ASGUARD_PONG:
 			tx_ts = GET_ECHO_PAYLOAD(payload, tx_ts);
 
-			write_log(&ins->logger, LOG_ECHO_PINGPONG_LATENCY, rdtsc() - tx_ts);
+			write_log(&ins->logger, LOG_ECHO_PINGPONG_LATENCY, RDTSC_ASGUARD - tx_ts);
 
 			break;
 		default:
