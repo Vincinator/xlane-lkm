@@ -30,11 +30,6 @@ static struct kunit_case asguard_raft_follower_test_cases[] = {
     {}
 };
 
-static struct kunit_suite asguard_raft_follower_test_suite = {
-    .name = "asguard_raft_follower",
-    .test_cases = asguard_raft_follower_test_cases,
-};
-
 int asguard_raft_follower_init(struct kunit *test){
 
 }
