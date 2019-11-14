@@ -35,7 +35,7 @@ static void asguard_test_get_rnd_timeout(struct kunit *test)
 
     for (i = 0; i < 100; i++) {
         val = get_rnd_timeout(10, 20);
-        KUNIT_ASSERT_LE(test, 20, val);
+        KUNIT_ASSERT_LE(test, val, 20);
         KUNIT_ASSERT_LE(test, 10, val);
     }
 
