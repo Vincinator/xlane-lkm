@@ -1,1 +1,0 @@
-cmd_net/asguard//core/asguard.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000 -T ./scripts/module-common.lds --build-id  -o net/asguard//core/asguard.ko net/asguard//core/asguard.o net/asguard//core/asguard.mod.o ;  true
