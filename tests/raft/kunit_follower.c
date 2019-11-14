@@ -1,11 +1,12 @@
 #include <kunit/test.h>
+#include <linux/timer.h>
 
 #include <asguard/consensus.h>
 #include <asguard/asguard.h>
 #include <asguard/logger.h>
 #include <asguard/payload_helper.h>
 
-
+/* Just a test to setup the test system.. nothing fancy tested here*/
 static void asguard_test_check_append_rpc(struct kunit *test)
 {
     //pkt_size, prev_log_term, prev_log_idx, max_entries_per_pkt
@@ -26,8 +27,23 @@ static void asguard_test_check_append_rpc(struct kunit *test)
 
 }
 
+/* Just a test to setup the test system.. nothing fancy tested here*/
+static void asguard_test_get_rnd_timeout(struct kunit *test)
+{
+    int i = 0;
+    ktime_t val;
+
+    for (i = 0; i < 100; i++) {
+        val = get_rnd_timeout(10, 20);
+        KUNIT_ASSERT_LE(test, 20, val);
+        KUNIT_ASSERT_LE(test, 10, val);
+    }
+
+}
+
 static struct kunit_case asguard_raft_follower_test_cases[] = {
     KUNIT_CASE(asguard_test_check_append_rpc),
+    KUNIT_CASE(asguard_test_get_rnd_timeout),
     {}
 };
 

@@ -40,5 +40,6 @@ EXTRA_CFLAGS += -I$(src)/common/
 # Core ASGUARD Components
 obj-$(CONFIG_ASGUARD_MODULE) := core/
 obj-$(CONFIG_ASGUARD_FOLLOWER_TEST) += tests/raft/kunit_follower.o
+obj-$(CONFIG_ASGUARD_NET_TEST) += tests/net/kunit_net.o
 
 endif
