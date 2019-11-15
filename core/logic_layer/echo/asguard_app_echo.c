@@ -26,7 +26,8 @@ static const struct asguard_protocol_ctrl_ops echo_ops = {
 struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 {
 	struct proto_instance *ins;
-	struct asguard_echo_priv *epriv; 
+	struct asguard_echo_priv *epriv;
+
 	ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
 
 	if (!ins)
@@ -52,7 +53,7 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 
 	return ins;
 error:
-	asguard_dbg("Error in %s", __FUNCTION__);
+	asguard_dbg("Error in %s", __func__);
 	return NULL;
 }
 EXPORT_SYMBOL(get_echo_proto_instance);

@@ -35,7 +35,7 @@ class build_host_task(object):
 
        # stdin, stdout, stderr = chan.exec_command(self.task)
 
-        print_info(self.user + "@" + self.target_ip + ": \n  > " + self.task)
+        print_info(self.user + "@" + self.target_ip + ":\n  > " + self.task)
 
         for line in f.readlines():
             output= output + "  < " + line

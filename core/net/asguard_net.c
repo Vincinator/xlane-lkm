@@ -46,7 +46,7 @@ struct net_device *asguard_get_netdevice(int ifindex)
 		ndev = next_net_device(ndev);
 	}
 
-	asguard_error("Netdevice is NULL %s\n", __FUNCTION__);
+	asguard_error("Netdevice is NULL %s\n", __func__);
 	return NULL;
 }
 EXPORT_SYMBOL(asguard_get_netdevice);
@@ -136,7 +136,7 @@ inline void add_L2_header(struct sk_buff *skb, char *src_mac, char *dst_mac)
 	eth = (struct ethhdr *)skb_put(skb, ETH_HLEN);
 	if (!eth) {
 		asguard_error("Could not get ethhdr from skb (%s)\n",
-			    __FUNCTION__);
+			    __func__);
 		return;
 	}
 
@@ -161,7 +161,7 @@ inline void add_L3_header(struct sk_buff *skb, u32 src_ip, u32 dst_ip)
 
 	if (!ipv4) {
 		asguard_error("Could not get ipv4 Header from skb (%s)\n",
-			    __FUNCTION__);
+			    __func__);
 		return;
 	}
 
@@ -216,7 +216,7 @@ inline void add_payload(struct sk_buff *skb, struct asguard_payload *payload)
 
 	if (!data) {
 		asguard_error("Could not get data ptr to skb data\n (%s)",
-			    __FUNCTION__);
+			    __func__);
 		return;
 	}
 
@@ -258,7 +258,7 @@ struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr
 
 	if (!nomination_pkt) {
 		asguard_error("Could not compose packet (%s)\n",
-			    __FUNCTION__);
+			    __func__);
 		return NULL;
 	}
 
@@ -269,7 +269,7 @@ struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr
 	add_L4_header(nomination_pkt);
 	add_payload(nomination_pkt, payload);
 
-#if 1
+#if VERBOSE_DEBUG
 	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
 		       payload,
 		       ASGUARD_PAYLOAD_BYTES, 0);
@@ -286,7 +286,7 @@ int compare_mac(unsigned char *m1, unsigned char *m2)
 {
 	int i;
 
-	for(i = 0; i < 6; i ++)
+	for (i = 0; i < 6; i ++)
 		if (m1[i] != m2[i])
 			return -1;
 
@@ -302,7 +302,7 @@ void get_cluster_ids(struct asguard_device *sdev, unsigned char *remote_mac, int
 	*lid = -1;
 	*cid = -1;
 
-	for(i = 0; i < spminfo->num_of_targets; i++) {
+	for (i = 0; i < spminfo->num_of_targets; i++) {
 		cur_mac = spminfo->pm_targets[i].pkt_data.naddr.dst_mac;
 		if (compare_mac(cur_mac, remote_mac) == 0) {
 			*cid = spminfo->pm_targets[i].pkt_data.naddr.cluster_id;

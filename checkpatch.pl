@@ -768,10 +768,10 @@ if (length($typedefsfile)) {
 $typeTypedefs .= '|' . $typeOtherTypedefs if ($typeOtherTypedefs ne "");
 
 sub build_types {
-	my $mods = "(?x:  \n" . join("|\n  ", (@modifierList, @modifierListFile)) . "\n)";
-	my $all = "(?x:  \n" . join("|\n  ", (@typeList, @typeListFile)) . "\n)";
-	my $Misordered = "(?x:  \n" . join("|\n  ", @typeListMisordered) . "\n)";
-	my $allWithAttr = "(?x:  \n" . join("|\n  ", @typeListWithAttr) . "\n)";
+	my $mods = "(?x: \n" . join("|\n  ", (@modifierList, @modifierListFile)) . "\n)";
+	my $all = "(?x: \n" . join("|\n  ", (@typeList, @typeListFile)) . "\n)";
+	my $Misordered = "(?x: \n" . join("|\n  ", @typeListMisordered) . "\n)";
+	my $allWithAttr = "(?x: \n" . join("|\n  ", @typeListWithAttr) . "\n)";
 	$Modifier	= qr{(?:$Attribute|$Sparse|$mods)};
 	$BasicType	= qr{
 				(?:$typeTypedefs\b)|
@@ -2704,7 +2704,7 @@ sub process {
 					     "Co-developed-by: must be immediately followed by Signed-off-by:\n" . "$here\n" . $rawline . "\n" .$rawlines[$linenr]);
 				} elsif ($1 ne $email) {
 					WARN("BAD_SIGN_OFF",
-					     "Co-developed-by and Signed-off-by: name/email do not match \n" . "$here\n" . $rawline . "\n" .$rawlines[$linenr]);
+					     "Co-developed-by and Signed-off-by: name/email do not match\n" . "$here\n" . $rawline . "\n" .$rawlines[$linenr]);
 				}
 			}
 		}
@@ -6393,12 +6393,12 @@ sub process {
 			     "switch default: should use break\n" . $herectx);
 		}
 
-# check for gcc specific __FUNCTION__
-		if ($line =~ /\b__FUNCTION__\b/) {
+# check for gcc specific __func__
+		if ($line =~ /\b__func__\b/) {
 			if (WARN("USE_FUNC",
-				 "__func__ should be used instead of gcc specific __FUNCTION__\n"  . $herecurr) &&
+				 "__func__ should be used instead of gcc specific __func__\n"  . $herecurr) &&
 			    $fix) {
-				$fixed[$fixlinenr] =~ s/\b__FUNCTION__\b/__func__/g;
+				$fixed[$fixlinenr] =~ s/\b__func__\b/__func__/g;
 			}
 		}
 

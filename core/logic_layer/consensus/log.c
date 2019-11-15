@@ -24,7 +24,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
 	write_log(&priv->throughput_logger, applying, RDTSC_ASGUARD);
 
-//	asguard_dbg("Added %d commands to State Machine. \n", applying);
+//	asguard_dbg("Added %d commands to State Machine.\n", applying);
 
 
 	return 0;
@@ -36,7 +36,7 @@ error:
 int commit_log(struct consensus_priv *priv)
 {
 	int err;
-	struct state_machine_cmd_log *log = &priv->sm_log; 
+	struct state_machine_cmd_log *log = &priv->sm_log;
 
 	err = apply_log_to_sm(priv);
 
@@ -72,13 +72,13 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 	}
 
 	// mind the off by one counting.. last_idx starts at 0
-	if (MAX_CONSENSUS_LOG <= last_idx + 1) {
+	if (last_idx + 1 >= MAX_CONSENSUS_LOG) {
 		err = -ENOMEM;
 		asguard_error("Log is full\n");
 		goto error;
 	}
 
-	if (log->commit_idx > last_idx ) {
+	if (log->commit_idx > last_idx) {
 		err = -EPROTO;
 		asguard_error("BUG - commit_idx is greater than last_idx!\n");
 		goto error;
@@ -87,7 +87,6 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 	entry = kmalloc(sizeof(struct sm_log_entry), GFP_KERNEL);
 
 	if (!entry) {
-		asguard_dbg("out of memory!\n");
 		err = -ENOMEM;
 		goto error;
 	}

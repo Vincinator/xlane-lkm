@@ -37,7 +37,7 @@ static char *asguard_alloc_mmap_buffer(void)
 {
 	char *page = (char *)get_zeroed_page(GFP_KERNEL);
 
-	asguard_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __func__);
 
 	if (!page)
 		goto error;
@@ -46,13 +46,13 @@ static char *asguard_alloc_mmap_buffer(void)
 
 	return page;
 error:
-	asguard_error("Failed in %s\n", __FUNCTION__);
+	asguard_error("Failed in %s\n", __func__);
 	return page;
 }
 
 static void asguard_free_mmap_buffer(void *page)
 {
-	asguard_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __func__);
 
 	ClearPageReserved(virt_to_page(page));
 	free_page((unsigned long)page);
@@ -63,7 +63,7 @@ static int asguard_bypass_open(struct inode *inode, struct file *filp)
 	struct asguard_fd_priv *sdev =
 		container_of(inode->i_cdev, struct asguard_fd_priv, cdev_tx);
 
-	asguard_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __func__);
 
 	filp->private_data = sdev;
 
@@ -72,7 +72,7 @@ static int asguard_bypass_open(struct inode *inode, struct file *filp)
 
 static int asguard_bypass_release(struct inode *inode, struct file *filp)
 {
-	asguard_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __func__);
 	return 0;
 }
 
@@ -82,7 +82,7 @@ static ssize_t asguard_bypass_read(struct file *filp, char __user *buf, size_t c
 	struct asguard_fd_priv *priv = (struct asguard_fd_priv *)filp->private_data;
 	ssize_t ret = 0;
 
-	asguard_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __func__);
 
 	BUG_ON(priv == NULL);
 
@@ -102,7 +102,7 @@ static ssize_t asguard_bypass_read(struct file *filp, char __user *buf, size_t c
 		ret = -EFAULT;
 		goto out;
 	}
-#if 1
+#if VERBOSE_DEBUG
 	print_hex_dump(KERN_DEBUG, "Aliveness Counter: ", DUMP_PREFIX_NONE, 16,
 		       1, priv->tx_buf, ASGUARD_PAYLOAD_BYTES, 0);
 #endif
@@ -120,7 +120,7 @@ static ssize_t asguard_bypass_write(struct file *filp, const char __user *buf,
 	struct asguard_fd_priv *priv = (struct asguard_fd_priv *)filp->private_data;
 	ssize_t ret = 0;
 
-	asguard_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __func__);
 
 	if (mutex_lock_killable(&priv->tx_mutex))
 		return -EINTR;
@@ -165,7 +165,7 @@ static vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 	struct page *page;
 	struct asguard_fd_priv *priv;
 
-	asguard_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __func__);
 
 	priv = (struct asguard_fd_priv *)vmf->vma->vm_private_data;
 	if (priv->tx_buf) {
@@ -187,7 +187,7 @@ static int asguard_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 	struct asguard_fd_priv *priv = filp->private_data;
 	int ret;
 
-	asguard_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __func__);
 
 	if (!priv) {
 		asguard_error(
@@ -227,7 +227,7 @@ int asguard_setup_chardev(struct asguard_device *sdev, struct asguard_fd_priv *p
 	dev_t devno;
 
 	BUG_ON(sdev == NULL || asguard_bypass_class == NULL);
-	asguard_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __func__);
 
 	devno = MKDEV(asguard_bypass_major, sdev->ifindex);
 
@@ -286,12 +286,12 @@ int asguard_bypass_init_class(struct asguard_device *sdev)
 	int err = 0;
 	dev_t dev = 0;
 
-	asguard_dbg("Enter: %s\n", __FUNCTION__);
+	asguard_dbg("Enter: %s\n", __func__);
 
 	err = alloc_chrdev_region(&dev, 0, ASGUARD_MAX_DEVICES, DEVNAME);
 	if (err < 0) {
 		asguard_error("alloc_chrdev_region() failed in %s\n",
-			    __FUNCTION__);
+			    __func__);
 		return err;
 	}
 
@@ -304,7 +304,7 @@ int asguard_bypass_init_class(struct asguard_device *sdev)
 
 	return 0;
 error:
-	asguard_error("Error in %s, cleaning up now\n", __FUNCTION__);
+	asguard_error("Error in %s, cleaning up now\n", __func__);
 	asguard_clean_class(sdev);
 	return err;
 }

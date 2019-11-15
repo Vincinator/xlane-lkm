@@ -49,10 +49,8 @@ int consensus_init(struct proto_instance *ins)
 
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
 
-	if (!priv->sm_log.entries) {
-		asguard_dbg("Not enough memory for log of size %d", MAX_CONSENSUS_LOG);
-		//BUG();
-	}
+	if (!priv->sm_log.entries)
+		BUG();
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
 			 priv->sdev->ifindex, ins->instance_id);
@@ -105,7 +103,7 @@ int consensus_start(struct proto_instance *ins)
 	return 0;
 
 error:
-	asguard_error(" %s failed\n", __FUNCTION__);
+	asguard_error(" %s failed\n", __func__);
 	return err;
 }
 
@@ -119,16 +117,16 @@ int consensus_stop(struct proto_instance *ins)
 
 	asguard_dbg("consensus stop\n");
 
-	switch(priv->nstate) {
-		case FOLLOWER:
-			stop_follower(ins);
-			break;
-		case CANDIDATE:
-			stop_candidate(ins);
-			break;
-		case LEADER:
-			stop_leader(ins);
-			break;
+	switch (priv->nstate) {
+	case FOLLOWER:
+		stop_follower(ins);
+		break;
+	case CANDIDATE:
+		stop_candidate(ins);
+		break;
+	case LEADER:
+		stop_leader(ins);
+		break;
 	}
 
 	le_state_transition_to(priv, LE_READY);
@@ -171,10 +169,9 @@ int consensus_clean(struct proto_instance *ins)
 	asguard_dbg("Cleaning %d entries from sm log\n", priv->sm_log.last_idx);
 
 	if (priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
-		for(i = 0; i < priv->sm_log.last_idx; i++) {
+		for (i = 0; i < priv->sm_log.last_idx; i++)
 			if (priv->sm_log.entries[i] != NULL)
 				kfree(priv->sm_log.entries[i]);
-		}
 	} else {
 		asguard_dbg("last_idx is -1, no logs to clean.\n");
 	}
@@ -253,5 +250,5 @@ int consensus_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 	       uint64_t ts)
 {
 	// if (consensus_is_alive(sdev))
-	// 	return 0;
+	//	return 0;
 }

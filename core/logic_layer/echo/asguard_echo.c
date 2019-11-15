@@ -34,10 +34,10 @@ int setup_echo_msg(struct pminfo *spminfo, u32 target_id, uint64_t ts, enum echo
 	     !!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
 
 	pkt_payload =
-     	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
+		spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
 
-	set_echo_opcode((unsigned char*)pkt_payload, opcode);
-	set_echo_tx_ts((unsigned char*)pkt_payload, ts);
+	set_echo_opcode((unsigned char *)pkt_payload, opcode);
+	set_echo_tx_ts((unsigned char *)pkt_payload, ts);
 
 	// TODO: Synchronize payload update with leader election..
 	//			... otherwise, leader election and protocol would overwrite each other

@@ -28,7 +28,7 @@ static ssize_t asguard_eval_ctrl_write(struct file *file,
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		asguard_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
@@ -46,13 +46,13 @@ static ssize_t asguard_eval_ctrl_write(struct file *file,
 		testcase_stop_timer(priv);
 		break;
 	case -1:
-		// one shot 
+		// one shot
 		asguard_dbg("One shot eval case\n");
 		testcase_one_shot_big_log(priv);
 		break;
 	default:
 		if (eval_selection < 0 || eval_selection > MAX_CONSENSUS_LOG) {
-			asguard_error("Invalid input: %d - %s\n", eval_selection, __FUNCTION__);
+			asguard_error("Invalid input: %d - %s\n", eval_selection, __func__);
 			err = -EINVAL;
 			goto error;
 		}
@@ -63,7 +63,7 @@ static ssize_t asguard_eval_ctrl_write(struct file *file,
 
 	return count;
 error:
-	asguard_error("Error during parsing of input.%s\n", __FUNCTION__);
+	asguard_error("Error during parsing of input.%s\n", __func__);
 	return err;
 
 }
@@ -99,11 +99,12 @@ void init_eval_ctrl_interfaces(struct consensus_priv *priv)
 {
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/consensus_eval_ctrl",
-			 priv->sdev->ifindex, priv->ins->instance_id);
-	
+	snprintf(name_buf, sizeof(name_buf),
+			"asguard/%d/proto_instances/%d/consensus_eval_ctrl",
+			priv->sdev->ifindex, priv->ins->instance_id);
+
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_eval_ctrl_ops, priv);
-	
+
 
 }
 EXPORT_SYMBOL(init_eval_ctrl_interfaces);
@@ -112,9 +113,10 @@ void remove_eval_ctrl_interfaces(struct consensus_priv *priv)
 {
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/consensus_eval_ctrl",
-			 priv->sdev->ifindex, priv->ins->instance_id);
-	
+	snprintf(name_buf, sizeof(name_buf),
+			"asguard/%d/proto_instances/%d/consensus_eval_ctrl",
+			priv->sdev->ifindex, priv->ins->instance_id);
+
 	remove_proc_entry(name_buf, NULL);
 
 }

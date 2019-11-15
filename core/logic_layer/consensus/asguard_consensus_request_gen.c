@@ -28,7 +28,7 @@ void testcase_stop_timer(struct consensus_priv *priv)
 
 }
 
-/* Fully saturates the local log (if leader)  
+/* Fully saturates the local log (if leader)
  *
  */
 void testcase_one_shot_big_log(struct consensus_priv *priv)
@@ -39,7 +39,7 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
 	err = 0;
 	u32 rand_value, rand_id;
 
-	for(i = 0; i < MAX_CONSENSUS_LOG; i++) {
+	for (i = 0; i < MAX_CONSENSUS_LOG; i++) {
 
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
@@ -52,7 +52,7 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
 		cur_cmd->sm_logvar_id = rand_id;
 		cur_cmd->sm_logvar_value = rand_value;
 		err = append_command(&priv->sm_log, cur_cmd, priv->term);
-		
+
 		if (err)
 			goto error;
 	}
@@ -91,10 +91,10 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	if (priv->nstate != LEADER)
 		return HRTIMER_RESTART; // nothing to do, node is not a leader.
 
-	asguard_dbg("Incoming Client requests.. \n");
-	
+	asguard_dbg("Incoming Client requests..\n");
+
 	// write x random entries to local log (if node is leader)
-	for(i = 0; i < test_data->x; i++) {
+	for (i = 0; i < test_data->x; i++) {
 
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
@@ -120,12 +120,12 @@ error:
 
 }
 
-/* 
+/*
  *
  */
 void _init_testcase_timeout(struct consensus_test_container *test_data)
 {
-	ktime_t timeout;	
+	ktime_t timeout;
 
 	// timeout to 1 second
 	timeout = ktime_set(1, 0);
@@ -145,7 +145,7 @@ void testcase_X_requests_per_sec(struct consensus_priv *priv, int x)
 	priv->test_data.x = x;
 
 	if (x < 0)  {
-		asguard_dbg("Invalid Input \n");
+		asguard_dbg("Invalid Input\n");
 		return;
 	}
 

@@ -23,7 +23,7 @@ static ssize_t asguard_ts_ctrl_write(struct file *file,
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		asguard_error("[ASGUARD] Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("[ASGUARD] Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
@@ -47,15 +47,15 @@ static ssize_t asguard_ts_ctrl_write(struct file *file,
 		break;
 	default:
 		asguard_error("[ASGUARD] Invalid input: %d - %s\n",
-			    timestamping_state, __FUNCTION__);
+			    timestamping_state, __func__);
 		err = -EINVAL;
 		goto error;
 	}
 	asguard_dbg("[ASGUARD] Timestamping state changed successfully.%s\n",
-		  __FUNCTION__);
+		  __func__);
 	return count;
 error:
-	asguard_error("[ASGUARD] Timestamping control failed.%s\n", __FUNCTION__);
+	asguard_error("[ASGUARD] Timestamping control failed.%s\n", __func__);
 	return err;
 }
 

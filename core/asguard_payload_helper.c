@@ -7,10 +7,10 @@
 
 
 /* Returns a pointer to the <n>th protocol of <spay>
- * 
+ *
  * If less than n protocols are included, a NULL ptr is returned
  */
-char *asguard_get_proto(struct asguard_payload *spay, int n) 
+char *asguard_get_proto(struct asguard_payload *spay, int n)
 {
 	int i;
 	char *cur_proto;
@@ -19,7 +19,7 @@ char *asguard_get_proto(struct asguard_payload *spay, int n)
 	cur_proto = spay->proto_data;
 
 	if (spay->protocols_included < n) {
-		asguard_error("only %d protocols are included, requested %d",spay->protocols_included, n);
+		asguard_error("only %d protocols are included, requested %d", spay->protocols_included, n);
 		return NULL;
 	}
 
@@ -34,11 +34,11 @@ char *asguard_get_proto(struct asguard_payload *spay, int n)
 EXPORT_SYMBOL(asguard_get_proto);
 
 
-/* Protocol offsets and protocols_included must be correct before calling this method. 
+/* Protocol offsets and protocols_included must be correct before calling this method.
  *
  * Sets protocol id and reserves space in the asguard payload,
  * if the required space is available.
- * 
+ *
  * returns a pointer to the start of that protocol payload memory area.
  */
 char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 proto_size)
@@ -63,7 +63,7 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 	}
 
 	if (unlikely(proto_offset + proto_size > MAX_ASGUARD_PAYLOAD_BYTES)) {
-		asguard_error("Not enough space in asguard payload for protocol\n");
+		asguard_error("Not enough space in asguard payload\n");
 		return NULL;
 	}
 
@@ -129,7 +129,7 @@ s32 _get_last_idx_safe(struct consensus_priv *priv)
 	return priv->sm_log.last_idx;
 }
 
-int _log_is_faulty(struct consensus_priv *priv) 
+int _log_is_faulty(struct consensus_priv *priv)
 {
 
 	if (!priv)
@@ -178,20 +178,20 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 	char *pkt_payload_sub;
 
 	// if (unlikely(_log_is_faulty(cur_priv))) {
-	// 	asguard_dbg("Log is faulty or not initialized.\n");
-	// 	return;
+	//	asguard_dbg("Log is faulty or not initialized.\n");
+	//	return;
 	// }
 
 	// Check if entries must be appended
 	cur_index = _get_last_idx_safe(cur_priv);
-	next_index = _get_next_idx(cur_priv, target_id); 
+	next_index = _get_next_idx(cur_priv, target_id);
 
 	if (next_index == -1) {
 		asguard_dbg("Invalid target id resulted in invalid next_index!\n");
 		return;
 	}
 //	asguard_dbg("PREP AE: cur_index=%d, next_index=%d\n", cur_index, next_index);
-	prev_log_term = _get_prev_log_term(cur_priv, next_index - 1 );
+	prev_log_term = _get_prev_log_term(cur_priv, next_index - 1);
 
 	if (prev_log_term == -1) {
 		asguard_error("BUG! - prev_log_term is invalid\n");
@@ -207,18 +207,18 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 		//  - thus, num_of_entries will not be 0
 
 		// Decide how many entries to update for the current target
-		num_entries = (cur_priv->max_entries_per_pkt < cur_index - next_index + 1) ? 
+		num_entries = (cur_priv->max_entries_per_pkt < cur_index - next_index + 1) ?
 				cur_priv->max_entries_per_pkt : (cur_index - next_index + 1);
 
 		// update next_index without receiving the response from the target
-		// .. If the receiver rejects this append command, this node will set the 
+		// .. If the receiver rejects this append command, this node will set the
 		// .. the next_index to the last known safe index of the receivers log.
 		// .. In this implementation the receiver sends the last known safe index
 		// .. with the append reply.
 		cur_priv->sm_log.next_index[target_id] += num_entries;
 
-		 asguard_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d, num_entries=%d\n", 
-		 	cur_index, next_index, match_index, prev_log_term, num_entries);
+		asguard_dbg("cur_index=%d, next_index=%d, match_index=%d, prev_log_term=%d, num_entries=%d\n",
+					cur_index, next_index, match_index, prev_log_term, num_entries);
 	}
 
 	// reserve space in asguard heartbeat for consensus LEAD
@@ -229,43 +229,43 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 	if (!pkt_payload_sub)
 		return;
 
-	set_ae_data(pkt_payload_sub, 
-			cur_priv->term, 
- 	 		cur_priv->node_id,
- 	 		// previous is one before the "this should be send next" index
-	 		next_index,
-	 		prev_log_term,
-	 		leader_commit_idx,
-	 		cur_priv, 
-	 		num_entries);
+	set_ae_data(pkt_payload_sub,
+		cur_priv->term,
+		cur_priv->node_id,
+		// previous is one before the "this should be send next" index
+		next_index,
+		prev_log_term,
+		leader_commit_idx,
+		cur_priv,
+		num_entries);
 }
 EXPORT_SYMBOL(setup_append_msg);
 
-/* Must be called after the asguard packet has been emitted. 
+/* Must be called after the asguard packet has been emitted.
  */
 void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay, int target_id)
 {
-	struct consensus_priv *cur_priv;	
+	struct consensus_priv *cur_priv;
 	int i;
 
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
-	
-	// iterate through consensus protocols and include LEAD messages if node is leader
-	for(i = 0; i < sdev->num_of_proto_instances; i++) {
-		
-		if (sdev->protos[i] != NULL && sdev->protos[i]->proto_type == ASGUARD_PROTO_CONSENSUS) {
-	 		
-	 		// get corresponding local instance data for consensus
-			cur_priv = 
-				(struct consensus_priv *)sdev->protos[i]->proto_data;
-	 		
-	 		if (cur_priv->nstate != LEADER)
-	 			continue;
 
-	 		// TODO: optimize append calls that do not contain any log updates
-	 		setup_append_msg(cur_priv, spay, sdev->protos[i]->instance_id, target_id);
-	 		
+	// iterate through consensus protocols and include LEAD messages if node is leader
+	for (i = 0; i < sdev->num_of_proto_instances; i++) {
+
+		if (sdev->protos[i] != NULL && sdev->protos[i]->proto_type == ASGUARD_PROTO_CONSENSUS) {
+
+			// get corresponding local instance data for consensus
+			cur_priv =
+				(struct consensus_priv *)sdev->protos[i]->proto_data;
+
+			if (cur_priv->nstate != LEADER)
+				continue;
+
+			// TODO: optimize append calls that do not contain any log updates
+			setup_append_msg(cur_priv, spay, sdev->protos[i]->instance_id, target_id);
+
 		}
 	}
 }

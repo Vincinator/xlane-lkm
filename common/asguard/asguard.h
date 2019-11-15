@@ -1,6 +1,8 @@
 #ifndef _ASGUARD_H_
 #define _ASGUARD_H_
 
+#define VERBOSE_DEBUG 1
+
 #ifndef CONFIG_KUNIT
 #define RDTSC_ASGUARD rdtsc()
 #else
@@ -47,7 +49,7 @@
 
 #define ASGUARD_PAYLOAD_BYTES 1000
 #define ASGUARD_HEADER_BYTES 64 // TODO: this should be more than enough for UDP/ipv4
-#define ASGUARD_PKT_BYTES ASGUARD_PAYLOAD_BYTES + ASGUARD_HEADER_BYTES
+#define ASGUARD_PKT_BYTES (ASGUARD_PAYLOAD_BYTES + ASGUARD_HEADER_BYTES)
 
 int asguard_core_register_nic(int ifindex, int asguard_id);
 
@@ -66,14 +68,14 @@ int asguard_core_register_nic(int ifindex, int asguard_id);
 /*
  * Each heartbeat contains one of the following operations
  *
- * NOOP: 			This heartbeat does not contain an update
+ * NOOP:			This heartbeat does not contain an update
  *					for the leader election
  *
- * NOMI(TERM): 		The sender of this message has nominated
+ * NOMI(TERM):		The sender of this message has nominated
  *					itself to become the new leader of the cluster
- *			   		for the given TERM (parameter1).
+ *					for the given TERM (parameter1).
  *
- * VOTE(TERM,ID): 	The sender voted for the node with
+ * VOTE(TERM,ID):	The sender voted for the node with
  *					the given ID (parameter2) to become
  *					the new leader in the TERM (parameter1).
  *
@@ -101,7 +103,7 @@ enum hb_interval {
 
 enum tsstate {
     ASGUARD_TS_RUNNING,
-    ASGUARD_TS_READY, 	/* Initialized but not active*/
+    ASGUARD_TS_READY,		/* Initialized but not active*/
     ASGUARD_TS_UNINIT,
     ASGUARD_TS_LOG_FULL,
 };
@@ -172,7 +174,7 @@ struct le_event_logs {
 
 enum logger_state {
 	LOGGER_RUNNING,
-	LOGGER_READY, 	/* Initialized but not active*/
+	LOGGER_READY,		/* Initialized but not active*/
 	LOGGER_UNINIT,
 	LOGGER_LOG_FULL,
 };
@@ -257,7 +259,7 @@ struct asguard_payload {
 
 	/* The number of protocols that are included in this payload.
 	 * If 0, then this payload is interpreted as "noop" operation
-	 * 		 .. for all local proto instances
+	 *		.. for all local proto instances
 	 */
 	u16 protocols_included;
 
@@ -284,27 +286,20 @@ struct asguard_packet_data {
 	 * Thus, we need a copy of pkt_payload to continue the copy in the pacemaker
 	 * even when a new version is currently written.
 	 *
-	 * The hb_active_ix member of this struct tells which index can be used by the pacemaker */
+	 * The hb_active_ix member of this struct tells which index can be used by the pacemaker
+	 */
 	struct asguard_payload *pkt_payload[2];
 
 	int hb_active_ix;
 
 	/* if updating != 0, then pacemaker will not update skb
-	 * uses old values in skb until updating == 0 */
+	 * uses old values in skb until updating == 0
+	 */
 	int updating;
 
 	/* pacemaker locks payload if it is using it */
 	spinlock_t lock;
 };
-
-// struct asguard_mlx5_con_info {
-// 	int ix;
-// 	int cqn;
-// 	void *c; /* mlx5 channel */
-
-// 	void (*asguard_post_ts)(int, uint64_t);
-// 	void (*asguard_post_payload)(int, unsigned char *, void *, u32);
-// };
 
 struct asguard_pacemaker_test_data {
 	enum asguard_pacemaker_test_state state;
@@ -380,27 +375,27 @@ struct asguard_protocol_ctrl_ops {
 	int (*init_ctrl)(void);
 
 	/* Initializes data and user space interfaces */
-	int (*init)(struct proto_instance *);
+	int (*init)(struct proto_instance *ins);
 
 	int (*init_payload)(void *payload);
 
-	int (*start)(struct proto_instance *);
+	int (*start)(struct proto_instance *ins);
 
-	int (*stop)(struct proto_instance *);
+	int (*stop)(struct proto_instance *ins);
 
-	int (*us_update)(struct proto_instance *, void *payload);
+	int (*us_update)(struct proto_instance *ins, void *payload);
 
 	/* free memory of app and remove user space interfaces */
-	int (*clean)(struct proto_instance *);
+	int (*clean)(struct proto_instance *ins);
 
-	int (*post_payload)(struct proto_instance *, unsigned char *remote_mac,
+	int (*post_payload)(struct proto_instance *ins, unsigned char *remote_mac,
 			    void *payload);
 
-	int (*post_ts)(struct proto_instance *, unsigned char *remote_mac,
+	int (*post_ts)(struct proto_instance *ins, unsigned char *remote_mac,
 		       uint64_t ts);
 
 	/* Write statistics to debug console  */
-	int (*info)(struct proto_instance *);
+	int (*info)(struct proto_instance *ins);
 };
 
 struct proto_instance {
@@ -418,9 +413,6 @@ struct proto_instance {
 	void *proto_data;
 
 };
-
-
-
 
 struct sk_buff *asguard_setup_hb_packet(struct pminfo *spminfo,
 				      int host_number);
