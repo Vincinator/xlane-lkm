@@ -28,7 +28,6 @@
 static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 {
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ctimer);
-	struct asguard_device *sdev = priv->sdev;
 	ktime_t timeout;
 
 	if (priv->ctimer_init == 0 || priv->nstate != CANDIDATE)
@@ -47,7 +46,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	 */
 	if (priv->c_retries >= CANDIDATURE_RETRY_LIMIT) {
 #if VERBOSE_DEBUG
-		asguard_log_le("%s, %llu, %d: reached maximum of candidature retries\n",
+		asguard_log_le("%s, %llu: reached maximum of candidature retries\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD);
 #endif
@@ -106,7 +105,6 @@ void reset_ctimeout(struct proto_instance *ins)
 
 void init_ctimeout(struct proto_instance *ins)
 {
-	int ftime_ns;
 	ktime_t timeout;
 
 	struct consensus_priv *priv =
@@ -203,6 +201,8 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
+	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+
 #if VERBOSE_DEBUG
 	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
 #endif
@@ -216,7 +216,6 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		// param3 interpreted as lastLogIndex
 		// param4 interpreted as lastLogTerm
 
-		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
@@ -230,7 +229,6 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	case NOOP:
 		break;
 	case APPEND:
-		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
 		if (param1 >= priv->term) {
 

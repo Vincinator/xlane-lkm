@@ -22,8 +22,6 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 	struct pminfo *spminfo =
 		(struct pminfo *)PDE_DATA(file_inode(file));
 	long new_hb_state = -1;
-	struct task_struct *heartbeat_task;
-	struct cpumask mask;
 
 	if (!spminfo)
 		return -ENODEV;
@@ -171,8 +169,6 @@ static ssize_t asguard_hbi_write(struct file *file,
 	struct pminfo *spminfo =
 		(struct pminfo *)PDE_DATA(file_inode(file));
 	long new_hbi = -1;
-	struct task_struct *heartbeat_task;
-	struct cpumask mask;
 
 	if (!spminfo)
 		return -ENODEV;
@@ -246,7 +242,6 @@ static ssize_t asguard_payload_write(struct file *file,
 	char *input_str;
 	char *search_str;
 	int i = 0;
-	int hb_active_ix;
 
 	if (!spminfo) {
 		asguard_error("spminfo is NULL.\n");
@@ -349,6 +344,8 @@ static ssize_t asguard_target_write(struct file *file,
 	int current_protocol;
 	int cluster_id;
 
+	current_ip = -1;
+
 	if (!spminfo)
 		return -ENODEV;
 
@@ -416,7 +413,6 @@ static ssize_t asguard_target_write(struct file *file,
 			state = 3;
 		} else if (state == 3) {
 			err = kstrtoint(input_str, 10, &cluster_id);
-
 
 			if (is_ip_local(sdev->ndev, current_ip)) {
 				sdev->cluster_id = cluster_id;
@@ -505,14 +501,13 @@ static ssize_t asguard_test_ctrl_write(struct file *file,
 		return err;
 	}
 
-	asguard_dbg("created %d active user space\n", new_active_processes);
+	asguard_dbg("created %ld active user space\n", new_active_processes);
 }
 
 static int asguard_test_ctrl_show(struct seq_file *m, void *v)
 {
 	struct pminfo *spminfo =
 		(struct pminfo *)m->private;
-	int i;
 
 	if (!spminfo)
 		return -ENODEV;

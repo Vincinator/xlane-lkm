@@ -197,6 +197,7 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 					return 1;
 		}
 	}
+	return 1;
 }
 EXPORT_SYMBOL(check_handle_nomination);
 

@@ -11,13 +11,13 @@
 static void test_asguard_ip_convert(struct kunit *test)
 {
 
-    KUNIT_EXPECT_EQ(test, 0xC0A80001, asguard_ip_convert("192.168.0.1"));
-    KUNIT_EXPECT_EQ(test, 0x0A40874B, asguard_ip_convert("10.64.135.75"));
-    KUNIT_EXPECT_EQ(test, 0x7F000001, asguard_ip_convert("127.0.0.1"));
-    KUNIT_EXPECT_EQ(test, 0x00000000, asguard_ip_convert("0.0.0.0"));
-    KUNIT_EXPECT_EQ(test, -EINVAL, asguard_ip_convert("some random string"));
-    KUNIT_EXPECT_EQ(test, 0xC0A80001, asguard_ip_convert("192.168.0.1"));
-    KUNIT_EXPECT_EQ(test, 0xC0A80001, asguard_ip_convert("192.168.0.1"));
+    KUNIT_EXPECT_EQ(test, (u32) 0xC0A80001, asguard_ip_convert("192.168.0.1"));
+    KUNIT_EXPECT_EQ(test, (u32) 0x0A40874B, asguard_ip_convert("10.64.135.75"));
+    KUNIT_EXPECT_EQ(test, (u32) 0x7F000001, asguard_ip_convert("127.0.0.1"));
+    KUNIT_EXPECT_EQ(test, (u32) 0x00000000, asguard_ip_convert("0.0.0.0"));
+    KUNIT_EXPECT_EQ(test, (u32) -EINVAL, asguard_ip_convert("some random string"));
+    KUNIT_EXPECT_EQ(test, (u32) 0xC0A80001, asguard_ip_convert("192.168.0.1"));
+    KUNIT_EXPECT_EQ(test, (u32) 0xC0A80001, asguard_ip_convert("192.168.0.1"));
 
 }
 

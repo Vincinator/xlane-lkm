@@ -52,6 +52,7 @@
 #define ASGUARD_PKT_BYTES (ASGUARD_PAYLOAD_BYTES + ASGUARD_HEADER_BYTES)
 
 int asguard_core_register_nic(int ifindex, int asguard_id);
+int asguard_core_remove_nic(int asguard_id);
 
 #define ASGUARD_NUM_TS_LOG_TYPES 8
 #define TIMESTAMP_ARRAY_LIMIT 100000

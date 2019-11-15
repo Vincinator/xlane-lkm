@@ -11,10 +11,10 @@
 
 // #define GET_LE_PAYLOAD(p, fld) (*(u32*)((p + offsetof(struct le_payload, fld))))
 
-// #define SET_LE_PAYLOAD(p, fld, v) do { \
-//   *((u32*)(((unsigned char *)p) + offsetof(struct le_payload, fld))) = v; \
-// } while (0)
-
+/* #define SET_LE_PAYLOAD(p, fld, v) do { \
+   *((u32*)(((unsigned char *)p) + offsetof(struct le_payload, fld))) = v; \
+ } while (0)
+ */
 
 /* TODO: Find a method to define the byte layout via structs and get the memory offsets via
  * a similiar method like the GET_LE_PAYLOAD from above.

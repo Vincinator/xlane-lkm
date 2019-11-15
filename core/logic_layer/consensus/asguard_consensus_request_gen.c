@@ -33,11 +33,11 @@ void testcase_stop_timer(struct consensus_priv *priv)
  */
 void testcase_one_shot_big_log(struct consensus_priv *priv)
 {
-	struct state_machine_cmd_log *log = &priv->sm_log;
 	int i, err;
 	struct sm_command *cur_cmd;
-	err = 0;
 	u32 rand_value, rand_id;
+
+	err = 0;
 
 	for (i = 0; i < MAX_CONSENSUS_LOG; i++) {
 
@@ -57,29 +57,25 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
 			goto error;
 	}
 
-	return 0;
+	return;
 
 error:
 	asguard_error("Evaluation Crashed errorcode=%d\n", err);
-	return err;
+	return;
 
 }
 
 static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 {
-	unsigned long flags;
 	struct consensus_test_container *test_data =
 			container_of(timer, struct consensus_test_container, timer);
 
 	struct consensus_priv *priv = test_data->priv;
-	struct asguard_device *sdev = priv->sdev;
 	u32 rand_value, rand_id;
 	ktime_t currtime, interval;
 	struct sm_command *cur_cmd;
-	struct pminfo *spminfo = &sdev->pminfo;
-	struct asguard_payload *spay;
 	int err = 0;
-	int i, tar, hb_passive_idx;
+	int i;
 
 	if (test_data->running == 0)
 		return HRTIMER_NORESTART;

@@ -25,6 +25,12 @@ static ssize_t asguard_le_config_write(struct file *file,
 	int fmin_tmp, fmax_tmp, cmin_tmp, cmax_tmp, max_entries_per_pkt_tmp;
 	int tmp;
 
+	max_entries_per_pkt_tmp = -1;
+	fmin_tmp = -1;
+	fmax_tmp = -1;
+	cmin_tmp = -1;
+	cmax_tmp = -1;
+
 	if (!priv)
 		return -ENODEV;
 
