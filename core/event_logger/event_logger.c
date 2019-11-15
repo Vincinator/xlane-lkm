@@ -106,7 +106,6 @@ error:
 int asguard_log_reset(struct asguard_logger *slog)
 {
 	int err;
-	int i;
 
 	if (!slog) {
 		asguard_error("logger is not initialized properly.\n");
@@ -209,7 +208,6 @@ error:
 int init_logger(struct asguard_logger *slog)
 {
 	int err;
-	int i;
 
 	err = 0;
 

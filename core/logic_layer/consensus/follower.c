@@ -77,7 +77,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 
 	if (!pkt_payload_sub) {
 		asguard_error("Sassy packet full!\n");
-		return -1;
+		return;
 	}
 
 	set_le_opcode((unsigned char *)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx, 0);
@@ -245,9 +245,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 {
 	u32 *prev_log_term, num_entries;
 	s32 *prev_log_idx, *leader_commit_idx;
-	int append_success;
 	u16 pkt_size;
-	u32 check;
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
@@ -341,6 +339,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
 
+	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
 #if VERBOSE_DEBUG
 	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
@@ -354,7 +353,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case VOTE:
 		break;
 	case NOMI:
-		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
@@ -366,7 +364,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case NOOP:
 		break;
 	case APPEND:
-		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 		/* Received a LEAD operation from a node with a higher term,
 		 * thus this node is accepting the node as new leader.
 		 */
@@ -431,7 +428,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 void init_timeout(struct proto_instance *ins)
 {
-	int ftime_ns;
 	ktime_t timeout;
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
@@ -474,7 +470,7 @@ void reset_ftimeout(struct proto_instance *ins)
 	 hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 
 #if VERBOSE_DEBUG
-	asguard_log_le("%s, %llu, %d: reset follower timeout occured.\n",
+	asguard_log_le("%s, %llu, %d: reset follower timeout occured: new timeout is %lld ms\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,

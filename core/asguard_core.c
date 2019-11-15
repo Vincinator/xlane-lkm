@@ -310,7 +310,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 }
 EXPORT_SYMBOL(asguard_core_register_nic);
 
-static int asguard_core_remove_nic(int asguard_id)
+int asguard_core_remove_nic(int asguard_id)
 {
 	int i;
 	char name_buf[MAX_ASGUARD_PROC_NAME];
@@ -341,6 +341,7 @@ static int asguard_core_remove_nic(int asguard_id)
 
 	return 0;
 }
+EXPORT_SYMBOL(asguard_core_remove_nic);
 
 int asguard_validate_asguard_device(int asguard_id)
 {
@@ -404,7 +405,7 @@ error:
 
 void clear_protocol_instances(struct asguard_device *sdev)
 {
-	int idx, i;
+	int i;
 
 	if (!sdev) {
 		asguard_error("SDEV is NULL - can not clear instances.\n");
@@ -576,11 +577,7 @@ void asguard_stop(int asguard_id)
 
 static void __exit asguard_connection_core_exit(void)
 {
-	int i;
-
 	kfree(score);
-	//clean_asguard_proto_info_interfaces();
-
 }
 
 module_init(asguard_connection_core_init);

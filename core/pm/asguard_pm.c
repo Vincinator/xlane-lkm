@@ -290,7 +290,7 @@ static int asguard_pm_loop(void *data)
 #else
 static int asguard_pm_loop(void *data)
 {
-
+	return 0;
 }
 #endif
 
@@ -331,7 +331,7 @@ static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 #else
 static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 {
-
+	return 0;
 }
 #endif
 
@@ -373,7 +373,7 @@ int asguard_pm_start_loop(void *data)
 	struct asguard_device *sdev =
 		container_of(spminfo, struct asguard_device, pminfo);
 	struct cpumask mask;
-	int err, i;
+	int err;
 
 	err = _validate_pm(sdev, spminfo);
 

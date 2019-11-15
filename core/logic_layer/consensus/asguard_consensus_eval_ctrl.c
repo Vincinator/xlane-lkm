@@ -15,8 +15,6 @@ static ssize_t asguard_eval_ctrl_write(struct file *file,
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)PDE_DATA(file_inode(file));
-	struct asguard_device *sdev =
-		(struct asguard_device *)PDE_DATA(file_inode(file));
 	char kernel_buffer[ASGUARD_NUMBUF];
 	int eval_selection = -3;
 	size_t size;

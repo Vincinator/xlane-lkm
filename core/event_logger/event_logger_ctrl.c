@@ -118,7 +118,7 @@ void init_logger_ctrl(struct asguard_logger *slog)
 
 	if (!slog) {
 		asguard_error("ins or Logs are not initialized!\n");
-		return -ENOMEM;
+		return;
 	}
 
 	snprintf(name_buf, sizeof(name_buf),
@@ -127,6 +127,6 @@ void init_logger_ctrl(struct asguard_logger *slog)
 
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_event_ctrl_ops, slog);
 
-	return 0;
+	return;
 }
 EXPORT_SYMBOL(init_logger_ctrl);

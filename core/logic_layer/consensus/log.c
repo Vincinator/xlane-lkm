@@ -28,8 +28,6 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
 
 	return 0;
-error:
-	return err;
 }
 
 
@@ -58,8 +56,6 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 {
 	int err;
 	int last_idx;
-	struct consensus_priv *priv =
-		container_of(log, struct consensus_priv, sm_log);
 	struct sm_log_entry *entry;
 
 

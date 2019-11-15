@@ -58,7 +58,6 @@ static ssize_t asguard_rx_ctrl_write(struct file *file,
 static int asguard_rx_ctrl_show(struct seq_file *m, void *v)
 {
 	struct asguard_device *sdev = (struct asguard_device *)m->private;
-	int i;
 
 	if (!sdev)
 		return -ENODEV;
@@ -116,7 +115,7 @@ static ssize_t asguard_verbose_ctrl_write(struct file *file,
 	}
 
 	sdev->verbose = new_state;
-	asguard_dbg("verbosity level set to %d\n", new_state);
+	asguard_dbg("verbosity level set to %ld\n", new_state);
 
 	return count;
 }
@@ -124,7 +123,6 @@ static ssize_t asguard_verbose_ctrl_write(struct file *file,
 static int asguard_verbose_ctrl_show(struct seq_file *m, void *v)
 {
 	struct asguard_device *sdev = (struct asguard_device *)m->private;
-	int i;
 
 	if (!sdev)
 		return -ENODEV;
