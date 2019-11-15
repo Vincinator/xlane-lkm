@@ -14,7 +14,6 @@
 
 int apply_log_to_sm(struct consensus_priv *priv)
 {
-	int err;
 	struct state_machine_cmd_log *log;
 	int applying;
 

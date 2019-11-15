@@ -71,11 +71,9 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 			container_of(timer, struct consensus_test_container, timer);
 
 	struct consensus_priv *priv = test_data->priv;
-	struct asguard_device *sdev = priv->sdev;
 	u32 rand_value, rand_id;
 	ktime_t currtime, interval;
 	struct sm_command *cur_cmd;
-	struct asguard_payload *spay;
 	int err = 0;
 	int i;
 

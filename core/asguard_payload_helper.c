@@ -172,7 +172,7 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 
 void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id)
 {
-	s32 match_index, next_index, cur_index;
+	s32 next_index, cur_index;
 	s32 prev_log_term, leader_commit_idx;
 	s32 num_entries = 0;
 	char *pkt_payload_sub;

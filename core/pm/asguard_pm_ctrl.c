@@ -22,8 +22,6 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 	struct pminfo *spminfo =
 		(struct pminfo *)PDE_DATA(file_inode(file));
 	long new_hb_state = -1;
-	struct task_struct *heartbeat_task;
-	struct cpumask mask;
 
 	if (!spminfo)
 		return -ENODEV;
