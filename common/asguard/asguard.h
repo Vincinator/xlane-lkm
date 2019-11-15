@@ -6,7 +6,7 @@
 #ifndef CONFIG_KUNIT
 #define RDTSC_ASGUARD rdtsc()
 #else
-#define RDTSC_ASGUARD 0
+#define RDTSC_ASGUARD 0ULL
 #endif
 
 
