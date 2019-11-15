@@ -6,7 +6,6 @@
 #include "include/leader.h"
 #include "include/follower.h"
 #include "include/candidate.h"
-#include "include/log.h"
 
 
 char *_le_state_name(enum le_state state)

@@ -11,7 +11,6 @@
 
 #include <asguard/payload_helper.h>
 
-#include "include/log.h"
 #include "include/consensus_helper.h"
 #include "include/asguard_consensus_ops.h"
 #include <asguard/consensus.h>
