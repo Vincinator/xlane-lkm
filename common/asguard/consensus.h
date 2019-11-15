@@ -43,12 +43,10 @@ enum node_state {
 	LEADER = 2,
 };
 
-
-struct sm_command{
+struct sm_command {
 	u32 sm_logvar_id;
 	u32 sm_logvar_value;
 };
-
 
 struct sm_log_entry {
 

@@ -32,12 +32,11 @@ static ssize_t asguard_le_config_write(struct file *file,
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		asguard_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
 	kernel_buffer[size] = '\0';
-	
 
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
@@ -63,15 +62,15 @@ static ssize_t asguard_le_config_write(struct file *file,
 		} else if (state == 3) {
 			cmax_tmp = tmp;
 			state = 4;
-		}else if (state == 4) {
+		} else if (state == 4) {
 			max_entries_per_pkt_tmp = tmp;
 			break;
-		} 
+		}
 	}
 
 	if (!(fmin_tmp < fmax_tmp && cmin_tmp < cmax_tmp)) {
-		asguard_error("Invalid Ranges! Must assure that fmin < fmax and cmin < cmax \n");
-		asguard_error("input order: fmin, fmax, cmin, cmax, max_entries_per_pkt_tmp  \n");
+		asguard_error("Invalid Ranges! Must assure that fmin < fmax and cmin < cmax\n");
+		asguard_error("input order: fmin, fmax, cmin, cmax, max_entries_per_pkt_tmp\n");
 		goto error;
 	}
 
@@ -90,7 +89,7 @@ static ssize_t asguard_le_config_write(struct file *file,
 
 	return count;
 error:
-	asguard_error("Error during parsing of input.%s\n", __FUNCTION__);
+	asguard_error("Error during parsing of input.%s\n", __func__);
 	return err;
 
 }
@@ -103,8 +102,7 @@ static int asguard_le_config_show(struct seq_file *m, void *v)
 	if (!priv)
 		return -ENODEV;
 
-	//seq_printf(m, "fmin,fmax,cmin,cmax (in ns) \n");
-	seq_printf(m, "%d,%d,%d,%d,%d\n", 
+	seq_printf(m, "%d,%d,%d,%d,%d\n",
 		priv->ft_min,
 		priv->ft_max,
 		priv->ct_min,
@@ -120,7 +118,6 @@ static int asguard_le_config_open(struct inode *inode, struct file *file)
 			   PDE_DATA(file_inode(file)));
 }
 
-
 static const struct file_operations asguard_le_config_ops = {
 	.owner = THIS_MODULE,
 	.open = asguard_le_config_open,
@@ -134,11 +131,12 @@ void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/le_config",
-			 priv->sdev->ifindex, priv->ins->instance_id);
-	
+	snprintf(name_buf, sizeof(name_buf),
+			"asguard/%d/proto_instances/%d/le_config",
+			priv->sdev->ifindex, priv->ins->instance_id);
+
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_le_config_ops, priv);
-	
+
 
 }
 EXPORT_SYMBOL(init_le_config_ctrl_interfaces);
@@ -147,9 +145,10 @@ void remove_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d/le_config",
-			 priv->sdev->ifindex, priv->ins->instance_id);
-	
+	snprintf(name_buf, sizeof(name_buf),
+			"asguard/%d/proto_instances/%d/le_config",
+			priv->sdev->ifindex, priv->ins->instance_id);
+
 	remove_proc_entry(name_buf, NULL);
 
 }

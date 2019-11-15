@@ -42,19 +42,19 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 		asguard_error(" Could not find asguard device!\n");
 		return -ENODEV;
 	}
-	
+
 
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		asguard_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
 	kernel_buffer[size] = '\0';
-	
+
 
 	search_str = kstrdup(kernel_buffer, GFP_KERNEL);
 	while ((input_str = strsep(&search_str, delimiters)) != NULL) {
@@ -62,19 +62,19 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 			continue;
 		if (state == 0) {
 			err = kstrtoint(input_str, 10, &instance_id);
-			
+
 
 			if (err)
 				goto error;
 
 			if (instance_id == -1) {
-				
+
 				// clear all existing protocols and exit
 				clear_protocol_instances(sdev);
 				asguard_dbg("cleared all instances\n");
 				return count;
 			}
-			
+
 
 			asguard_dbg("instance id: %s\n", input_str);
 			state = 1;
@@ -83,21 +83,21 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 
 			if (err)
 				goto error;
-			
+
 			err = register_protocol_instance(sdev, instance_id, protocol_id);
-			
+
 
 			if (err)
 				goto error;
 
-		} 
+		}
 	}
 	asguard_dbg("Created a new protocol instance  of type %d with instance id %d\n",
 			  protocol_id, instance_id);
 	return count;
 error:
 
-	asguard_error("Error during parsing of input.%s\n", __FUNCTION__);
+	asguard_error("Error during parsing of input.%s\n", __func__);
 	return err;
 }
 

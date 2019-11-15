@@ -36,7 +36,7 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 	err = copy_from_user(kernel_buffer, buffer, count);
 
 	if (err) {
-		asguard_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
@@ -45,7 +45,7 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_hb_state);
 
 	if (err) {
-		asguard_error("Error converting input%s\n", __FUNCTION__);
+		asguard_error("Error converting input%s\n", __func__);
 		goto error;
 	}
 
@@ -68,10 +68,10 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 		goto error;
 	}
 
-	asguard_dbg("Heartbeat state changed successfully.%s\n", __FUNCTION__);
+	asguard_dbg("Heartbeat state changed successfully.%s\n", __func__);
 	return count;
 error:
-	asguard_error("Heartbeat control failed.%s\n", __FUNCTION__);
+	asguard_error("Heartbeat control failed.%s\n", __func__);
 	return err;
 }
 
@@ -119,7 +119,7 @@ static ssize_t asguard_cpumgmt_write(struct file *file,
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		asguard_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
@@ -140,7 +140,7 @@ static ssize_t asguard_cpumgmt_write(struct file *file,
 
 	return count;
 error:
-	asguard_error("Could not set cpu.%s\n", __FUNCTION__);
+	asguard_error("Could not set cpu.%s\n", __func__);
 	return err;
 }
 
@@ -185,7 +185,7 @@ static ssize_t asguard_hbi_write(struct file *file,
 	err = copy_from_user(kernel_buffer, buffer, count);
 
 	if (err) {
-		asguard_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
@@ -194,7 +194,7 @@ static ssize_t asguard_hbi_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_hbi);
 
 	if (err) {
-		asguard_error("Error converting input%s\n", __FUNCTION__);
+		asguard_error("Error converting input%s\n", __func__);
 		goto error;
 	}
 
@@ -206,11 +206,11 @@ static ssize_t asguard_hbi_write(struct file *file,
 	}
 
 	spminfo->hbi = new_hbi;
-	
-	asguard_dbg("Heartbeat state changed successfully.%s\n", __FUNCTION__);
+
+	asguard_dbg("Heartbeat state changed successfully.%s\n", __func__);
 	return count;
 error:
-	asguard_error("Heartbeat control failed.%s\n", __FUNCTION__);
+	asguard_error("Heartbeat control failed.%s\n", __func__);
 	return err;
 }
 
@@ -258,7 +258,7 @@ static ssize_t asguard_payload_write(struct file *file,
 
 	ret = copy_from_user(kernel_buffer, user_buffer, count);
 	if (ret) {
-		asguard_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __func__);
 		goto out;
 	}
 
@@ -363,7 +363,7 @@ static ssize_t asguard_target_write(struct file *file,
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 	if (err) {
-		asguard_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __func__);
 		goto error;
 	}
 
@@ -389,7 +389,7 @@ static ssize_t asguard_target_write(struct file *file,
 			current_ip = asguard_ip_convert(input_str);
 			if (current_ip == -EINVAL) {
 				asguard_error("Error formating IP address. %s\n",
-					    __FUNCTION__);
+					    __func__);
 				return -EINVAL;
 			}
 			state = 1;
@@ -412,7 +412,7 @@ static ssize_t asguard_target_write(struct file *file,
 			}
 
 
-		
+
 			state = 3;
 		} else if (state == 3) {
 			err = kstrtoint(input_str, 10, &cluster_id);
@@ -436,7 +436,7 @@ static ssize_t asguard_target_write(struct file *file,
 
 	return count;
 error:
-	asguard_error("Error during parsing of input.%s\n", __FUNCTION__);
+	asguard_error("Error during parsing of input.%s\n", __func__);
 	return err;
 }
 
@@ -492,7 +492,7 @@ static ssize_t asguard_test_ctrl_write(struct file *file,
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		asguard_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __func__);
 		return err;
 	}
 
@@ -501,7 +501,7 @@ static ssize_t asguard_test_ctrl_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_active_processes);
 
 	if (err) {
-		asguard_error("Error converting input%s\n", __FUNCTION__);
+		asguard_error("Error converting input%s\n", __func__);
 		return err;
 	}
 

@@ -27,7 +27,7 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 
 	write_log(&priv->ins->logger, FOLLOWER_TIMEOUT, RDTSC_ASGUARD);
 
-#if 1
+#if VERBOSE_DEBUG
 
 	asguard_log_le("%s, %llu, %d: Follower timer timed out\n",
 			nstate_string(priv->nstate),
@@ -55,8 +55,8 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	char *pkt_payload_sub;
 	int hb_passive_ix;
 
-#if 1
-	asguard_log_le("%s, %llu, %d: REPLY APPEND append_success=%d, param1=%d,logged_idx=%d \n",
+#if VERBOSE_DEBUG
+	asguard_log_le("%s, %llu, %d: REPLY APPEND append_success=%d, param1=%d,logged_idx=%d\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,
@@ -69,18 +69,18 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
 
 	pkt_payload =
-     	spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
+		spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
 
 	pkt_payload_sub =
- 		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
+		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
 
 
- 	if (!pkt_payload_sub) {
- 		asguard_error("Sassy packet full! This error is not handled - not implemented\n");
- 		return -1;
- 	}
+	if (!pkt_payload_sub) {
+		asguard_error("Sassy packet full!\n");
+		return -1;
+	}
 
-	set_le_opcode((unsigned char*)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx, 0);
+	set_le_opcode((unsigned char *)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx, 0);
 
 	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
 
@@ -94,7 +94,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
-#if 1
+#if VERBOSE_DEBUG
 
 	asguard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
 			nstate_string(priv->nstate),
@@ -342,11 +342,11 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	s32 param1, param2, param3, param4;
 
 
-#if 1
+#if VERBOSE_DEBUG
 	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
 #endif
 
-	switch(opcode) {
+	switch (opcode) {
 		// param1 interpreted as term
 		// param2 interpreted as candidateID
 		// param3 interpreted as lastLogIndex of Candidate
@@ -354,25 +354,25 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case VOTE:
 		break;
 	case NOMI:
-	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
-	 	if (check_handle_nomination(priv, param1, param2, param3, param4)) {
-		 	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
+		if (check_handle_nomination(priv, param1, param2, param3, param4)) {
+			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 			reset_ftimeout(ins);
-		 }
+		}
 		break;
 	case NOOP:
 		break;
 	case APPEND:
-	 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
+		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 		/* Received a LEAD operation from a node with a higher term,
 		 * thus this node is accepting the node as new leader.
 		 */
 		if (param1 > priv->term) {
 
-#if 1
+#if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 #endif
@@ -394,7 +394,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		else if (param1 == priv->term) {
 
 			if (priv->leader_id == remote_lid) {
-#if 0
+#if VERBOSE_DEBUG
 				if (sdev->verbose >= 5)
 					asguard_dbg("Received message from known leader term=%u\n", param1);
 #endif
@@ -402,8 +402,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				reset_ftimeout(ins);
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
-			}else {
-#if 1
+			} else {
+#if VERBOSE_DEBUG
 				if (sdev->verbose >= 2)
 					asguard_dbg("Received message from new leader term=%u\n", param1);
 #endif
@@ -414,7 +414,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 * Ignoring this LEAD operation and let the countdown continue to go down.
 		 */
 		else {
-#if 1
+#if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received APPEND from leader with lower term=%u\n", param1);
 #endif
@@ -422,7 +422,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		}
 		break;
 	default:
-		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n",remote_lid, opcode);
+		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", remote_lid, opcode);
 
 	}
 
@@ -450,8 +450,8 @@ void init_timeout(struct proto_instance *ins)
 
 	priv->accu_rand = timeout; // first rand timeout of this follower
 
-#if 0
-	asguard_log_le("%s, %llu, %d: Init follower timeout to %lld ms. \n",
+#if VERBOSE_DEBUG
+	asguard_log_le("%s, %llu, %d: Init follower timeout to %lld ms.\n",
 		nstate_string(priv->nstate),
 		RDTSC_ASGUARD,
 		priv->term,
@@ -473,7 +473,7 @@ void reset_ftimeout(struct proto_instance *ins)
 	 hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
 	 hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 
-#if 0
+#if VERBOSE_DEBUG
 	asguard_log_le("%s, %llu, %d: reset follower timeout occured.\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
@@ -509,9 +509,9 @@ int start_follower(struct proto_instance *ins)
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;
 
- 	init_timeout(ins);
+	init_timeout(ins);
 
-#if 1
+#if VERBOSE_DEBUG
 	asguard_dbg("Node became a follower\n");
 #endif
 

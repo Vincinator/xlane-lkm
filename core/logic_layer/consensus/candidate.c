@@ -36,17 +36,17 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 
 	priv->c_retries++;
 	write_log(&priv->ins->logger, CANDIDATE_TIMEOUT, RDTSC_ASGUARD);
-	
+
 	/* The candidate can not get a majority from the cluster.
-	 * Probably less than the required majority of nodes are alive. 
-	 * 
+	 * Probably less than the required majority of nodes are alive.
+	 *
 	 * Option 1: start the process over and retry as follower
 	 * Option 2: become Leader without majority (interim Leader)
 	 * Option 3: Unreachable, retry only manually - shutdown leader election.
 	 *
 	 */
 	if (priv->c_retries >= CANDIDATURE_RETRY_LIMIT) {
-#if 1
+#if VERBOSE_DEBUG
 		asguard_log_le("%s, %llu, %d: reached maximum of candidature retries\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD);
@@ -69,7 +69,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	timeout = get_rnd_timeout(priv->c_retries * priv->ct_min, priv->c_retries * priv->ct_max);
 
 	hrtimer_forward_now(timer, timeout);
-#if 1
+#if VERBOSE_DEBUG
 	asguard_log_le("%s, %llu, %d: Restart candidate timer with %lld ms timeout - Candidature retry %d.\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
@@ -79,13 +79,13 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 #endif
 
 	return HRTIMER_RESTART;
-	
+
 }
 
 void reset_ctimeout(struct proto_instance *ins)
 {
 	ktime_t timeout;
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 			(struct consensus_priv *)ins->proto_data;
 
 	priv->c_retries = 0;
@@ -94,7 +94,7 @@ void reset_ctimeout(struct proto_instance *ins)
 	hrtimer_cancel(&priv->ctimer);
 	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ctimer, HRTIMER_MODE_REL_PINNED);
-#if 1
+#if VERBOSE_DEBUG
 	asguard_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
@@ -109,9 +109,9 @@ void init_ctimeout(struct proto_instance *ins)
 	int ftime_ns;
 	ktime_t timeout;
 
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
-	
+
 	if (priv->ctimer_init == 1) {
 		reset_ctimeout(ins);
 		return;
@@ -125,7 +125,7 @@ void init_ctimeout(struct proto_instance *ins)
 
 	priv->ctimer.function = &_handle_candidate_timeout;
 
-#if 1
+#if VERBOSE_DEBUG
 	asguard_log_le("%s, %llu, %d: Init Candidate timeout to %lld ms.\n",
 		nstate_string(priv->nstate),
 		RDTSC_ASGUARD,
@@ -138,7 +138,7 @@ void init_ctimeout(struct proto_instance *ins)
 
 int setup_nomination(struct proto_instance *ins)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
 	priv->term++;
@@ -149,16 +149,16 @@ int setup_nomination(struct proto_instance *ins)
 	return 0;
 }
 
-void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt) 
+void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 {
 	int err;
 
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
 	priv->votes++;
 
-#if 1
+#if VERBOSE_DEBUG
 	asguard_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
 					nstate_string(priv->nstate),
 					RDTSC_ASGUARD,
@@ -171,8 +171,8 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 
 	if (priv->votes * 2 >= (priv->sdev->pminfo.num_of_targets + 1)) {
 
-#if 1
-		asguard_log_le("%s, %llu, %d: got majority with %d from %d possible votes \n",
+#if VERBOSE_DEBUG
+		asguard_log_le("%s, %llu, %d: got majority with %d from %d possible votes\n",
 				nstate_string(priv->nstate),
 				RDTSC_ASGUARD,
 				priv->term,
@@ -189,7 +189,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 			asguard_error("Error occured during the transition to leader role\n");
 			return;
 		}
-	}else {
+	} else {
 		reset_ctimeout(ins);
 	}
 
@@ -197,16 +197,16 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 
 int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 	struct asguard_device *sdev = priv->sdev;
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
-#if 1
+#if VERBOSE_DEBUG
 	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
 #endif
-	switch(opcode) {
+	switch (opcode) {
 	case VOTE:
 		accept_vote(ins, remote_lid, pkt);
 		break;
@@ -222,11 +222,11 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
 		if (check_handle_nomination(priv, param1, param2, param3, param4)) {
-		  	node_transition(ins, FOLLOWER);
-		  	reply_vote(ins, remote_lid, rcluster_id, param1, param2);
+			node_transition(ins, FOLLOWER);
+			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}
 
-		break;		
+		break;
 	case NOOP:
 		break;
 	case APPEND:
@@ -234,7 +234,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 
 		if (param1 >= priv->term) {
 
-#if 1
+#if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
@@ -242,15 +242,15 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 
 		} else {
-#if 1
+#if VERBOSE_DEBUG
 
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received LEAD from leader with lower term=%u\n", param1);
 #endif
-			// Ignore this LEAD message, continue to wait for votes 
-	
+			// Ignore this LEAD message, continue to wait for votes
+
 		}
-	
+
 		break;
 	default:
 		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", remote_lid, opcode);
@@ -261,8 +261,8 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 
 int stop_candidate(struct proto_instance *ins)
 {
-	
-	struct consensus_priv *priv = 
+
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
 	if (priv->ctimer_init == 0)
@@ -275,7 +275,7 @@ int stop_candidate(struct proto_instance *ins)
 
 int start_candidate(struct proto_instance *ins)
 {
-	struct consensus_priv *priv = 
+	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
 	priv->votes = 0;

@@ -11,7 +11,6 @@
 
 #include <asguard/payload_helper.h>
 
-#include "include/log.h"
 #include "include/consensus_helper.h"
 #include "include/asguard_consensus_ops.h"
 #include <asguard/consensus.h>
@@ -134,14 +133,14 @@ void set_ae_data(unsigned char *pkt,
 	if (num_of_entries == 0)
 		return;
 
-	if (first_idx > priv->sm_log.last_idx ) {
+	if (first_idx > priv->sm_log.last_idx) {
 		asguard_error("Nothing to send, first_idx > priv->sm_log.last_idx %d, %d", first_idx, priv->sm_log.last_idx);
 		*included_entries = 0;
 		return;
 	}
 
 	//check if num_of_entries would exceed actual entries
-	if ((first_idx + (num_of_entries - 1) )> priv->sm_log.last_idx) {
+	if ((first_idx + (num_of_entries - 1)) > priv->sm_log.last_idx) {
 		asguard_error("BUG! can not send more entries than available... %d, %d, %d\n",
 					first_idx, num_of_entries, priv->sm_log.last_idx);
 		*included_entries = 0;
@@ -150,7 +149,7 @@ void set_ae_data(unsigned char *pkt,
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	for(i = first_idx; i < first_idx + num_of_entries; i++) {
+	for (i = first_idx; i < first_idx + num_of_entries; i++) {
 
 		if (!entries[i]) {
 			asguard_dbg("BUG! - entries at %d is null", i);
@@ -176,7 +175,7 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 
 	if (priv->term < param1) {
 		if (priv->voted == param1) {
-#if 1
+#if VERBOSE_DEBUG
 		asguard_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
 #endif
 			return 0;
@@ -243,7 +242,6 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 
 	ins = kmalloc (sizeof(struct proto_instance), GFP_KERNEL);
 
-
 	if (!ins)
 		goto error;
 
@@ -275,7 +273,7 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 
 	return ins;
 error:
-	asguard_dbg("Error in %s", __FUNCTION__);
+	asguard_dbg("Error in %s", __func__);
 	return NULL;
 }
 EXPORT_SYMBOL(get_consensus_proto_instance);

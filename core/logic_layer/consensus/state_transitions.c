@@ -6,18 +6,7 @@
 #include "include/leader.h"
 #include "include/follower.h"
 #include "include/candidate.h"
-#include "include/log.h"
 
-
-// static char *node_state_name(enum node_state state)
-// {
-// 	switch (state) {
-// 	case FOLLOWER: return "Follower";
-// 	case CANDIDATE: return "Candidate";
-// 	case LEADER: return "Leader";
-// 	default: return "UNKNOWN STATE";
-// 	}
-// }
 
 char *_le_state_name(enum le_state state)
 {
@@ -40,17 +29,17 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 	     !!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
 
 	pkt_payload =
-     	spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
+		spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
 
 	pkt_payload_sub =
- 		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
+		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
 
- 	if (!pkt_payload_sub) {
- 		asguard_error("Sassy packet full! This error is not handled - not implemented\n");
- 		return -1;
- 	}
+	if (!pkt_payload_sub) {
+		asguard_error("Sassy packet full!\n");
+		return -1;
+	}
 
-	set_le_opcode((unsigned char*)pkt_payload_sub, opcode, param1, param2, param3, param4);
+	set_le_opcode((unsigned char *)pkt_payload_sub, opcode, param1, param2, param3, param4);
 
 	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 
@@ -84,7 +73,7 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
-#if 1
+#if VERBOSE_DEBUG
 	asguard_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
@@ -101,8 +90,8 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u
 
 void le_state_transition_to(struct consensus_priv *priv, enum le_state state)
 {
-#if 1
-	asguard_dbg("Leader Election Activation State Transition from %s to %s \n", _le_state_name(priv->state), _le_state_name(state));
+#if VERBOSE_DEBUG
+	asguard_dbg("Leader Election Activation State Transition from %s to %s\n", _le_state_name(priv->state), _le_state_name(state));
 #endif
 	priv->state = state;
 
@@ -117,15 +106,15 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 	priv->votes = 0; // start with 0 votes on every transition
 
 	// Stop old timeouts
-	switch(state) {
-		case FOLLOWER:
-			stop_follower(ins);
-			break;
-		case CANDIDATE:
-			stop_candidate(ins);
-			break;
-		default:
-			break;
+	switch (state) {
+	case FOLLOWER:
+		stop_follower(ins);
+		break;
+	case CANDIDATE:
+		stop_candidate(ins);
+		break;
+	default:
+		break;
 	}
 
 	switch (state) {
@@ -145,7 +134,7 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 
 	if (err)
 		goto error;
-#if 1
+#if VERBOSE_DEBUG
 	asguard_log_le("%s, %llu, %d: transition to state %s\n",
 				nstate_string(priv->nstate),
 				RDTSC_ASGUARD,

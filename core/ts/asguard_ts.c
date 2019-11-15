@@ -78,7 +78,7 @@ int asguard_write_timestamp(struct asguard_device *sdev,
 
 
 	if (!sdev||! sdev->stats||!sdev->stats->timestamp_logs[logid]) {
-		asguard_dbg("Nullptr error in %s\n", __FUNCTION__);
+		asguard_dbg("Nullptr error in %s\n", __func__);
 		return 0;
 	}
 
@@ -87,7 +87,7 @@ int asguard_write_timestamp(struct asguard_device *sdev,
 	if (unlikely(logs->current_timestamps > TIMESTAMP_ARRAY_LIMIT)) {
 
 		asguard_dbg("Logs are full! Stopped tracking.%s\n",
-		       __FUNCTION__);
+		       __func__);
 
 		asguard_ts_stop(sdev);
 		ts_state_transition_to(sdev, ASGUARD_TS_LOG_FULL);
@@ -115,7 +115,7 @@ int asguard_ts_start(struct asguard_device *sdev)
 {
 
 	if (sdev->ts_state != ASGUARD_TS_READY) {
-		asguard_error(" asguard is not in ready state. %s\n", __FUNCTION__);
+		asguard_error(" asguard is not in ready state. %s\n", __func__);
 		goto error;
 	}
 
@@ -134,7 +134,7 @@ int asguard_reset_stats(struct asguard_device *sdev)
 	if (sdev == NULL||sdev->stats == NULL) {
 		asguard_error(
 			"can not clear stats, nullptr error.%s\n",
-			__FUNCTION__);
+			__func__);
 		err = -EINVAL;
 		goto error;
 	}
@@ -142,7 +142,7 @@ int asguard_reset_stats(struct asguard_device *sdev)
 	if (sdev->ts_state == ASGUARD_TS_RUNNING) {
 		asguard_error(
 			" can not clear stats when timestamping is active.%s\n",
-			__FUNCTION__);
+			__func__);
 		err = -EPERM;
 		goto error;
 	}
@@ -150,7 +150,7 @@ int asguard_reset_stats(struct asguard_device *sdev)
 	if (sdev->ts_state != ASGUARD_TS_READY) {
 		asguard_error(
 			"can not clear stats, asguard timestamping is in an undefined state.%s\n",
-			__FUNCTION__);
+			__func__);
 		err = -EPERM;
 		goto error;
 	}
@@ -158,18 +158,18 @@ int asguard_reset_stats(struct asguard_device *sdev)
 	/* Reset, not free so timestamping can continue directly.*/
 	for (i = 0; i < sdev->stats->timestamp_amount; i++) {
 		if (!sdev->stats->timestamp_logs[i]) {
-			asguard_error( "BUG! timestamp_log index does not exist. %s\n",__FUNCTION__);
+			asguard_error( "BUG! timestamp_log index does not exist. %s\n",__func__);
 			err = -EPERM;
 			goto error;
 		} else {
 			sdev->stats->timestamp_logs[i]->current_timestamps = 0;
 		}
-		
+
 	}
 
 	return 0;
 error:
-	asguard_error(" error code: %d for %s\n", err, __FUNCTION__);
+	asguard_error(" error code: %d for %s\n", err, __func__);
 	return err;
 }
 
@@ -183,7 +183,7 @@ int asguard_clean_timestamping(struct asguard_device *sdev)
 	if (!sdev->stats) {
 		err = -EINVAL;
 		asguard_error(" stats for active device is not valid %s\n",
-			    __FUNCTION__);
+			    __func__);
 		goto error;
 	}
 
@@ -216,10 +216,10 @@ int asguard_clean_timestamping(struct asguard_device *sdev)
 	kfree(sdev->stats);
 
 	ts_state_transition_to(sdev, ASGUARD_TS_UNINIT);
-	asguard_dbg(" cleanup done%s\n", __FUNCTION__);
+	asguard_dbg(" cleanup done%s\n", __func__);
 	return 0;
 error:
-	asguard_error(" error code: %d for %s\n", err, __FUNCTION__);
+	asguard_error(" error code: %d for %s\n", err, __func__);
 	return err;
 }
 
@@ -234,7 +234,7 @@ static int init_log_ctrl(struct asguard_device *sdev, int logid)
 
 	if (!sdev->stats) {
 		err = -ENOMEM;
-		asguard_error(" Stats is not initialized!%s\n", __FUNCTION__);
+		asguard_error(" Stats is not initialized!%s\n", __func__);
 		goto error;
 	}
 
@@ -251,14 +251,14 @@ static int init_log_ctrl(struct asguard_device *sdev, int logid)
 		err = -ENOMEM;
 		asguard_error(
 			" Could not create timestamps  procfs data entry%s\n",
-			__FUNCTION__);
+			__func__);
 		goto error;
 	}
-	asguard_dbg(" Created %d procfs %s\n",  logid, __FUNCTION__);
+	asguard_dbg(" Created %d procfs %s\n",  logid, __func__);
 	return 0;
 
 error:
-	asguard_error(" error code: %d for %s\n", err, __FUNCTION__);
+	asguard_error(" error code: %d for %s\n", err, __func__);
 	return err;
 }
 
@@ -270,11 +270,11 @@ int init_timestamping(struct asguard_device *sdev)
 	int i;
 
 	if (sdev->verbose)
-		asguard_dbg(" asguard device setup started %s\n", __FUNCTION__);
+		asguard_dbg(" asguard device setup started %s\n", __func__);
 
 	if (!sdev) {
 		err = -EINVAL;
-		asguard_error(" asguard device is NULL %s\n", __FUNCTION__);
+		asguard_error(" asguard device is NULL %s\n", __func__);
 		goto error;
 	}
 
@@ -282,7 +282,7 @@ int init_timestamping(struct asguard_device *sdev)
 	if (!sdev->stats) {
 		err = -ENOMEM;
 		asguard_error(" Could not allocate memory for stats.%s\n",
-			    __FUNCTION__);
+			    __func__);
 		goto error;
 	}
 
@@ -294,7 +294,7 @@ int init_timestamping(struct asguard_device *sdev)
 		err = -ENOMEM;
 		asguard_error(
 			" Could not allocate memory for timestamp_logs pointer.%s\n",
-			__FUNCTION__);
+			__func__);
 		goto error;
 	}
 
@@ -338,7 +338,7 @@ int init_timestamping(struct asguard_device *sdev)
 	return 0;
 
 error:
-	asguard_error(" Error code: %d for %s\n", err, __FUNCTION__);
+	asguard_error(" Error code: %d for %s\n", err, __func__);
 	if (sdev && sdev->stats) {
 		kfree(sdev->stats);
 		for (i = 0; i < log_types; i++) {

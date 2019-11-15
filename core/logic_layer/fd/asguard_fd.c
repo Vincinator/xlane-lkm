@@ -29,7 +29,7 @@ static const struct asguard_protocol_ctrl_ops fd_ops = {
 struct proto_instance *get_fd_proto_instance(struct asguard_device *sdev)
 {
 	struct proto_instance *ins;
-	struct asguard_fd_priv *fpriv; 
+	struct asguard_fd_priv *fpriv;
 
 	ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
 
@@ -51,7 +51,7 @@ struct proto_instance *get_fd_proto_instance(struct asguard_device *sdev)
 
 	return ins;
 error:
-	asguard_dbg("Error in %s", __FUNCTION__);
+	asguard_dbg("Error in %s", __func__);
 	return NULL;
 }
 EXPORT_SYMBOL(get_fd_proto_instance);

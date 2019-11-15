@@ -53,10 +53,12 @@ const char *pm_state_string(enum pmstate state)
 	}
 }
 
+
+
 void pm_state_transition_to(struct pminfo *spminfo,
 			    const enum pmstate state)
 {
-#if 1
+#if VERBOSE_DEBUG
 	asguard_dbg("State Transition from %s to %s\n",
 		  pm_state_string(spminfo->state), pm_state_string(state));
 #endif
@@ -79,9 +81,9 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
 
 		pkt_payload =
-	     	spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
+			spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
- 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
+		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
 
 		/* Setup SKB */
 		spminfo->pm_targets[i].skb = compose_skb(sdev, naddr, pkt_payload);
@@ -155,15 +157,15 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 					 pkt_payload);
 
 		// if (sdev->verbose >= 4)
-		// 	print_hex_dump(KERN_DEBUG,
-		// 		"TX Payload: ", DUMP_PREFIX_NONE,
-		// 		16, 1, pkt_payload, ASGUARD_PAYLOAD_BYTES, 0);
+		//	print_hex_dump(KERN_DEBUG,
+		//		"TX Payload: ", DUMP_PREFIX_NONE,
+		//		16, 1, pkt_payload, ASGUARD_PAYLOAD_BYTES, 0);
 
 		asguard_send_hb(ndev, spminfo->pm_targets[i].skb);
 
 		// if (ts_state == ASGUARD_TS_RUNNING) {
-		// 	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
-		// 	asguard_write_timestamp(sdev, 4, ktime_get(), i);
+		//		asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
+		//		asguard_write_timestamp(sdev, 4, ktime_get(), i);
 		// }
 
 
@@ -180,7 +182,7 @@ static int _validate_pm(struct asguard_device *sdev,
 							struct pminfo *spminfo)
 {
 	if (!spminfo) {
-		asguard_error("No Device. %s\n", __FUNCTION__);
+		asguard_error("No Device. %s\n", __func__);
 		return -ENODEV;
 	}
 
@@ -200,7 +202,7 @@ static int _validate_pm(struct asguard_device *sdev,
 	}
 
 	if (spminfo->num_of_targets <= 0) {
-		asguard_error("num_of_targets is invalid! Have you set the target hosts?\n");
+		asguard_error("num_of_targets is invalid.\n");
 		return -EINVAL;
 	}
 
@@ -227,7 +229,7 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 	put_cpu();
 
 	// Stopping all protocols
-	for(i = 0; i < sdev->num_of_proto_instances; i++)
+	for (i = 0; i < sdev->num_of_proto_instances; i++)
 		if (sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL)
 			sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
 
@@ -252,9 +254,9 @@ static int asguard_pm_loop(void *data)
 		cur_time = RDTSC_ASGUARD;
 
 		// if (!can_fire(prev_time, cur_time, interval))
-		// 	continue;
+		//	continue;
 
-		if (!sdev->fire&&!can_fire(prev_time, cur_time, interval))
+		if (!sdev->fire && !can_fire(prev_time, cur_time, interval))
 			continue;
 
 		sdev->fire = !sdev->fire;
@@ -277,7 +279,7 @@ static int asguard_pm_loop(void *data)
 		local_irq_restore(flags);
 
 		// if (sdev->ts_state == ASGUARD_TS_RUNNING)
-		// 	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, 42);
+		//	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, 42);
 
 	}
 
@@ -304,9 +306,8 @@ static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 
 	ktime_t currtime, interval;
 
-	if (!asguard_pacemaker_is_alive(spminfo)) {
+	if (!asguard_pacemaker_is_alive(spminfo))
 		return HRTIMER_NORESTART;
-	}
 
 	currtime  = ktime_get();
 	interval = ktime_set(0, 100000000);
@@ -383,12 +384,13 @@ int asguard_pm_start_loop(void *data)
 
 	cpumask_clear(&mask);
 
-	heartbeat_task = kthread_create(&asguard_pm_loop, sdev, "asguard pm loop");
+	heartbeat_task = kthread_create(&asguard_pm_loop, sdev,
+			"asguard pm loop");
 
 	kthread_bind(heartbeat_task, spminfo->active_cpu);
 
 	if (IS_ERR(heartbeat_task)) {
-		asguard_error("Task Error. %s\n", __FUNCTION__);
+		asguard_error("Task Error. %s\n", __func__);
 		return -EINVAL;
 	}
 
@@ -411,7 +413,7 @@ int asguard_pm_reset(struct pminfo *spminfo)
 	asguard_dbg("Reset Pacemaker Configuration\n");
 
 	if (!spminfo) {
-		asguard_error("No Device. %s\n", __FUNCTION__);
+		asguard_error("No Device. %s\n", __func__);
 		return -ENODEV;
 	}
 

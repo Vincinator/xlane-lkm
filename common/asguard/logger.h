@@ -16,7 +16,7 @@
 
 #define LOG_LE_PREFIX "[LEADER ELECTION][LOG]"
 
-/* 
+/*
  * Prefixes NIC device ID and ASGUARD Context (e.g. [ASGUARD][NIC4][CONSENSUS])
  */
 #if ASGUARD_DEBUG

@@ -32,7 +32,7 @@ static ssize_t asguard_fdus_reg_write(struct file *file,
 	err = copy_from_user(kernel_buffer, user_buffer, count);
 
 	if (err) {
-		asguard_error("Copy from user failed%s\n", __FUNCTION__);
+		asguard_error("Copy from user failed%s\n", __func__);
 		return err;
 	}
 
@@ -41,7 +41,7 @@ static ssize_t asguard_fdus_reg_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_state);
 
 	if (err) {
-		asguard_error(" Error converting input%s\n", __FUNCTION__);
+		asguard_error(" Error converting input%s\n", __func__);
 		return err;
 	}
 
