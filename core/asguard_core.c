@@ -572,6 +572,11 @@ void asguard_stop(int asguard_id)
 	if (asguard_validate_asguard_device(asguard_id))
 		return;
 
+	if(!score->sdevices[asguard_id]) {
+		asguard_error("asguard device is NULL\n");
+		return;
+	}
+
 	/* Stop Pacemaker */
 	asguard_pm_stop(&score->sdevices[asguard_id]->pminfo);
 
@@ -588,7 +593,7 @@ static void __exit asguard_connection_core_exit(void)
 	unregister_asguard();
 
 	for(i = 0; i < MAX_NIC_DEVICES; i++) {
-
+		asguard_dbg("free iteration %d", i);
 		if(!score->sdevices[i])
 			continue;
 

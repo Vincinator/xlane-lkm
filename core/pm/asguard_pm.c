@@ -409,10 +409,16 @@ int asguard_pm_start_loop(void *data)
 
 int asguard_pm_stop(struct pminfo *spminfo)
 {
+	if(!spminfo) {
+		asguard_error("spminfo is NULL.\n");
+		return -EINVAL;
+	}
+
 	pm_state_transition_to(spminfo, ASGUARD_PM_READY);
 
 	return 0;
 }
+EXPORT_SYMBOL(asguard_pm_stop);
 
 int asguard_pm_reset(struct pminfo *spminfo)
 {
