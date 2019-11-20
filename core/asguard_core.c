@@ -592,9 +592,9 @@ static void __exit asguard_connection_core_exit(void)
 		if(!score->sdevices[i])
 			continue;
 
-		asguard_stop(score->sdevices[i]->asguard_id);
+		asguard_stop(i);
 
-		asguard_core_remove_nic(score->sdevices[i]->asguard_id);
+		asguard_core_remove_nic(i);
 
 	}
 
