@@ -53,9 +53,9 @@ int asguard_ulib_setup(int ifindex) {
         return 0;
 }
 
-// Very unsecure to let the proc decide where to write - not for production! 
-// TODO: memory protection mechanism - process can only write to its assigned memory
-//			... however, this is just a prototype to show the mechanics. 
+// Very unsecure to let the proc decide where to write - not for production!
+// NOTE: memory protection mechanism - process can only write to its assigned memory
+//			... however, this is just a prototype to show the mechanics.
 int asguard_update_status(int procid, uint64_t status) {
         if (!shared_mem_page) {
                 printf(" Update status failed, shared mem page not available\n");
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 {
 	int procid, devid;
 	int counter;
-    
+
     printf("Started Demo! Application.\n");
 
     if (argc != 3) {
@@ -102,12 +102,12 @@ int main(int argc, char **argv)
 	    	counter = 0;
 
 	    asguard_update_status(procid, counter);
-	    
+
 	    running++;
 	    counter++;
     }
-  
+
     printf("Stopped Demo Application.\n");
-  
+
     return 0;
 }

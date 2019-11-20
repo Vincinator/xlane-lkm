@@ -186,7 +186,7 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 
 			// Safety Check during development & Debugging..
 			if (priv->sm_log.entries[priv->sm_log.last_idx] == NULL) {
-				asguard_dbg("BUG! Log is faulty can not grant any votes. /n");
+				asguard_dbg("BUG! Log is faulty can not grant any votes. \n");
 				return 0;
 			}
 

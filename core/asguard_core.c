@@ -556,7 +556,7 @@ static int __init asguard_connection_core_init(void)
 
 	return 0;
 error:
-	asguard_error("Could not initialize asguard - aborting init./n");
+	asguard_error("Could not initialize asguard - aborting init.\n");
 	return err;
 
 }

@@ -120,8 +120,13 @@ static inline void asguard_update_skb_payload(struct sk_buff *skb, void *payload
 	tail_ptr = skb_tail_pointer(skb);
 	data_ptr = (tail_ptr - ASGUARD_PAYLOAD_BYTES);
 
-	// TODO: directly write in skb, and use skb dual-buffer!?
-	// TODO: check if the skb memory is moved/freed by the NIC
+/* TODO: directly write in skb, and use skb dual-buffer!?
+ * Update: when we write directly to the skb, then we need to
+ *			implement a locking mechanism for NIC/CPU accessing the
+ *			skb's.. Which would introduce potential jitter sources..
+ *			This memcpy makes sure, that we only access the next skb
+ *			if the applications are done with the logic..
+ */
 	memcpy(data_ptr, payload, ASGUARD_PAYLOAD_BYTES);
 }
 
