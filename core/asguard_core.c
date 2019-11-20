@@ -316,11 +316,17 @@ int asguard_core_remove_device_stats(int asguard_id)
 	struct asguard_stats *stats = score->sdevices[asguard_id]->stats;
 
 	for (i = 0; i < stats->timestamp_amount; i++) {
-		kfree(stats->timestamp_logs[i]->timestamp_items);
-		kfree(stats->timestamp_logs[i]->name);
-		kfree(stats->timestamp_logs[i]->proc_dir);
+
+		if(tats->timestamp_logs[i]->timestamp_items)
+			kfree(stats->timestamp_logs[i]->timestamp_items);
+
+		if(stats->timestamp_logs[i]->name)
+			kfree(stats->timestamp_logs[i]->name);
+
 		kfree(stats->timestamp_logs[i]);
 	}
+	asguard_dbg("Freed memory for stats of asguard device %d", asguard_id);
+
 	kfree(stats);
 
 	return 0;
