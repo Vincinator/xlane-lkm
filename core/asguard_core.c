@@ -242,7 +242,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 		return -EINVAL;
 	}
 
-	asguard_dbg("register nic at asguard core\n");
+	asguard_dbg("register nic at asguard core. ifindex=%d, asguard_id=%d\n", ifindex, asguard_id);
 
 	score->rx_tables[asguard_id] =
 		kmalloc(sizeof(struct asguard_rx_table), GFP_KERNEL);

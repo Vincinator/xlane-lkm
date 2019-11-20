@@ -255,7 +255,7 @@ static int init_log_ctrl(struct asguard_device *sdev, int logid)
 			__func__);
 		goto error;
 	}
-	asguard_dbg(" Created %d procfs %s\n",  logid, __func__);
+	//asguard_dbg(" Created %d procfs %s\n",  logid, __func__);
 	return 0;
 
 error:

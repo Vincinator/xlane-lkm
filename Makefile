@@ -7,6 +7,7 @@ endif
 
 
 EXTRA_CFLAGS += -I$(src)/common/
+EXTRA_CFLAGS += -g -DDEBUG
 
 # Core ASGUARD Components
 obj-m := core/
