@@ -342,7 +342,6 @@ int asguard_core_remove_nic(int asguard_id)
 		kfree(score->rx_tables[asguard_id]->rhost_buffers[i]);
 
 	kfree(score->rx_tables[asguard_id]);
-	kfree(score->sdevices[asguard_id]);
 
 	return 0;
 }
@@ -569,19 +568,27 @@ error:
 
 void asguard_stop(int asguard_id)
 {
-	if (asguard_validate_asguard_device(asguard_id))
+	asguard_dbg("Enter Stop asguard fun..\n");
+
+	if (asguard_validate_asguard_device(asguard_id)){
+		asguard_dbg("invalid asguard id %d", asguard_id);
 		return;
+	}
 
 	if(!score->sdevices[asguard_id]) {
 		asguard_error("asguard device is NULL\n");
 		return;
 	}
+	asguard_dbg("setting pacemaker state..\n");
 
 	/* Stop Pacemaker */
 	score->sdevices[asguard_id]->pminfo.state = ASGUARD_PM_READY;
 
+	asguard_dbg("pacemaker state set..\n");
+
 	/* Stop Timestamping */
 	asguard_ts_stop(score->sdevices[asguard_id]);
+	asguard_dbg("ts  stopped set..\n");
 
 }
 
@@ -592,18 +599,31 @@ static void __exit asguard_connection_core_exit(void)
 	// MUST unregister asguard for drivers first
 	unregister_asguard();
 
+	if(!score){
+		asguard_error("score is NULL \n");
+		return;
+	}
+
 	for(i = 0; i < MAX_NIC_DEVICES; i++) {
 		asguard_dbg("free iteration %d", i);
 		if(!score->sdevices[i])
 			continue;
+		asguard_dbg("asguard device is not NULL", i);
 
 		asguard_stop(i);
+		asguard_dbg("asguard device stopped..", i);
 
 		asguard_core_remove_nic(i);
+		asguard_dbg("asguard device removed..", i);
+
+		kfree(score->sdevices[asguard_id]);
+		asguard_dbg("freed asguard device..", i);
 
 	}
 
 	kfree(score);
+	asguard_dbg("Unloaded Module..", i);
+
 }
 
 module_init(asguard_connection_core_init);
