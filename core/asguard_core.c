@@ -616,7 +616,7 @@ static void __exit asguard_connection_core_exit(void)
 		asguard_core_remove_nic(i);
 		asguard_dbg("asguard device removed..", i);
 
-		kfree(score->sdevices[asguard_id]);
+		kfree(score->sdevices[i]);
 		asguard_dbg("freed asguard device..", i);
 
 	}
