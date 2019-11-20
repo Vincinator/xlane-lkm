@@ -578,7 +578,7 @@ void asguard_stop(int asguard_id)
 	}
 
 	/* Stop Pacemaker */
-	asguard_pm_stop(&score->sdevices[asguard_id]->pminfo);
+	score->sdevices[asguard_id]->pminfo.state = ASGUARD_PM_READY;
 
 	/* Stop Timestamping */
 	asguard_ts_stop(score->sdevices[asguard_id]);
