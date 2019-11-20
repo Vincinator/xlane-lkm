@@ -317,7 +317,7 @@ int asguard_core_remove_device_stats(int asguard_id)
 
 	for (i = 0; i < stats->timestamp_amount; i++) {
 
-		if(tats->timestamp_logs[i]->timestamp_items)
+		if(stats->timestamp_logs[i]->timestamp_items)
 			kfree(stats->timestamp_logs[i]->timestamp_items);
 
 		if(stats->timestamp_logs[i]->name)
