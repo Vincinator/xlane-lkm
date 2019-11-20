@@ -598,7 +598,11 @@ static void __exit asguard_connection_core_exit(void)
 {
 	int i;
 
+	// MUST unregister asguard for drivers first
+	unregister_asguard();
+
 	for(i = 0; i < MAX_NIC_DEVICES; i++) {
+
 		if(!score->sdevices[i])
 			continue;
 
