@@ -191,8 +191,8 @@ int asguard_clean_timestamping(struct asguard_device *sdev)
 		if (!sdev->stats->timestamp_logs[i])
 			goto error;
 
-		snprintf(name_buf, sizeof(name_buf), "asguard/%d/ts/data/%s",
-			 sdev->ifindex, sdev->stats->timestamp_logs[i]->name);
+		snprintf(name_buf, sizeof(name_buf), "asguard/%d/ts/data/%d",
+			 sdev->ifindex, i);
 
 		remove_proc_entry(name_buf, NULL);
 	}
@@ -210,7 +210,6 @@ int asguard_clean_timestamping(struct asguard_device *sdev)
 		if(!sdev->stats->timestamp_logs[i])
 			continue;
 		kfree(sdev->stats->timestamp_logs[i]->timestamp_items);
-		kfree(sdev->stats->timestamp_logs[i]->name);
 		kfree(sdev->stats->timestamp_logs[i]);
 	}
 
