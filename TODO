@@ -1,0 +1,37 @@
+
+
+Build Process:
+    ✔ remove sign "+" in kernel version magic of kernel module @done(19-11-20 09:24)
+
+  Infrastructure: @high
+    ✔ Automate Module Installation @done(19-11-19 14:37)
+      ✔ Check if required kernel is installed @done(19-11-19 14:22)
+    ☐ Define performance tests
+      ☐ Latency
+      ☐ Jitter
+      ☐ Throughput
+    ☐ Leave performance tests clean
+      ☐ Reloading kernel module should reset all states of ASGuard
+    ☐ Automate performance tests
+    ☐ Archive performance test logs
+    ☐ Evaluate metrics (latency, jitter, throughput) from test logs
+    ☐ publish metrics
+
+
+  Kernel Module Unit tests:
+    Consensus:
+      ☐ Follower Logic
+      ☐ Leader Logic
+      ☐ Candidate Logic
+      ☐ Net Helper / Payload Helper @high
+    ASGuard basic services:
+      ☐ pacemaker (possible?)
+      ☐ Kernel Module registration services
+      ☐ ASGuard Sub-Payload Extraction
+      ☐ ASGuard Sub-Payload Integration
+
+
+
+  Nice to Have:
+    ☐ When has a Server finished booting?
+    ☐

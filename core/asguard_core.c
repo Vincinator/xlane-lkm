@@ -310,6 +310,22 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 }
 EXPORT_SYMBOL(asguard_core_register_nic);
 
+int asguard_core_remove_device_stats(int asguard_id)
+{
+	int i;
+	struct asguard_stats *stats = score->sdevices[asguard_id]->stats;
+
+	for (i = 0; i < stats->timestamp_amount; i++) {
+		kfree(stats->timestamp_logs[i]->timestamp_items);
+		kfree(stats->timestamp_logs[i]->name);
+		kfree(stats->timestamp_logs[i]->proc_dir);
+		kfree(stats->timestamp_logs[i]);
+	}
+	kfree(stats);
+
+	return 0;
+}
+
 int asguard_core_remove_nic(int asguard_id)
 {
 	int i;
@@ -330,7 +346,10 @@ int asguard_core_remove_nic(int asguard_id)
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d",
 		 score->sdevices[asguard_id]->ifindex);
-	proc_mkdir(name_buf, NULL);
+
+	remove_proc_entry(name_buf, NULL);
+
+	asguard_core_remove_device_stats(asguard_id);
 
 	/* Free Memory used for this NIC */
 	for (i = 0; i < MAX_PROCESSES_PER_HOST; i++)
@@ -577,6 +596,18 @@ void asguard_stop(int asguard_id)
 
 static void __exit asguard_connection_core_exit(void)
 {
+	int i;
+
+	for(i = 0; i < MAX_NIC_DEVICES; i++) {
+		if(!score->sdevices[i])
+			continue;
+
+		asguard_stop(score->sdevices[i]->asguard_id);
+
+		asguard_core_remove_nic(score->sdevices[i]->asguard_id);
+
+	}
+
 	kfree(score);
 }
 
