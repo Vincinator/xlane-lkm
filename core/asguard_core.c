@@ -310,27 +310,6 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 }
 EXPORT_SYMBOL(asguard_core_register_nic);
 
-int asguard_core_remove_device_stats(int asguard_id)
-{
-	int i;
-	struct asguard_stats *stats = score->sdevices[asguard_id]->stats;
-
-	for (i = 0; i < stats->timestamp_amount; i++) {
-
-		if(stats->timestamp_logs[i]->timestamp_items)
-			kfree(stats->timestamp_logs[i]->timestamp_items);
-
-		if(stats->timestamp_logs[i]->name)
-			kfree(stats->timestamp_logs[i]->name);
-
-		kfree(stats->timestamp_logs[i]);
-	}
-	asguard_dbg("Freed memory for stats of asguard device %d", asguard_id);
-
-	kfree(stats);
-
-	return 0;
-}
 
 int asguard_core_remove_nic(int asguard_id)
 {
@@ -339,6 +318,8 @@ int asguard_core_remove_nic(int asguard_id)
 
 	if (asguard_validate_asguard_device(asguard_id))
 		return -1;
+
+	asguard_clean_timestamping(score->sdevices[asguard_id]);
 
 	/* Remove Ctrl Interfaces for NIC */
 	clean_asguard_pm_ctrl_interfaces(score->sdevices[asguard_id]);
@@ -355,7 +336,6 @@ int asguard_core_remove_nic(int asguard_id)
 
 	remove_proc_entry(name_buf, NULL);
 
-	asguard_core_remove_device_stats(asguard_id);
 
 	/* Free Memory used for this NIC */
 	for (i = 0; i < MAX_PROCESSES_PER_HOST; i++)
