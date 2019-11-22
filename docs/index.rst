@@ -3,11 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ASGuard's documentation!
+Overview of ASGuard's documentation
 ===================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Overview:
+   :maxdepth: 3
 
-   welcone.rst
+   about_the_docs.rst
+   dev-guide/setup_dev_env.rst
+   eval-guide/setup_eval_env.rst
+
+
+What is this shit
+
+
