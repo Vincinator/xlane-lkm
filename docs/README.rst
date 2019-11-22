@@ -1,4 +1,6 @@
-# Asguard Developer Documentation
+*******************************
+Asguard Developer Documentation
+*******************************
 
 The asguard paper describes the architecture of asguard, this documentation
 excludes specifcally any design choices or any presentation of the architecture of ASGuard.
