@@ -1,5 +1,10 @@
 
 
+Debugging:
+  ☐ GDB Kernel Module
+    ☐ Load sources in gdb (via list gdb-cmd)
+    ☐ memory dump in kernel module
+
 Build Process:
     ✔ remove sign "+" in kernel version magic of kernel module @done(19-11-20 09:24)
 
