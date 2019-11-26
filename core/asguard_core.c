@@ -594,7 +594,9 @@ void asguard_stop(int asguard_id)
 
 static void __exit asguard_connection_core_exit(void)
 {
-	int i;
+	int i, device_count;
+
+	device_count = asguard_get_device_count();
 
 	// MUST unregister asguard for drivers first
 	unregister_asguard();
@@ -604,7 +606,7 @@ static void __exit asguard_connection_core_exit(void)
 		return;
 	}
 
-	for(i = 0; i < MAX_NIC_DEVICES; i++) {
+	for(i = 0; i < device_count; i++) {
 		asguard_dbg("free iteration %d", i);
 		if(!score->sdevices[i])
 			continue;
