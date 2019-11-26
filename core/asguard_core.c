@@ -260,7 +260,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 
 	score->sdevices[asguard_id] =
 		kmalloc(sizeof(struct asguard_device), GFP_KERNEL);
-
+	score->num_devices++;
 	score->sdevices[asguard_id]->ifindex = ifindex;
 	score->sdevices[asguard_id]->asguard_id = asguard_id;
 	score->sdevices[asguard_id]->ndev = asguard_get_netdevice(ifindex);
@@ -536,6 +536,8 @@ static int __init asguard_connection_core_init(void)
 		return -1;
 	}
 
+	score->num_devices = 0;
+
 	score->rx_tables = kmalloc_array(
 		MAX_NIC_DEVICES, sizeof(struct asguard_rx_table *), GFP_KERNEL);
 
@@ -594,9 +596,7 @@ void asguard_stop(int asguard_id)
 
 static void __exit asguard_connection_core_exit(void)
 {
-	int i, device_count;
-
-	device_count = asguard_get_device_count();
+	int i;
 
 	// MUST unregister asguard for drivers first
 	unregister_asguard();
@@ -606,7 +606,7 @@ static void __exit asguard_connection_core_exit(void)
 		return;
 	}
 
-	for(i = 0; i < device_count; i++) {
+	for(i = 0; i < score->num_devices; i++) {
 		asguard_dbg("free iteration %d", i);
 		if(!score->sdevices[i])
 			continue;

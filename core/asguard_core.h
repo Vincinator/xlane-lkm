@@ -11,7 +11,7 @@
 #define RX_CYCLE_SIZE                                                          \
 	1 /* How many packets per remote host to hold in asguard memory */
 
-/* 
+/*
  * The size of payload does not exceed the ASGUARD_PACKET_PAYLOAD_SIZE value.
  * This is true for all asguard packet types!
  */
@@ -44,9 +44,9 @@ struct asguard_rx_table {
 };
 
 /*
- * Each NIC port gets a unique table. 
+ * Each NIC port gets a unique table.
  * This struct holds references to all tables.
- * ifindex of NIC PORT corresponds to array position of struct asguard_rx_table *tables. 
+ * ifindex of NIC PORT corresponds to array position of struct asguard_rx_table *tables.
  */
 struct asguard_core {
 	/* NIC independent Data */
@@ -55,6 +55,9 @@ struct asguard_core {
 
 	/* NIC specific Data */
 	struct asguard_device **sdevices;
+
+	/* Number of registered asguard devices */
+	int num_devices;
 };
 
 //void init_asguard_proto_info_interfaces(void);
