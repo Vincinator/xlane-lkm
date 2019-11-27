@@ -6,8 +6,8 @@ To better understand our development workflow,
 we start by describing our development environment and it's challanges.
 
 You need a supported NIC in order to run and test ASGuard.
-Your local workstation does (most likeley) not have the
-supported NICs available. If you have one, awesome - I'm jealous!
+Your local workstation does (most likeley) not have one of the
+supported NICs. If you have one, awesome - I'm jealous!
 
 We test asguard on a dedicated test lab. Therefore, we need to upload
 a every version we want to test to the lab and deploy it there.
