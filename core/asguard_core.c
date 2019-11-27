@@ -649,8 +649,10 @@ static void __exit asguard_connection_core_exit(void)
 	}
 	// we freed score, thus we do not have to reset score->num_devices to 0..
 	kfree(score);
-	asguard_dbg("Unloaded Module..", i);
 
+	remove_proc_entry("asguard", NULL);
+
+	asguard_dbg("Unloaded Module..", i);
 }
 
 module_init(asguard_connection_core_init);
