@@ -7,7 +7,7 @@ Overview of ASGuard's documentation
 
    about_the_docs.rst
    admin-guide/install_asguard.rst
-   dev-guide/setup_dev_env.rst
+   dev-guide/index.rst
    eval-guide/setup_eval_env.rst
 
 

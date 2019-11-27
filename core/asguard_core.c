@@ -567,6 +567,40 @@ error:
 
 }
 
+void asguard_stop_pacemaker(struct asguard_device *adev)
+{
+	asguard_dbg("Enter Stop pacemaker..\n");
+
+	if(!adev) {
+		asguard_error("asguard device is NULL\n");
+		return;
+	}
+	asguard_dbg("setting pacemaker state..\n");
+
+	if(!adev->pminfo.state != ASGUARD_PM_EMITTING) {
+		asguard_error("asguard device is NULL\n");
+		return;
+	}
+
+	adev->pminfo.state = ASGUARD_PM_READY;
+
+	asguard_dbg("pacemaker state set..\n");
+}
+
+void asguard_stop_timestamping(struct asguard_device *adev)
+{
+	asguard_dbg("Enter Stop timestamping ..\n");
+
+	if(!adev) {
+		asguard_error("ASGuard Device is Null.\n");
+		return;
+	}
+
+	asguard_ts_stop(adev);
+
+	asguard_dbg("ts stopped..\n");
+
+}
 
 void asguard_stop(int asguard_id)
 {
@@ -577,20 +611,11 @@ void asguard_stop(int asguard_id)
 		return;
 	}
 
-	if(!score->sdevices[asguard_id]) {
-		asguard_error("asguard device is NULL\n");
-		return;
-	}
-	asguard_dbg("setting pacemaker state..\n");
+	asguard_stop_timestamping(score->sdevices[asguard_id]);
 
-	/* Stop Pacemaker */
-	score->sdevices[asguard_id]->pminfo.state = ASGUARD_PM_READY;
+	asguard_stop_pacemaker(score->sdevices[asguard_id]);
 
-	asguard_dbg("pacemaker state set..\n");
-
-	/* Stop Timestamping */
-	asguard_ts_stop(score->sdevices[asguard_id]);
-	asguard_dbg("ts  stopped set..\n");
+	asguard_dbg("Stopped asguard..\n");
 
 }
 
@@ -622,7 +647,7 @@ static void __exit asguard_connection_core_exit(void)
 		asguard_dbg("freed asguard device..", i);
 
 	}
-
+	// we freed score, thus we do not have to reset score->num_devices to 0..
 	kfree(score);
 	asguard_dbg("Unloaded Module..", i);
 
