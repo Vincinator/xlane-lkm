@@ -595,7 +595,6 @@ void asguard_stop_timestamping(struct asguard_device *adev)
 		asguard_error("ASGuard Device is Null.\n");
 		return;
 	}
-
 	asguard_ts_stop(adev);
 
 	asguard_dbg("ts stopped..\n");
@@ -637,8 +636,8 @@ static void __exit asguard_connection_core_exit(void)
 			continue;
 		asguard_dbg("asguard device is not NULL", i);
 
-		asguard_stop(i);
-		asguard_dbg("asguard device stopped..", i);
+		//asguard_stop(i);
+		//asguard_dbg("asguard device stopped..", i);
 
 		asguard_core_remove_nic(i);
 		asguard_dbg("asguard device removed..", i);
