@@ -325,11 +325,12 @@ int asguard_core_remove_nic(int asguard_id)
 	clean_asguard_pm_ctrl_interfaces(score->sdevices[asguard_id]);
 	clean_asguard_ctrl_interfaces(score->sdevices[asguard_id]);
 
+	clear_protocol_instances(score->sdevices[asguard_id]);
+
 	remove_proto_instance_ctrl(score->sdevices[asguard_id]);
 
 
 	//remove_logger_ifaces(&score->sdevices[asguard_id]->le_logger);
-	clear_protocol_instances(score->sdevices[asguard_id]);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d",
 		 score->sdevices[asguard_id]->ifindex);
