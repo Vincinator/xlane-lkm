@@ -10,7 +10,7 @@ Your local workstation does (most likeley) not have one of the
 supported NICs. If you have one, awesome - I'm jealous!
 
 We test asguard on a dedicated test lab. Therefore, we need to upload
-a every version we want to test to the lab and deploy it there.
+and deploy every change to the lab.
 Additionally, we compile ASGuard on Linux machines, and utilise a build
 server within our test lab.
 
