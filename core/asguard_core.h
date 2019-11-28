@@ -49,9 +49,6 @@ struct asguard_rx_table {
  * ifindex of NIC PORT corresponds to array position of struct asguard_rx_table *tables.
  */
 struct asguard_core {
-	/* NIC independent Data */
-	struct asguard_rx_table **
-		rx_tables; /* Each NIC port (identified by ifindex) has a own table */
 
 	/* NIC specific Data */
 	struct asguard_device **sdevices;

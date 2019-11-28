@@ -207,21 +207,14 @@ EXPORT_SYMBOL(asguard_post_payload);
 void asguard_reset_remote_host_counter(int asguard_id)
 {
 	int i;
-	struct asguard_rx_table *rxt;
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct asguard_pm_target_info *pmtarget;
-
-	rxt = score->rx_tables[asguard_id];
-
-	if (!rxt)
-		return;
 
 	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
 		pmtarget = &sdev->pminfo.pm_targets[i];
 
 		kfree(pmtarget->pkt_data.pkt_payload[0]);
 		kfree(pmtarget->pkt_data.pkt_payload[1]);
-		kfree(rxt->rhost_buffers[i]);
 	}
 
 	sdev->pminfo.num_of_targets = 0;
@@ -244,22 +237,9 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 
 	asguard_dbg("register nic at asguard core. ifindex=%d, asguard_id=%d\n", ifindex, asguard_id);
 
-	score->rx_tables[asguard_id] =
-		kmalloc(sizeof(struct asguard_rx_table), GFP_KERNEL);
-	score->rx_tables[asguard_id]->rhost_buffers =
-		kmalloc_array(MAX_REMOTE_SOURCES,
-				  sizeof(struct asguard_rx_buffer *),
-						GFP_KERNEL);
-
-	/* Allocate each rhost ring buffer*/
-	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
-		score->rx_tables[asguard_id]->rhost_buffers[i] =
-			kmalloc(sizeof(struct asguard_rx_buffer),
-				GFP_KERNEL);
-	}
-
 	score->sdevices[asguard_id] =
 		kmalloc(sizeof(struct asguard_device), GFP_KERNEL);
+
 	score->num_devices++;
 	score->sdevices[asguard_id]->ifindex = ifindex;
 	score->sdevices[asguard_id]->asguard_id = asguard_id;
@@ -325,7 +305,6 @@ int asguard_core_remove_nic(int asguard_id)
 	clean_asguard_pm_ctrl_interfaces(score->sdevices[asguard_id]);
 	clean_asguard_ctrl_interfaces(score->sdevices[asguard_id]);
 
-	clear_protocol_instances(score->sdevices[asguard_id]);
 
 	remove_proto_instance_ctrl(score->sdevices[asguard_id]);
 
@@ -337,12 +316,6 @@ int asguard_core_remove_nic(int asguard_id)
 
 	remove_proc_entry(name_buf, NULL);
 
-
-	/* Free Memory used for this NIC */
-	for (i = 0; i < MAX_PROCESSES_PER_HOST; i++)
-		kfree(score->rx_tables[asguard_id]->rhost_buffers[i]);
-
-	kfree(score->rx_tables[asguard_id]);
 
 	return 0;
 }
@@ -363,10 +336,6 @@ int asguard_validate_asguard_device(int asguard_id)
 		return -1;
 	}
 
-	if (!score->rx_tables || !score->rx_tables[asguard_id]) {
-		asguard_error("rx_tables is invalid!\n");
-		return -1;
-	}
 	return 0;
 }
 EXPORT_SYMBOL(asguard_validate_asguard_device);
@@ -464,7 +433,6 @@ void clear_protocol_instances(struct asguard_device *sdev)
 int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 					int protocol_id, int cluster_id)
 {
-	struct asguard_rx_table *rxt;
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct asguard_pm_target_info *pmtarget;
 	int ifindex;
@@ -477,13 +445,6 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	if (sdev->pminfo.num_of_targets >= MAX_REMOTE_SOURCES) {
 		asguard_error("Reached Limit of remote hosts.\n");
 		asguard_error("Limit is=%d\n", MAX_REMOTE_SOURCES);
-		return -1;
-	}
-
-	rxt = score->rx_tables[asguard_id];
-
-	if (!rxt) {
-		asguard_error("rxt is NULL\n");
 		return -1;
 	}
 
@@ -518,6 +479,7 @@ EXPORT_SYMBOL(asguard_core_register_remote_host);
 
 static int __init asguard_connection_core_init(void)
 {
+	int i;
 	int err = -EINVAL;
 
 	if (ifindex < 0) {
@@ -539,21 +501,16 @@ static int __init asguard_connection_core_init(void)
 
 	score->num_devices = 0;
 
-	score->rx_tables = kmalloc_array(
-		MAX_NIC_DEVICES, sizeof(struct asguard_rx_table *), GFP_KERNEL);
-
-	if (!score->rx_tables) {
-		asguard_error("allocation of score->rx_tables failed\n");
-		return -1;
-	}
-
 	score->sdevices = kmalloc_array(
 		MAX_NIC_DEVICES, sizeof(struct asguard_device *), GFP_KERNEL);
 
-	if (!score->rx_tables) {
+	if (!score->sdevices) {
 		asguard_error("allocation of score->sdevices failed\n");
 		return -1;
 	}
+
+	for(i = 0; i < MAX_NIC_DEVICES; i++)
+		score->sdevices[i] = NULL;
 
 	proc_mkdir("asguard", NULL);
 
@@ -633,8 +590,10 @@ static void __exit asguard_connection_core_exit(void)
 
 	for(i = 0; i < score->num_devices; i++) {
 		asguard_dbg("free iteration %d", i);
+
 		if(!score->sdevices[i])
 			continue;
+
 		asguard_dbg("asguard device is not NULL", i);
 
 		//asguard_stop(i);
