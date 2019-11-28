@@ -190,12 +190,16 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 }
 
 
-u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, s32 prev_log_idx)
+u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 prev_log_idx)
 {
 	struct sm_log_entry *entry;
 
 	if (prev_log_idx == -1) {
 		asguard_dbg("prev log idx is -1\n");
+		if( prev_log_term < priv->term) {
+			asguard_error(" received append RPC with lower prev term");
+			// TODO: handle this case.
+		}
 		return 0;
 	}
 
@@ -204,12 +208,12 @@ u32 _check_prev_log_match(struct state_machine_cmd_log *log, u32 prev_log_term, 
 		return 1;
 	}
 
-	if (prev_log_idx > log->last_idx) {
+	if (prev_log_idx > priv->sm_log.last_idx) {
 		asguard_dbg("Entry at index %d does not exist\n", prev_log_idx);
 		return 1;
 	}
 
-	entry = log->entries[prev_log_idx];
+	entry = priv->sm_log.entries[prev_log_idx];
 
 	if (entry == NULL) {
 		asguard_dbg("BUG! Entry is NULL at index %d", prev_log_idx);
@@ -272,7 +276,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_false_unlock;
 	}
 
-	if (_check_prev_log_match(&priv->sm_log, *prev_log_term, *prev_log_idx)) {
+	if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
 		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
 				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
 		goto reply_false_unlock;

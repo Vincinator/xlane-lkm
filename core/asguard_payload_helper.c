@@ -146,9 +146,16 @@ int _log_is_faulty(struct consensus_priv *priv)
 s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 {
 
-	if (idx < 0) {
-		asguard_dbg("idx < 0 %d\n", idx);
-		return 0;
+	if (idx == -1) {
+		// Logs are empty, because next index points to first element.
+		// Thus, there was no prev log term. And therefore we can use the
+		// current term.
+		return cur_priv->term;
+	}
+
+	if (idx < -1) {
+		asguard_dbg("invalid value - idx=%d\n", idx);
+		return -1;
 	}
 
 	if (idx > cur_priv->sm_log.last_idx) {
@@ -193,7 +200,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 //	asguard_dbg("PREP AE: cur_index=%d, next_index=%d\n", cur_index, next_index);
 	prev_log_term = _get_prev_log_term(cur_priv, next_index - 1);
 
-	if (prev_log_term == -1) {
+	if (prev_log_term < 0) {
 		asguard_error("BUG! - prev_log_term is invalid\n");
 		return;
 	}
