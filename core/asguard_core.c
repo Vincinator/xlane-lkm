@@ -588,25 +588,22 @@ static void __exit asguard_connection_core_exit(void)
 		return;
 	}
 
-	for(i = 0; i < score->num_devices; i++) {
-		asguard_dbg("free iteration %d", i);
+	for(i = 0; i < MAX_NIC_DEVICES; i++) {
 
-		if(!score->sdevices[i])
+		if(!score->sdevices[i]) {
+			asguard_dbg("Skipping uninitialized device asguard_id=%d", i);
 			continue;
+		}
 
-		asguard_dbg("asguard device is not NULL", i);
+		asguard_dbg("Clean up device with asguard_id=%d", i);
 
-		//asguard_stop(i);
-		//asguard_dbg("asguard device stopped..", i);
+		asguard_stop(i);
 
 		asguard_core_remove_nic(i);
-		asguard_dbg("asguard device removed..", i);
 
 		kfree(score->sdevices[i]);
-		asguard_dbg("freed asguard device..", i);
-
 	}
-	// we freed score, thus we do not have to reset score->num_devices to 0..
+
 	kfree(score);
 
 	remove_proc_entry("asguard", NULL);
