@@ -599,6 +599,8 @@ static void __exit asguard_connection_core_exit(void)
 
 		asguard_stop(i);
 
+		clear_protocol_instances(score->sdevices[i])
+
 		asguard_core_remove_nic(i);
 
 		kfree(score->sdevices[i]);
