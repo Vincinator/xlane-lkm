@@ -224,7 +224,7 @@ u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 pr
 		asguard_dbg("prev_log_term does not match %d != %d", entry->term, prev_log_term);
 
 		// Delete entries from prev_log_idx to last_idx
-		remove_from_log_until_last(log, prev_log_idx);
+		remove_from_log_until_last(&priv->sm_log, prev_log_idx);
 		return 1;
 	}
 
