@@ -242,11 +242,25 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 	return 0;
 }
 
+
 int consensus_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 	       uint64_t ts)
 {
-	// if (consensus_is_alive(sdev))
-	//	return 0;
+	struct consensus_priv *priv =
+		(struct consensus_priv *)ins->proto_data;
+	int remote_lid, rcluster_id;
 
+
+	 if (!consensus_is_alive(priv))
+		return 0;
+
+	get_cluster_ids(priv->sdev, remote_mac, &remote_lid, &rcluster_id);
+
+	// Got HB from Leader - Reset follower timeout now
+	if (priv->nstate == FOLLOWER){
+		if (priv->leader_id == remote_lid){
+			reset_ftimeout(ins);
+		}
+	}
 	return 0;
 }

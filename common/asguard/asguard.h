@@ -399,6 +399,7 @@ struct asguard_protocol_ctrl_ops {
 	int (*info)(struct proto_instance *ins);
 };
 
+
 struct proto_instance {
 
 	u16 instance_id;

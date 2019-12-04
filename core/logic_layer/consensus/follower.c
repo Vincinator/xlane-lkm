@@ -345,6 +345,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
+
 #if VERBOSE_DEBUG
 	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
 #endif
@@ -361,8 +362,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 		if (check_handle_nomination(priv, param1, param2, param3, param4)) {
-			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 			reset_ftimeout(ins);
+			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}
 		break;
 	case NOOP:
@@ -373,17 +374,17 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 */
 		if (param1 > priv->term) {
 
+			reset_ftimeout(ins);
+
+			accept_leader(ins, remote_lid, rcluster_id, param1);
+			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
+
+			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
+
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
 #endif
-
-			accept_leader(ins, remote_lid, rcluster_id, param1);
-			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
-			reset_ftimeout(ins);
-
-			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
-
 		}
 
 		/* Received a LEAD operation from a node with the same term,
@@ -395,18 +396,19 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		else if (param1 == priv->term) {
 
 			if (priv->leader_id == remote_lid) {
+				// follower timeout already handled.
+				//reset_ftimeout(ins); 
+				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
+
 #if VERBOSE_DEBUG
 				if (sdev->verbose >= 5)
 					asguard_dbg("Received message from known leader term=%u\n", param1);
 #endif
 
-				reset_ftimeout(ins);
-				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
-
 			} else {
 #if VERBOSE_DEBUG
-				if (sdev->verbose >= 2)
-					asguard_dbg("Received message from new leader term=%u\n", param1);
+				if (sdev->verbose >= 1)
+					asguard_dbg("Received message from new leader! Leader changed but term did update! term=%u\n", param1);
 #endif
 				// Ignore this LEAD message, let the ftimer continue.. because: "this is not my leader!"
 			}
@@ -416,9 +418,13 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 */
 		else {
 #if VERBOSE_DEBUG
-			if (sdev->verbose >= 2)
+			if (sdev->verbose >= 5)
 				asguard_dbg("Received APPEND from leader with lower term=%u\n", param1);
 #endif
+			if (priv->leader_id == remote_lid) {
+				asguard_error("BUG! Current accepted LEADER has lower Term=%u\n", param1);
+			}
+
 			// Ignore this LEAD message, let the ftimer continue.
 		}
 		break;
