@@ -71,9 +71,14 @@ EXPORT_SYMBOL(asguard_get_protocol_name);
 void asguard_post_ts(int asguard_id, uint64_t cycles)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
+	struct proto_instance *cur_ins;
 
 	if (sdev->ts_state == ASGUARD_TS_RUNNING)
 		asguard_write_timestamp(sdev, 1, cycles, asguard_id);
+
+	// notify all loaded protocols about incoming packet.
+
+
 }
 EXPORT_SYMBOL(asguard_post_ts);
 

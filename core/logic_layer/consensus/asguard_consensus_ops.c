@@ -224,6 +224,12 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 	if (remote_lid == -1 || rcluster_id == -1)
 		return -1;
 
+	if (priv->nstate == FOLLOWER){
+		if (priv->leader_id == remote_lid){
+			// Got HB from Leader - Reset follower timeout now
+			reset_ftimeout(ins);
+		}
+	}
 
 	switch (priv->nstate) {
 	case FOLLOWER:
@@ -248,19 +254,9 @@ int consensus_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
-	int remote_lid, rcluster_id;
-
 
 	 if (!consensus_is_alive(priv))
 		return 0;
 
-	get_cluster_ids(priv->sdev, remote_mac, &remote_lid, &rcluster_id);
-
-	// Got HB from Leader - Reset follower timeout now
-	if (priv->nstate == FOLLOWER){
-		if (priv->leader_id == remote_lid){
-			reset_ftimeout(ins);
-		}
-	}
 	return 0;
 }
