@@ -116,7 +116,7 @@ static inline void asguard_update_skb_udp_port(struct sk_buff *skb, int udp_port
 {
 	struct udphdr *uh = udp_hdr(skb);
 
-	uh->dest = udp_port;
+	uh->dest = htons((u16)udp_port);
 }
 
 static inline void asguard_update_skb_payload(struct sk_buff *skb, void *payload)
