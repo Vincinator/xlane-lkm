@@ -169,6 +169,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 int stop_leader(struct proto_instance *ins)
 {
+	priv->sdev->tx_port = 319;
 
 	return 0;
 }
@@ -181,6 +182,8 @@ int start_leader(struct proto_instance *ins)
 	int hb_passive_ix, i;
 
 	initialze_indices(priv);
+
+	priv->sdev->tx_port = 320;
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		hb_passive_ix =

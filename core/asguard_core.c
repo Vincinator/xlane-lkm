@@ -257,6 +257,8 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->last_leader_ts = 0;
 	score->sdevices[asguard_id]->num_of_proto_instances = 0;
 	score->sdevices[asguard_id]->fire = 0;
+	score->sdevices[asguard_id]->tx_port = 319;
+
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		score->sdevices[asguard_id]->instance_id_mapping[i] = -1;
 

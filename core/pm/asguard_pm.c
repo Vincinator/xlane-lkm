@@ -112,6 +112,13 @@ unlock:
 	HARD_TX_UNLOCK(ndev, txq);
 }
 
+static inline void asguard_update_skb_udp_port(struct sk_buff *skb, int udp_port)
+{
+	struct udphdr *uh = udp_hdr(skb);
+
+	uh->dest = udp_port;
+}
+
 static inline void asguard_update_skb_payload(struct sk_buff *skb, void *payload)
 {
 	unsigned char *tail_ptr;
@@ -154,17 +161,10 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
-		//Direct Updates - No double buffer
-		//if (sdev->proto->ctrl_ops.us_update != NULL)
-		//	sdev->proto->ctrl_ops.us_update(sdev, pkt_payload);
+		asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
 
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
-
-		// if (sdev->verbose >= 4)
-		//	print_hex_dump(KERN_DEBUG,
-		//		"TX Payload: ", DUMP_PREFIX_NONE,
-		//		16, 1, pkt_payload, ASGUARD_PAYLOAD_BYTES, 0);
 
 		asguard_send_hb(ndev, spminfo->pm_targets[i].skb);
 
@@ -173,12 +173,9 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		//		asguard_write_timestamp(sdev, 4, ktime_get(), i);
 		// }
 
-
 		// Protocols have been emitted, do not sent them again ..
 		// .. and free the reservations for new protocols
 		invalidate_proto_data(sdev, pkt_payload, i);
-
-
 	}
 	return 0;
 }
