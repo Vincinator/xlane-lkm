@@ -169,7 +169,6 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 int stop_leader(struct proto_instance *ins)
 {
-	priv->sdev->tx_port = 319;
 
 	return 0;
 }
