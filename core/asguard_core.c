@@ -68,7 +68,7 @@ const char *asguard_get_protocol_name(enum asguard_protocol_type protocol_type)
 }
 EXPORT_SYMBOL(asguard_get_protocol_name);
 
-void asguard_post_ts(int asguard_id, uint64_t cycles)
+void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct proto_instance *cur_ins;
@@ -76,8 +76,8 @@ void asguard_post_ts(int asguard_id, uint64_t cycles)
 	if (sdev->ts_state == ASGUARD_TS_RUNNING)
 		asguard_write_timestamp(sdev, 1, cycles, asguard_id);
 
-	// notify all loaded protocols about incoming packet.
-
+	if(ctype == 2) // channel type 2 is leader channel
+		sdev->last_leader_ts = cycles;
 
 }
 EXPORT_SYMBOL(asguard_post_ts);
@@ -254,7 +254,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->verbose = 0;
 	score->sdevices[asguard_id]->rx_state = ASGUARD_RX_DISABLED;
 	score->sdevices[asguard_id]->ts_state = ASGUARD_TS_UNINIT;
-
+	score->sdevices[asguard_id]->last_leader_ts = 0;
 	score->sdevices[asguard_id]->num_of_proto_instances = 0;
 	score->sdevices[asguard_id]->fire = 0;
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)

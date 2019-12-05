@@ -20,7 +20,14 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 {
 	int err;
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ftimer);
-	// struct asguard_device *sdev = priv->sdev;
+	struct asguard_device *sdev = priv->sdev;
+
+	// optimistical timestamping from leader pkt -> do not start candidature, restart follower timeout
+	if(priv->llts_before_ftime != sdev->last_leader_ts) {
+		priv->llts_before_ftime = sdev->last_leader_ts;
+		asguard_dbg("optimistical timestamping of leader pkt prevented follower timeout");
+		return HRTIMER_RESTART;
+	}
 
 	if (priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
 		return HRTIMER_NORESTART;
@@ -397,7 +404,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			if (priv->leader_id == remote_lid) {
 				// follower timeout already handled.
-				//reset_ftimeout(ins); 
+				//reset_ftimeout(ins);
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 #if VERBOSE_DEBUG
@@ -473,10 +480,15 @@ void reset_ftimeout(struct proto_instance *ins)
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
+
+
 	 timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
 
 	 hrtimer_cancel(&priv->ftimer);
 	 hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
+
+	 priv->llts_before_ftime = priv->sdev->last_leader_ts;
+
 	 hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 
 #if VERBOSE_DEBUG

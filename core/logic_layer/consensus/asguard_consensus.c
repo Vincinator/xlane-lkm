@@ -271,6 +271,7 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 	cpriv->max_entries_per_pkt = MAX_AE_ENTRIES_PER_PKT;
 	cpriv->sdev = sdev;
 	cpriv->ins = ins;
+	cpriv->llts_before_ftime = 0;
 
 	return ins;
 error:

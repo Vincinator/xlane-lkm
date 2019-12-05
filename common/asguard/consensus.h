@@ -111,6 +111,8 @@ struct consensus_priv {
 
 	struct consensus_test_container test_data;
 
+	// last leader timestmap before current follower timeout
+	uint64_t llts_before_ftime;
 
 	enum node_state nstate;
 

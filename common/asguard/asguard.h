@@ -354,6 +354,8 @@ struct asguard_device {
 
 	u32 cluster_id;
 
+	uint64_t last_leader_ts;
+
 	int verbose; /* Prints more information when set to 1 during RX/TX to dmesg*/
 
 	enum asguard_rx_state rx_state;
@@ -460,7 +462,7 @@ struct proto_instance *generate_protocol_instance(struct asguard_device *sdev, i
 void clean_asguard_ctrl_interfaces(struct asguard_device *sdev);
 void init_asguard_ctrl_interfaces(struct asguard_device *sdev);
 
-void asguard_post_ts(int asguard_id, uint64_t cycles);
+void asguard_post_ts(int asguard_id, uint64_t cycles, int leader_queue);
 
 void ts_state_transition_to(struct asguard_device *sdev,
 			    enum tsstate state);
