@@ -540,11 +540,6 @@ void asguard_stop_pacemaker(struct asguard_device *adev)
 	}
 	asguard_dbg("setting pacemaker state..\n");
 
-	if(!adev->pminfo.state != ASGUARD_PM_EMITTING) {
-		asguard_error("asguard device is NULL\n");
-		return;
-	}
-
 	adev->pminfo.state = ASGUARD_PM_READY;
 
 	asguard_dbg("pacemaker state set..\n");
