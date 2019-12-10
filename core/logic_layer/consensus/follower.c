@@ -23,7 +23,8 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	struct asguard_device *sdev = priv->sdev;
 	ktime_t timeout;
 
-	asguard_dbg(" follower timeout: llts_before_ftime=%llu and last_leader_ts=%llu\n", priv->llts_before_ftime, sdev->last_leader_ts);
+	if(sdev->verbose)
+		asguard_dbg(" follower timeout: llts_before_ftime=%llu and last_leader_ts=%llu\n", priv->llts_before_ftime, sdev->last_leader_ts);
 
 	if (priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
 		return HRTIMER_NORESTART;
@@ -40,8 +41,8 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	}
 
 #if VERBOSE_DEBUG
-
-	asguard_log_le("%s, %llu, %d: Follower timer timed out\n",
+	if(sdev->verbose)
+		asguard_log_le("%s, %llu, %d: Follower timer timed out\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term);
@@ -68,7 +69,8 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	int hb_passive_ix;
 
 #if VERBOSE_DEBUG
-	asguard_log_le("%s, %llu, %d: REPLY APPEND append_success=%d, param1=%d,logged_idx=%d\n",
+	if(priv->sdev->verbose)
+		asguard_log_le("%s, %llu, %d: REPLY APPEND append_success=%d, param1=%d,logged_idx=%d\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,
@@ -107,8 +109,8 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 #if VERBOSE_DEBUG
-
-	asguard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
+	if(priv->sdev->verbose)
+		asguard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,
@@ -496,7 +498,8 @@ void reset_ftimeout(struct proto_instance *ins)
 	 hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
 
 #if VERBOSE_DEBUG
-	asguard_log_le("%s, %llu, %d: reset follower timeout occured: new timeout is %lld ms\n",
+	if(priv->sdev->verbose)
+		asguard_log_le("%s, %llu, %d: reset follower timeout occured: new timeout is %lld ms\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,
@@ -536,7 +539,8 @@ int start_follower(struct proto_instance *ins)
 	init_timeout(ins);
 
 #if VERBOSE_DEBUG
-	asguard_dbg("Node became a follower\n");
+	if(priv->sdev->verbose)
+		asguard_dbg("Node became a follower\n");
 #endif
 
 	return 0;

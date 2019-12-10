@@ -46,6 +46,7 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 	 */
 	if (priv->c_retries >= CANDIDATURE_RETRY_LIMIT) {
 #if VERBOSE_DEBUG
+	if(priv->sdev->verbose)
 		asguard_log_le("%s, %llu: reached maximum of candidature retries\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD);
@@ -69,7 +70,8 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 
 	hrtimer_forward_now(timer, timeout);
 #if VERBOSE_DEBUG
-	asguard_log_le("%s, %llu, %d: Restart candidate timer with %lld ms timeout - Candidature retry %d.\n",
+	if(priv->sdev->verbose)
+		asguard_log_le("%s, %llu, %d: Restart candidate timer with %lld ms timeout - Candidature retry %d.\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,
@@ -94,7 +96,8 @@ void reset_ctimeout(struct proto_instance *ins)
 	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
 	hrtimer_start_expires(&priv->ctimer, HRTIMER_MODE_REL_PINNED);
 #if VERBOSE_DEBUG
-	asguard_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
+	if(priv->sdev->verbose)
+		asguard_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,
@@ -124,11 +127,12 @@ void init_ctimeout(struct proto_instance *ins)
 	priv->ctimer.function = &_handle_candidate_timeout;
 
 #if VERBOSE_DEBUG
-	asguard_log_le("%s, %llu, %d: Init Candidate timeout to %lld ms.\n",
-		nstate_string(priv->nstate),
-		RDTSC_ASGUARD,
-		priv->term,
-		 ktime_to_ms(timeout));
+	if(priv->sdev->verbose)
+		asguard_log_le("%s, %llu, %d: Init Candidate timeout to %lld ms.\n",
+			nstate_string(priv->nstate),
+			RDTSC_ASGUARD,
+			priv->term,
+			ktime_to_ms(timeout));
 #endif
 
 	hrtimer_start_range_ns(&priv->ctimer, timeout, HRTIMER_MODE_REL_PINNED, TOLERANCE_CTIMEOUT_NS);
@@ -157,7 +161,8 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 	priv->votes++;
 
 #if VERBOSE_DEBUG
-	asguard_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
+	if(priv->sdev->verbose)
+		asguard_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
 					nstate_string(priv->nstate),
 					RDTSC_ASGUARD,
 					priv->term,
@@ -170,6 +175,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 	if (priv->votes * 2 >= (priv->sdev->pminfo.num_of_targets + 1)) {
 
 #if VERBOSE_DEBUG
+	if(priv->sdev->verbose)
 		asguard_log_le("%s, %llu, %d: got majority with %d from %d possible votes\n",
 				nstate_string(priv->nstate),
 				RDTSC_ASGUARD,
