@@ -21,20 +21,23 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	int err;
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ftimer);
 	struct asguard_device *sdev = priv->sdev;
+	ktime_t timeout;
 
 	asguard_dbg(" follower timeout: llts_before_ftime=%llu and last_leader_ts=%llu\n", priv->llts_before_ftime, sdev->last_leader_ts);
-
-	// optimistical timestamping from leader pkt -> do not start candidature, restart follower timeout
-	if(priv->llts_before_ftime != sdev->last_leader_ts) {
-		priv->llts_before_ftime = sdev->last_leader_ts;
-		asguard_dbg("optimistical timestamping of leader pkt prevented follower timeout\n");
-		return HRTIMER_RESTART;
-	}
 
 	if (priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
 		return HRTIMER_NORESTART;
 
 	write_log(&priv->ins->logger, FOLLOWER_TIMEOUT, RDTSC_ASGUARD);
+
+	// optimistical timestamping from leader pkt -> do not start candidature, restart follower timeout
+	if(priv->llts_before_ftime != sdev->last_leader_ts) {
+		priv->llts_before_ftime = sdev->last_leader_ts;
+		asguard_dbg("optimistical timestamping of leader pkt prevented follower timeout\n");
+	 	timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
+		hrtimer_forward_now (timer, timeout);
+		return HRTIMER_RESTART;
+	}
 
 #if VERBOSE_DEBUG
 
