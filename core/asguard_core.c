@@ -78,10 +78,6 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 
 	if(ctype == 2) { // channel type 2 is leader channel
 		sdev->last_leader_ts = cycles;
-		asguard_dbg("RX Leader optimistical timestamp");
-	}else {
-		asguard_dbg("ctype was %d", ctype);
-
 	}
 }
 EXPORT_SYMBOL(asguard_post_ts);
