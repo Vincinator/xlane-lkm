@@ -74,7 +74,8 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 #if VERBOSE_DEBUG
-	asguard_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
+	if(priv->sdev->verbose)
+		asguard_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,
@@ -91,7 +92,8 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u
 void le_state_transition_to(struct consensus_priv *priv, enum le_state state)
 {
 #if VERBOSE_DEBUG
-	asguard_dbg("Leader Election Activation State Transition from %s to %s\n", _le_state_name(priv->state), _le_state_name(state));
+	if(priv->sdev->verbose)
+		asguard_dbg("Leader Election Activation State Transition from %s to %s\n", _le_state_name(priv->state), _le_state_name(state));
 #endif
 	priv->state = state;
 

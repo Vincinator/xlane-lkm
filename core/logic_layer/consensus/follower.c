@@ -34,7 +34,8 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	// optimistical timestamping from leader pkt -> do not start candidature, restart follower timeout
 	if(priv->llts_before_ftime != sdev->last_leader_ts) {
 		priv->llts_before_ftime = sdev->last_leader_ts;
-		asguard_dbg("optimistical timestamping of leader pkt prevented follower timeout\n");
+		if(sdev->verbose)
+			asguard_dbg("optimistical timestamping of leader pkt prevented follower timeout\n");
 	 	timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
 		hrtimer_forward_now (timer, timeout);
 		return HRTIMER_RESTART;
@@ -472,11 +473,12 @@ void init_timeout(struct proto_instance *ins)
 	priv->accu_rand = timeout; // first rand timeout of this follower
 
 #if VERBOSE_DEBUG
-	asguard_log_le("%s, %llu, %d: Init follower timeout to %lld ms.\n",
-		nstate_string(priv->nstate),
-		RDTSC_ASGUARD,
-		priv->term,
-		ktime_to_ms(timeout));
+	if(priv->sdev->verbose)
+		asguard_log_le("%s, %llu, %d: Init follower timeout to %lld ms.\n",
+			nstate_string(priv->nstate),
+			RDTSC_ASGUARD,
+			priv->term,
+			ktime_to_ms(timeout));
 #endif
 
 	hrtimer_start_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS, HRTIMER_MODE_REL_PINNED);

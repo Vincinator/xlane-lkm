@@ -76,7 +76,8 @@ void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum 
 	if (opcode == APPEND && verbose < 4)
 		return;
 
-	asguard_log_le("%s, %llu, %d: %s from %d with term %d\n",
+	if(verbose)
+		asguard_log_le("%s, %llu, %d: %s from %d with term %d\n",
 					nstate_string(nstate),
 					ts,
 					term,
