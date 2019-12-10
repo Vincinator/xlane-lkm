@@ -22,10 +22,12 @@ static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
 	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ftimer);
 	struct asguard_device *sdev = priv->sdev;
 
+	asguard_dbg(" follower timeout: llts_before_ftime=%llu and last_leader_ts=%llu\n", priv->llts_before_ftime, sdev->last_leader_ts);
+
 	// optimistical timestamping from leader pkt -> do not start candidature, restart follower timeout
 	if(priv->llts_before_ftime != sdev->last_leader_ts) {
 		priv->llts_before_ftime = sdev->last_leader_ts;
-		asguard_dbg("optimistical timestamping of leader pkt prevented follower timeout");
+		asguard_dbg("optimistical timestamping of leader pkt prevented follower timeout\n");
 		return HRTIMER_RESTART;
 	}
 
@@ -404,18 +406,19 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			if (priv->leader_id == remote_lid) {
 				// follower timeout already handled.
-				//reset_ftimeout(ins);
+				reset_ftimeout(ins);
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 #if VERBOSE_DEBUG
 				if (sdev->verbose >= 5)
-					asguard_dbg("Received message from known leader term=%u\n", param1);
+					asguard_dbg("Received message from known leader (%d) term=%u\n", rcluster_id, param1);
 #endif
 
 			} else {
 #if VERBOSE_DEBUG
 				if (sdev->verbose >= 1)
-					asguard_dbg("Received message from new leader! Leader changed but term did update! term=%u\n", param1);
+					asguard_dbg("Received message from new leader (%d)! Leader changed but term did not update! term=%u\n",
+					rcluster_id, param1);
 #endif
 				// Ignore this LEAD message, let the ftimer continue.. because: "this is not my leader!"
 			}
@@ -426,10 +429,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		else {
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 5)
-				asguard_dbg("Received APPEND from leader with lower term=%u\n", param1);
+				asguard_dbg("Received APPEND from leader (%d) with lower term=%u\n", rcluster_id, param1);
 #endif
 			if (priv->leader_id == remote_lid) {
-				asguard_error("BUG! Current accepted LEADER has lower Term=%u\n", param1);
+				asguard_error("BUG! Current accepted LEADER (%d) has lower Term=%u\n", rcluster_id,  param1);
 			}
 
 			// Ignore this LEAD message, let the ftimer continue.
@@ -479,8 +482,6 @@ void reset_ftimeout(struct proto_instance *ins)
 	ktime_t timeout;
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
-
-
 
 	 timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
 

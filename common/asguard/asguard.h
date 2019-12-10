@@ -418,8 +418,8 @@ struct proto_instance {
 	struct asguard_protocol_ctrl_ops ctrl_ops;
 
 	void *proto_data;
-
 };
+
 
 struct sk_buff *asguard_setup_hb_packet(struct pminfo *spminfo,
 				      int host_number);
