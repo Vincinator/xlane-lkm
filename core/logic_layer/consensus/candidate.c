@@ -234,7 +234,8 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
-				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
+				asguard_dbg("Received message from new leader (%d) with higher or equal term=%u\n",
+							rcluster_id,  param1);
 #endif
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
@@ -243,7 +244,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 #if VERBOSE_DEBUG
 
 			if (sdev->verbose >= 2)
-				asguard_dbg("Received LEAD from leader with lower term=%u\n", param1);
+				asguard_dbg("Received LEAD from leader (%d) with lower term=%u\n", rcluster_id, param1);
 #endif
 			// Ignore this LEAD message, continue to wait for votes
 
