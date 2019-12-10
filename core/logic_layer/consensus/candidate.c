@@ -135,7 +135,7 @@ void init_ctimeout(struct proto_instance *ins)
 			ktime_to_ms(timeout));
 #endif
 
-	hrtimer_start_range_ns(&priv->ctimer, timeout, HRTIMER_MODE_REL_PINNED, TOLERANCE_CTIMEOUT_NS);
+	hrtimer_start_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS, HRTIMER_MODE_REL_PINNED);
 }
 
 int setup_nomination(struct proto_instance *ins)
