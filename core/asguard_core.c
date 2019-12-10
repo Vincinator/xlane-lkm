@@ -71,15 +71,12 @@ EXPORT_SYMBOL(asguard_get_protocol_name);
 void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
-	struct proto_instance *cur_ins;
 
 	if (sdev->ts_state == ASGUARD_TS_RUNNING)
 		asguard_write_timestamp(sdev, 1, cycles, asguard_id);
 
 	if(ctype == 2) { // channel type 2 is leader channel
 		sdev->last_leader_ts = cycles;
-		if(sdev->verbose)
-			asguard_dbg("Post optimistical ts from leader channel\n");
 	}
 }
 EXPORT_SYMBOL(asguard_post_ts);
