@@ -398,7 +398,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
-				asguard_dbg("Received message from new leader with higher term=%u local term=%u\n", param1, priv->term);
+				asguard_dbg("Received message from new leader with higher term=%d local term=%d\n", param1, priv->term);
 #endif
 		}
 

@@ -127,7 +127,7 @@ struct consensus_priv {
 	 */
 	int cluster_mapping[MAX_NODE_ID];
 
-	u32 term;
+	s32 term;
 
 	uint64_t accu_rand;
 
