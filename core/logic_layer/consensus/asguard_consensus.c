@@ -197,7 +197,7 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 					return 1;
 		}
 	}
-	return 1;
+	return 0; // got request of invalid term! (lower or equal current term)
 }
 EXPORT_SYMBOL(check_handle_nomination);
 
