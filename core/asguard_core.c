@@ -81,6 +81,8 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 		if(sdev->verbose)
 			asguard_dbg("Post optimistical ts from leader channel\n");
 	}
+	if(sdev->verbose)
+		asguard_dbg("timestamp posted... ctype=%d, cycles=%llu\n", ctype, cycles);
 }
 EXPORT_SYMBOL(asguard_post_ts);
 
