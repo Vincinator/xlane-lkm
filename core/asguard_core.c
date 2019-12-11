@@ -272,7 +272,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->num_of_proto_instances = 0;
 	score->sdevices[asguard_id]->fire = 0;
 	score->sdevices[asguard_id]->tx_port = 319;
-	score->sdevices[asguard_id]->cur_leader_id = -1;
+	score->sdevices[asguard_id]->cur_leader_lid = -1;
 
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
