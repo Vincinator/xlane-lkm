@@ -191,13 +191,17 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	//asguard_dbg("Payload size: %d, state: %d %s %i", cqe_bcnt, sdev->pminfo.state, __func__, __LINE__);
 
-	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
+	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING)){
+		asguard_dbg("Not emitting. \n");
 		return;
+	}
 
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
-	if (unlikely(remote_lid == -1 || rcluster_id == -1))
+	if (unlikely(remote_lid == -1 || rcluster_id == -1)){
+		asguard_dbg("Invalid ids! \n");
 		return;
+	}
 
 	// Update aliveness state and timestamps
 	//spminfo->pm_targets[remote_lid].lhb_ts = spminfo->pm_targets[remote_lid].chb_ts;
