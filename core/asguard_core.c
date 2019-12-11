@@ -78,8 +78,8 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 	if(ctype == 2) { // channel type 2 is leader channel
 		sdev->last_leader_ts = cycles;
 		if(sdev->cur_leader_lid != -1) {
-			sdev->spminfo->pm_targets[sdev->cur_leader_lid].chb_ts = cycles;
-			sdev->spminfo->pm_targets[sdev->cur_leader_lid].alive = 1;
+			sdev->pminfo.pm_targets[sdev->cur_leader_lid].chb_ts = cycles;
+			sdev->pminfo.pm_targets[sdev->cur_leader_lid].alive = 1;
 		}
 
 	}
