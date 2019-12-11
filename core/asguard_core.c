@@ -207,7 +207,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	}
 
 	// Update aliveness state and timestamps
-	//spminfo->pm_targets[remote_lid].lhb_ts = spminfo->pm_targets[remote_lid].chb_ts;
+	spminfo->pm_targets[remote_lid].lhb_ts = spminfo->pm_targets[remote_lid].chb_ts;
 	spminfo->pm_targets[remote_lid].chb_ts = RDTSC_ASGUARD;
 	spminfo->pm_targets[remote_lid].alive = 1;
 
