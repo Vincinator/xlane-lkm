@@ -201,7 +201,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
-	if (unlikely(remote_lid == -1 || rcluster_id == -1)){
+	if (unlikely(remote_lid == -1 || rcluster_id == -1 || remote_lid > spminfo->num_of_targets)){
 		asguard_dbg("Invalid ids! \n");
 		return;
 	}
