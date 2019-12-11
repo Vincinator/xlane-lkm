@@ -264,6 +264,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->fire = 0;
 	score->sdevices[asguard_id]->tx_port = 319;
 
+
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		score->sdevices[asguard_id]->instance_id_mapping[i] = -1;
 
@@ -472,6 +473,10 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->pkt_data.naddr.dst_ip = ip;
 	pmtarget->pkt_data.naddr.cluster_id = cluster_id;
 	pmtarget->pkt_data.protocol_id = protocol_id;
+	pmtarget->lhb_ts = 0;
+	pmtarget->chb_ts = 0;
+	pmtarget->resp_factor = 2;
+	pmtarget->cur_waiting_interval = 2;
 
 	pmtarget->pkt_data.pkt_payload[0] =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
