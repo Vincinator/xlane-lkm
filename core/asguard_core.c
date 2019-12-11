@@ -77,6 +77,11 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 
 	if(ctype == 2) { // channel type 2 is leader channel
 		sdev->last_leader_ts = cycles;
+		if(sdev->cur_leader_lid != -1) {
+			sdev->spminfo->pm_targets[sdev->cur_leader_lid].chb_ts = cycles;
+			sdev->spminfo->pm_targets[sdev->cur_leader_lid].alive = 1;
+		}
+
 	}
 }
 EXPORT_SYMBOL(asguard_post_ts);
@@ -267,6 +272,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->num_of_proto_instances = 0;
 	score->sdevices[asguard_id]->fire = 0;
 	score->sdevices[asguard_id]->tx_port = 319;
+	score->sdevices[asguard_id]->cur_leader_id = -1;
 
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)

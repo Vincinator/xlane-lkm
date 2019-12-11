@@ -379,6 +379,7 @@ struct asguard_device {
 	int ifindex; /* corresponds to ifindex of net_device */
 	int asguard_id;
 	int fire;
+	int cur_leader_lid;
 
 	// 319 for normal traffic, 320 for leader traffic.
 	int tx_port;

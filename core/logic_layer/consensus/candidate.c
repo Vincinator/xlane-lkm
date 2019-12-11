@@ -188,6 +188,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 		err = node_transition(ins, LEADER);
 		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, RDTSC_ASGUARD);
 		priv->accu_rand = 0;
+		priv->sdev->cur_leader_lid = -1;
 
 		if (err) {
 			asguard_error("Error occured during the transition to leader role\n");
