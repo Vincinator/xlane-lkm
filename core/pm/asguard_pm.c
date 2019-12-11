@@ -189,7 +189,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
-		asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
+		//asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
 		asguard_dbg("sending to cluster node %d to udp target port %d", i, sdev->tx_port);
 
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
