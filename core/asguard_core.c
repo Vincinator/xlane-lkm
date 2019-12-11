@@ -152,12 +152,37 @@ void _handle_sub_payloads(struct asguard_device *sdev, unsigned char *remote_mac
 }
 
 
+int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
+{
+	int i;
+
+	if (unlikely(sdev->warmup_state == WARMING_UP)) {
+		// Do not start Leader Election until all targets have send a message to this node.
+		for (i = 0; i < spminfo->num_of_targets; i++)
+			if (!spminfo->pm_targets[i].alive)
+				return 1;
+
+		// Starting all protocols
+		for (i = 0; i < sdev->num_of_proto_instances; i++) {
+			if (sdev->protos != NULL && sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL) {
+				asguard_dbg("starting instance %d", i);
+				sdev->protos[i]->ctrl_ops.start(sdev->protos[i]);
+			} else {
+				asguard_dbg("protocol instance %d not initialized", i);
+			}
+		}
+		asguard_dbg("Warmup done!\n");
+		sdev->warmup_state = WARMED_UP;
+		return 0;
+	}
+}
+
 void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct pminfo *spminfo = &sdev->pminfo;
 	u16 received_proto_instances;
-	int i, remote_lid, rcluster_id;
+	int remote_lid, rcluster_id;
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
@@ -169,42 +194,23 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
 		return;
 
-	if (sdev->warmup_state == WARMING_UP) {
+	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
-		get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
-
-		if (remote_lid == -1 || rcluster_id == -1)
-			return;
-
-		if (spminfo->pm_targets[remote_lid].alive == 0)
-			spminfo->pm_targets[remote_lid].alive = 1;
-
-		// asguard_dbg("Received Message from node %d\n", rcluster_id);
-
-		// Do not start Leader Election until all targets have send a message to this node.
-		for (i = 0; i < spminfo->num_of_targets; i++)
-			if (!spminfo->pm_targets[i].alive)
-				return;
-
-		// Starting all protocols
-		for (i = 0; i < sdev->num_of_proto_instances; i++) {
-			if (sdev->protos != NULL && sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL) {
-				asguard_dbg("starting instance %d", i);
-				sdev->protos[i]->ctrl_ops.start(sdev->protos[i]);
-			} else {
-				asguard_dbg("protocol instance %d not initialized", i);
-			}
-		}
-
-		asguard_dbg("Warmup done!\n");
-		sdev->warmup_state = WARMED_UP;
+	if (unlikely(remote_lid == -1 || rcluster_id == -1))
 		return;
-	}
+
+	// Update aliveness state and timestamps
+	//spminfo->pm_targets[remote_lid].lhb_ts = spminfo->pm_targets[remote_lid].chb_ts;
+	spminfo->pm_targets[remote_lid].chb_ts = RDTSC_ASGUARD;
+	spminfo->pm_targets[remote_lid].alive = 1;
+
+	if(check_warmup_state(sdev, spminfo))
+		return;
+
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
 	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload),
 		received_proto_instances, cqe_bcnt);
-
 }
 EXPORT_SYMBOL(asguard_post_payload);
 

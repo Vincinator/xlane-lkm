@@ -310,7 +310,35 @@ struct asguard_pacemaker_test_data {
 
 struct asguard_pm_target_info {
 	int target_id;
-	int alive;	// 0 if not alive
+
+	/* Timestamp of heartbeat from last check*/
+	uint64_t lhb_ts;
+
+	/* Timestamp refreshed by the reception of the last packet from this node
+	 * If chb_ts == lhb_ts: remote node is considered dead
+	 * If chb_ts != lhb_ts: remote node is considered alive
+	 */
+	uint64_t chb_ts;
+
+
+	/* 1 if node is considered alive
+	 * 0 if node is considered dead
+	 * node considered dead if lhb_ts did not change since X local interval
+	 * X=resp_factor
+	 */
+	int alive;
+
+	/* responsiveness factor
+	 *
+	 * Determines the factor how many local intervals to wait
+	 * before the node is considered dead
+	 */
+	int resp_factor;
+
+	/* Used to determine how many intervals the PM has already waited
+	 * Will be reset to resp_factor after every aliveness check
+	 */
+	int cur_waiting_interval;
 
 	/* Params used to build the SKB for TX */
 	struct asguard_packet_data pkt_data;
