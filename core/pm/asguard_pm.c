@@ -137,6 +137,32 @@ static inline void asguard_update_skb_payload(struct sk_buff *skb, void *payload
 	memcpy(data_ptr, payload, ASGUARD_PAYLOAD_BYTES);
 }
 
+/*
+ * Marks target with local id <i> as dead
+ * if no update came in since last check
+ */
+void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo, int i)
+{
+	if(spminfo->pm_targets[i].cur_waiting_interval != 0){
+		spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].cur_waiting_interval - 1;
+		return;
+	}
+
+	if(spminfo->pm_targets[i].lhb_ts == spminfo->pm_targets[i].chb_ts) {
+		asguard_dbg("Node %d is considered dead\n", i);
+		spminfo->pm_targets[i].alive = 0;
+		spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
+		return;
+	}
+
+ 	// may be redundant - since we already update aliveness on reception of pkt
+	spminfo->pm_targets[i].alive = 1;
+
+	spminfo->pm_targets[i].lhb_ts =  spminfo->pm_targets[i].chb_ts;
+	spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
+}
+
+
 static inline int _emit_pkts(struct asguard_device *sdev,
 		struct pminfo *spminfo)
 {
@@ -176,35 +202,11 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		// Protocols have been emitted, do not sent them again ..
 		// .. and free the reservations for new protocols
 		invalidate_proto_data(sdev, pkt_payload, i);
-		update_aliveness_states(sdev, i);
+		update_aliveness_states(sdev, spminfo, i);
 	}
 	return 0;
 }
 
-/*
- * Marks target with local id <i> as dead
- * if no update came in since last check
- */
-void update_aliveness_states(struct asguard_device *sdev, int i)
-{
-	if(spminfo->pm_targets[i].cur_waiting_interval != 0){
-		spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].cur_waiting_interval - 1;
-		return;
-	}
-
-	if(spminfo->pm_targets[i].lhb_ts == spminfo->pm_targets[i].chb_ts) {
-		asguard_dbg("Node %d is considered dead\n", i);
-		spminfo->pm_targets[i].alive = 0;
-		spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
-		return;
-	}
-
- 	// may be redundant - since we already update aliveness on reception of pkt
-	spminfo->pm_targets[i].alive = 1;
-
-	spminfo->pm_targets[i].lhb_ts =  spminfo->pm_targets[i].chb_ts;
-	spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
-}
 
 
 
