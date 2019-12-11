@@ -173,8 +173,8 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 		}
 		asguard_dbg("Warmup done!\n");
 		sdev->warmup_state = WARMED_UP;
-		return 0;
 	}
+	return 0;
 }
 
 void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
