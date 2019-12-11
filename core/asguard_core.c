@@ -196,10 +196,8 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	//asguard_dbg("Payload size: %d, state: %d %s %i", cqe_bcnt, sdev->pminfo.state, __func__, __LINE__);
 
-	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING)){
-		asguard_dbg("Not emitting. \n");
+	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
 		return;
-	}
 
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
