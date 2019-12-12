@@ -212,7 +212,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	}
 
 	// Update aliveness state and timestamps
-	asguard_dbg("Got packet payload for target with local id %d\n", remote_lid);
+	asguard_dbg("Got packet payload for target with local id %d and mac %pM\n", remote_lid, remote_mac);
 	spminfo->pm_targets[remote_lid].chb_ts = RDTSC_ASGUARD;
 	spminfo->pm_targets[remote_lid].alive = 1;
 
