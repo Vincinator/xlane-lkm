@@ -217,7 +217,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
 	int batch = spminfo->num_of_targets;
-	// enum tsstate ts_state = sdev->ts_state;
+	enum tsstate ts_state = sdev->ts_state;
 	int ret;
 
 
@@ -240,6 +240,10 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 	/* Send heartbeats to all targets */
 	asguard_send_hbs(ndev, spminfo);
+
+	if(ts_state == ASGUARD_TS_RUNNING) {
+		asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
+	}
 
 	/* Leave Heartbeat pkts in clean state */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
