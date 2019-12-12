@@ -289,7 +289,7 @@ int start_candidate(struct proto_instance *ins)
 
 	asguard_dbg("Initialization finished.\n");
 
-	priv->sdev->tx_port = 319;
+	priv->sdev->tx_port = 3319;
 
 	setup_nomination(ins);
 	init_ctimeout(ins);

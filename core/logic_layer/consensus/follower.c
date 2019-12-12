@@ -533,7 +533,7 @@ int start_follower(struct proto_instance *ins)
 	if (err)
 		goto error;
 
-	priv->sdev->tx_port = 319;
+	priv->sdev->tx_port = 3319;
 
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;

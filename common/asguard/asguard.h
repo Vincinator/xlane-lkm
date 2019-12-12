@@ -381,7 +381,7 @@ struct asguard_device {
 	int fire;
 	int cur_leader_lid;
 
-	// 319 for normal traffic, 320 for leader traffic.
+	// 3319 for normal traffic, 3320 for leader traffic.
 	int tx_port;
 
 	u32 cluster_id;
