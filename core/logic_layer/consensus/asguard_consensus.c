@@ -222,7 +222,6 @@ void set_le_opcode(unsigned char *pkt, enum le_opcode opco, s32 p1, s32 p2, s32 
 
 	param4 = GET_CON_PROTO_PARAM4_PTR(pkt);
 	*param4 = (s32) p4;
-
 }
 
 static const struct asguard_protocol_ctrl_ops consensus_ops = {
