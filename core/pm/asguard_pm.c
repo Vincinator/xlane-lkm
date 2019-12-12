@@ -142,6 +142,8 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 		 * work can be done once per batch process (vs. for each pkt).
 		 */
 		ret = netdev_start_xmit(skb, ndev, txq, i + 1 != spminfo->num_of_targets);
+
+		asguard_dbg("Pkt sent to local id %d\n", i);
 		if(ret != NETDEV_TX_OK) {
 			asguard_error("netdev_start_xmit returned %d - DEBUG THIS - exiting PM now. \n", ret);
 			goto unlock;
