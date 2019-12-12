@@ -106,7 +106,7 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 	}
 
 	if( spminfo->num_of_targets == 0) {
-		asguard_info("No targets for pacemaker. \n");
+		asguard_dbg("No targets for pacemaker. \n");
 		return 0;
 	}
 
