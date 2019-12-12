@@ -204,9 +204,6 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
 		return;
 
-
-
-
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if (unlikely(remote_lid == -1 || rcluster_id == -1 || remote_lid > spminfo->num_of_targets)){
@@ -215,7 +212,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	}
 
 	// Update aliveness state and timestamps
-	spminfo->pm_targets[remote_lid].lhb_ts = spminfo->pm_targets[remote_lid].chb_ts;
+	asguard_dbg("Got packet payload for target with local id %d\n", remote_lid);
 	spminfo->pm_targets[remote_lid].chb_ts = RDTSC_ASGUARD;
 	spminfo->pm_targets[remote_lid].alive = 1;
 

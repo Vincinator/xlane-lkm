@@ -52,7 +52,7 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 
 	cur_proto = spay->proto_data;
 
-	// Check if protocol instance alreandy existis in payload
+	// Check if protocol instance already existis in payload
 	for (i = 0; i < spay->protocols_included; i++) {
 
 		if (instance_id == GET_PROTO_TYPE_VAL(cur_proto))
