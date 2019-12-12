@@ -196,7 +196,7 @@ inline void add_L4_header(struct sk_buff *skb)
 	udp = (struct udphdr *)skb_put(skb, sizeof(struct udphdr));
 	if (udp) {
 		udp->source = htons((u16)1111);
-		udp->dest = htons((u16)3320);
+		udp->dest = htons((u16)3319);
 		udp->len = htons((u16)ASGUARD_PAYLOAD_BYTES);
 		udp->check = 0;
 	}
