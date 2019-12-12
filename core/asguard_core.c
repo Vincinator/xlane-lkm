@@ -221,12 +221,13 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
+/*
 	if(sdev->verbose) {
 		asguard_dbg("Packet from %pM\n received isntances: %hu\n", remote_mac, received_proto_instances);
 		print_hex_dump(KERN_DEBUG, ":", DUMP_PREFIX_NONE, 32, 1, payload,
 		       64, 0);
 	}
-
+*/
 
 	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload),
 		received_proto_instances, cqe_bcnt);
