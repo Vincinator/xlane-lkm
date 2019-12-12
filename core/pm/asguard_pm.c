@@ -87,29 +87,73 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 
 		/* Setup SKB */
 		spminfo->pm_targets[i].skb = compose_skb(sdev, naddr, pkt_payload);
-		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id());
+		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
 	}
 }
 
-static inline void asguard_send_hb(struct net_device *ndev, struct sk_buff *skb)
+static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spminfo)
 {
-	int ret;
 	struct netdev_queue *txq;
+	struct sk_buff *skb
+	unsigned long flags;
+	int tx_index = smp_processor_id();
 
-	txq = skb_get_tx_queue(ndev, skb);
-	skb_get(skb); /* keep this. otherwise this thread locks the system */
 
-	HARD_TX_LOCK(ndev, txq, smp_processor_id());
+	if (unlikely(!netif_running(ndev) ||
+			!netif_carrier_ok(ndev))) {
+		asguard_error("Network device offline!\n exiting pacemaker\n");
+		return -1;
+	}
+
+	if( spminfo->num_of_targets == 0) {
+		asguard_info("No targets for pacemaker. \n");
+		return 0;
+	}
+
+	local_irq_save(flags);
+	local_bh_disable();
+
+	/* The queue mapping is the same for each target <i>
+	 * Since we pinned the pacemaker to a single cpu,
+	 * we can use the smp_processor_id() directly.
+	 */
+	txq = &ndev->_tx[tx_index];
+
+	HARD_TX_LOCK(ndev, txq, tx_index);
 
 	if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
 		asguard_error("Device Busy unlocking.\n");
 		goto unlock;
 	}
 
-	//skb_queue_head
-	ret = netdev_start_xmit(skb, ndev, txq, 0);
+	/* send packets in batch processing mode */
+	for (i = 0; i < spminfo->num_of_targets; i++) {
+		skb = spminfo->pm_targets[i].skb;
+
+		skb_get(skb);
+
+		/* Utilise batch process mechanism for the heartbeats.
+		 * HB pkts will be transmitted to the NIC,
+		 * but the NIC will only start emitting the pkts
+		 * when the last HB has been successfully prepared and transmitted
+		 * to the NIC.
+		 *
+		 * Locking and preparation overhead is reduced, because preparation
+		 * work can be done once per batch process (vs. for each pkt).
+		 */
+		ret = netdev_start_xmit(skb, ndev, txq, i + 1 != spminfo->num_of_targets);
+		if(ret != NETDEV_TX_OK) {
+			asguard_error("netdev_start_xmit returned %d - DEBUG THIS - exiting PM now. \n", ret);
+			goto unlock;
+		}
+	}
+
 unlock:
 	HARD_TX_UNLOCK(ndev, txq);
+
+	local_bh_enable();
+	local_irq_restore(flags);
+
 }
 
 static inline void asguard_update_skb_udp_port(struct sk_buff *skb, int udp_port)
@@ -172,14 +216,12 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 	int i;
 	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
+	int batch = spminfo->num_of_targets;
 	// enum tsstate ts_state = sdev->ts_state;
+	int ret;
 
-	/* If netdev is offline, then stop pacemaker */
-	if (unlikely(!netif_running(ndev) ||
-		     !netif_carrier_ok(ndev))) {
-		return -1;
-	}
 
+	/* Prepare heartbeat packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
 		// Always update payload to avoid jitter!
@@ -194,19 +236,21 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
+	}
 
-		asguard_send_hb(ndev, spminfo->pm_targets[i].skb);
+	/* Send heartbeats to all targets */
+	asguard_send_hbs(ndev, spminfo);
 
-		// if (ts_state == ASGUARD_TS_RUNNING) {
-		//		asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
-		//		asguard_write_timestamp(sdev, 4, ktime_get(), i);
-		// }
+	/* Leave Heartbeat pkts in clean state */
+	for (i = 0; i < spminfo->num_of_targets; i++) {
 
-		// Protocols have been emitted, do not sent them again ..
-		// .. and free the reservations for new protocols
+		/* Protocols have been emitted, do not sent them again ..
+		 * .. and free the reservations for new protocols */
 		invalidate_proto_data(sdev, pkt_payload, i);
 		update_aliveness_states(sdev, spminfo, i);
 	}
+
+
 	return 0;
 }
 
@@ -281,7 +325,6 @@ static int asguard_pm_loop(void *data)
 	struct asguard_device *sdev = (struct asguard_device *) data;
 	struct pminfo *spminfo = &sdev->pminfo;
 	uint64_t interval = spminfo->hbi;
-	unsigned long flags;
 	int err;
 
 	__prepare_pm_loop(sdev, spminfo);
@@ -302,20 +345,12 @@ static int asguard_pm_loop(void *data)
 
 		prev_time = cur_time;
 
-		local_irq_save(flags);
-		local_bh_disable();
-
 		err = _emit_pkts(sdev, spminfo);
 
 		if (err) {
 			asguard_pm_stop(spminfo);
-			local_bh_enable();
-			local_irq_restore(flags);
 			return err;
 		}
-
-		local_bh_enable();
-		local_irq_restore(flags);
 
 		// if (sdev->ts_state == ASGUARD_TS_RUNNING)
 		//	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, 42);
