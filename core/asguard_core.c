@@ -101,13 +101,18 @@ struct proto_instance *get_proto_instance(struct asguard_device *sdev, u16 proto
 {
 	int idx;
 
-	if (unlikely(proto_id < 0 || proto_id > MAX_PROTO_INSTANCES))
+	if (unlikely(proto_id < 0 || proto_id > MAX_PROTO_INSTANCES)){
+		asguard_error("proto_id is invalid: %hu\n", proto_id);
 		return NULL;
+	}
 
 	idx = sdev->instance_id_mapping[proto_id];
 
-	if (unlikely(idx < 0 || idx >= MAX_PROTO_INSTANCES))
+	if (unlikely(idx < 0 || idx >= MAX_PROTO_INSTANCES)){
+		asguard_error("idx is invalid: %d\n", idx);
+
 		return NULL;
+	}
 
 	return sdev->protos[idx];
 }
@@ -147,7 +152,7 @@ void _handle_sub_payloads(struct asguard_device *sdev, unsigned char *remote_mac
 	// check if instance for the given protocol id exists
 	if (!cur_ins) {
 		if (sdev->verbose >= 3)
-			asguard_dbg("No instance for protocol id %d were found\n", cur_proto_id);
+			asguard_dbg("No instance for protocol id %d were found. Sender MAC: %pM\n, instances=%d", cur_proto_id, remote_mac, instances);
 	} else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
 	}
