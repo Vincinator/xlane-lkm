@@ -522,7 +522,6 @@ int write_log(struct asguard_logger *slog, int type, uint64_t tcs);
 struct asguard_device *get_sdev(int devid);
 
 void send_pkt(struct net_device *ndev, struct sk_buff *skb);
-int send_pkts(struct asguard_device *sdev, struct sk_buff **skbs, int num_pkts);
 
 int is_ip_local(struct net_device *dev,	u32 ip_addr);
 

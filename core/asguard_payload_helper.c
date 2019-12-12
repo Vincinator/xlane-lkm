@@ -52,18 +52,25 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 
 	cur_proto = spay->proto_data;
 
-	// Iterate through existing protocols
+	// Check if protocol instance alreandy existis in payload
 	for (i = 0; i < spay->protocols_included; i++) {
+
 		if (instance_id == GET_PROTO_TYPE_VAL(cur_proto))
-			break;
+			goto reuse; // reuse existing payload part for this instance id
+
 		cur_offset = GET_PROTO_OFFSET_VAL(cur_proto);
 		cur_proto = cur_proto + cur_offset;
-
 		proto_offset += cur_offset;
+
 	}
+
+	spay->protocols_included++;
+
+reuse:
 
 	if (unlikely(proto_offset + proto_size > MAX_ASGUARD_PAYLOAD_BYTES)) {
 		asguard_error("Not enough space in asguard payload\n");
+		spay->protocols_included--;
 		return NULL;
 	}
 
@@ -72,10 +79,6 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 
 	*pid = instance_id;
 	*poff = proto_size;
-
-	//asguard_dbg("pid: %hu, poff: %hu", *pid, *poff);
-
-	spay->protocols_included++;
 
 	return cur_proto;
 }

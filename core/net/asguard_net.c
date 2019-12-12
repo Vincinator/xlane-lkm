@@ -340,20 +340,4 @@ void send_pkt(struct net_device *ndev, struct sk_buff *skb)
 EXPORT_SYMBOL(send_pkt);
 #endif
 
-int send_pkts(struct asguard_device *sdev, struct sk_buff **skbs, int num_pkts)
-{
-	int i;
 
-	/* If netdev is offline, then stop pacemaker */
-	if (unlikely(!netif_running(sdev->ndev) ||
-		     !netif_carrier_ok(sdev->ndev))) {
-		return -1;
-	}
-
-	for (i = 0; i < num_pkts; i++) {
-		if (!skbs[i])
-			continue;
-		send_pkt(sdev->ndev, skbs[i]);
-	}
-	return 0;
-}
