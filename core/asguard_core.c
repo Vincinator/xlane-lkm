@@ -204,6 +204,14 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
 		return;
 
+
+	if(sdev->verbose) {
+		asguard_dbg("Packet from %pM\n", remote_mac);
+		print_hex_dump(KERN_DEBUG, ":", DUMP_PREFIX_NONE, 16, 1, payload,
+		       cqe_bcnt, 0);
+	}
+
+
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if (unlikely(remote_lid == -1 || rcluster_id == -1 || remote_lid > spminfo->num_of_targets)){

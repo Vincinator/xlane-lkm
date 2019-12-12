@@ -269,9 +269,9 @@ struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr
 	add_payload(nomination_pkt, payload);
 
 #if VERBOSE_DEBUG
-	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
-		       payload,
-		       ASGUARD_PAYLOAD_BYTES, 0);
+//	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,
+//		       payload,
+//		       ASGUARD_PAYLOAD_BYTES, 0);
 
 	asguard_dbg("Composed packet\n");
 #endif
