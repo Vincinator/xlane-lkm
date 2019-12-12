@@ -94,10 +94,10 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spminfo)
 {
 	struct netdev_queue *txq;
-	struct sk_buff *skb
+	struct sk_buff *skb;
 	unsigned long flags;
 	int tx_index = smp_processor_id();
-
+	int i, ret;
 
 	if (unlikely(!netif_running(ndev) ||
 			!netif_carrier_ok(ndev))) {
