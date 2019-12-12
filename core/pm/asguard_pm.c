@@ -143,7 +143,6 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 		 */
 		ret = netdev_start_xmit(skb, ndev, txq, i + 1 != spminfo->num_of_targets);
 
-		asguard_dbg("Pkt sent to local id %d\n", i);
 		if(ret != NETDEV_TX_OK) {
 			asguard_error("netdev_start_xmit returned %d - DEBUG THIS - exiting PM now. \n", ret);
 			goto unlock;
@@ -233,7 +232,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
-		asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
+		//asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
 		//asguard_dbg("sending to cluster node %d to udp target port %d", i, sdev->tx_port);
 
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
