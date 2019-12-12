@@ -205,11 +205,6 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 		return;
 
 
-	if(sdev->verbose) {
-		asguard_dbg("Packet from %pM\n", remote_mac);
-		print_hex_dump(KERN_DEBUG, ":", DUMP_PREFIX_NONE, 16, 1, payload,
-		       cqe_bcnt, 0);
-	}
 
 
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
@@ -228,6 +223,13 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 		return;
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
+
+	if(sdev->verbose) {
+		asguard_dbg("Packet from %pM\n received isntances: %hu\n", remote_mac, received_proto_instances);
+		print_hex_dump(KERN_DEBUG, ":", DUMP_PREFIX_NONE, 32, 1, payload,
+		       64, 0);
+	}
+
 
 	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload),
 		received_proto_instances, cqe_bcnt);
