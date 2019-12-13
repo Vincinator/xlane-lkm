@@ -167,6 +167,10 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 	int i;
 
 	if (unlikely(sdev->warmup_state == WARMING_UP)) {
+
+		// DEBUG
+		return 1;
+
 		// Do not start Leader Election until all targets have send a message to this node.
 		for (i = 0; i < spminfo->num_of_targets; i++)
 			if (!spminfo->pm_targets[i].alive)
