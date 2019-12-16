@@ -195,10 +195,11 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 
 
 
-void do_process_pkt(struct process_pkt_in *ppi)
+void do_process_pkt(void *data)
 {
 	u16 received_proto_instances;
 	unsigned long flags;
+	struct process_pkt_in *ppi = (struct process_pkt_in *) data;
 
 	/* start of critical section - locking per remote target*/
 	spin_lock_irqsave(ppi->target_lock, flags);
