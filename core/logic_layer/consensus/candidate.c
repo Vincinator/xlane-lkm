@@ -198,7 +198,9 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 			return;
 		}
 	} else {
-		reset_ctimeout(ins);
+		// TODO: reset candidature interval counter after every vote?
+		//       .... Or count the total intervals required for majority?
+		priv->candidate_counter = 0;
 	}
 
 }
