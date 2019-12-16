@@ -108,17 +108,6 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 
 	priv->votes = 0; // start with 0 votes on every transition
 
-	// Stop old timeouts
-	switch (state) {
-	case FOLLOWER:
-		stop_follower(ins);
-		break;
-	case CANDIDATE:
-		stop_candidate(ins);
-		break;
-	default:
-		break;
-	}
 
 	switch (state) {
 	case FOLLOWER:

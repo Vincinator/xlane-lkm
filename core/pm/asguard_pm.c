@@ -241,10 +241,18 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 		return;
 	}
 
+	if(unlikely(sdev->warmup_state == WARMING_UP))
+		return;
+
+
 
 	if(leader_lid == -1 || spminfo->pm_targets[leader_lid].alive == 0) {
 		asguard_dbg("Leader is dead\n");
 		if(lowest_follower_id == self_id) {
+			if(priv->nstate == CANDIDATE) {
+				asguard_dbg("Self nomination already started\n");
+				return;
+			}
 			asguard_dbg("Start self nomination - this node has the lowest id %d\n", lowest_follower_id);
 
 			node_transition(priv->ins, CANDIDATE);
