@@ -17,6 +17,7 @@
 #include <linux/ktime.h>
 #include <linux/time.h>
 
+
 #include "logger.h"
 
 #define MAX_ASGUARD_PROC_NAME 256
@@ -311,6 +312,9 @@ struct asguard_pacemaker_test_data {
 struct asguard_pm_target_info {
 	int target_id;
 
+
+	spinlock_t rx_process_lock;
+
 	/* Timestamp of heartbeat from last check*/
 	uint64_t lhb_ts;
 
@@ -448,6 +452,15 @@ struct proto_instance {
 
 	void *proto_data;
 };
+
+struct process_pkt_in {
+
+	struct asguard_device *sdev;
+	unsigned char *remote_mac;
+	void *payload;
+	u32 cqe_bcnt;
+	spinlock_t *target_lock;
+}
 
 
 struct sk_buff *asguard_setup_hb_packet(struct pminfo *spminfo,

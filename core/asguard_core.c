@@ -2,6 +2,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
+#include <linux/spinlock.h>
 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -191,11 +192,69 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 	return 0;
 }
 
+
+
+void do_process_pkt(struct process_pkt_in *ppi)
+{
+	u16 received_proto_instances;
+	unsigned long flags;
+
+	/* start of critical section - locking per remote target*/
+	spin_lock_irqsave(ppi->target_lock, flags);
+
+	received_proto_instances = GET_PROTO_AMOUNT_VAL(ppi->payload);
+
+	_handle_sub_payloads(ppi->sdev, ppi->remote_mac, GET_PROTO_START_SUBS_PTR(ppi->payload),
+		received_proto_instances, ppi->cqe_bcnt);
+
+	/* end of critical section - locking per remote target */
+	spin_unlock_irqrestore(ppi->target_lock, flags);
+
+}
+
+
+
+void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *remote_mac, void *payload, u32 cqe_bcnt, int remote_lid)
+{
+	static struct task_struct *process_pkt_task;
+
+	process_pkt_in = kmalloc(sizeof(struct process_pkt_in), GFP_KERNEL);
+
+	if(!process_pkt_in){
+		asguard_error("Not enough memory to process pkt\n");
+		return -ENOMEM;
+	}
+
+	process_pkt_in->sdev = sdev;
+	process_pkt_in->remote_mac = remote_mac;
+	process_pkt_in->payload = payload;
+	process_pkt_in->cqe_bcnt = cqe_bcnt;
+	process_pkt_in->remote_lid = remote_lid;
+
+	/* Lock per remote target - processing of packets from multiple targets in parallel is allowed */
+	process_pkt_in->target_lock = &sdev->pminfo.pm_targets[remote_lid].rx_process_lock;
+
+	process_pkt_task = kthread_create(&do_process_pkt, process_pkt_in,
+			"asguard process pkt");
+
+	/* TODO: parameterize the cpu that should execute the process_pkt task */
+	kthread_bind(process_pkt_task, 42);
+
+	if (IS_ERR(process_pkt_task)) {
+		asguard_error("asguard process pkt task Error. %s\n", __func__);
+		return -EINVAL;
+	}
+
+	wake_up_process(process_pkt_task);
+
+}
+
+
+
 void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct pminfo *spminfo = &sdev->pminfo;
-	u16 received_proto_instances;
 	int remote_lid, rcluster_id;
 
 	if (unlikely(!sdev)) {
@@ -222,18 +281,9 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	if(check_warmup_state(sdev, spminfo))
 		return;
 
-	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
-/*
-	if(sdev->verbose) {
-		asguard_dbg("Packet from %pM\n received isntances: %hu\n", remote_mac, received_proto_instances);
-		print_hex_dump(KERN_DEBUG, ":", DUMP_PREFIX_NONE, 32, 1, payload,
-		       64, 0);
-	}
-*/
+	asguard_process_pkt_payload(sdev,remote_mac, payload, cqe_bcnt, remote_lid);
 
-	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload),
-		received_proto_instances, cqe_bcnt);
 }
 EXPORT_SYMBOL(asguard_post_payload);
 
