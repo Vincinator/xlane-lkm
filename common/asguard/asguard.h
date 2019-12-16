@@ -460,7 +460,7 @@ struct process_pkt_in {
 	void *payload;
 	u32 cqe_bcnt;
 	spinlock_t *target_lock;
-}
+};
 
 
 struct sk_buff *asguard_setup_hb_packet(struct pminfo *spminfo,

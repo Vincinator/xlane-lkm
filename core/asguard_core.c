@@ -3,6 +3,7 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
+#include <linux/kthread.h>
 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
