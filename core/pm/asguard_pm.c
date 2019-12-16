@@ -233,7 +233,7 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 {
 	int leader_lid = sdev->cur_leader_lid;
 	u32 self_id = sdev->cluster_id;
-	u32 lowest_follower_id = get_lowest_alive_id(spminfo);
+	u32 lowest_follower_id = get_lowest_alive_id(sdev, spminfo);
 	struct consensus_priv *priv = sdev->consensus_priv;
 
 	if(!priv) {
