@@ -118,6 +118,8 @@ struct consensus_priv {
 
 	enum le_state state;
 
+	int candidate_counter;
+
 	u32 leader_id;
 
 	u32 node_id;
