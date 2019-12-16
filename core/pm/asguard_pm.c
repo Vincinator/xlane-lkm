@@ -245,9 +245,7 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 		return;
 
 
-
 	if(leader_lid == -1 || spminfo->pm_targets[leader_lid].alive == 0) {
-		asguard_dbg("Leader is dead\n");
 		if(lowest_follower_id == self_id) {
 			/* TODO: parameterize candidate_counter check */
 			if(priv->nstate == CANDIDATE && priv->candidate_counter < 50) {
