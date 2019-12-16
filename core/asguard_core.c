@@ -195,7 +195,7 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 
 
 
-void do_process_pkt(void *data)
+static int do_process_pkt(void *data)
 {
 	u16 received_proto_instances;
 	unsigned long flags;
@@ -212,6 +212,7 @@ void do_process_pkt(void *data)
 	/* end of critical section - locking per remote target */
 	spin_unlock_irqrestore(ppi->target_lock, flags);
 
+	return 0;
 }
 
 
@@ -223,9 +224,9 @@ void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *rem
 
 	ppi = kmalloc(sizeof(struct process_pkt_in), GFP_KERNEL);
 
-	if(!process_pkt_in){
+	if(!ppi){
 		asguard_error("Not enough memory to process pkt\n");
-		return -ENOMEM;
+		return;
 	}
 
 	ppi->sdev = sdev;

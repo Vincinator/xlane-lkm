@@ -457,6 +457,7 @@ struct process_pkt_in {
 
 	struct asguard_device *sdev;
 	unsigned char *remote_mac;
+	int remote_lid;
 	void *payload;
 	u32 cqe_bcnt;
 	spinlock_t *target_lock;
