@@ -537,6 +537,7 @@ int start_follower(struct proto_instance *ins)
 
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;
+	priv->candidate_counter = 0;
 
 	//init_timeout(ins);
 

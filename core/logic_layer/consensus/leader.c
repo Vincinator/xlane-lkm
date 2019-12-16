@@ -183,6 +183,8 @@ int start_leader(struct proto_instance *ins)
 	initialze_indices(priv);
 
 	priv->sdev->tx_port = 3320;
+	priv->candidate_counter = 0;
+
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		hb_passive_ix =

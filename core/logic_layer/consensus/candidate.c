@@ -289,13 +289,14 @@ int start_candidate(struct proto_instance *ins)
 
 	priv->votes = 0;
 	priv->nstate = CANDIDATE;
+	priv->candidate_counter = 0;
 
 	asguard_dbg("Initialization finished.\n");
 
 	priv->sdev->tx_port = 3319;
 
 	setup_nomination(ins);
-	init_ctimeout(ins);
+	//init_ctimeout(ins);
 
 	asguard_dbg("Candidate started.\n");
 

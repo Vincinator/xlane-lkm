@@ -249,8 +249,10 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 	if(leader_lid == -1 || spminfo->pm_targets[leader_lid].alive == 0) {
 		asguard_dbg("Leader is dead\n");
 		if(lowest_follower_id == self_id) {
-			if(priv->nstate == CANDIDATE) {
-				asguard_dbg("Self nomination already started\n");
+			/* TODO: parameterize candidate_counter check */
+			if(priv->nstate == CANDIDATE && priv->candidate_counter < 50) {
+				asguard_dbg("Self nomination already started - waited %d HB intervals\n", priv->candidate_counter);
+				priv->candidate_counter++;
 				return;
 			}
 			asguard_dbg("Start self nomination - this node has the lowest id %d\n", lowest_follower_id);
