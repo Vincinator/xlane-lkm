@@ -557,7 +557,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->pkt_data.protocol_id = protocol_id;
 	pmtarget->lhb_ts = 0;
 	pmtarget->chb_ts = 0;
-	pmtarget->resp_factor = 2;
+	pmtarget->resp_factor = 4;
 	pmtarget->cur_waiting_interval = 2;
 
 	pmtarget->pkt_data.pkt_payload[0] =
