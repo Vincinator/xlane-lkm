@@ -247,7 +247,7 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 		if(lowest_follower_id == self_id) {
 			asguard_dbg("Start self nomination - this node has the lowest id %d\n", lowest_follower_id);
 
-			err = node_transition(priv->ins, CANDIDATE);
+			node_transition(priv->ins, CANDIDATE);
 			write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, RDTSC_ASGUARD);
 		}
 	}
