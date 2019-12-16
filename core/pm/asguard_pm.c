@@ -310,7 +310,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		update_aliveness_states(sdev, spminfo, i);
 	}
 
-	if(sdev->is_leader == 0)
+	if(sdev->consensus_priv->nstate != LEADER)
 		update_leader(sdev, spminfo);
 
 
