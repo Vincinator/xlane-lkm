@@ -219,24 +219,25 @@ void do_process_pkt(void *data)
 void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *remote_mac, void *payload, u32 cqe_bcnt, int remote_lid)
 {
 	static struct task_struct *process_pkt_task;
+	struct process_pkt_in *ppi;
 
-	process_pkt_in = kmalloc(sizeof(struct process_pkt_in), GFP_KERNEL);
+	ppi = kmalloc(sizeof(struct process_pkt_in), GFP_KERNEL);
 
 	if(!process_pkt_in){
 		asguard_error("Not enough memory to process pkt\n");
 		return -ENOMEM;
 	}
 
-	process_pkt_in->sdev = sdev;
-	process_pkt_in->remote_mac = remote_mac;
-	process_pkt_in->payload = payload;
-	process_pkt_in->cqe_bcnt = cqe_bcnt;
-	process_pkt_in->remote_lid = remote_lid;
+	ppi->sdev = sdev;
+	ppi->remote_mac = remote_mac;
+	ppi->payload = payload;
+	ppi->cqe_bcnt = cqe_bcnt;
+	ppi->remote_lid = remote_lid;
 
 	/* Lock per remote target - processing of packets from multiple targets in parallel is allowed */
-	process_pkt_in->target_lock = &sdev->pminfo.pm_targets[remote_lid].rx_process_lock;
+	ppi->target_lock = &sdev->pminfo.pm_targets[remote_lid].rx_process_lock;
 
-	process_pkt_task = kthread_create(&do_process_pkt, process_pkt_in,
+	process_pkt_task = kthread_create(&do_process_pkt, ppi,
 			"asguard process pkt");
 
 	/* TODO: parameterize the cpu that should execute the process_pkt task */
