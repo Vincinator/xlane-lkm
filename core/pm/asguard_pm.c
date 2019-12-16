@@ -219,8 +219,8 @@ u32 get_lowest_alive_id(struct asguard_device *sdev, struct pminfo *spminfo)
 
 	for(i = 0; i < spminfo->num_of_targets; i++) {
 		if(spminfo->pm_targets[i].alive){
-			if(cur_low > spminfo->pm_targets[i].target_id ) {
-				cur_low = (u32) spminfo->pm_targets[i].target_id;
+			if(cur_low > spminfo->pm_targets[i].pkt_data.naddr.cluster_id) {
+				cur_low = (u32) spminfo->pm_targets[i].pkt_data.naddr.cluster_id;
 			}
 		}
 	}
