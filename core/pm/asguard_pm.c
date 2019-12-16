@@ -303,7 +303,11 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 	/* Leave Heartbeat pkts in clean state */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
+		hb_active_ix =
+		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
 
+		pkt_payload =
+		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 		/* Protocols have been emitted, do not sent them again ..
 		 * .. and free the reservations for new protocols */
 		invalidate_proto_data(sdev, pkt_payload, i);
