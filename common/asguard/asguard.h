@@ -384,6 +384,7 @@ struct asguard_device {
 	int asguard_id;
 	int fire;
 	int cur_leader_lid;
+	struct consensus_priv *consensus_priv;
 
 	int is_leader; /* Is this node a leader? */
 
