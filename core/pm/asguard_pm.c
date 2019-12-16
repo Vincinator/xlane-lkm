@@ -303,7 +303,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 	}
 
 	if(sdev->is_leader == 0)
-		update_leader(sdev);
+		update_leader(sdev, spminfo);
 
 
 
