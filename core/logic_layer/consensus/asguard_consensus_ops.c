@@ -38,6 +38,7 @@ int consensus_init(struct proto_instance *ins)
 	priv->throughput_logger.instance_id = ins->instance_id;
 	priv->throughput_logger.ifindex = priv->sdev->ifindex;
 	priv->throughput_logger.name = "consensus_throughput";
+	priv->sdev->consensus_priv = priv; /* reference for pacemaker */
 
 	priv->throughput_logger.events = kmalloc_array(MAX_THROUGPUT_LOGGER_EVENTS, sizeof(struct logger_event *), GFP_KERNEL);
 
@@ -224,12 +225,6 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 	if (remote_lid == -1 || rcluster_id == -1)
 		return -1;
 
-	if (priv->nstate == FOLLOWER){
-		if (priv->leader_id == remote_lid){
-			// Got HB from Leader - Reset follower timeout now
-			reset_ftimeout(ins);
-		}
-	}
 
 	switch (priv->nstate) {
 	case FOLLOWER:

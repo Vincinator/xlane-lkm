@@ -377,7 +377,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 		if (check_handle_nomination(priv, param1, param2, param3, param4)) {
-			reset_ftimeout(ins);
+			//reset_ftimeout(ins);
 			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}
 		break;
@@ -389,7 +389,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 */
 		if (param1 > priv->term) {
 
-			reset_ftimeout(ins);
+			//reset_ftimeout(ins);
 
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
@@ -412,7 +412,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			if (priv->leader_id == remote_lid) {
 				// follower timeout already handled.
-				reset_ftimeout(ins);
+				//reset_ftimeout(ins);
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 #if VERBOSE_DEBUG
@@ -538,7 +538,7 @@ int start_follower(struct proto_instance *ins)
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;
 
-	init_timeout(ins);
+	//init_timeout(ins);
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)

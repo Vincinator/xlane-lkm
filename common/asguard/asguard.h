@@ -385,6 +385,8 @@ struct asguard_device {
 	int fire;
 	int cur_leader_lid;
 
+	int is_leader; /* Is this node a leader? */
+
 	// 3319 for normal traffic, 3320 for leader traffic.
 	int tx_port;
 

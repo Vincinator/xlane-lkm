@@ -21,6 +21,7 @@
 #include <asguard/logger.h>
 #include <asguard/asguard.h>
 #include <asguard/payload_helper.h>
+#include <asguard/consensus.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][PACEMAKER]"
@@ -210,6 +211,51 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 	spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
 }
 
+u32 get_lowest_alive_id(struct asguard_device *sdev, struct pminfo *spminfo)
+{
+	int i;
+	u32 cur_low = sdev->cluster_id;
+
+
+	for(i = 0; i < spminfo->num_of_targets; i++) {
+		if(spminfo->pm_targets[i].alive){
+			if(cur_low > spminfo->pm_targets[i].target_id ) {
+				cur_low = (u32) spminfo->pm_targets[i].target_id;
+			}
+		}
+	}
+
+	return cur_low;
+}
+
+
+void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
+{
+	int leader_lid = sdev->cur_leader_lid;
+	u32 self_id = sdev->cluster_id;
+	u32 lowest_follower_id = get_lowest_alive_id(spminfo);
+	struct consensus_priv *priv = sdev->consensus_priv;
+
+	if(!priv) {
+		asguard_dbg("consensus priv is NULL \n");
+		return;
+	}
+
+
+	if(cur_leader_lid == -1 || spminfo->pm_targets[leader_lid].alive == 0) {
+		asguard_dbg("Leader is dead\n");
+		if(lowest_follower_id == self_id) {
+			asguard_dbg("Start self nomination - this node has the lowest id %d\n", lowest_follower_id);
+
+			err = node_transition(priv->ins, CANDIDATE);
+			write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, RDTSC_ASGUARD);
+		}
+	}
+
+
+}
+
+
 
 static inline int _emit_pkts(struct asguard_device *sdev,
 		struct pminfo *spminfo)
@@ -255,6 +301,10 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		invalidate_proto_data(sdev, pkt_payload, i);
 		update_aliveness_states(sdev, spminfo, i);
 	}
+
+	if(sdev->is_leader == 0)
+		update_leader(sdev);
+
 
 
 	return 0;

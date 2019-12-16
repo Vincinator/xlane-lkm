@@ -283,7 +283,13 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 		return;
 
 
-	asguard_process_pkt_payload(sdev,remote_mac, payload, cqe_bcnt, remote_lid);
+	received_proto_instances = GET_PROTO_AMOUNT_VAL(ppi->payload);
+
+	_handle_sub_payloads(ppi->sdev, ppi->remote_mac, GET_PROTO_START_SUBS_PTR(ppi->payload),
+		received_proto_instances, ppi->cqe_bcnt);
+
+
+	// asguard_process_pkt_payload(sdev,remote_mac, payload, cqe_bcnt, remote_lid);
 
 }
 EXPORT_SYMBOL(asguard_post_payload);
