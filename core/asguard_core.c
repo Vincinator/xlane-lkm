@@ -31,6 +31,7 @@ module_param(ifindex, int, 0660);
 static struct asguard_core *score;
 
 
+
 struct asguard_device *get_sdev(int devid)
 {
 	if (unlikely(devid < 0 || devid > MAX_NIC_DEVICES)) {
@@ -248,13 +249,13 @@ void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *rem
 }
 
 
-
 void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct pminfo *spminfo = &sdev->pminfo;
 	int remote_lid, rcluster_id;
 	u16 received_proto_instances;
+
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
@@ -283,14 +284,20 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
+	asguard_dbg("Processing start TS: %llu", RDTSC_ASGUARD);
+
 	_handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(payload),
 		received_proto_instances, cqe_bcnt);
 
+	asguard_dbg("Processing end TS: %llu", RDTSC_ASGUARD);
 
 	// asguard_process_pkt_payload(sdev,remote_mac, payload, cqe_bcnt, remote_lid);
 
 }
 EXPORT_SYMBOL(asguard_post_payload);
+
+
+
 
 void asguard_reset_remote_host_counter(int asguard_id)
 {
