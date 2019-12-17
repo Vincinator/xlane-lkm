@@ -249,7 +249,6 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 		if(lowest_follower_id == self_id) {
 			/* TODO: parameterize candidate_counter check */
 			if(priv->nstate == CANDIDATE && priv->candidate_counter < 50) {
-				asguard_dbg("Self nomination already started - waited %d HB intervals\n", priv->candidate_counter);
 				priv->candidate_counter++;
 				return;
 			}

@@ -120,7 +120,7 @@ struct proto_instance *get_proto_instance(struct asguard_device *sdev, u16 proto
 }
 
 
-void _handle_sub_payloads(struct asguard_device *sdev, unsigned char *remote_mac, char *payload, int instances, u32 bcnt)
+void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int cluster_id, char *payload, int instances, u32 bcnt)
 {
 	u16 cur_proto_id;
 	u16 cur_offset;
@@ -156,11 +156,11 @@ void _handle_sub_payloads(struct asguard_device *sdev, unsigned char *remote_mac
 		if (sdev->verbose >= 3)
 			asguard_dbg("No instance for protocol id %d were found. Sender MAC: %pM\n, instances=%d", cur_proto_id, remote_mac, instances);
 	} else {
-		cur_ins->ctrl_ops.post_payload(cur_ins, remote_mac, payload);
+		cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
 	}
 
 	// handle next payload
-	_handle_sub_payloads(sdev, remote_mac, payload + cur_offset, instances - 1, bcnt - cur_offset);
+	_handle_sub_payloads(sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset);
 }
 
 
@@ -286,8 +286,8 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
-//	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload),
-//		received_proto_instances, cqe_bcnt);
+	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload),
+		received_proto_instances, cqe_bcnt);
 
 
 	// asguard_process_pkt_payload(sdev,remote_mac, payload, cqe_bcnt, remote_lid);

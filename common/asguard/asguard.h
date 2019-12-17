@@ -430,7 +430,7 @@ struct asguard_protocol_ctrl_ops {
 	/* free memory of app and remove user space interfaces */
 	int (*clean)(struct proto_instance *ins);
 
-	int (*post_payload)(struct proto_instance *ins, unsigned char *remote_mac,
+	int (*post_payload)(struct proto_instance *ins, int remote_lid, int cluster_id,
 			    void *payload);
 
 	int (*post_ts)(struct proto_instance *ins, unsigned char *remote_mac,

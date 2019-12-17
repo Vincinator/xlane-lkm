@@ -198,7 +198,7 @@ int consensus_us_update(struct proto_instance *ins, void *payload)
 	return 0;
 }
 
-int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
+int consensus_post_payload(struct proto_instance *ins, int remote_lid, int cluster_id,
 		    void *payload)
 {
 	struct consensus_priv *priv =
@@ -219,12 +219,6 @@ int consensus_post_payload(struct proto_instance *ins, unsigned char *remote_mac
 		asguard_dbg("private consensus data is null!\n");
 		return 0;
 	}
-
-	get_cluster_ids(priv->sdev, remote_mac, &remote_lid, &rcluster_id);
-
-	if (remote_lid == -1 || rcluster_id == -1)
-		return -1;
-
 
 	switch (priv->nstate) {
 	case FOLLOWER:

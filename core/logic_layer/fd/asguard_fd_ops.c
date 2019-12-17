@@ -8,7 +8,7 @@
 int fd_init(struct proto_instance *ins)
 {
 	int err = 0;
-	struct asguard_fd_priv *priv = 
+	struct asguard_fd_priv *priv =
 		(struct asguard_fd_priv *)ins->proto_data;
 
 	struct asguard_device *sdev = priv->sdev;
@@ -53,7 +53,7 @@ int fd_init_payload(void *payload)
 
 int fd_start(struct proto_instance *ins)
 {
-	struct asguard_fd_priv *priv = 
+	struct asguard_fd_priv *priv =
 		(struct asguard_fd_priv *)ins->proto_data;
 
 	asguard_dbg("fd start\n");
@@ -62,7 +62,7 @@ int fd_start(struct proto_instance *ins)
 
 int fd_stop(struct proto_instance *ins)
 {
-	struct asguard_fd_priv *priv = 
+	struct asguard_fd_priv *priv =
 		(struct asguard_fd_priv *)ins->proto_data;
 	asguard_dbg("fd stop\n");
 	return 0;
@@ -70,7 +70,7 @@ int fd_stop(struct proto_instance *ins)
 
 int fd_clean(struct proto_instance *ins)
 {
-	struct asguard_fd_priv *priv = 
+	struct asguard_fd_priv *priv =
 		(struct asguard_fd_priv *)ins->proto_data;
 	struct asguard_device *sdev = priv->sdev;
 
@@ -81,7 +81,7 @@ int fd_clean(struct proto_instance *ins)
 
 int fd_info(struct proto_instance *ins)
 {
-	struct asguard_fd_priv *priv = 
+	struct asguard_fd_priv *priv =
 		(struct asguard_fd_priv *)ins->proto_data;
 
 	asguard_dbg("fd info\n");
@@ -95,7 +95,7 @@ int fd_info(struct proto_instance *ins)
 int fd_us_update(struct proto_instance *ins, void *payload)
 {
 	int i;
-	struct asguard_fd_priv *priv = 
+	struct asguard_fd_priv *priv =
 		(struct asguard_fd_priv *)ins->proto_data;
 	struct asguard_device *sdev = priv->sdev;
 
@@ -132,7 +132,7 @@ int fd_us_update(struct proto_instance *ins, void *payload)
 	return 0;
 }
 
-int fd_post_payload(struct proto_instance *ins, unsigned char *remote_mac,
+int fd_post_payload(struct proto_instance *ins, int remote_lid, int cluster_id,
 		    void *payload)
 {
 	// .. Test only ..
