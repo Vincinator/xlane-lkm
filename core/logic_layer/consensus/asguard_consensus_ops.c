@@ -198,12 +198,11 @@ int consensus_us_update(struct proto_instance *ins, void *payload)
 	return 0;
 }
 
-int consensus_post_payload(struct proto_instance *ins, int remote_lid, int cluster_id,
+int consensus_post_payload(struct proto_instance *ins, int remote_lid, int rcluster_id,
 		    void *payload)
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
-	int remote_lid, rcluster_id;
 
 	if (unlikely(!consensus_is_alive(priv)))
 		return 0;

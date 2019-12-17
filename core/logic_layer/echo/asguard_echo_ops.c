@@ -45,10 +45,9 @@ int echo_info(struct proto_instance *ins)
 	return 0;
 }
 
-int echo_post_payload(struct proto_instance *ins, int remote_lid, int cluster_id,
+int echo_post_payload(struct proto_instance *ins, int remote_lid, int rcluster_id,
 		      void *payload)
 {
-	int remote_lid, rcluster_id;
 	uint64_t tx_ts;
 	enum echo_opcode opcode;
 
