@@ -154,7 +154,7 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 	// check if instance for the given protocol id exists
 	if (!cur_ins) {
 		if (sdev->verbose >= 3)
-			asguard_dbg("No instance for protocol id %d were found. Sender MAC: %pM\n, instances=%d", cur_proto_id, remote_mac, instances);
+			asguard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
 	} else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
 	}
