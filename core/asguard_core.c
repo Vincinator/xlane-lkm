@@ -201,10 +201,7 @@ static int do_process_pkt(void *data)
 	/* start of critical section - locking per remote target*/
 	spin_lock_irqsave(ppi->target_lock, flags);
 
-	received_proto_instances = GET_PROTO_AMOUNT_VAL(ppi->payload);
-
-	_handle_sub_payloads(ppi->sdev, ppi->remote_mac, GET_PROTO_START_SUBS_PTR(ppi->payload),
-		received_proto_instances, ppi->cqe_bcnt);
+// Do payload handling work here ...
 
 	/* end of critical section - locking per remote target */
 	spin_unlock_irqrestore(ppi->target_lock, flags);
@@ -286,7 +283,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
-	_handle_sub_payloads(sdev, remote_mac, GET_PROTO_START_SUBS_PTR(payload),
+	_handle_sub_payloads(sdev, remote_lid, cluster_id, GET_PROTO_START_SUBS_PTR(payload),
 		received_proto_instances, cqe_bcnt);
 
 

@@ -205,17 +205,17 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid, int clust
 		(struct consensus_priv *)ins->proto_data;
 	int remote_lid, rcluster_id;
 
-	if (!consensus_is_alive(priv))
+	if (unlikely(!consensus_is_alive(priv)))
 		return 0;
 
 	// safety check during debugging and development
-	if (!ins) {
+	if (unlikely(!ins)) {
 		asguard_dbg("proto instance is null!\n");
 		return 0;
 	}
 
 	// safety check during debugging and development
-	if (!priv) {
+	if (unlikely(!priv)) {
 		asguard_dbg("private consensus data is null!\n");
 		return 0;
 	}
