@@ -171,7 +171,7 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 
 	if (unlikely(sdev->warmup_state == WARMING_UP)) {
 
-		// Do not start Leader Election until all targets have send a message to this node.
+		// Do not start Leader Election until all targets have send a message to this node
 		for (i = 0; i < spminfo->num_of_targets; i++)
 			if (!spminfo->pm_targets[i].alive)
 				return 1;
@@ -247,7 +247,6 @@ void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *rem
 	wake_up_process(process_pkt_task);
 
 }
-
 
 void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
 {
