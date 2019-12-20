@@ -394,7 +394,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 
-			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
+			//_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
@@ -413,7 +413,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			if (priv->leader_id == remote_lid) {
 				// follower timeout already handled.
 				//reset_ftimeout(ins);
-				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
+				//_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 #if VERBOSE_DEBUG
 				if (sdev->verbose >= 5)

@@ -30,8 +30,6 @@ module_param(ifindex, int, 0660);
 
 static struct asguard_core *score;
 
-
-
 struct asguard_device *get_sdev(int devid)
 {
 	if (unlikely(devid < 0 || devid > MAX_NIC_DEVICES)) {
