@@ -280,13 +280,14 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
-
-	asguard_dbg("Processing start TS: %llu", RDTSC_ASGUARD);
+	sdev->pkt_proc_ctr++;
+	sdev->pkt_proc_sts = RDTSC_ASGUARD;
 
 	_handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(payload),
 		received_proto_instances, cqe_bcnt);
 
-	asguard_dbg("Processing end TS: %llu", RDTSC_ASGUARD);
+	sdev->pkt_proc_ets = RDTSC_ASGUARD;
+
 
 	// asguard_process_pkt_payload(sdev,remote_mac, payload, cqe_bcnt, remote_lid);
 
@@ -346,6 +347,10 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->fire = 0;
 	score->sdevices[asguard_id]->tx_port = 3319;
 	score->sdevices[asguard_id]->cur_leader_lid = -1;
+	score->sdevices[asguard_id]->pkt_proc_sts = 0;
+	score->sdevices[asguard_id]->pkt_proc_ets = 0;
+	score->sdevices[asguard_id]->pkt_proc_ctr = 0;
+
 
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)

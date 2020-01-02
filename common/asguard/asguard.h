@@ -386,6 +386,13 @@ struct asguard_device {
 	int cur_leader_lid;
 	struct consensus_priv *consensus_priv;
 
+	/* DEBUGING Processing Time */
+	int pkt_proc_ctr;
+	uint64_t pkt_proc_sts;
+	uint64_t pkt_proc_ets;
+	/* END */
+
+
 	int is_leader; /* Is this node a leader? */
 
 	// 3319 for normal traffic, 3320 for leader traffic.

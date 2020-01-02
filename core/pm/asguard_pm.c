@@ -195,10 +195,17 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 	}
 
 	if(spminfo->pm_targets[i].lhb_ts == spminfo->pm_targets[i].chb_ts) {
-		if (sdev->verbose)
+		if (sdev->verbose){
 			asguard_dbg("Node %d is considered dead. \n lhb_ts = %llu \n chb_ts = %llu \n, cluster_id=%d",
 						i, spminfo->pm_targets[i].lhb_ts, spminfo->pm_targets[i].chb_ts, spminfo->pm_targets[i].pkt_data.naddr.cluster_id );
 
+			asguard_dbg("Processing Info\n
+						proc counter: %d\n
+			 			start ts: %llu\n
+						end ts: %llu", RDTSC_ASGUARD);
+
+
+		}
 		spminfo->pm_targets[i].alive = 0;
 		spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
 		return;
