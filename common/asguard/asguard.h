@@ -387,7 +387,7 @@ struct asguard_device {
 	struct consensus_priv *consensus_priv;
 
 	/* DEBUGING Processing Time */
-	int pkt_proc_ctr;
+	uint64_t pkt_proc_ctr;
 	uint64_t pkt_proc_sts;
 	uint64_t pkt_proc_ets;
 	/* END */

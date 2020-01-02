@@ -200,10 +200,9 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 						i, spminfo->pm_targets[i].lhb_ts, spminfo->pm_targets[i].chb_ts, spminfo->pm_targets[i].pkt_data.naddr.cluster_id );
 
 			asguard_dbg("Processing Info\n
-						proc counter: %d\n
+						proc counter: %llu\n
 			 			start ts: %llu\n
 						end ts: %llu",
-						RDTSC_ASGUARD,
 						sdev->pkt_proc_ctr,
 						sdev->pkt_proc_sts,
 						sdev->pkt_proc_ets);
