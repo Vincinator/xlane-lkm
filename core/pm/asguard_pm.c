@@ -202,7 +202,11 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 			asguard_dbg("Processing Info\n
 						proc counter: %d\n
 			 			start ts: %llu\n
-						end ts: %llu", RDTSC_ASGUARD);
+						end ts: %llu",
+						RDTSC_ASGUARD,
+						sdev->pkt_proc_ctr,
+						sdev->pkt_proc_sts,
+						sdev->pkt_proc_ets);
 
 
 		}
