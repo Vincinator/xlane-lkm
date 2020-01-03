@@ -254,7 +254,7 @@ void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *rem
 
 }
 
-static void pkt_process_handler(struct work_struct *w) {
+void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw = (struct asguard_pkt_work_data *) container_of(w, asguard_pkt_work_data, work);
 
