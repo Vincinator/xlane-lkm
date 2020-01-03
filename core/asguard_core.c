@@ -253,6 +253,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	int remote_lid, rcluster_id;
 	u16 received_proto_instances;
 	uint64_t ts2, ts3;
+	ts2 = RDTSC_ASGUARD;
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
@@ -265,11 +266,10 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
 		return;
 
-	ts2 = RDTSC_ASGUARD;
+	ts3 = RDTSC_ASGUARD;
 
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
-	ts3 = RDTSC_ASGUARD;
 
 
 	if (unlikely(remote_lid == -1)){
