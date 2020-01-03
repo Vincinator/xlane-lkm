@@ -252,46 +252,50 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	struct pminfo *spminfo = &sdev->pminfo;
 	int remote_lid, rcluster_id;
 	u16 received_proto_instances;
+	uint64_t ts2, ts3;
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
 		return;
 	}
 
+
 	//asguard_dbg("Payload size: %d, state: %d %s %i", cqe_bcnt, sdev->pminfo.state, __func__, __LINE__);
 
 	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
 		return;
 
+	ts2 = RDTSC_ASGUARD;
+
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
-	if (unlikely(remote_lid == -1 || rcluster_id == -1 || remote_lid > spminfo->num_of_targets)){
+	ts3 = RDTSC_ASGUARD;
+
+	if (sdev->ts_state == ASGUARD_TS_RUNNING){
+		asguard_write_timestamp(sdev, ts2, RDTSC_ASGUARD, rcluster_id);
+		asguard_write_timestamp(sdev, ts3, RDTSC_ASGUARD, rcluster_id);
+
+	}
+
+	if (unlikely(remote_lid == -1)){
 		asguard_dbg("Invalid ids! \n");
 		return;
 	}
-
-	if (sdev->ts_state == ASGUARD_TS_RUNNING)
-		asguard_write_timestamp(sdev, 2, RDTSC_ASGUARD, rcluster_id);
 
 	// Update aliveness state and timestamps
 	spminfo->pm_targets[remote_lid].chb_ts = RDTSC_ASGUARD;
 	spminfo->pm_targets[remote_lid].alive = 1;
 
 	if(check_warmup_state(sdev, spminfo)){
-		if (sdev->ts_state == ASGUARD_TS_RUNNING)
-			asguard_write_timestamp(sdev, 3, RDTSC_ASGUARD, rcluster_id);
 		return;
 	}
-
-
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
 	_handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(payload),
 		received_proto_instances, cqe_bcnt);
 
-	if (sdev->ts_state == ASGUARD_TS_RUNNING)
-		asguard_write_timestamp(sdev, 3, RDTSC_ASGUARD, rcluster_id);
+
 
 	// asguard_process_pkt_payload(sdev,remote_mac, payload, cqe_bcnt, remote_lid);
 
