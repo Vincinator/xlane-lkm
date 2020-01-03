@@ -50,7 +50,9 @@ static int asguard_proc_show(struct seq_file *m, void *v)
 	BUG_ON(!logs);
 
 	for (i = 0; i < logs->current_timestamps; i++)
-		seq_printf(m, "%llu\n", logs->timestamp_items[i].timestamp_tcs);
+		seq_printf(m, "%llu, %d\n",
+				logs->timestamp_items[i].timestamp_tcs,
+				logs->timestamp_items[i].target_id);
 
 	return 0;
 }

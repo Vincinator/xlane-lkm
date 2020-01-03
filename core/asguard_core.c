@@ -253,9 +253,6 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	int remote_lid, rcluster_id;
 	u16 received_proto_instances;
 
-	if (sdev->ts_state == ASGUARD_TS_RUNNING)
-		asguard_write_timestamp(sdev, 2, RDTSC_ASGUARD, asguard_id);
-
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
 		return;
@@ -267,6 +264,9 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 		return;
 
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
+
+	if (sdev->ts_state == ASGUARD_TS_RUNNING)
+		asguard_write_timestamp(sdev, 2, RDTSC_ASGUARD, rcluster_id);
 
 	if (unlikely(remote_lid == -1 || rcluster_id == -1 || remote_lid > spminfo->num_of_targets)){
 		asguard_dbg("Invalid ids! \n");
@@ -280,15 +280,13 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	if(check_warmup_state(sdev, spminfo))
 		return;
 
-
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
-
 
 	_handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(payload),
 		received_proto_instances, cqe_bcnt);
 
 	if (sdev->ts_state == ASGUARD_TS_RUNNING)
-		asguard_write_timestamp(sdev, 3, RDTSC_ASGUARD, asguard_id);
+		asguard_write_timestamp(sdev, 3, RDTSC_ASGUARD, rcluster_id);
 
 	// asguard_process_pkt_payload(sdev,remote_mac, payload, cqe_bcnt, remote_lid);
 
