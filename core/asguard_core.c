@@ -302,7 +302,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
 	INIT_WORK(&work->work, pkt_process_handler);
-	queue_work(asguard_wq, work);
+	queue_work(asguard_wq, &work->work);
 
 	ts3 = RDTSC_ASGUARD;
 
