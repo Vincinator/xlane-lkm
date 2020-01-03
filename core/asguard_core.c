@@ -278,8 +278,8 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	}
 
 	if (sdev->ts_state == ASGUARD_TS_RUNNING){
-		asguard_write_timestamp(sdev, ts2, RDTSC_ASGUARD, rcluster_id);
-		asguard_write_timestamp(sdev, ts3, RDTSC_ASGUARD, rcluster_id);
+		asguard_write_timestamp(sdev, 2, ts2, rcluster_id);
+		asguard_write_timestamp(sdev, 3, ts3, rcluster_id);
 	}
 
 	// Update aliveness state and timestamps
