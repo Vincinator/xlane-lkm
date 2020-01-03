@@ -744,7 +744,7 @@ static void __exit asguard_connection_core_exit(void)
 
 	remove_proc_entry("asguard", NULL);
 
-	flush_workqueue(wq);
+	flush_workqueue(asguard_wq);
 	destroy_workqueue(asguard_wq);
 
 	asguard_dbg("Unloaded Module..", i);
