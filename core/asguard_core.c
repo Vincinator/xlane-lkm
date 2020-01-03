@@ -254,10 +254,9 @@ void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *rem
 
 }
 
-static void pkt_process_handler(struct work_struct *work){
+static void pkt_process_handler(struct work_struct *w) {
 
-	struct asguard_pkt_work_data *aw
-		= (struct asguard_pkt_work_data *)container_of(work, asguard_pkt_work_data, work);
+	struct asguard_pkt_work_data *aw = (struct asguard_pkt_work_data *) container_of(w, asguard_pkt_work_data, work);
 
 	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
 		aw->received_proto_instances, aw->cqe_bcnt);
