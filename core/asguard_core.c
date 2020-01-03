@@ -265,20 +265,25 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
-	if (sdev->ts_state == ASGUARD_TS_RUNNING)
-		asguard_write_timestamp(sdev, 2, RDTSC_ASGUARD, rcluster_id);
-
 	if (unlikely(remote_lid == -1 || rcluster_id == -1 || remote_lid > spminfo->num_of_targets)){
 		asguard_dbg("Invalid ids! \n");
 		return;
 	}
 
+	if (sdev->ts_state == ASGUARD_TS_RUNNING)
+		asguard_write_timestamp(sdev, 2, RDTSC_ASGUARD, rcluster_id);
+
 	// Update aliveness state and timestamps
 	spminfo->pm_targets[remote_lid].chb_ts = RDTSC_ASGUARD;
 	spminfo->pm_targets[remote_lid].alive = 1;
 
-	if(check_warmup_state(sdev, spminfo))
+	if(check_warmup_state(sdev, spminfo)){
+		if (sdev->ts_state == ASGUARD_TS_RUNNING)
+			asguard_write_timestamp(sdev, 3, RDTSC_ASGUARD, rcluster_id);
 		return;
+	}
+
+
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
