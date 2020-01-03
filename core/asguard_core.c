@@ -32,8 +32,6 @@ module_param(ifindex, int, 0660);
 
 static struct workqueue_struct *asguard_wq;
 
-void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int cluster_id, char *payload, int instances, u32 bcnt)
-
 //  sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset
 struct asguard_pkt_work_data {
     struct work_struct work;
