@@ -33,17 +33,7 @@ module_param(ifindex, int, 0660);
 static struct workqueue_struct *asguard_wq;
 
 //  sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset
-struct asguard_pkt_work_data {
-    struct work_struct work;
 
-	struct asguard_device *sdev;
-	int remote_lid;
-	int rcluster_id;
-	char *payload;
-	int received_proto_instances;
-	u32 cqe_bcnt;
-
-};
 
 
 static struct asguard_core *score;

@@ -1,6 +1,9 @@
 #ifndef _ASGUARD_H_
 #define _ASGUARD_H_
 
+#include <linux/workqueue.h>
+
+
 #define VERBOSE_DEBUG 1
 
 #ifndef CONFIG_KUNIT
@@ -473,6 +476,17 @@ struct process_pkt_in {
 	spinlock_t *target_lock;
 };
 
+struct asguard_pkt_work_data {
+    struct work_struct work;
+
+	struct asguard_device *sdev;
+	int remote_lid;
+	int rcluster_id;
+	char *payload;
+	int received_proto_instances;
+	u32 cqe_bcnt;
+
+};
 
 struct sk_buff *asguard_setup_hb_packet(struct pminfo *spminfo,
 				      int host_number);
