@@ -284,13 +284,10 @@ EXPORT_SYMBOL(compose_skb);
 int compare_mac(unsigned char *m1, unsigned char *m2)
 {
 	int i;
-	long diff;
 
-	for (i = 5; i >= 0; i--){
-		diff = m1[i] - m2[i];
-		if (diff)
+	for (i = 5; i >= 0; i--)
+		if (m1[i] != m2[i])
 			return -1;
-	}
 
 	return 0;
 }
@@ -309,7 +306,7 @@ void get_cluster_ids(struct asguard_device *sdev, unsigned char *remote_mac, int
 		if (compare_mac(cur_mac, remote_mac) == 0) {
 			*cid = spminfo->pm_targets[i].pkt_data.naddr.cluster_id;
 			*lid = i;
-			// return; // exiting here increases the jitter
+			return;
 		}
 	}
 }
