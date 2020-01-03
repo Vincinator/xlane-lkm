@@ -9,9 +9,12 @@
 #include <linux/seq_file.h>
 #include <linux/uaccess.h>
 
+#include <linux/workqueue.h>
+
 #include "asguard_core.h"
 #include <asguard/asguard.h>
 #include <asguard_con/asguard_con.h>
+
 
 #include <asguard/logger.h>
 #include <asguard/payload_helper.h>
@@ -26,6 +29,23 @@ MODULE_VERSION("0.01");
 
 static int ifindex = -1;
 module_param(ifindex, int, 0660);
+
+static struct workqueue_struct *asguard_wq;
+
+void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int cluster_id, char *payload, int instances, u32 bcnt)
+
+//  sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset
+struct asguard_pkt_work_data {
+    struct work_struct work;
+
+	struct asguard_device *sdev;
+	int remote_lid;
+	int cluster_id;
+	char *payload;
+	int instances;
+	u32 bcnt;
+
+};
 
 
 static struct asguard_core *score;
@@ -246,6 +266,17 @@ void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *rem
 
 }
 
+static void pkt_process_handler(struct work_struct *work){
+
+	struct asguard_pkt_work_data *aw
+		= (struct asguard_pkt_work_data *)container_of(work, asguard_pkt_work_data, work);
+
+	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
+		aw->received_proto_instances, aw->cqe_bcnt);
+
+	kfree(aw);
+}
+
 void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
@@ -253,28 +284,21 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	int remote_lid, rcluster_id;
 	u16 received_proto_instances;
 	uint64_t ts2, ts3;
+	struct asguard_pkt_work_data *work;
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
 		return;
 	}
 
-
-	//asguard_dbg("Payload size: %d, state: %d %s %i", cqe_bcnt, sdev->pminfo.state, __func__, __LINE__);
-
 	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
 		return;
-
-
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
-
-
 
 	if (unlikely(remote_lid == -1)){
 		asguard_dbg("Invalid ids! \n");
 		return;
 	}
-
 
 	// Update aliveness state and timestamps
 	spminfo->pm_targets[remote_lid].chb_ts = RDTSC_ASGUARD;
@@ -288,8 +312,9 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	ts2 = RDTSC_ASGUARD;
 
-	_handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(payload),
-		received_proto_instances, cqe_bcnt);
+	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
+	INIT_WORK(&work->work, pkt_process_handler);
+	queue_work(asguard_wq, work);
 
 	ts3 = RDTSC_ASGUARD;
 
@@ -297,9 +322,6 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 		asguard_write_timestamp(sdev, 2, ts2, rcluster_id);
 		asguard_write_timestamp(sdev, 3, ts3, rcluster_id);
 	}
-
-	asguard_dbg("Processing on CPU: %d", smp_processor_id());
-	// asguard_process_pkt_payload(sdev,remote_mac, payload, cqe_bcnt, remote_lid);
 
 }
 EXPORT_SYMBOL(asguard_post_payload);
@@ -633,6 +655,10 @@ static int __init asguard_connection_core_init(void)
 
 	//init_asguard_proto_info_interfaces();
 
+	/* Allocate Workqueues */
+	asguard_wq = alloc_workqueue("asguard", 0, 0);
+
+
 	return 0;
 error:
 	asguard_error("Could not initialize asguard - aborting init.\n");
@@ -720,7 +746,11 @@ static void __exit asguard_connection_core_exit(void)
 
 	remove_proc_entry("asguard", NULL);
 
+	flush_workqueue(wq);
+	destroy_workqueue(asguard_wq);
+
 	asguard_dbg("Unloaded Module..", i);
+
 }
 
 module_init(asguard_connection_core_init);
