@@ -298,7 +298,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 		asguard_write_timestamp(sdev, 3, ts3, rcluster_id);
 	}
 
-
+	asguard_dbg("Processing on CPU: %d", smp_processor_id());
 	// asguard_process_pkt_payload(sdev,remote_mac, payload, cqe_bcnt, remote_lid);
 
 }
