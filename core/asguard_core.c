@@ -38,9 +38,9 @@ struct asguard_pkt_work_data {
 
 	struct asguard_device *sdev;
 	int remote_lid;
-	int cluster_id;
+	int rcluster_id;
 	char *payload;
-	int instances;
+	int received_proto_instances;
 	u32 cqe_bcnt;
 
 };
