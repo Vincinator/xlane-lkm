@@ -301,6 +301,8 @@ void get_cluster_ids(struct asguard_device *sdev, unsigned char *remote_mac, int
 	*lid = -1;
 	*cid = -1;
 
+	return;
+
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 		cur_mac = spminfo->pm_targets[i].pkt_data.naddr.dst_mac;
 		if (compare_mac(cur_mac, remote_mac) == 0) {
