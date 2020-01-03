@@ -271,15 +271,15 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	ts3 = RDTSC_ASGUARD;
 
-	if (sdev->ts_state == ASGUARD_TS_RUNNING){
-		asguard_write_timestamp(sdev, ts2, RDTSC_ASGUARD, rcluster_id);
-		asguard_write_timestamp(sdev, ts3, RDTSC_ASGUARD, rcluster_id);
-
-	}
 
 	if (unlikely(remote_lid == -1)){
 		asguard_dbg("Invalid ids! \n");
 		return;
+	}
+
+	if (sdev->ts_state == ASGUARD_TS_RUNNING){
+		asguard_write_timestamp(sdev, ts2, RDTSC_ASGUARD, rcluster_id);
+		asguard_write_timestamp(sdev, ts3, RDTSC_ASGUARD, rcluster_id);
 	}
 
 	// Update aliveness state and timestamps
