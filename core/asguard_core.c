@@ -41,7 +41,7 @@ struct asguard_pkt_work_data {
 	int cluster_id;
 	char *payload;
 	int instances;
-	u32 bcnt;
+	u32 cqe_bcnt;
 
 };
 
