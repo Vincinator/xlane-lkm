@@ -258,6 +258,8 @@ void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw = (struct asguard_pkt_work_data *) container_of(w, struct asguard_pkt_work_data, work);
 
+	asguard_dbg("processing work item from work queue");
+
 	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
 		aw->received_proto_instances, aw->cqe_bcnt);
 
@@ -280,6 +282,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	if (unlikely(sdev->pminfo.state != ASGUARD_PM_EMITTING))
 		return;
+
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if (unlikely(remote_lid == -1)){
@@ -301,7 +304,9 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
 	INIT_WORK(&work->work, pkt_process_handler);
-	queue_work(asguard_wq, &work->work);
+	if(!queue_work(asguard_wq, &work->work)) {
+		asguard_dbg("Work item not put in query..");
+	}
 
 	ts3 = RDTSC_ASGUARD;
 
@@ -643,7 +648,7 @@ static int __init asguard_connection_core_init(void)
 	//init_asguard_proto_info_interfaces();
 
 	/* Allocate Workqueues */
-	asguard_wq = alloc_workqueue("asguard", 0, 0);
+	asguard_wq = alloc_workqueue("asguard", WQ_CPU_INTENSIVE, 0);
 
 
 	return 0;
