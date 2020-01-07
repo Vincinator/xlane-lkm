@@ -197,64 +197,6 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 	return 0;
 }
 
-
-
-static int do_process_pkt(void *data)
-{
-	u16 received_proto_instances;
-	unsigned long flags;
-	struct process_pkt_in *ppi = (struct process_pkt_in *) data;
-
-	/* start of critical section - locking per remote target*/
-	spin_lock_irqsave(ppi->target_lock, flags);
-
-// Do payload handling work here ...
-
-	/* end of critical section - locking per remote target */
-	spin_unlock_irqrestore(ppi->target_lock, flags);
-
-	return 0;
-}
-
-
-
-void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *remote_mac, void *payload, u32 cqe_bcnt, int remote_lid)
-{
-	static struct task_struct *process_pkt_task;
-	struct process_pkt_in *ppi;
-
-	ppi = kmalloc(sizeof(struct process_pkt_in), GFP_KERNEL);
-
-	if(!ppi){
-		asguard_error("Not enough memory to process pkt\n");
-		return;
-	}
-
-	ppi->sdev = sdev;
-	ppi->remote_mac = remote_mac;
-	ppi->payload = payload;
-	ppi->cqe_bcnt = cqe_bcnt;
-	ppi->remote_lid = remote_lid;
-
-	/* Lock per remote target - processing of packets from multiple targets in parallel is allowed */
-	ppi->target_lock = &sdev->pminfo.pm_targets[remote_lid].rx_process_lock;
-
-	process_pkt_task = kthread_create(&do_process_pkt, ppi,
-			"asguard process pkt");
-
-	/* TODO: parameterize the cpu that should execute the process_pkt task */
-	kthread_bind(process_pkt_task, 42);
-
-	if (IS_ERR(process_pkt_task)) {
-		asguard_error("asguard process pkt task Error. %s\n", __func__);
-		return -EINVAL;
-	}
-
-	wake_up_process(process_pkt_task);
-
-}
-
-
 // Note: this function will not explicitly run on the same isolated cpu
 //		.. for consecutive packets (even from the same host)
 //   ... Timestamping may be
