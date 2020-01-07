@@ -271,9 +271,9 @@ void pkt_process_handler(struct work_struct *w) {
 
 	ts3 = RDTSC_ASGUARD;
 
-	if (sdev->ts_state == ASGUARD_TS_RUNNING){
-		asguard_write_timestamp(sdev, 2, ts2, rcluster_id);
-		asguard_write_timestamp(sdev, 3, ts3, rcluster_id);
+	if (aw->sdev->ts_state == ASGUARD_TS_RUNNING){
+		asguard_write_timestamp(aw->sdev, 2, ts2, aw->rcluster_id);
+		asguard_write_timestamp(aw->sdev, 3, ts3, aw->rcluster_id);
 	}
 }
 
