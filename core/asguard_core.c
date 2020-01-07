@@ -254,12 +254,14 @@ void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *rem
 
 }
 
+
+// Note: this function will not explicitly run on the same isolated cpu
+//		.. for consecutive packets (even from the same host)
+//   ... Timestamping may be
 void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw;
-	uint64_t ts2, ts3;
 
-	ts2 = RDTSC_ASGUARD;
 
 	aw = (struct asguard_pkt_work_data *) container_of(w, struct asguard_pkt_work_data, work);
 
@@ -269,12 +271,7 @@ void pkt_process_handler(struct work_struct *w) {
 
 	kfree(aw);
 
-	ts3 = RDTSC_ASGUARD;
 
-	if (aw->sdev->ts_state == ASGUARD_TS_RUNNING){
-		asguard_write_timestamp(aw->sdev, 2, ts2, aw->rcluster_id);
-		asguard_write_timestamp(aw->sdev, 3, ts3, aw->rcluster_id);
-	}
 }
 
 void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
@@ -284,6 +281,10 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	int remote_lid, rcluster_id;
 	u16 received_proto_instances;
 	struct asguard_pkt_work_data *work;
+	uint64_t ts2, ts3;
+
+	ts2 = RDTSC_ASGUARD;
+
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
@@ -323,7 +324,12 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 		asguard_dbg("Work item not put in query..");
 	}
 
+	ts3 = RDTSC_ASGUARD;
 
+	if (sdev->ts_state == ASGUARD_TS_RUNNING){
+		asguard_write_timestamp(sdev, 2, ts2, rcluster_id);
+		asguard_write_timestamp(sdev, 3, ts3, rcluster_id);
+	}
 
 }
 EXPORT_SYMBOL(asguard_post_payload);
