@@ -256,12 +256,25 @@ void asguard_process_pkt_payload(struct asguard_device *sdev, unsigned char *rem
 
 void pkt_process_handler(struct work_struct *w) {
 
-	struct asguard_pkt_work_data *aw = (struct asguard_pkt_work_data *) container_of(w, struct asguard_pkt_work_data, work);
+	struct asguard_pkt_work_data *aw;
+	uint64_t ts2, ts3;
+
+	ts2 = RDTSC_ASGUARD;
+
+	aw = (struct asguard_pkt_work_data *) container_of(w, struct asguard_pkt_work_data, work);
+
 
 	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
 		aw->received_proto_instances, aw->cqe_bcnt);
 
 	kfree(aw);
+
+	ts3 = RDTSC_ASGUARD;
+
+	if (sdev->ts_state == ASGUARD_TS_RUNNING){
+		asguard_write_timestamp(sdev, 2, ts2, rcluster_id);
+		asguard_write_timestamp(sdev, 3, ts3, rcluster_id);
+	}
 }
 
 void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
@@ -270,7 +283,6 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	struct pminfo *spminfo = &sdev->pminfo;
 	int remote_lid, rcluster_id;
 	u16 received_proto_instances;
-	uint64_t ts2, ts3;
 	struct asguard_pkt_work_data *work;
 
 	if (unlikely(!sdev)) {
@@ -298,7 +310,6 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
-	ts2 = RDTSC_ASGUARD;
 
 	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
 	work->cqe_bcnt = cqe_bcnt;
@@ -312,12 +323,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 		asguard_dbg("Work item not put in query..");
 	}
 
-	ts3 = RDTSC_ASGUARD;
 
-	if (sdev->ts_state == ASGUARD_TS_RUNNING){
-		asguard_write_timestamp(sdev, 2, ts2, rcluster_id);
-		asguard_write_timestamp(sdev, 3, ts3, rcluster_id);
-	}
 
 }
 EXPORT_SYMBOL(asguard_post_payload);
