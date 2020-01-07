@@ -258,8 +258,6 @@ void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw = (struct asguard_pkt_work_data *) container_of(w, struct asguard_pkt_work_data, work);
 
-	asguard_dbg("processing work item from work queue");
-
 	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
 		aw->received_proto_instances, aw->cqe_bcnt);
 
@@ -303,6 +301,12 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	ts2 = RDTSC_ASGUARD;
 
 	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
+	work->cqe_bcnt = cqe_bcnt;
+	work->payload = payload;
+	work->rcluster_id = rcluster_id;
+	work->remote_lid = remote_lid;
+	work->received_proto_instances = received_proto_instances;
+	work->sdev = sdev;
 	INIT_WORK(&work->work, pkt_process_handler);
 	if(!queue_work(asguard_wq, &work->work)) {
 		asguard_dbg("Work item not put in query..");
