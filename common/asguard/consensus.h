@@ -90,6 +90,8 @@ struct state_machine_cmd_log {
 	 */
 	int lock;
 
+	spinlock_t slock;
+
 	struct sm_log_entry **entries;
 
 };
@@ -156,6 +158,7 @@ struct consensus_priv {
 
 	/* number of followers voted for this node */
 	int votes;
+
 
 	struct state_machine_cmd_log sm_log;
 	struct asguard_logger throughput_logger;

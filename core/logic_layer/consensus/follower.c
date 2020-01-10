@@ -268,32 +268,16 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
-	if (num_entries == 0) {
-		// no reply if nothing to append!
-		return;
-	}
+	if (num_entries == 0)
+		return;	// no reply if nothing to append!
 
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
-	// TODO: wait until lock is released!
-	if (priv->sm_log.lock) {
-		asguard_dbg("Too fast! sm log is still locked..\n");
-		goto reply_false;
-	}
-
-	priv->sm_log.lock = 1;
-
 	if (check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx, priv->max_entries_per_pkt)) {
 		asguard_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
 				  pkt_size, *prev_log_term, *prev_log_idx);
-		goto reply_false_unlock;
-	}
-
-	if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
-		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
-				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
 		goto reply_false_unlock;
 	}
 
@@ -302,11 +286,21 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_false_unlock;
 	}
 
+	spin_lock(&priv->sm_log.slock);
+
+	if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
+		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
+				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
+		goto reply_false_unlock;
+	}
+
 	// append entries and if it fails, reply false
 	if (append_commands(priv, pkt, num_entries, pkt_size)) {
 		asguard_dbg("append commands failed\n");
 		goto reply_false_unlock;
 	}
+
+	spin_unlock(&priv->sm_log.slock);
 
 	// check commit index
 	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
@@ -325,8 +319,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	// Check if commit index must be updated
 	if (*leader_commit_idx > priv->sm_log.commit_idx) {
-		asguard_dbg("Nothing to update! leader_commit_idx=%d, priv->sm_log.commit_idx= %d", *leader_commit_idx, priv->sm_log.commit_idx);
-
 		// min(leader_commit_idx, last_idx)
 		// note: last_idx of local log can not be null if append_commands was successfully executed
 		priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
@@ -334,9 +326,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	}
 
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
-	priv->sdev->fire = 1;
 
-	priv->sm_log.lock = 0;
+	priv->sdev->fire = 1;
 
 	return;
 
