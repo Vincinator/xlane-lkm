@@ -253,14 +253,15 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
-
 	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
+
 	work->cqe_bcnt = cqe_bcnt;
 	work->payload = payload;
 	work->rcluster_id = rcluster_id;
 	work->remote_lid = remote_lid;
 	work->received_proto_instances = received_proto_instances;
 	work->sdev = sdev;
+
 	INIT_WORK(&work->work, pkt_process_handler);
 	if(!queue_work(asguard_wq, &work->work)) {
 		asguard_dbg("Work item not put in query..");
@@ -275,9 +276,6 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 }
 EXPORT_SYMBOL(asguard_post_payload);
-
-
-
 
 void asguard_reset_remote_host_counter(int asguard_id)
 {
@@ -333,8 +331,6 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->pkt_proc_ets = 0;
 	score->sdevices[asguard_id]->pkt_proc_ctr = 0;
 
-
-
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		score->sdevices[asguard_id]->instance_id_mapping[i] = -1;
 
@@ -388,9 +384,7 @@ int asguard_core_remove_nic(int asguard_id)
 	clean_asguard_pm_ctrl_interfaces(score->sdevices[asguard_id]);
 	clean_asguard_ctrl_interfaces(score->sdevices[asguard_id]);
 
-
 	remove_proto_instance_ctrl(score->sdevices[asguard_id]);
-
 
 	//remove_logger_ifaces(&score->sdevices[asguard_id]->le_logger);
 

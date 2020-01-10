@@ -29,6 +29,7 @@ void logger_state_transition_to(struct asguard_logger *slog,
 	slog->state = state;
 }
 
+
 int write_log(struct asguard_logger *slog,
 			  int type, uint64_t tcs)
 {
