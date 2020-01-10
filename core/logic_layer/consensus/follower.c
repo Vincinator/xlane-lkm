@@ -286,8 +286,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_false;
 	}
 
-	spin_lock(&priv->sm_log.slock);
-
+	//spin_lock(&priv->sm_log.slock);
+	mutex_lock(&priv->sm_log.mlock);
 	if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
 		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
 				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
@@ -300,7 +300,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_false_unlock;
 	}
 
-	spin_unlock(&priv->sm_log.slock);
+	mutex_unlock(&priv->sm_log.mlock);
 
 	// check commit index
 	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
@@ -332,7 +332,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	return;
 reply_false_unlock:
-	spin_unlock(&priv->sm_log.slock);
+	mutex_unlock(&priv->sm_log.mlock);
 reply_false:
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
 	priv->sdev->fire = 1;
@@ -525,6 +525,8 @@ int start_follower(struct proto_instance *ins)
 		goto error;
 
 	priv->sdev->tx_port = 3319;
+
+	mutex_init(&priv->sm_log.mlock);
 
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;

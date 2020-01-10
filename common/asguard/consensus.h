@@ -92,6 +92,8 @@ struct state_machine_cmd_log {
 
 	spinlock_t slock;
 
+	struct mutex mlock;
+
 	struct sm_log_entry **entries;
 
 };

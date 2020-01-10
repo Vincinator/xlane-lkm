@@ -660,8 +660,13 @@ static void __exit asguard_connection_core_exit(void)
 {
 	int i;
 
+	asguard_dbg("exit module... \n");
+	destroy_workqueue(asguard_wq);
+	asguard_dbg("destroyed wq ... \n");
+
 	// MUST unregister asguard for drivers first
 	unregister_asguard();
+	asguard_dbg("asguard unregisted ... \n");
 
 	if(!score){
 		asguard_error("score is NULL \n");
@@ -691,7 +696,6 @@ static void __exit asguard_connection_core_exit(void)
 	remove_proc_entry("asguard", NULL);
 
 	// flush_workqueue(asguard_wq);
-	destroy_workqueue(asguard_wq);
 
 	asguard_dbg("Unloaded Module..", i);
 
