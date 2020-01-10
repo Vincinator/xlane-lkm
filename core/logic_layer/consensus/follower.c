@@ -278,12 +278,12 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	if (check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx, priv->max_entries_per_pkt)) {
 		asguard_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
 				  pkt_size, *prev_log_term, *prev_log_idx);
-		goto reply_false_unlock;
+		goto reply_false;
 	}
 
 	if (num_entries < 0 || num_entries > priv->max_entries_per_pkt) {
 		asguard_dbg("invalid num_entries=%d\n", num_entries);
-		goto reply_false_unlock;
+		goto reply_false;
 	}
 
 	spin_lock(&priv->sm_log.slock);
@@ -308,14 +308,14 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	// check if leader_commit_idx is out of bounds
 	if (*leader_commit_idx < -1 || *leader_commit_idx > MAX_CONSENSUS_LOG) {
 		asguard_dbg("Out of bounds: leader_commit_idx=%d", *leader_commit_idx);
-		goto reply_false_unlock;
+		goto reply_false;
 	}
 
 	// check if leader_commit_idx points to a valid entry
 	if (*leader_commit_idx > priv->sm_log.last_idx) {
 		asguard_dbg("Not referencing a valid log entry: leader_commit_idx=%d, priv->sm_log.last_idx=%d",
 				*leader_commit_idx, priv->sm_log.last_idx);
-		goto reply_false_unlock;
+		goto reply_false;
 	}
 
 	// Check if commit index must be updated
@@ -331,9 +331,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	priv->sdev->fire = 1;
 
 	return;
-
 reply_false_unlock:
-	priv->sm_log.lock = 0;
+	spin_unlock(&priv->sm_log.slock);
 reply_false:
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
 	priv->sdev->fire = 1;
