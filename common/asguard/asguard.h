@@ -15,6 +15,7 @@
 
 #include <linux/list.h>
 #include <linux/spinlock_types.h>
+#include <linux/mutex.h>
 
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
