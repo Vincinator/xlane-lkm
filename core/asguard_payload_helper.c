@@ -1,4 +1,6 @@
 
+#include <linux/slab.h>
+
 
 #include <asguard/consensus.h>
 #include <asguard/asguard.h>
@@ -276,7 +278,7 @@ void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *
 EXPORT_SYMBOL(invalidate_proto_data);
 
 
-void _do_prepare_log_replication(struct asguard_device *sdev)
+int _do_prepare_log_replication(struct asguard_device *sdev)
 {
 	struct consensus_priv *cur_priv;
 	int i, j;
@@ -338,7 +340,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 		prepare_log_replication(aw->sdev);
 		kfree(aw);
 	} else {
-		sdev->block_leader_wq = 0;
+		aw->sdev->block_leader_wq = 0;
 	}
 	kfree(aw);
 }
