@@ -186,6 +186,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 	s32 prev_log_term, leader_commit_idx;
 	s32 num_entries = 0;
 	char *pkt_payload_sub;
+	int more = 0;
 
 	// if (unlikely(_log_is_faulty(cur_priv))) {
 	//	asguard_dbg("Log is faulty or not initialized.\n");
@@ -218,8 +219,13 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 		//  - thus, num_of_entries will not be 0
 
 		// Decide how many entries to update for the current target
-		num_entries = (cur_priv->max_entries_per_pkt < cur_index - next_index + 1) ?
-				cur_priv->max_entries_per_pkt : (cur_index - next_index + 1);
+
+		if (cur_priv->max_entries_per_pkt < cur_index - next_index + 1) {
+			num_entries = cur_priv->max_entries_per_pkt;
+			more = 1;
+		} else {
+			num_entries = (cur_index - next_index + 1);
+		}
 
 		// update next_index without receiving the response from the target
 		// .. If the receiver rejects this append command, this node will set the
@@ -248,7 +254,8 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 		prev_log_term,
 		leader_commit_idx,
 		cur_priv,
-		num_entries);
+		num_entries,
+		more);
 }
 EXPORT_SYMBOL(setup_append_msg);
 

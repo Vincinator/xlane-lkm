@@ -100,7 +100,8 @@ void set_ae_data(unsigned char *pkt,
 				 s32 in_prevLogTerm,
 				 s32 in_leaderCommitIdx,
 				 struct consensus_priv *priv,
-				 s32 num_of_entries)
+				 s32 num_of_entries,
+				 int more)
 {
 	struct sm_log_entry **entries = priv->sm_log.entries;
 	u16 *opcode;
@@ -168,6 +169,10 @@ void set_ae_data(unsigned char *pkt,
 		*cur_ptr = entries[i]->cmd->sm_logvar_value;
 		cur_ptr++;
 	}
+
+	// there is more to send, directly fire the next heartbeat
+	if (more)
+		priv->sdev->fire = 1;
 
 }
 
