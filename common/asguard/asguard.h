@@ -298,6 +298,9 @@ struct asguard_packet_data {
 
 	int hb_active_ix;
 
+	/* Do not reupdate until the active has been emitted (only for leader logic) */
+	int active_dirty;
+
 	/* if updating != 0, then pacemaker will not update skb
 	 * uses old values in skb until updating == 0
 	 */
@@ -422,6 +425,9 @@ struct asguard_device {
 	int instance_id_mapping[MAX_PROTO_INSTANCES];
 	int num_of_proto_instances;
 	struct proto_instance **protos; // array of ptrs to protocol instances
+
+	struct workqueue_struct *asguard_leader_wq;
+	int block_leader_wq; // if != 0, then no additional items can be queued to the asguard_leader_wq
 };
 
 struct asguard_protocol_ctrl_ops {
@@ -488,6 +494,12 @@ struct asguard_pkt_work_data {
 	u32 cqe_bcnt;
 
 };
+struct asguard_leader_pkt_work_data {
+    struct work_struct work;
+	struct asguard_device *sdev;
+
+};
+
 
 struct sk_buff *asguard_setup_hb_packet(struct pminfo *spminfo,
 				      int host_number);

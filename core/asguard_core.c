@@ -16,6 +16,7 @@
 #include <asguard_con/asguard_con.h>
 
 
+
 #include <asguard/logger.h>
 #include <asguard/payload_helper.h>
 
@@ -32,17 +33,16 @@ module_param(ifindex, int, 0660);
 
 static struct workqueue_struct *asguard_wq;
 
+
 //  sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset
-
-
 
 static struct asguard_core *score;
 
 struct asguard_device *get_sdev(int devid)
 {
+
 	if (unlikely(devid < 0 || devid > MAX_NIC_DEVICES)) {
 		asguard_error(" invalid asguard device id\n");
-
 		return NULL;
 	}
 
@@ -54,7 +54,6 @@ struct asguard_device *get_sdev(int devid)
 	return score->sdevices[devid];
 }
 EXPORT_SYMBOL(get_sdev);
-
 
 struct asguard_core *asguard_core(void)
 {
@@ -330,6 +329,11 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->pkt_proc_sts = 0;
 	score->sdevices[asguard_id]->pkt_proc_ets = 0;
 	score->sdevices[asguard_id]->pkt_proc_ctr = 0;
+
+	score->sdevices[asguard_id]->asguard_leader_wq =
+		 alloc_workqueue("asguard_leader", WQ_CPU_INTENSIVE, 0);
+
+
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		score->sdevices[asguard_id]->instance_id_mapping[i] = -1;
@@ -660,13 +664,10 @@ static void __exit asguard_connection_core_exit(void)
 {
 	int i;
 
-	asguard_dbg("exit module... \n");
 	destroy_workqueue(asguard_wq);
-	asguard_dbg("destroyed wq ... \n");
 
 	// MUST unregister asguard for drivers first
 	unregister_asguard();
-	asguard_dbg("asguard unregisted ... \n");
 
 	if(!score){
 		asguard_error("score is NULL \n");
@@ -679,21 +680,18 @@ static void __exit asguard_connection_core_exit(void)
 			asguard_dbg("Skipping uninitialized device asguard_id=%d", i);
 			continue;
 		}
-
-		asguard_dbg("Clean up device with asguard_id=%d", i);
-
 		asguard_stop(i);
 
 		clear_protocol_instances(score->sdevices[i]);
 
 		asguard_core_remove_nic(i);
 
+		destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
+
 		kfree(score->sdevices[i]);
 	}
 
 	kfree(score);
-
-	remove_proc_entry("asguard", NULL);
 
 	// flush_workqueue(asguard_wq);
 

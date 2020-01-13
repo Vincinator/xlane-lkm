@@ -6,6 +6,8 @@
 #include <asguard/logger.h>
 
 
+
+
 /* Returns a pointer to the <n>th protocol of <spay>
  *
  * If less than n protocols are included, a NULL ptr is returned
@@ -180,7 +182,7 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 	return cur_priv->sm_log.entries[idx]->term;
 }
 
-void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id)
+int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id)
 {
 	s32 next_index, cur_index;
 	s32 prev_log_term, leader_commit_idx;
@@ -244,7 +246,7 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 						ASGUARD_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
 	if (!pkt_payload_sub)
-		return;
+		return 0;
 
 	set_ae_data(pkt_payload_sub,
 		cur_priv->term,
@@ -256,6 +258,8 @@ void setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *s
 		cur_priv,
 		num_entries,
 		more);
+
+	return more;
 }
 EXPORT_SYMBOL(setup_append_msg);
 
@@ -263,28 +267,102 @@ EXPORT_SYMBOL(setup_append_msg);
  */
 void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay, int target_id)
 {
-	struct consensus_priv *cur_priv;
-	int i;
 
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
 
-	// iterate through consensus protocols and include LEAD messages if node is leader
-	for (i = 0; i < sdev->num_of_proto_instances; i++) {
 
-		if (sdev->protos[i] != NULL && sdev->protos[i]->proto_type == ASGUARD_PROTO_CONSENSUS) {
-
-			// get corresponding local instance data for consensus
-			cur_priv =
-				(struct consensus_priv *)sdev->protos[i]->proto_data;
-
-			if (cur_priv->nstate != LEADER)
-				continue;
-
-			// TODO: optimize append calls that do not contain any log updates
-			setup_append_msg(cur_priv, spay, sdev->protos[i]->instance_id, target_id);
-
-		}
-	}
 }
 EXPORT_SYMBOL(invalidate_proto_data);
+
+
+void _do_prepare_log_replication(struct asguard_device *sdev)
+{
+	struct consensus_priv *cur_priv;
+	int i, j;
+	struct pminfo *spminfo = &sdev->pminfo;
+	int hb_passive_ix;
+	struct asguard_payload *pkt_payload;
+	int more = 0;
+
+	for (i = 0; i < spminfo->num_of_targets; i++) {
+
+		hb_passive_ix =
+		     !!!spminfo->pm_targets[i].pkt_data.hb_active_ix;
+
+		pkt_payload =
+		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_ix];
+
+		if(spminfo->pm_targets[i].pkt_data.active_dirty){
+			asguard_dbg("DEBUG: prev pkt has not been emitted yet.\n");
+			continue; // previous pkt has not been emitted yet
+		}
+
+		// iterate through consensus protocols and include LEAD messages if node is leader
+		for (j = 0; j < sdev->num_of_proto_instances; j++) {
+
+			if (sdev->protos[i] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
+
+				// get corresponding local instance data for consensus
+				cur_priv =
+					(struct consensus_priv *)sdev->protos[j]->proto_data;
+
+				if (cur_priv->nstate != LEADER)
+					continue;
+
+				// TODO: optimize append calls that do not contain any log updates
+				more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, i);
+
+			}
+		}
+		spminfo->pm_targets[i].pkt_data.active_dirty = 1;
+		spminfo->pm_targets[i].pkt_data.hb_active_ix = hb_passive_ix;
+
+	}
+
+	return more;
+
+}
+
+void prepare_log_replication_handler(struct work_struct *w)
+{
+	struct asguard_leader_pkt_work_data *aw;
+	int more;
+
+	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
+
+	more = _do_prepare_log_replication(aw->sdev);
+
+	// Check if new work must be scheduled:
+	if(more){
+		prepare_log_replication(aw->sdev);
+		kfree(aw);
+	} else {
+		sdev->block_leader_wq = 0;
+	}
+	kfree(aw);
+}
+
+void prepare_log_replication(struct asguard_device *sdev)
+{
+	struct asguard_leader_pkt_work_data *work;
+
+	/* Do nothing if work is already queued.
+	 * If a work item is finished, and work is to do, the work item itself schedules
+	 * the next work item.
+	 */
+	if(sdev->block_leader_wq)
+		return;
+
+	sdev->block_leader_wq = 1;
+
+	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
+	work->sdev = sdev;
+
+	INIT_WORK(&work->work, prepare_log_replication_handler);
+	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
+		asguard_dbg("Work item not put in query..");
+	}
+
+}
+EXPORT_SYMBOL(prepare_log_replication);
