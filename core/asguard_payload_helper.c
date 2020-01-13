@@ -312,7 +312,6 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 				if (cur_priv->nstate != LEADER)
 					continue;
 
-				asguard_dbg("setup append msg \n");
 				// TODO: optimize append calls that do not contain any log updates
 				more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, i);
 
@@ -332,6 +331,8 @@ void prepare_log_replication_handler(struct work_struct *w)
 	struct asguard_leader_pkt_work_data *aw;
 	int more;
 
+	asguard_dbg("setup append msg \n");
+
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
 
 	more = _do_prepare_log_replication(aw->sdev);
@@ -340,6 +341,8 @@ void prepare_log_replication_handler(struct work_struct *w)
 	if(more){
 		aw->sdev->block_leader_wq = 0;
 		prepare_log_replication(aw->sdev);
+		kfree(aw);
+		return;
 	} else {
 		aw->sdev->block_leader_wq = 0;
 	}
