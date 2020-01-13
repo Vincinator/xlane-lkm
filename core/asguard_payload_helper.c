@@ -203,7 +203,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 	if (next_index == -1) {
 		asguard_dbg("Invalid target id resulted in invalid next_index!\n");
-		return;
+		return more;
 	}
 
 	// asguard_dbg("PREP AE: cur_index=%d, next_index=%d\n", cur_index, next_index);
@@ -211,7 +211,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 	if (prev_log_term < 0) {
 		asguard_error("BUG! - prev_log_term is invalid\n");
-		return;
+		return more;
 	}
 
 	leader_commit_idx = cur_priv->sm_log.commit_idx;
