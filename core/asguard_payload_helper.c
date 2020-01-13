@@ -312,6 +312,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 				if (cur_priv->nstate != LEADER)
 					continue;
 
+				asguard_dbg("setup append msg \n");
 				// TODO: optimize append calls that do not contain any log updates
 				more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, i);
 

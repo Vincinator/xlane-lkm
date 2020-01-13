@@ -148,6 +148,9 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 			asguard_error("netdev_start_xmit returned %d - DEBUG THIS - exiting PM now. \n", ret);
 			goto unlock;
 		}
+
+		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
+
 	}
 
 unlock:
@@ -322,7 +325,6 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		/* Protocols have been emitted, do not sent them again ..
 		 * .. and free the reservations for new protocols */
 		invalidate_proto_data(sdev, pkt_payload, i);
-		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
 
 		update_aliveness_states(sdev, spminfo, i);
 	}
