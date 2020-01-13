@@ -606,5 +606,5 @@ void remove_proto_instance_ctrl(struct asguard_device *sdev);
 
 int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 				    int protocol_id, int cluster_id);
-
+void update_leader(struct asguard_device *sdev, struct pminfo *spminfo);
 #endif /* _ASGUARD_H_ */

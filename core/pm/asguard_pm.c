@@ -271,6 +271,7 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 
 
 }
+EXPORT_SYMBOL(update_leader);
 
 
 
