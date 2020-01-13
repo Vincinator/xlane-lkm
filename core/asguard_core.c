@@ -192,6 +192,7 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 		}
 		asguard_dbg("Warmup done!\n");
 		sdev->warmup_state = WARMED_UP;
+		update_leader(sdev, &sdev->pminfo);
 	}
 	return 0;
 }
