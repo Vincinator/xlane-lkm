@@ -185,16 +185,17 @@ int start_leader(struct proto_instance *ins)
 	priv->sdev->tx_port = 3320;
 	priv->candidate_counter = 0;
 
+	prepare_log_replication(priv->sdev);
 
-	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
-		hb_passive_ix =
-		     !!!spminfo->pm_targets[i].pkt_data.hb_active_ix;
+	// for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
+	// 	hb_passive_ix =
+	// 	     !!!spminfo->pm_targets[i].pkt_data.hb_active_ix;
 
-		pkt_payload =
-			spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_ix];
+	// 	pkt_payload =
+	// 		spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_ix];
 
-		setup_append_msg(priv, pkt_payload, ins->instance_id, i);
-	}
+	// 	setup_append_msg(priv, pkt_payload, ins->instance_id, i);
+	// }
 
 	return 0;
 }
