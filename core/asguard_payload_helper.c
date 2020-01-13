@@ -338,7 +338,6 @@ void prepare_log_replication_handler(struct work_struct *w)
 	// Check if new work must be scheduled:
 	if(more){
 		prepare_log_replication(aw->sdev);
-		kfree(aw);
 	} else {
 		aw->sdev->block_leader_wq = 0;
 	}
