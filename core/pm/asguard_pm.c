@@ -328,6 +328,8 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 	if(sdev->consensus_priv->nstate != LEADER)
 		update_leader(sdev, spminfo);
+	else
+		prepare_log_replication(sdev);
 
 	return 0;
 }

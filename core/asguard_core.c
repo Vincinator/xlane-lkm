@@ -329,6 +329,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->pkt_proc_sts = 0;
 	score->sdevices[asguard_id]->pkt_proc_ets = 0;
 	score->sdevices[asguard_id]->pkt_proc_ctr = 0;
+	score->sdevices[asguard_id]->block_leader_w = 0;
 
 	score->sdevices[asguard_id]->asguard_leader_wq =
 		 alloc_workqueue("asguard_leader", WQ_CPU_INTENSIVE, 0);
@@ -538,6 +539,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	}
 	pmtarget->alive = 0;
 	pmtarget->pkt_data.hb_active_ix = 0;
+	pmtarget->pkt_data.active_dirty = 0;
 	pmtarget->pkt_data.naddr.dst_ip = ip;
 	pmtarget->pkt_data.naddr.cluster_id = cluster_id;
 	pmtarget->pkt_data.protocol_id = protocol_id;
