@@ -321,9 +321,9 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		/* Protocols have been emitted, do not sent them again ..
 		 * .. and free the reservations for new protocols */
 		invalidate_proto_data(sdev, pkt_payload, i);
-		update_aliveness_states(sdev, spminfo, i);
 		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
 
+		update_aliveness_states(sdev, spminfo, i);
 	}
 
 	if(sdev->consensus_priv->nstate != LEADER)
