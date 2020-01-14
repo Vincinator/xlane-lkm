@@ -332,18 +332,20 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 
 void prepare_log_replication_handler(struct work_struct *w);
 
+static int block_leader_wq = 0;
+
 void _schedule_log_rep(struct asguard_device *sdev)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
 
-	sdev->block_leader_wq = 1;
+	block_leader_wq = 1;
 
 	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
 	work->sdev = sdev;
 
 	INIT_WORK(&work->work, prepare_log_replication_handler);
 	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
-		asguard_dbg("Work item not put in query..");
+		asguard_dbg("Work item not put in queue..");
 	}
 
 
@@ -367,7 +369,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 		_schedule_log_rep(aw->sdev);
 	} else {
 		asguard_dbg("nothing more to do.. schedule log rep handler\n");
-		aw->sdev->block_leader_wq = 0;
+		block_leader_wq = 0;
 	}
 	kfree(aw);
 }
@@ -379,7 +381,7 @@ void prepare_log_replication(struct asguard_device *sdev)
 	 * If a work item is finished, and work is to do, the work item itself schedules
 	 * the next work item.
 	 */
-	if(sdev->block_leader_wq)
+	if(block_leader_wq)
 		return;
 
 	_schedule_log_rep(sdev);
