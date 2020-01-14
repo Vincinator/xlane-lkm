@@ -286,9 +286,9 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 	int hb_passive_ix;
 	struct asguard_payload *pkt_payload;
 	int more = 0;
-	asguard_dbg("do log rep \n");
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
+		asguard_dbg("do log rep i=%d\n", i);
 
 		hb_passive_ix =
 		     !!!spminfo->pm_targets[i].pkt_data.hb_active_ix;
@@ -303,6 +303,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 
 		// iterate through consensus protocols and include LEAD messages if node is leader
 		for (j = 0; j < sdev->num_of_proto_instances; j++) {
+			asguard_dbg("do log rep j=%d\n", j);
 
 			if (sdev->protos[i] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
 
@@ -323,6 +324,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 
 	}
 
+	asguard_dbg("done do log rep\n", j);
 	return more;
 
 }
@@ -332,8 +334,6 @@ void prepare_log_replication_handler(struct work_struct *w);
 void _schedule_log_rep(struct asguard_device *sdev)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
-
-	asguard_dbg("schedule log rep \n");
 
 	sdev->block_leader_wq = 1;
 
@@ -360,9 +360,12 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	// Check if new work must be scheduled:
 	if(more){
+		asguard_dbg("do more schedule log rep handler\n");
+
 		// do not open block, direct call to schedule
 		_schedule_log_rep(aw->sdev);
 	} else {
+		asguard_dbg("nothing more to do.. schedule log rep handler\n");
 		aw->sdev->block_leader_wq = 0;
 	}
 	kfree(aw);
@@ -371,8 +374,6 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 void prepare_log_replication(struct asguard_device *sdev)
 {
-	asguard_dbg("prepare_log_rep \n");
-
 	/* Do nothing if work is already queued.
 	 * If a work item is finished, and work is to do, the work item itself schedules
 	 * the next work item.
