@@ -683,8 +683,6 @@ static void __exit asguard_connection_core_exit(void)
 
 	// flush_workqueue(asguard_wq);
 
-	asguard_dbg("Unloaded Module..", i);
-
 }
 
 module_init(asguard_connection_core_init);
