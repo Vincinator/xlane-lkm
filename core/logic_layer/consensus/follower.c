@@ -274,19 +274,19 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
-	if (check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx, priv->max_entries_per_pkt)) {
-		asguard_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
-				  pkt_size, *prev_log_term, *prev_log_idx);
-		goto reply_false;
-	}
+	// if (check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx, priv->max_entries_per_pkt)) {
+	// 	asguard_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
+	// 			  pkt_size, *prev_log_term, *prev_log_idx);
+	// 	goto reply_false;
+	// }
 
-	if (num_entries < 0 || num_entries > priv->max_entries_per_pkt) {
-		asguard_dbg("invalid num_entries=%d\n", num_entries);
-		goto reply_false;
-	}
+	// if (num_entries < 0 || num_entries > priv->max_entries_per_pkt) {
+	// 	asguard_dbg("invalid num_entries=%d\n", num_entries);
+	// 	goto reply_false;
+	// }
 
-	//spin_lock(&priv->sm_log.slock);
 	mutex_lock(&priv->sm_log.mlock);
+
 	if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
 		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
 				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
@@ -301,29 +301,30 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	mutex_unlock(&priv->sm_log.mlock);
 
-	// check commit index
-	leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
+	// // check commit index
+	// leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
 
-	// check if leader_commit_idx is out of bounds
-	if (*leader_commit_idx < -1 || *leader_commit_idx > MAX_CONSENSUS_LOG) {
-		asguard_dbg("Out of bounds: leader_commit_idx=%d", *leader_commit_idx);
-		goto reply_false;
-	}
+	// // check if leader_commit_idx is out of bounds
+	// if (*leader_commit_idx < -1 || *leader_commit_idx > MAX_CONSENSUS_LOG) {
+	// 	asguard_dbg("Out of bounds: leader_commit_idx=%d", *leader_commit_idx);
+	// 	goto reply_false;
+	// }
 
-	// check if leader_commit_idx points to a valid entry
-	if (*leader_commit_idx > priv->sm_log.last_idx) {
-		asguard_dbg("Not referencing a valid log entry: leader_commit_idx=%d, priv->sm_log.last_idx=%d",
-				*leader_commit_idx, priv->sm_log.last_idx);
-		goto reply_false;
-	}
+	// // check if leader_commit_idx points to a valid entry
+	// if (*leader_commit_idx > priv->sm_log.last_idx) {
+	// 	asguard_dbg("Not referencing a valid log entry: leader_commit_idx=%d, priv->sm_log.last_idx=%d",
+	// 			*leader_commit_idx, priv->sm_log.last_idx);
+	// 	goto reply_false;
+	// }
 
-	// Check if commit index must be updated
-	if (*leader_commit_idx > priv->sm_log.commit_idx) {
-		// min(leader_commit_idx, last_idx)
-		// note: last_idx of local log can not be null if append_commands was successfully executed
-		priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
-		commit_log(priv);
-	}
+
+	// // Check if commit index must be updated
+	// if (*leader_commit_idx > priv->sm_log.commit_idx) {
+	// 	// min(leader_commit_idx, last_idx)
+	// 	// note: last_idx of local log can not be null if append_commands was successfully executed
+	// 	priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
+	// 	commit_log(priv);
+	// }
 
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
 
