@@ -280,12 +280,13 @@ EXPORT_SYMBOL(invalidate_proto_data);
 
 int _do_prepare_log_replication(struct asguard_device *sdev)
 {
-	struct consensus_priv *cur_priv;
+	struct consensus_priv *cur_priv = NULL;
 	int i, j;
 	struct pminfo *spminfo = &sdev->pminfo;
 	int hb_passive_ix;
 	struct asguard_payload *pkt_payload;
 	int more = 0;
+	asguard_dbg("do log rep \n");
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
@@ -328,10 +329,10 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 
 void prepare_log_replication_handler(struct work_struct *w)
 {
-	struct asguard_leader_pkt_work_data *aw;
-	int more;
+	struct asguard_leader_pkt_work_data *aw = NULL;
+	int more = 0;
 
-	asguard_dbg("setup append msg \n");
+	asguard_dbg("schedule log rep handler\n");
 
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
 
@@ -339,26 +340,19 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	// Check if new work must be scheduled:
 	if(more){
-		aw->sdev->block_leader_wq = 0;
-		prepare_log_replication(aw->sdev);
-		kfree(aw);
-		return;
+		// do not open block, direct call to schedule
+		_schedule_log_rep(aw->sdev);
 	} else {
 		aw->sdev->block_leader_wq = 0;
 	}
 	kfree(aw);
 }
 
-void prepare_log_replication(struct asguard_device *sdev)
+void _schedule_log_rep(struct asguard_device *sdev)
 {
-	struct asguard_leader_pkt_work_data *work;
+	struct asguard_leader_pkt_work_data *work = NULL;
 
-	/* Do nothing if work is already queued.
-	 * If a work item is finished, and work is to do, the work item itself schedules
-	 * the next work item.
-	 */
-	if(sdev->block_leader_wq)
-		return;
+	asguard_dbg("schedule log rep \n");
 
 	sdev->block_leader_wq = 1;
 
@@ -370,5 +364,20 @@ void prepare_log_replication(struct asguard_device *sdev)
 		asguard_dbg("Work item not put in query..");
 	}
 
+
+}
+
+void prepare_log_replication(struct asguard_device *sdev)
+{
+	asguard_dbg("prepare_log_rep \n");
+
+	/* Do nothing if work is already queued.
+	 * If a work item is finished, and work is to do, the work item itself schedules
+	 * the next work item.
+	 */
+	if(sdev->block_leader_wq)
+		return;
+
+	_schedule_log_rep(sdev);
 }
 EXPORT_SYMBOL(prepare_log_replication);
