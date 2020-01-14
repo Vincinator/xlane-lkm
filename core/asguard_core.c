@@ -682,6 +682,7 @@ static void __exit asguard_connection_core_exit(void)
 			asguard_dbg("Skipping uninitialized device asguard_id=%d", i);
 			continue;
 		}
+
 		asguard_stop(i);
 
 		destroy_workqueue(score->sdevices[i]->asguard_leader_wq);

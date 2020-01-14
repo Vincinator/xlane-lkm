@@ -368,14 +368,9 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	more = _do_prepare_log_replication(aw->sdev);
 
-	// Check if new work must be scheduled:
-	if(more){
+	// ignore more
+	aw->sdev->block_leader_wq = 0;
 
-		// do not open block, direct call to schedule
-		_schedule_log_rep(aw->sdev);
-	} else {
-		aw->sdev->block_leader_wq = 0;
-	}
 	kfree(aw);
 
 }
