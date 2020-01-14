@@ -392,7 +392,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		}
 
 		// Current Leader is commiting
-		if(param1 == priv->term){
+		if(param1 == priv->term && param2 != -1){
 			// Check if commit index must be updated
 			if (param2 > priv->sm_log.commit_idx) {
 				// min(leader_commit_idx, last_idx)
