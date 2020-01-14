@@ -343,7 +343,7 @@ void _schedule_log_rep(struct asguard_device *sdev)
 	work->sdev = sdev;
 
 	INIT_WORK(&work->work, prepare_log_replication_handler);
-	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
+	if(!schedule_work(sdev->asguard_leader_wq, &work->work)) {
 		asguard_dbg("Work item not put in queue ..");
 	}
 	asguard_dbg("_schedule_log_rep - done\n");
