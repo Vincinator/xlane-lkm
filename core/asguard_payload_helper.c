@@ -300,6 +300,10 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 			continue; // previous pkt has not been emitted yet
 		}
 
+		if(spminfo->pm_targets[i].alive == 0) {
+			continue; // Current target is not alive!
+		}
+
 		// iterate through consensus protocols and include LEAD messages if node is leader
 		for (j = 0; j < sdev->num_of_proto_instances; j++) {
 
