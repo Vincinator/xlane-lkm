@@ -66,7 +66,6 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 		goto error;
 	}
 
-	asguard_dbg("Heartbeat state changed successfully.%s\n", __func__);
 	return count;
 error:
 	asguard_error("Heartbeat control failed.%s\n", __func__);
@@ -203,7 +202,6 @@ static ssize_t asguard_hbi_write(struct file *file,
 
 	spminfo->hbi = new_hbi;
 
-	asguard_dbg("Heartbeat state changed successfully.%s\n", __func__);
 	return count;
 error:
 	asguard_error("Heartbeat control failed.%s\n", __func__);

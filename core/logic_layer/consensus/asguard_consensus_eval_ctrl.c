@@ -40,12 +40,10 @@ static ssize_t asguard_eval_ctrl_write(struct file *file,
 
 	switch (eval_selection) {
 	case 0:
-		asguard_dbg("stopping eval timers\n");
 		testcase_stop_timer(priv);
 		break;
 	case -1:
 		// one shot
-		asguard_dbg("One shot eval case\n");
 		testcase_one_shot_big_log(priv);
 		break;
 	default:

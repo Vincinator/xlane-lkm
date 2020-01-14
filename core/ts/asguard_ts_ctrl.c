@@ -51,8 +51,7 @@ static ssize_t asguard_ts_ctrl_write(struct file *file,
 		err = -EINVAL;
 		goto error;
 	}
-	asguard_dbg("[ASGUARD] Timestamping state changed successfully.%s\n",
-		  __func__);
+
 	return count;
 error:
 	asguard_error("[ASGUARD] Timestamping control failed.%s\n", __func__);

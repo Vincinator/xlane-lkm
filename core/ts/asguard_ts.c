@@ -219,7 +219,6 @@ int asguard_clean_timestamping(struct asguard_device *sdev)
 	kfree(sdev->stats);
 
 	ts_state_transition_to(sdev, ASGUARD_TS_UNINIT);
-	asguard_dbg(" cleanup done%s\n", __func__);
 	return 0;
 error:
 	asguard_error(" error code: %d for %s\n", err, __func__);

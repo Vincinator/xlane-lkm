@@ -115,7 +115,6 @@ static ssize_t asguard_verbose_ctrl_write(struct file *file,
 	}
 
 	sdev->verbose = new_state;
-	asguard_dbg("verbosity level set to %ld\n", new_state);
 
 	return count;
 }
