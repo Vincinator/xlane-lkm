@@ -292,6 +292,7 @@ int start_candidate(struct proto_instance *ins)
 	priv->votes = 0;
 	priv->nstate = CANDIDATE;
 	priv->candidate_counter = 0;
+	priv->sdev->is_leader = 0;
 
 	asguard_dbg("Initialization finished.\n");
 

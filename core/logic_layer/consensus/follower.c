@@ -525,7 +525,7 @@ int start_follower(struct proto_instance *ins)
 		goto error;
 
 	priv->sdev->tx_port = 3319;
-
+	priv->sdev->is_leader = 0;
 	mutex_init(&priv->sm_log.mlock);
 
 	priv->votes = 0;

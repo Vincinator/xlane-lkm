@@ -169,6 +169,9 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 int stop_leader(struct proto_instance *ins)
 {
+	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
+
+	priv->sdev->is_leader = 0;
 
 	return 0;
 }
@@ -182,6 +185,7 @@ int start_leader(struct proto_instance *ins)
 
 	initialze_indices(priv);
 
+	priv->sdev->is_leader = 1;
 	priv->sdev->tx_port = 3320;
 	priv->candidate_counter = 0;
 

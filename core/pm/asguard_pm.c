@@ -28,9 +28,7 @@
 
 static struct task_struct *heartbeat_task;
 
-static inline bool
-
-asguard_pacemaker_is_alive(struct pminfo *spminfo)
+static inline bool asguard_pacemaker_is_alive(struct pminfo *spminfo)
 {
 	return spminfo->state == ASGUARD_PM_EMITTING;
 }

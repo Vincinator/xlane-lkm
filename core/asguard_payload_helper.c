@@ -332,6 +332,16 @@ void _schedule_log_rep(struct asguard_device *sdev)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
 
+	// if leadership has been dropped, do not schedule leader work
+	if(sdev->is_leader == 0)
+		return;
+
+	// if pacemaker has been stopped, do not schedule leader tx work
+	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
+		return;
+
+	// if log is full, do not schedule new work!
+
 	sdev->block_leader_wq = 1;
 
 	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);

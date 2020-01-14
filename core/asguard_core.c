@@ -331,6 +331,8 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->pkt_proc_ets = 0;
 	score->sdevices[asguard_id]->pkt_proc_ctr = 0;
 	score->sdevices[asguard_id]->block_leader_wq = 0;
+	score->sdevices[asguard_id]->is_leader = 0;
+
 	score->sdevices[asguard_id]->asguard_leader_wq =
 		 alloc_workqueue("asguard_leader", WQ_UNBOUND | WQ_HIGHPRI, 0);
 
