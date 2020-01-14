@@ -7,6 +7,7 @@
 #include <asguard/payload_helper.h>
 #include <asguard/logger.h>
 
+#include <linux/workqueue.h>
 
 
 
@@ -378,10 +379,8 @@ void prepare_log_replication(struct asguard_device *sdev)
 	 * If a work item is finished, and work is to do, the work item itself schedules
 	 * the next work item.
 	 */
-	if(sdev->block_leader_wq){
-		asguard_dbg("blocking, %d\n", sdev->block_leader_wq);
+	if(sdev->block_leader_wq)
 		return;
-	}
 
 	_schedule_log_rep(sdev);
 }
