@@ -475,23 +475,18 @@ void clear_protocol_instances(struct asguard_device *sdev)
 
 	// If pacemaker is running, do not clear the protocols!
 	if (sdev->pminfo.state == ASGUARD_PM_EMITTING) {
-		asguard_error("PM is running!\n");
 		return;
 	}
 
 	for (i = 0; i < sdev->num_of_proto_instances; i++) {
 
-		asguard_dbg("Cleaning proto with id=%d\n", i);
 
 		if (!sdev->protos[i])
 			continue;
 
-		asguard_dbg("protocol instance exists\n");
 
 		if (sdev->protos[i]->ctrl_ops.clean != NULL) {
-			asguard_dbg(" Call clean function of protocol\n");
 			sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
-			asguard_dbg(" Clean of Protocol done\n");
 
 		}
 
@@ -502,7 +497,6 @@ void clear_protocol_instances(struct asguard_device *sdev)
 		kfree(sdev->protos[i]);
 
 	}
-	asguard_dbg("done clean. num of proto instances: %d\n", sdev->num_of_proto_instances);
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		sdev->instance_id_mapping[i] = -1;
@@ -679,7 +673,6 @@ static void __exit asguard_connection_core_exit(void)
 	for(i = 0; i < MAX_NIC_DEVICES; i++) {
 
 		if(!score->sdevices[i]) {
-			asguard_dbg("Skipping uninitialized device asguard_id=%d", i);
 			continue;
 		}
 

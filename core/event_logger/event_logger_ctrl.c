@@ -22,7 +22,6 @@ static ssize_t asguard_event_ctrl_write(struct file *file,
 
 	size = min(sizeof(kernel_buffer) - 1, count);
 
-	asguard_error("Write init count=%lu %s\n", count, __func__);
 	memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
 	err = copy_from_user(kernel_buffer, user_buffer, count);
@@ -55,8 +54,6 @@ static ssize_t asguard_event_ctrl_write(struct file *file,
 		err = -EINVAL;
 		goto error;
 	}
-	asguard_dbg("Leader Election Logger state changed successfully.%s\n",
-		  __func__);
 	return count;
 error:
 	asguard_error("Leader Election Logger control operation failed.%s\n", __func__);
