@@ -195,9 +195,9 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 	}
 
 	if(spminfo->pm_targets[i].lhb_ts == spminfo->pm_targets[i].chb_ts) {
-		if (sdev->verbose){
+		if (sdev->verbose && sdev->warmup_state == WARMED_UP){
 			asguard_dbg("Node %d is considered dead. \n lhb_ts = %llu \n chb_ts = %llu \n, cluster_id=%d",
-						i, spminfo->pm_targets[i].lhb_ts, spminfo->pm_targets[i].chb_ts, spminfo->pm_targets[i].pkt_data.naddr.cluster_id );
+					i, spminfo->pm_targets[i].lhb_ts, spminfo->pm_targets[i].chb_ts, spminfo->pm_targets[i].pkt_data.naddr.cluster_id );
 		}
 		spminfo->pm_targets[i].alive = 0;
 		spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
