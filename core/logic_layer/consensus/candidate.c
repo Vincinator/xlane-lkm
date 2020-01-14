@@ -240,8 +240,9 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		break;
 	case NOOP:
 		break;
-	case APPEND:
-
+	case ALIVE:
+		/* Received an ALIVE operation from a node that claims to be the new leader
+		 */
 		if (param1 >= priv->term) {
 
 #if VERBOSE_DEBUG
@@ -252,9 +253,21 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 
+		}
+
+		/* Ignore other cases for ALIVE operation*/
+		break;
+	case APPEND:
+
+		if(priv->leader_id != remote_lid) {
+			asguard_error("received APPEND from a node that is not accepted as leader \n");
+			break;
+		}
+
+		if (param1 >= priv->term) {
+			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 		} else {
 #if VERBOSE_DEBUG
-
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received LEAD from leader (%d) with lower term=%u\n", rcluster_id, param1);
 #endif

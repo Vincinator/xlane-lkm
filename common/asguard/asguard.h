@@ -97,6 +97,7 @@ enum le_opcode {
 	LEAD = 3,
 	APPEND = 4,
 	APPEND_REPLY = 5,
+	ALIVE = 6,
 };
 
 

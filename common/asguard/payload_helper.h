@@ -94,9 +94,11 @@ typedef int(*handle_payload_fun)(struct asguard_device *,
 								 unsigned char *remote_mac,
 								 void *payload);
 
+// TODO: why 20??
 #define ASGUARD_PROTO_CON_AE_BASE_SZ 20
 #define CONLOG_ENTRY_SIZE 8
 
+// TODO: why 17??
 #define ASGUARD_PROTO_CON_PAYLOAD_SZ 17
 #define ASGUARD_CON_METADATA_SZ 23
 #define ASGUARD_CON_LOGCMD_SZ 8
@@ -111,6 +113,7 @@ char *asguard_get_proto(struct asguard_payload *spay, int n);
 char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 proto_size);
 void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay, int i);
 int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id);
+int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id);
 void prepare_log_replication(struct asguard_device *sdev);
 
 #endif  /* _ASGUARD_PHELP_H_ */

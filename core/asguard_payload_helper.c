@@ -184,6 +184,17 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 
 	return cur_priv->sm_log.entries[idx]->term;
 }
+int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id)
+{
+	char *pkt_payload_sub;
+
+	pkt_payload_sub = asguard_reserve_proto(instance_id, spay, ASGUARD_PROTO_CON_PAYLOAD_SZ);
+
+	set_le_opcode((unsigned char *)pkt_payload_sub, ALIVE, cur_priv->term, 0, 0, 0);
+
+	return 0;
+}
+EXPORT_SYMBOL(setup_alive_msg);
 
 int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id)
 {
@@ -297,7 +308,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_ix];
 
 		if(spminfo->pm_targets[i].pkt_data.active_dirty){
-			continue; // previous pkt has not been emitted yet
+			continue; // previous pkt has not been emitted yet, thus we can not switch buffer at the end of this function
 		}
 
 		if(spminfo->pm_targets[i].alive == 0) {

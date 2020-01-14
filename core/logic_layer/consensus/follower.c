@@ -374,22 +374,41 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		break;
 	case NOOP:
 		break;
-	case APPEND:
-		/* Received a LEAD operation from a node with a higher term,
-		 * thus this node is accepting the node as new leader.
+	case ALIVE:
+		/* Received an ALIVE operation from a node that claims to be the new leader
 		 */
 		if (param1 > priv->term) {
-
 			//reset_ftimeout(ins);
-
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
+
+#if VERBOSE_DEBUG
+			if (sdev->verbose >= 2)
+				asguard_dbg("Received ALIVE op from new leader with higher term=%d local term=%d\n", param1, priv->term);
+#endif
+		}
+
+		/* Ignore other cases for ALIVE operation*/
+
+		break;
+	case APPEND:
+
+		if(priv->leader_id != remote_lid) {
+			asguard_error("received APPEND from a node that is not accepted as leader \n");
+			break;
+		}
+		/* Received a LEAD operation from a node with a higher term,
+		 * thus this node was accecpted
+		 */
+		if (param1 > priv->term) {
+			// accept_leader(ins, remote_lid, rcluster_id, param1);
+			// write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 
 			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
-				asguard_dbg("Received message from new leader with higher term=%d local term=%d\n", param1, priv->term);
+				asguard_dbg("Received APPEND op from leader with higher term=%d local term=%d\n", param1, priv->term);
 #endif
 		}
 

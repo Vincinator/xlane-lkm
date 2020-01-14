@@ -53,6 +53,8 @@ const char *opcode_string(enum le_opcode opcode)
 		return "Append";
 	case APPEND_REPLY:
 		return "Append Reply";
+	case ALIVE:
+		return "Alive";
 	default:
 		return "Unknown State ";
 	}
@@ -74,6 +76,9 @@ void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum 
 		return;
 
 	if (opcode == APPEND && verbose < 4)
+		return;
+
+	if (opcode == ALIVE && verbose < 4)
 		return;
 
 	if(verbose)

@@ -147,7 +147,6 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 			goto unlock;
 		}
 
-		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
 
 	}
 
@@ -264,7 +263,29 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 }
 EXPORT_SYMBOL(update_leader);
 
+static void update_alive_msg(struct asguard_device *sdev, struct asguard_payload *pkt_payload, int target_id)
+{
+	int j;
 
+	// only leaders will append an ALIVE operation to the heartbeat
+	if(sdev->is_leader == 0)
+		return;
+
+	// iterate through consensus protocols and include ALIVE message
+	for (j = 0; j < sdev->num_of_proto_instances; j++) {
+
+		if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
+
+			// get corresponding local instance data for consensus
+			cur_priv =
+				(struct consensus_priv *)sdev->protos[j]->proto_data;
+
+			setup_alive_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id);
+
+		}
+	}
+
+}
 
 static inline int _emit_pkts(struct asguard_device *sdev,
 		struct pminfo *spminfo)
@@ -315,12 +336,17 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		invalidate_proto_data(sdev, pkt_payload, i);
 
 		update_aliveness_states(sdev, spminfo, i);
+
+		// append alive msg before others can append more consensus operations
+		update_alive_msg(sdev, pkt_payload, i);
+
+		// after alive msg has been added, the current active buffer can be used again
+		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
+
 	}
 
 	if(sdev->consensus_priv->nstate != LEADER)
 		update_leader(sdev, spminfo);
-	else
-		prepare_log_replication(sdev);
 
 	return 0;
 }

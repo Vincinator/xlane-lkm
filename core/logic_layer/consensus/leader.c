@@ -130,33 +130,26 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		}
 
 		break;
-
-	case APPEND:
-		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-
+	case ALIVE:
+		/* Received an ALIVE operation from a node that claims to be the new leader
+		 */
 		if (param1 > priv->term) {
+			//reset_ftimeout(ins);
+			accept_leader(ins, remote_lid, rcluster_id, param1);
+			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
+
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
-			accept_leader(ins, remote_lid, rcluster_id, param1);
-			write_log(&ins->logger, LEADER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
-
-
-		} else {
-#if VERBOSE_DEBUG
-			if (sdev->verbose >= 2)
-				asguard_dbg("Received LEAD from leader with lower or equal term=%u\n", param1);
-
-			// Ignore this LEAD message, continue to send LEAD messages
-			asguard_log_le("%s, %llu, %d: Cluster node %d also claims to be leader in term %u.\n",
-				nstate_string(priv->nstate),
-				RDTSC_ASGUARD,
-				priv->term,
-				rcluster_id,
-				param1);
-#endif
 		}
+
+		/* Ignore other cases for ALIVE operation*/
+
+		break;
+	case APPEND:
+
+		asguard_dbg("received APPEND but node is leader BUG\n");
 
 		break;
 	default:
