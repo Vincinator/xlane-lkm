@@ -290,52 +290,52 @@ void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *
 EXPORT_SYMBOL(invalidate_proto_data);
 
 
-int _do_prepare_log_replication(struct asguard_device *sdev)
+int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 {
 	struct consensus_priv *cur_priv = NULL;
-	int i, j;
+	int j;
 	struct pminfo *spminfo = &sdev->pminfo;
 	int hb_passive_ix;
 	struct asguard_payload *pkt_payload;
 	int more = 0;
 
-	for (i = 0; i < spminfo->num_of_targets; i++) {
 
-		hb_passive_ix =
-		     !!!spminfo->pm_targets[i].pkt_data.hb_active_ix;
+	hb_passive_ix =
+			!!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
 
-		pkt_payload =
-		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_ix];
+	pkt_payload =
+			spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
 
-		if(spminfo->pm_targets[i].pkt_data.active_dirty){
-			continue; // previous pkt has not been emitted yet, thus we can not switch buffer at the end of this function
-		}
-
-		if(spminfo->pm_targets[i].alive == 0) {
-			continue; // Current target is not alive!
-		}
-
-		// iterate through consensus protocols and include LEAD messages if node is leader
-		for (j = 0; j < sdev->num_of_proto_instances; j++) {
-
-			if (sdev->protos[i] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
-
-				// get corresponding local instance data for consensus
-				cur_priv =
-					(struct consensus_priv *)sdev->protos[j]->proto_data;
-
-				if (cur_priv->nstate != LEADER)
-					continue;
-
-				// TODO: optimize append calls that do not contain any log updates
-				more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, i);
-
-			}
-		}
-		spminfo->pm_targets[i].pkt_data.active_dirty = 1;
-		spminfo->pm_targets[i].pkt_data.hb_active_ix = hb_passive_ix;
-
+	if(spminfo->pm_targets[target_id].pkt_data.active_dirty){
+		continue; // previous pkt has not been emitted yet, thus we can not switch buffer at the end of this function
 	}
+
+	if(spminfo->pm_targets[target_id].alive == 0) {
+		continue; // Current target is not alive!
+	}
+
+	// iterate through consensus protocols and include LEAD messages if node is leader
+	for (j = 0; j < sdev->num_of_proto_instances; j++) {
+
+		if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
+
+			// get corresponding local instance data for consensus
+			cur_priv =
+				(struct consensus_priv *)sdev->protos[j]->proto_data;
+
+			if (cur_priv->nstate != LEADER)
+				continue;
+
+			// TODO: optimize append calls that do not contain any log updates
+			more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, target_id);
+
+		}
+	}
+
+	spminfo->pm_targets[target_id].pkt_data.active_dirty = 1;
+	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
+
+
 
 	return more;
 
@@ -343,7 +343,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 
 void prepare_log_replication_handler(struct work_struct *w);
 
-void _schedule_log_rep(struct asguard_device *sdev)
+void _schedule_log_rep(struct asguard_device *sdev, int target_id)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
 
@@ -361,6 +361,7 @@ void _schedule_log_rep(struct asguard_device *sdev)
 
 	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
 	work->sdev = sdev;
+	work->target_id = target_id;
 
 	INIT_WORK(&work->work, prepare_log_replication_handler);
 	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
@@ -377,7 +378,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
 
-	more = _do_prepare_log_replication(aw->sdev);
+	more = _do_prepare_log_replication(aw->sdev, aw->target_id);
 
 	// if(more) {
 	// 	_schedule_log_rep(aw->sdev);
@@ -385,8 +386,8 @@ void prepare_log_replication_handler(struct work_struct *w)
 	// 	aw->sdev->block_leader_wq = 0;
 	// }
 
-
 	aw->sdev->block_leader_wq = 0;
+	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
 	kfree(aw);
 
@@ -395,14 +396,21 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 void prepare_log_replication(struct asguard_device *sdev)
 {
-	/* Do nothing if work is already queued.
-	 * If a work item is finished, and work is to do, the work item itself schedules
-	 * the next work item.
-	 */
-	if(sdev->block_leader_wq)
-		return;
+	int i;
 
-	_schedule_log_rep(sdev);
+	for(i = 0; i < sdev->pminfo.num_of_targets; i++){
+		if (sdev->pminfo.pm_targets[i].pkt_data.active_dirty) {
+			asguard_dbg(" last pkt has not been emitted yet. \n");
+			continue;
+		}
+		if (sdev->pminfo.pm_targets[i].pkt_data.updating) {
+			asguard_dbg(" unfinished work has already been scheduled. \n");
+			continue;
+		}
+		sdev->pminfo.pm_targets[i].pkt_data.updating = 1;
+		_schedule_log_rep(sdev, i);
+	}
+
 
 }
 EXPORT_SYMBOL(prepare_log_replication);

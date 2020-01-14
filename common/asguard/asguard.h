@@ -499,6 +499,8 @@ struct asguard_leader_pkt_work_data {
     struct work_struct work;
 	struct asguard_device *sdev;
 
+	int target_id;
+
 };
 
 
