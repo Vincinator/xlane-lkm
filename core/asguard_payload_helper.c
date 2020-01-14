@@ -335,6 +335,7 @@ void prepare_log_replication_handler(struct work_struct *w);
 void _schedule_log_rep(struct asguard_device *sdev)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
+	asguard_dbg("_schedule_log_rep\n");
 
 	sdev->block_leader_wq = 1;
 
@@ -345,15 +346,17 @@ void _schedule_log_rep(struct asguard_device *sdev)
 	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
 		asguard_dbg("Work item not put in queue ..");
 	}
-
+	asguard_dbg("_schedule_log_rep - done\n");
 
 }
+
+
 void prepare_log_replication_handler(struct work_struct *w)
 {
 	struct asguard_leader_pkt_work_data *aw = NULL;
 	int more = 0;
 
-	asguard_dbg("schedule log rep handler\n");
+	asguard_dbg("prepare_log_replication_handler\n");
 
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
 
@@ -370,6 +373,8 @@ void prepare_log_replication_handler(struct work_struct *w)
 		aw->sdev->block_leader_wq = 0;
 	}
 	kfree(aw);
+	asguard_dbg("prepare_log_replication_handler - done\n");
+
 }
 
 
@@ -381,7 +386,10 @@ void prepare_log_replication(struct asguard_device *sdev)
 	 */
 	if(sdev->block_leader_wq)
 		return;
+	asguard_dbg("prepare_log_replication - pass\n");
 
 	_schedule_log_rep(sdev);
+	asguard_dbg("prepare_log_replication - done\n");
+
 }
 EXPORT_SYMBOL(prepare_log_replication);
