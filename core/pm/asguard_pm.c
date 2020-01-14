@@ -277,10 +277,8 @@ static void update_alive_msg(struct asguard_device *sdev, struct asguard_payload
 		if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
 
 			// get corresponding local instance data for consensus
-			cur_priv =
-				(struct consensus_priv *)sdev->protos[j]->proto_data;
-
-			setup_alive_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id);
+			setup_alive_msg((struct consensus_priv *)sdev->protos[j]->proto_data,
+							pkt_payload, sdev->protos[j]->instance_id);
 
 		}
 	}
