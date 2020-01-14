@@ -327,6 +327,8 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 
 }
 
+void prepare_log_replication_handler(struct work_struct *w);
+
 void _schedule_log_rep(struct asguard_device *sdev)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
