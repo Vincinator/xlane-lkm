@@ -150,7 +150,6 @@ int consensus_clean(struct proto_instance *ins)
 		return 0;
 	}
 
-	asguard_dbg("cleaning consensus\n");
 
 	le_state_transition_to(priv, LE_UNINIT);
 
@@ -166,8 +165,6 @@ int consensus_clean(struct proto_instance *ins)
 		 priv->sdev->ifindex, ins->instance_id);
 
 	remove_proc_entry(name_buf, NULL);
-
-	asguard_dbg("Cleaning %d entries from sm log\n", priv->sm_log.last_idx);
 
 	if (priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
 		for (i = 0; i < priv->sm_log.last_idx; i++)

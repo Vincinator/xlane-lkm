@@ -612,22 +612,17 @@ error:
 
 void asguard_stop_pacemaker(struct asguard_device *adev)
 {
-	asguard_dbg("Enter Stop pacemaker..\n");
 
 	if(!adev) {
 		asguard_error("asguard device is NULL\n");
 		return;
 	}
-	asguard_dbg("setting pacemaker state..\n");
 
 	adev->pminfo.state = ASGUARD_PM_READY;
-
-	asguard_dbg("pacemaker state set..\n");
 }
 
 void asguard_stop_timestamping(struct asguard_device *adev)
 {
-	asguard_dbg("Enter Stop timestamping ..\n");
 
 	if(!adev) {
 		asguard_error("ASGuard Device is Null.\n");
@@ -635,13 +630,11 @@ void asguard_stop_timestamping(struct asguard_device *adev)
 	}
 	asguard_ts_stop(adev);
 
-	asguard_dbg("ts stopped..\n");
 
 }
 
 void asguard_stop(int asguard_id)
 {
-	asguard_dbg("Enter Stop asguard fun..\n");
 
 	if (asguard_validate_asguard_device(asguard_id)){
 		asguard_dbg("invalid asguard id %d", asguard_id);
@@ -651,8 +644,6 @@ void asguard_stop(int asguard_id)
 	asguard_stop_timestamping(score->sdevices[asguard_id]);
 
 	asguard_stop_pacemaker(score->sdevices[asguard_id]);
-
-	asguard_dbg("Stopped asguard..\n");
 
 }
 

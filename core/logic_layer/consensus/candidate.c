@@ -307,14 +307,11 @@ int start_candidate(struct proto_instance *ins)
 	priv->candidate_counter = 0;
 	priv->sdev->is_leader = 0;
 
-	asguard_dbg("Initialization finished.\n");
-
 	priv->sdev->tx_port = 3319;
 
 	setup_nomination(ins);
 	//init_ctimeout(ins);
 
-	asguard_dbg("Candidate started.\n");
 
 	return 0;
 }
