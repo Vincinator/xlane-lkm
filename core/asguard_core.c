@@ -693,6 +693,8 @@ static void __exit asguard_connection_core_exit(void)
 
 	kfree(score);
 
+	remove_proc_entry("asguard", NULL);
+
 	// flush_workqueue(asguard_wq);
 
 	asguard_dbg("Unloaded Module..", i);
