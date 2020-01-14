@@ -129,7 +129,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		}
 		// send next append (DEBUG ONLY.. )
-		prepare_log_replication(priv->sdev);
+		prepare_log_replication_for_target(priv->sdev, remote_lid);
 
 		break;
 	case ALIVE:

@@ -115,5 +115,7 @@ void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *
 int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id);
 int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id);
 void prepare_log_replication(struct asguard_device *sdev);
+void prepare_log_replication_for_target(struct asguard_device *sdev, int target_id);
+
 
 #endif  /* _ASGUARD_PHELP_H_ */

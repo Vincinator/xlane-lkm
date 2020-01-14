@@ -393,24 +393,29 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 }
 
+void prepare_log_replication_for_target(struct asguard_device *sdev, int target_id)
+{
+
+	if (sdev->pminfo.pm_targets[target_id].pkt_data.active_dirty) {
+		asguard_dbg(" last pkt has not been emitted yet. \n");
+		return;
+	}
+	if (sdev->pminfo.pm_targets[target_id].pkt_data.updating) {
+		asguard_dbg(" unfinished work has already been scheduled. \n");
+		return;
+	}
+	sdev->pminfo.pm_targets[target_id].pkt_data.updating = 1;
+	_schedule_log_rep(sdev, target_id);
+
+}
+EXPORT_SYMBOL(prepare_log_replication_for_target);
 
 void prepare_log_replication(struct asguard_device *sdev)
 {
 	int i;
 
-	for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-		if (sdev->pminfo.pm_targets[i].pkt_data.active_dirty) {
-			asguard_dbg(" last pkt has not been emitted yet. \n");
-			continue;
-		}
-		if (sdev->pminfo.pm_targets[i].pkt_data.updating) {
-			asguard_dbg(" unfinished work has already been scheduled. \n");
-			continue;
-		}
-		sdev->pminfo.pm_targets[i].pkt_data.updating = 1;
-		_schedule_log_rep(sdev, i);
-	}
-
+	for(i = 0; i < sdev->pminfo.num_of_targets; i++)
+		prepare_log_replication_for_target(sdev, i);
 
 }
 EXPORT_SYMBOL(prepare_log_replication);
