@@ -250,8 +250,8 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		// .. with the append reply.
 		cur_priv->sm_log.next_index[target_id] += num_entries;
 
-		asguard_dbg("cur_index=%d, next_index=%d, prev_log_term=%d, num_entries=%d\n",
-					cur_index, next_index, prev_log_term, num_entries);
+		asguard_dbg("target_id=%d, cur_index=%d, next_index=%d, prev_log_term=%d, num_entries=%d\n",
+					target_id, cur_index, next_index, prev_log_term, num_entries);
 	}
 
 	// reserve space in asguard heartbeat for consensus LEAD
