@@ -533,6 +533,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->alive = 0;
 	pmtarget->pkt_data.hb_active_ix = 0;
 	pmtarget->pkt_data.active_dirty = 0;
+	pmtarget->pkt_data.updating = 0;
 	pmtarget->pkt_data.naddr.dst_ip = ip;
 	pmtarget->pkt_data.naddr.cluster_id = cluster_id;
 	pmtarget->pkt_data.protocol_id = protocol_id;
