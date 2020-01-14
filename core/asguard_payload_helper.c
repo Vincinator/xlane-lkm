@@ -327,6 +327,24 @@ int _do_prepare_log_replication(struct asguard_device *sdev)
 
 }
 
+void _schedule_log_rep(struct asguard_device *sdev)
+{
+	struct asguard_leader_pkt_work_data *work = NULL;
+
+	asguard_dbg("schedule log rep \n");
+
+	sdev->block_leader_wq = 1;
+
+	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
+	work->sdev = sdev;
+
+	INIT_WORK(&work->work, prepare_log_replication_handler);
+	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
+		asguard_dbg("Work item not put in query..");
+	}
+
+
+}
 void prepare_log_replication_handler(struct work_struct *w)
 {
 	struct asguard_leader_pkt_work_data *aw = NULL;
@@ -348,24 +366,6 @@ void prepare_log_replication_handler(struct work_struct *w)
 	kfree(aw);
 }
 
-void _schedule_log_rep(struct asguard_device *sdev)
-{
-	struct asguard_leader_pkt_work_data *work = NULL;
-
-	asguard_dbg("schedule log rep \n");
-
-	sdev->block_leader_wq = 1;
-
-	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
-	work->sdev = sdev;
-
-	INIT_WORK(&work->work, prepare_log_replication_handler);
-	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
-		asguard_dbg("Work item not put in query..");
-	}
-
-
-}
 
 void prepare_log_replication(struct asguard_device *sdev)
 {
