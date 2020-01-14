@@ -379,11 +379,14 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	more = _do_prepare_log_replication(aw->sdev);
 
-	if(more) {
-		_schedule_log_rep(aw->sdev);
-	} else {
-		aw->sdev->block_leader_wq = 0;
-	}
+	// if(more) {
+	// 	_schedule_log_rep(aw->sdev);
+	// } else {
+	// 	aw->sdev->block_leader_wq = 0;
+	// }
+
+
+	aw->sdev->block_leader_wq = 0;
 
 	kfree(aw);
 
