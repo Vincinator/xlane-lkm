@@ -75,8 +75,6 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 				return count;
 			}
 
-
-			asguard_dbg("instance id: %s\n", input_str);
 			state = 1;
 		} else if (state == 1) {
 			err = kstrtoint(input_str, 10, &protocol_id);

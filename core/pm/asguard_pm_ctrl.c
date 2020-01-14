@@ -49,15 +49,12 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 
 	switch (new_hb_state) {
 	case 0:
-		asguard_dbg("Stop Heartbeat thread\n");
 		asguard_pm_stop(spminfo);
 		break;
 	case 1:
-		asguard_dbg("Start PM as busy loop\n");
 		asguard_pm_start_loop(spminfo);
 		break;
 	case 2:
-		asguard_dbg("Reset Kernel Configuration\n");
 		asguard_pm_reset(spminfo);
 		break;
 	default:
@@ -426,7 +423,6 @@ static ssize_t asguard_target_write(struct file *file,
 		}
 	}
 	spminfo->num_of_targets = i;
-	asguard_dbg("Number of targets is now: %d\n", i);
 
 	return count;
 error:

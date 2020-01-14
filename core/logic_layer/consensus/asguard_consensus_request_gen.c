@@ -22,10 +22,6 @@
 void testcase_stop_timer(struct consensus_priv *priv)
 {
 	priv->test_data.running = 0;
-
-	asguard_dbg("Timer will be stopped directly after next timeout\n");
-	asguard_dbg("Actions of next timeout will not be performed.\n");
-
 }
 
 /* Fully saturates the local log (if leader)

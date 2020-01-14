@@ -85,8 +85,6 @@ int consensus_start(struct proto_instance *ins)
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
-	asguard_dbg("consensus start\n");
-
 	if (consensus_is_alive(priv)) {
 		asguard_dbg("Consensus is already running!\n");
 		return 0;
@@ -115,8 +113,6 @@ int consensus_stop(struct proto_instance *ins)
 
 	if (!consensus_is_alive(priv))
 		return 0;
-
-	asguard_dbg("consensus stop\n");
 
 	switch (priv->nstate) {
 	case FOLLOWER:

@@ -210,7 +210,6 @@ u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 pr
 	struct sm_log_entry *entry;
 
 	if (prev_log_idx == -1) {
-		asguard_dbg("prev log idx is -1\n");
 		if( prev_log_term < priv->term) {
 			asguard_error(" received append RPC with lower prev term");
 			// TODO: handle this case.

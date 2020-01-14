@@ -29,8 +29,6 @@ const char *ts_state_string(enum tsstate state)
 void ts_state_transition_to(struct asguard_device *sdev,
 			    enum tsstate state)
 {
-	asguard_dbg("State Transition from %s to %s\n",
-		  ts_state_string(sdev->ts_state), ts_state_string(state));
 	sdev->ts_state = state;
 }
 

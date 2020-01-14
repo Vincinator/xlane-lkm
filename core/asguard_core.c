@@ -184,7 +184,6 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 		// Starting all protocols
 		for (i = 0; i < sdev->num_of_proto_instances; i++) {
 			if (sdev->protos != NULL && sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.start != NULL) {
-				asguard_dbg("starting instance %d", i);
 				sdev->protos[i]->ctrl_ops.start(sdev->protos[i]);
 			} else {
 				asguard_dbg("protocol instance %d not initialized", i);
