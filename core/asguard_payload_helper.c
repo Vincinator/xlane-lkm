@@ -190,7 +190,7 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spa
 
 	pkt_payload_sub = asguard_reserve_proto(instance_id, spay, ASGUARD_PROTO_CON_PAYLOAD_SZ);
 
-	set_le_opcode((unsigned char *)pkt_payload_sub, ALIVE, cur_priv->term, 0, 0, 0);
+	set_le_opcode((unsigned char *)pkt_payload_sub, ALIVE, cur_priv->term, cur_priv->sm_log.commit_idx, 0, 0);
 
 	return 0;
 }

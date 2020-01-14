@@ -376,6 +376,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case NOOP:
 		break;
 	case ALIVE:
+		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+
 		/* Received an ALIVE operation from a node that claims to be the new leader
 		 */
 		if (param1 > priv->term) {
@@ -387,6 +389,17 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received ALIVE op from new leader with higher term=%d local term=%d\n", param1, priv->term);
 #endif
+		}
+
+		// Current Leader is commiting
+		if(param1 == priv->term){
+			// Check if commit index must be updated
+			if (param2 > priv->sm_log.commit_idx) {
+				// min(leader_commit_idx, last_idx)
+				// note: last_idx of local log can not be null if append_commands was successfully executed
+				priv->sm_log.commit_idx = param2 > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
+				commit_log(priv);
+			}
 		}
 
 		/* Ignore other cases for ALIVE operation*/
