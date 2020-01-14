@@ -105,7 +105,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 			goto error;
 	}
 	// notify the leader to start the log replication (application logic)
-	prepare_log_replication(priv->sdev);
+	//prepare_log_replication(priv->sdev);
 
 	return HRTIMER_RESTART;
 error:

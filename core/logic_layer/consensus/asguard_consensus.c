@@ -175,9 +175,7 @@ void set_ae_data(unsigned char *pkt,
 		cur_ptr++;
 	}
 
-	// there is more to send, directly fire the next heartbeat
-	if (more)
-		priv->sdev->fire = 1;
+	priv->sdev->fire = 1;
 
 }
 
