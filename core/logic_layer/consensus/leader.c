@@ -189,7 +189,7 @@ int start_leader(struct proto_instance *ins)
 	priv->sdev->tx_port = 3320;
 	priv->candidate_counter = 0;
 
-	prepare_log_replication(priv->sdev);
+	//prepare_log_replication(priv->sdev);
 
 	// for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 	// 	hb_passive_ix =
