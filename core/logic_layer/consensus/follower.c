@@ -397,7 +397,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			if (param2 > priv->sm_log.commit_idx) {
 				// min(leader_commit_idx, last_idx)
 				// note: last_idx of local log can not be null if append_commands was successfully executed
-				priv->sm_log.commit_idx = param2 > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
+				priv->sm_log.commit_idx = param2 > priv->sm_log.last_idx ? priv->sm_log.last_idx : param2;
 				commit_log(priv);
 			}
 		}
