@@ -52,7 +52,7 @@ static ssize_t asguard_eval_ctrl_write(struct file *file,
 			err = -EINVAL;
 			goto error;
 		}
-		asguard_dbg("Appending %d entries to log every second\n", eval_selection);
+		// asguard_dbg("Appending %d entries to log every second\n", eval_selection);
 		testcase_X_requests_per_sec(priv, eval_selection);
 
 	}

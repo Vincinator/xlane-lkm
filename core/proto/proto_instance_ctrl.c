@@ -71,7 +71,6 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 
 				// clear all existing protocols and exit
 				clear_protocol_instances(sdev);
-				asguard_dbg("cleared all instances\n");
 				return count;
 			}
 
@@ -90,8 +89,6 @@ static ssize_t proto_instance_ctrl_write(struct file *file,
 
 		}
 	}
-	asguard_dbg("Created a new protocol instance  of type %d with instance id %d\n",
-			  protocol_id, instance_id);
 	return count;
 error:
 

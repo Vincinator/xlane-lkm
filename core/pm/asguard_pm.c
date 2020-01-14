@@ -549,8 +549,6 @@ int asguard_pm_start_loop(void *data)
 	if (err)
 		return err;
 
-	asguard_dbg("protocol instances: %d", sdev->num_of_proto_instances);
-
 	cpumask_clear(&mask);
 
 	heartbeat_task = kthread_create(&asguard_pm_loop, sdev,

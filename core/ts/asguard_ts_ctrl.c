@@ -102,8 +102,6 @@ void init_asguard_ts_ctrl_interfaces(struct asguard_device *sdev)
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_ts_ctrl_ops,
 			 sdev);
 
-	asguard_dbg(
-		"[ASGUARD] Timestamping ctrl interfaces created for device (%d)\n",
-		sdev->ifindex);
+
 }
 

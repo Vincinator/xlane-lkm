@@ -609,8 +609,7 @@ void init_asguard_pm_ctrl_interfaces(struct asguard_device *sdev)
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_cpumgmt_ops,
 			 &sdev->pminfo);
 
-	asguard_dbg("Pacemaker ctrl interfaces created for device (%d)\n",
-		  sdev->ifindex);
+
 }
 EXPORT_SYMBOL(init_asguard_pm_ctrl_interfaces);
 

@@ -146,6 +146,6 @@ void testcase_X_requests_per_sec(struct consensus_priv *priv, int x)
 	// start hrtimer!
 	_init_testcase_timeout(&priv->test_data);
 
-	asguard_dbg("Appending %d consensus requests every second, if node is currently the leader\n", x);
+	//asguard_dbg("Appending %d consensus requests every second, if node is currently the leader\n", x);
 
 }
