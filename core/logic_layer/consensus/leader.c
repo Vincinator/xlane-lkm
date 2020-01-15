@@ -58,6 +58,15 @@ void update_commit_idx(struct consensus_priv *priv)
 			asguard_error("current_N is invalid\n");
 			return;
 		}
+		if(current_N > priv->sm_log.last_idx){
+			asguard_dbg("BUG! last_applied \n");
+		}
+
+		asguard_dbg("current_N=%d, priv->sdev->pminfo.num_of_targets=%d, target=%d\n",
+				current_N, priv->sdev->pminfo.num_of_targets, i );
+
+		asguard_dbg("last_idx=%d, commit_idx=%d \n",
+				priv->sm_log.last_idx, priv->sm_log.commit_idx );
 
 		if (priv->sm_log.entries[current_N]->term == priv->term)
 			// majority of match_index[j] >= N and sm_log.entries[N]->term == currentTerm
