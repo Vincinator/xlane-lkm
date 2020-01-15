@@ -58,8 +58,10 @@ void update_commit_idx(struct consensus_priv *priv)
 			asguard_error("current_N is invalid\n");
 			return;
 		}
+
 		if(current_N > priv->sm_log.last_idx){
 			asguard_dbg("BUG! last_applied \n");
+			return;
 		}
 
 		asguard_dbg("current_N=%d, priv->sdev->pminfo.num_of_targets=%d, target=%d\n",
