@@ -78,7 +78,7 @@ void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum 
 	if (opcode == APPEND && verbose < 4)
 		return;
 
-	if (opcode == ALIVE && verbose < 4)
+	if (opcode == ALIVE)
 		return;
 
 	if(verbose)
