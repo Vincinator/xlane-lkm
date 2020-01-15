@@ -72,10 +72,10 @@ EXPORT_SYMBOL(consensus_is_alive);
 void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm)
 {
 
-	if (opcode == NOOP && verbose < 4)
+	if (opcode == NOOP)
 		return;
 
-	if (opcode == APPEND && verbose < 4)
+	if (opcode == APPEND)
 		return;
 
 	if (opcode == ALIVE)

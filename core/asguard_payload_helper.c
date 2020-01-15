@@ -382,9 +382,9 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
-	if(more) {
-		prepare_log_replication_for_target(aw->sdev, aw->target_id);
-	}
+	// if(more) {
+	// 	prepare_log_replication_for_target(aw->sdev, aw->target_id);
+	// }
 
 	kfree(aw);
 }
