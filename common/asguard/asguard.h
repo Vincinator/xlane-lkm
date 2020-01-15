@@ -302,6 +302,8 @@ struct asguard_packet_data {
 	/* Do not reupdate until the active has been emitted (only for leader logic) */
 	int active_dirty;
 
+	struct mutex active_dirty_lock;
+
 	/* if updating != 0, then pacemaker will not update skb
 	 * uses old values in skb until updating == 0
 	 */
@@ -428,7 +430,6 @@ struct asguard_device {
 	struct proto_instance **protos; // array of ptrs to protocol instances
 
 	struct workqueue_struct *asguard_leader_wq;
-	int block_leader_wq; // if != 0, then no additional items can be queued to the asguard_leader_wq
 };
 
 struct asguard_protocol_ctrl_ops {

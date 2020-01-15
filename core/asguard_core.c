@@ -4,6 +4,7 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/kthread.h>
+#include <linux/mutex.h>
 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -329,7 +330,6 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->pkt_proc_sts = 0;
 	score->sdevices[asguard_id]->pkt_proc_ets = 0;
 	score->sdevices[asguard_id]->pkt_proc_ctr = 0;
-	score->sdevices[asguard_id]->block_leader_wq = 0;
 	score->sdevices[asguard_id]->is_leader = 0;
 
 	score->sdevices[asguard_id]->asguard_leader_wq =
@@ -533,6 +533,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->alive = 0;
 	pmtarget->pkt_data.hb_active_ix = 0;
 	pmtarget->pkt_data.active_dirty = 0;
+	mutex_init(&pmtarget->pkt_data.active_dirty_lock);
 	pmtarget->pkt_data.updating = 0;
 	pmtarget->pkt_data.naddr.dst_ip = ip;
 	pmtarget->pkt_data.naddr.cluster_id = cluster_id;

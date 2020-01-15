@@ -339,6 +339,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 		// after alive msg has been added, the current active buffer can be used again
 		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
+		mutex_unlock(&spminfo->pm_targets[i].pkt_data.active_dirty_lock);
 
 	}
 

@@ -335,8 +335,6 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 	spminfo->pm_targets[target_id].pkt_data.active_dirty = 1;
 	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 
-
-
 	return more;
 
 }
@@ -355,9 +353,6 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id)
 	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
 		return;
 
-	// if log is full, do not schedule new work!
-
-	sdev->block_leader_wq = 1;
 
 	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
 	work->sdev = sdev;
@@ -376,13 +371,14 @@ void prepare_log_replication_handler(struct work_struct *w)
 	struct asguard_leader_pkt_work_data *aw = NULL;
 	int more = 0;
 
+	// wait until the previous packet has been sent.
+	// ... do not wait for reply from target
+	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
+
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
 
 	more = _do_prepare_log_replication(aw->sdev, aw->target_id);
 
-
-
-	aw->sdev->block_leader_wq = 0;
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
 	if(more) {
@@ -395,22 +391,19 @@ void prepare_log_replication_handler(struct work_struct *w)
 void prepare_log_replication_for_target(struct asguard_device *sdev, int target_id)
 {
 
-	if (sdev->pminfo.pm_targets[target_id].pkt_data.active_dirty) {
-		asguard_dbg(" last pkt has not been emitted yet. \n");
-		return;
-	}
-	if (sdev->pminfo.pm_targets[target_id].pkt_data.updating) {
-		asguard_dbg(" unfinished work has already been scheduled. \n");
-		return;
-	}
-
 	if(sdev->is_leader == 0)
 		return;
 
 	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
 		return;
 
+	if (sdev->pminfo.pm_targets[target_id].pkt_data.updating) {
+		asguard_dbg("Work not scheduled: Only schedule one log rep work item per target in parallel \n");
+		return;
+	}
+
 	sdev->pminfo.pm_targets[target_id].pkt_data.updating = 1;
+
 	_schedule_log_rep(sdev, target_id);
 
 }
