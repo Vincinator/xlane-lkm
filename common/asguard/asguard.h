@@ -4,7 +4,7 @@
 #include <linux/workqueue.h>
 
 
-#define VERBOSE_DEBUG 0
+#define VERBOSE_DEBUG 1
 
 #ifndef CONFIG_KUNIT
 #define RDTSC_ASGUARD rdtsc()
