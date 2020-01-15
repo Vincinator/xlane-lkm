@@ -373,9 +373,10 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	// wait until the previous packet has been sent.
 	// ... do not wait for reply from target
-	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
 
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
+
+	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
 
 	more = _do_prepare_log_replication(aw->sdev, aw->target_id);
 
