@@ -109,6 +109,9 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
+
+
+
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
 		asguard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
@@ -368,7 +371,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
-		if (check_handle_nomination(priv, param1, param2, param3, param4)) {
+		if (check_handle_nomination(priv, param1, param2, param3, param4, rcluster_id, remote_lid)) {
 			//reset_ftimeout(ins);
 			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}
@@ -407,7 +410,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		break;
 	case APPEND:
 
-		if(priv->leader_id != remote_lid) {
+		if(priv->leader_id != rcluster_id) {
 			asguard_error("received APPEND from a node that is not accepted as leader \n");
 			break;
 		}
@@ -434,7 +437,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 */
 		else if (param1 == priv->term) {
 
-			if (priv->leader_id == remote_lid) {
+			if (priv->leader_id == rcluster_id) {
 				// follower timeout already handled.
 				//reset_ftimeout(ins);
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
@@ -461,7 +464,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			if (sdev->verbose >= 5)
 				asguard_dbg("Received APPEND from leader (%d) with lower term=%u\n", rcluster_id, param1);
 #endif
-			if (priv->leader_id == remote_lid) {
+			if (priv->leader_id == rcluster_id) {
 				asguard_error("BUG! Current accepted LEADER (%d) has lower Term=%u\n", rcluster_id,  param1);
 			}
 
@@ -469,7 +472,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		}
 		break;
 	default:
-		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", remote_lid, opcode);
+		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", rcluster_id, opcode);
 
 	}
 

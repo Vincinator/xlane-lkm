@@ -179,7 +179,7 @@ void set_ae_data(unsigned char *pkt,
 
 }
 
-int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2, u32 param3, u32 param4)
+int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2, u32 param3, u32 param4, int rcluster_id, int remote_lid)
 {
 
 	if (priv->term < param1) {
@@ -189,6 +189,12 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 #endif
 			return 0;
 		} else {
+
+			if(priv->sdev->cur_leader_lid >= 0 && priv->sdev->cur_leader_lid < priv->sdev->pminfo.num_of_targets)
+				if(priv->sdev->pminfo.pm_targets[priv->sdev->cur_leader_lid].alive
+					&& priv->leader_id < rcluster_id)
+					return 0; // current leader is alive and has better id
+
 			// if local log is empty, just grant the vote!
 			if (priv->sm_log.last_idx == -1)
 				return 1;

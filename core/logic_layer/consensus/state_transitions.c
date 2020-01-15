@@ -84,7 +84,7 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u
 #endif
 
 	priv->term = term;
-	priv->leader_id = remote_lid;
+	priv->leader_id = cluster_id;
 	priv->sdev->cur_leader_lid = remote_lid;
 	node_transition(ins, FOLLOWER);
 

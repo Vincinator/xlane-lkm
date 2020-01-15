@@ -399,7 +399,7 @@ void prepare_log_replication_for_target(struct asguard_device *sdev, int target_
 		return;
 
 	if (sdev->pminfo.pm_targets[target_id].pkt_data.updating) {
-		asguard_dbg("Work not scheduled: Only schedule one log rep work item per target in parallel \n");
+		//asguard_dbg("Work not scheduled: Only schedule one log rep work item per target in parallel \n");
 		return;
 	}
 
