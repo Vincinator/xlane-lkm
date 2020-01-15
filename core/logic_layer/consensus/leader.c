@@ -150,8 +150,10 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		break;
 	case APPEND:
-
-		asguard_dbg("received APPEND but node is leader BUG\n");
+#if VERBOSE_DEBUG
+			if (sdev->verbose >= 2)
+				asguard_dbg("received APPEND but node is leader BUG\n");
+#endif
 
 		break;
 	default:

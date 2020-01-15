@@ -380,17 +380,16 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	more = _do_prepare_log_replication(aw->sdev, aw->target_id);
 
-	// if(more) {
-	// 	_schedule_log_rep(aw->sdev);
-	// } else {
-	// 	aw->sdev->block_leader_wq = 0;
-	// }
+
 
 	aw->sdev->block_leader_wq = 0;
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
-	kfree(aw);
+	if(more) {
+		prepare_log_replication_for_target(aw->sdev, aw->target_id);
+	}
 
+	kfree(aw);
 }
 
 void prepare_log_replication_for_target(struct asguard_device *sdev, int target_id)
@@ -404,6 +403,13 @@ void prepare_log_replication_for_target(struct asguard_device *sdev, int target_
 		asguard_dbg(" unfinished work has already been scheduled. \n");
 		return;
 	}
+
+	if(sdev->is_leader == 0)
+		return;
+
+	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
+		return;
+
 	sdev->pminfo.pm_targets[target_id].pkt_data.updating = 1;
 	_schedule_log_rep(sdev, target_id);
 
