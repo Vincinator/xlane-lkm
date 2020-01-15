@@ -258,7 +258,6 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 		}
 	}
 
-
 }
 EXPORT_SYMBOL(update_leader);
 
@@ -285,7 +284,7 @@ static void update_alive_msg(struct asguard_device *sdev, struct asguard_payload
 }
 
 static inline int _emit_pkts(struct asguard_device *sdev,
-		struct pminfo *spminfo)
+		struct pminfo *spminfo, int fire)
 {
 	struct asguard_payload *pkt_payload;
 	int i;
@@ -332,7 +331,9 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		 * .. and free the reservations for new protocols */
 		invalidate_proto_data(sdev, pkt_payload, i);
 
-		update_aliveness_states(sdev, spminfo, i);
+		// only update aliveness states if not fired out of schedule!
+		if(!fire)
+			update_aliveness_states(sdev, spminfo, i);
 
 		// append alive msg before others can append more consensus operations
 		update_alive_msg(sdev, pkt_payload, i);
@@ -348,8 +349,6 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 	return 0;
 }
-
-
 
 
 static int _validate_pm(struct asguard_device *sdev,
@@ -436,11 +435,12 @@ static int asguard_pm_loop(void *data)
 		if (!sdev->fire && !can_fire(prev_time, cur_time, interval))
 			continue;
 
-		sdev->fire = !sdev->fire;
 
 		prev_time = cur_time;
 
-		err = _emit_pkts(sdev, spminfo);
+		err = _emit_pkts(sdev, spminfo, sdev->fire);
+
+		sdev->fire = 0;
 
 		if (err) {
 			asguard_pm_stop(spminfo);
@@ -489,7 +489,7 @@ static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 	local_irq_save(flags);
 	local_bh_disable();
 
-	_emit_pkts(sdev, spminfo);
+	_emit_pkts(sdev, spminfo, sdev->fire);
 
 	local_bh_enable();
 	local_irq_restore(flags);
