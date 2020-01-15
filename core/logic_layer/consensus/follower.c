@@ -293,6 +293,19 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
 		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
 				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
+
+		/* Do not reply false on all conditions here.
+		 *
+		 *  If we receive a log replication from the current leader,
+		 * 	we can continue to store it even if a previous part is missing.
+		 *  notify the leader what part is missing.
+		 *  Only mark last index of consecutive items as "stable".
+		 *  After the stable index, parts may be missing.
+		 *  Also notify the leader about the stable index.
+		 *
+		 * If we have a leader change, we must reset last index to the stable index,
+		 * and continue to build the log from there (throw away unstable items).
+		 */
 		goto reply_false_unlock;
 	}
 
