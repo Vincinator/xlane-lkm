@@ -104,6 +104,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		// param3 contains last idx in follower log
 		param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
+		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
 		// check if success
 
@@ -120,7 +121,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// including the index after emitting the udp packet..
 			//priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
 
-			priv->sm_log.match_index[remote_lid] = param3;
+			priv->sm_log.match_index[remote_lid] = param4;
 
 			update_commit_idx(priv);
 

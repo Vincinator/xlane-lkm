@@ -50,14 +50,10 @@ error:
 EXPORT_SYMBOL(commit_log);
 
 
-int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s32 term)
+int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s32 term, int log_idx)
 {
 	int err;
-	int last_idx;
 	struct sm_log_entry *entry;
-
-
-	last_idx = log->last_idx;
 
 	if (!log) {
 		err = -EINVAL;
@@ -65,16 +61,16 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 		goto error;
 	}
 
-	// mind the off by one counting.. last_idx starts at 0
-	if (last_idx + 1 >= MAX_CONSENSUS_LOG) {
+	// mind the off by one counting..
+	if (log_idx + 1 >= MAX_CONSENSUS_LOG) {
 		err = -ENOMEM;
 		asguard_error("Log is full\n");
 		goto error;
 	}
 
-	if (log->commit_idx > last_idx) {
+	if (log->commit_idx > log_idx) {
 		err = -EPROTO;
-		asguard_error("BUG - commit_idx is greater than last_idx!\n");
+		asguard_error("BUG - commit_idx is greater than log_idx!\n");
 		goto error;
 	}
 
@@ -87,9 +83,14 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 
 	entry->cmd = cmd;
 	entry->term = term;
+	log->entries[log_idx + 1] = entry;
 
-	log->entries[last_idx + 1] = entry;
-	log->last_idx++; // increase only if it is safe to access the entries array at last_idx! (parallel access)
+	// only update last index if we are not appending missing previous parts
+	if (log->last_idx < log_idx)
+		log->last_idx++;
+
+	if(!unstable)
+		log->stable_idx++; // this is a stable append, so we can increase the idx by 1
 
 	return 0;
 error:

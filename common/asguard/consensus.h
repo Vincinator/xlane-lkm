@@ -80,6 +80,10 @@ struct state_machine_cmd_log {
 	 */
 	s32 commit_idx;
 
+	/* Index of the last entry with no previous missing entries
+	 */
+	s32 stable_idx;
+
 	/* Maximum index of the entries array
 	 */
 	u32 max_entries;
@@ -169,7 +173,7 @@ struct consensus_priv {
 
 
 int commit_log(struct consensus_priv *priv);
-int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, int term);
+int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, int term, int log_idx);
 
 
 

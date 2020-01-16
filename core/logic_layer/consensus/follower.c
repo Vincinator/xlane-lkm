@@ -95,7 +95,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 		return;
 	}
 
-	set_le_opcode((unsigned char *)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx, 0);
+	set_le_opcode((unsigned char *)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx, priv->sm_log.stable_idx);
 
 	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
 
@@ -130,15 +130,15 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 
 }
 
-int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_entries, int pkt_size)
+int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_entries, int pkt_size, int start_log_idx, int unstable)
 {
-	int i, err, new_last;
+	int i, err, new_last, new_stable;
 	u32 *cur_ptr;
 	struct sm_command *cur_cmd;
 	struct state_machine_cmd_log *log = &priv->sm_log;
 
 
-	new_last = log->last_idx + num_entries;
+	new_last = start_log_idx + num_entries;
 
 	if (new_last >= MAX_CONSENSUS_LOG) {
 		asguard_dbg("Local log is full!\n");
@@ -155,7 +155,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	for (i = log->last_idx + 1; i <= new_last; i++) {
+	for (i = start_log_idx + 1; i <= new_last; i++) {
 
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
@@ -170,7 +170,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		cur_cmd->sm_logvar_value = *cur_ptr;
 		cur_ptr++;
 
-		err = append_command(&priv->sm_log, cur_cmd, priv->term);
+		err = append_command(&priv->sm_log, cur_cmd, priv->term, i, unstable);
 
 		if (err) {
 			// kfree(cur_cmd); // free memory of failed log entry.. others from this loop (?)
@@ -221,24 +221,24 @@ u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 pr
 	}
 
 	if (prev_log_idx < -1) {
-		asguard_dbg("prev log idx is invalid! %d\n", prev_log_idx);
+		asguard_error("prev log idx is invalid! %d\n", prev_log_idx);
 		return 1;
 	}
 
 	if (prev_log_idx > priv->sm_log.last_idx) {
-		asguard_dbg("Entry at index %d does not exist\n", prev_log_idx);
+		asguard_error("Entry at index %d does not exist. Expected stable append.\n", prev_log_idx);
 		return 1;
 	}
 
 	entry = priv->sm_log.entries[prev_log_idx];
 
 	if (entry == NULL) {
-		asguard_dbg("BUG! Entry is NULL at index %d", prev_log_idx);
+		asguard_error("BUG! Entry is NULL at index %d", prev_log_idx);
 		return 1;
 	}
 
 	if (entry->term != prev_log_term) {
-		asguard_dbg("prev_log_term does not match %d != %d", entry->term, prev_log_term);
+		asguard_error("prev_log_term does not match %d != %d", entry->term, prev_log_term);
 
 		// Delete entries from prev_log_idx to last_idx
 		remove_from_log_until_last(&priv->sm_log, prev_log_idx);
@@ -267,6 +267,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	u32 *prev_log_term, num_entries;
 	s32 *prev_log_idx, *leader_commit_idx;
 	u16 pkt_size;
+	int unstable = 0;
+	int start_idx;
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
@@ -288,30 +290,42 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	// 	goto reply_false;
 	// }
 
+	/*   If we receive a log replication from the current leader,
+	 * 	 we can continue to store it even if a previous part is missing.
+	 *
+	 * We call log replications with missing parts "unstable" replications.
+	 * A stable index points to the last entry in the the log, where
+	 * all previous entries exist (stable is not necessarily commited!).
+	 */
+
+	// unstable append?
+	if(*prev_log_idx > priv->sm_log.last_id) {
+		/* Only accept unstable entries if leader and term did not change!
+		 *
+		 *   If we have a leader change, we must reset last index to the stable index,
+		 *   and continue to build the log from there (throw away unstable items).
+		 */
+		if(prev_log_term == priv->term && priv->leader_id == rcluster_id){
+			unstable = 1;
+		}
+	}
+	start_idx = (*prev_log_idx) + 1;
 	mutex_lock(&priv->sm_log.mlock);
 
-	if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
-		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
-				  *prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
+	if (unstable){
+		asguard_dbg("Unstable append. num_entries=%d, prev_log_idx=%d\n",
+				num_entries, *prev_log_idx);
 
-		/* Do not reply false on all conditions here.
-		 *
-		 *  If we receive a log replication from the current leader,
-		 * 	we can continue to store it even if a previous part is missing.
-		 *  notify the leader what part is missing.
-		 *  Only mark last index of consecutive items as "stable".
-		 *  After the stable index, parts may be missing.
-		 *  Also notify the leader about the stable index.
-		 *
-		 * If we have a leader change, we must reset last index to the stable index,
-		 * and continue to build the log from there (throw away unstable items).
-		 */
+	} else if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx, unstable)) {
+		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
+				*prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
+
 		goto reply_false_unlock;
 	}
 
 	// append entries and if it fails, reply false
-	if (append_commands(priv, pkt, num_entries, pkt_size)) {
-		asguard_dbg("append commands failed\n");
+	if (append_commands(priv, pkt, num_entries, pkt_size, start_idx, unstable)) {
+		asguard_dbg("append commands failed. start_idx=%d, unstable=%d\n", start_idx, unstable);
 		goto reply_false_unlock;
 	}
 
@@ -412,8 +426,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			// Check if commit index must be updated
 			if (param2 > priv->sm_log.commit_idx) {
 				// min(leader_commit_idx, last_idx)
-				// note: last_idx of local log can not be null if append_commands was successfully executed
-				priv->sm_log.commit_idx = param2 > priv->sm_log.last_idx ? priv->sm_log.last_idx : param2;
+				// note: stable_idx of local log can not be null if append_commands was successfully executed
+				priv->sm_log.commit_idx = param2 > priv->sm_log.stable_idx ? priv->sm_log.stable_idx : param2;
 				commit_log(priv);
 			}
 		}
