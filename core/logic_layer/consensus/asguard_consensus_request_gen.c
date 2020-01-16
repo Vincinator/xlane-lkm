@@ -72,7 +72,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	struct sm_command *cur_cmd;
 	int err = 0;
 	int i;
-	int start_idx = &priv->sm_log.last_idx + 1;
+	int start_idx = priv->sm_log.last_idx + 1;
 
 	if (test_data->running == 0)
 		return HRTIMER_NORESTART;
