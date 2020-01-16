@@ -24,10 +24,8 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
 //	asguard_dbg("Added %d commands to State Machine.\n", applying);
 
-
 	return 0;
 }
-
 
 int commit_log(struct consensus_priv *priv)
 {
@@ -40,7 +38,6 @@ int commit_log(struct consensus_priv *priv)
 		goto error;
 
 	log->last_applied = log->commit_idx;
-
 
 	return 0;
 error:
@@ -70,7 +67,7 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 
 	if (log->commit_idx > log_idx) {
 		err = -EPROTO;
-		asguard_error("BUG - commit_idx is greater than log_idx!\n");
+		asguard_error("BUG - commit_idx=%d is greater than log_idx=%d!\n", log->commit_idx, log_idx);
 		goto error;
 	}
 
