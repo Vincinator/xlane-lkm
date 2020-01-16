@@ -305,7 +305,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		 *   If we have a leader change, we must reset last index to the stable index,
 		 *   and continue to build the log from there (throw away unstable items).
 		 */
-		if(prev_log_term == priv->term && priv->leader_id == rcluster_id){
+		if(*prev_log_term == priv->term && priv->leader_id == rcluster_id){
 			unstable = 1;
 		}
 	}
@@ -316,7 +316,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		asguard_dbg("Unstable append. num_entries=%d, prev_log_idx=%d\n",
 				num_entries, *prev_log_idx);
 
-	} else if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx, unstable)) {
+	} else if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
 		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
 				*prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
 
