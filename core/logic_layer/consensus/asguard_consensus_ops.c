@@ -18,6 +18,7 @@ int consensus_init(struct proto_instance *ins)
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 	char name_buf[MAX_ASGUARD_PROC_NAME];
+	int i;
 
 	priv->ctimer_init = 0;
 	priv->ftimer_init = 0;
@@ -52,6 +53,9 @@ int consensus_init(struct proto_instance *ins)
 
 	if (!priv->sm_log.entries)
 		BUG();
+
+	for(i = 0; i < MAX_CONSENSUS_LOG; i++)
+		priv->sm_log.entries[i] = NULL;
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
 			 priv->sdev->ifindex, ins->instance_id);
@@ -164,7 +168,7 @@ int consensus_clean(struct proto_instance *ins)
 
 	if (priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
 		for (i = 0; i < priv->sm_log.last_idx; i++)
-			if (priv->sm_log.entries[i] != NULL)
+			if (priv->sm_log.entries[i] != NULL) // entries are NULL initialized
 				kfree(priv->sm_log.entries[i]);
 	} else {
 		asguard_dbg("last_idx is -1, no logs to clean.\n");
