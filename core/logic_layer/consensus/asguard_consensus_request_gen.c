@@ -72,6 +72,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	struct sm_command *cur_cmd;
 	int err = 0;
 	int i;
+	int start_idx = &priv->sm_log.last_idx + 1;
 
 	if (test_data->running == 0)
 		return HRTIMER_NORESTART;
@@ -86,7 +87,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	asguard_dbg("Incoming Client requests..\n");
 
 	// write x random entries to local log (if node is leader)
-	for (i = 0; i < test_data->x; i++) {
+	for (i = start_idx; i < start_idx + test_data->x; i++) {
 
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);

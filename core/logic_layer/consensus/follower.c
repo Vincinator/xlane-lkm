@@ -138,7 +138,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 	struct state_machine_cmd_log *log = &priv->sm_log;
 
 
-	new_last = start_log_idx + num_entries;
+	new_last = start_log_idx + num_entries - 1;
 
 	if (new_last >= MAX_CONSENSUS_LOG) {
 		asguard_dbg("Local log is full!\n");
@@ -155,7 +155,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 
 	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
-	for (i = start_log_idx + 1; i <= new_last; i++) {
+	for (i = start_log_idx; i <= new_last; i++) {
 
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 

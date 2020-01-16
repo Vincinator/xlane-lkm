@@ -62,7 +62,7 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 	}
 
 	// mind the off by one counting..
-	if (log_idx + 1 >= MAX_CONSENSUS_LOG) {
+	if (log_idx >= MAX_CONSENSUS_LOG) {
 		err = -ENOMEM;
 		asguard_error("Log is full\n");
 		goto error;
@@ -83,7 +83,7 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 
 	entry->cmd = cmd;
 	entry->term = term;
-	log->entries[log_idx + 1] = entry;
+	log->entries[log_idx] = entry;
 
 	// only update last index if we are not appending missing previous parts
 	if (log->last_idx < log_idx)
