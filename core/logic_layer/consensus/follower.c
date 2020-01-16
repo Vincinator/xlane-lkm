@@ -299,7 +299,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	 */
 
 	// unstable append?
-	if(*prev_log_idx > priv->sm_log.last_id) {
+	if(*prev_log_idx > priv->sm_log.last_idx) {
 		/* Only accept unstable entries if leader and term did not change!
 		 *
 		 *   If we have a leader change, we must reset last index to the stable index,
