@@ -84,6 +84,8 @@ struct state_machine_cmd_log {
 	 */
 	s32 stable_idx;
 
+	s32 start_retrans_idx;
+
 	/* Maximum index of the entries array
 	 */
 	u32 max_entries;

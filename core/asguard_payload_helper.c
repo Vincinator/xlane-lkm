@@ -212,6 +212,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 	if (cur_priv->sm_log.start_retrans_idx != -1) {
 		next_index = cur_priv->sm_log.start_retrans_idx;
+		cur_priv->sm_log.start_retrans_idx = -1;
 		retrans = 1;
 	} else {
 		next_index = _get_next_idx(cur_priv, target_id);
