@@ -88,7 +88,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	struct asguard_device *sdev = priv->sdev;
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
-	s32 param1, param2, param3;
+	s32 param1, param2, param3, param4;
 	//s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
 	switch (opcode) {
