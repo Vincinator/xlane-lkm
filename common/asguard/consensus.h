@@ -173,7 +173,7 @@ struct consensus_priv {
 
 
 int commit_log(struct consensus_priv *priv);
-int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, int term, int log_idx);
+int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, int term, int log_idx, int unstable);
 
 
 

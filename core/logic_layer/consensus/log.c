@@ -50,7 +50,7 @@ error:
 EXPORT_SYMBOL(commit_log);
 
 
-int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s32 term, int log_idx)
+int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s32 term, int log_idx, int unstable)
 {
 	int err;
 	struct sm_log_entry *entry;
