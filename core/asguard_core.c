@@ -202,7 +202,7 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 //   ... Timestamping may be
 void pkt_process_handler(struct work_struct *w) {
 
-	struct asguard_pkt_work_data *aw;
+	struct asguard_pkt_work_data *aw = NULL;
 
 
 	aw = (struct asguard_pkt_work_data *) container_of(w, struct asguard_pkt_work_data, work);
@@ -211,8 +211,8 @@ void pkt_process_handler(struct work_struct *w) {
 	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
 		aw->received_proto_instances, aw->cqe_bcnt);
 
-	kfree(aw);
-
+	if(aw)
+		kfree(aw);
 
 }
 

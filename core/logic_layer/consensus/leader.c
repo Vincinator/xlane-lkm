@@ -55,7 +55,7 @@ void update_commit_idx(struct consensus_priv *priv)
 		current_N = priv->sm_log.match_index[i];
 
 		if (current_N >= MAX_CONSENSUS_LOG) {
-			asguard_error("current_N is invalid\n");
+			asguard_error("current_N=%d is invalid\n", current_N);
 			return;
 		}
 
@@ -120,6 +120,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// index it has updated the follower log. As an alternative, the leader could remember a state
 			// including the index after emitting the udp packet..
 			//priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
+			asguard_dbg("Received Reply with State=success.. param4=%d\n", param4);
 
 			priv->sm_log.match_index[remote_lid] = param4;
 
