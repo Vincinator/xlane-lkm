@@ -203,15 +203,23 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	s32 num_entries = 0;
 	char *pkt_payload_sub;
 	int more = 0;
+	int retrans = 0;
 
 	// if (unlikely(_log_is_faulty(cur_priv))) {
 	//	asguard_dbg("Log is faulty or not initialized.\n");
 	//	return;
 	// }
 
+	if (cur_priv->sm_log.start_retrans_idx != -1) {
+		next_index = cur_priv->sm_log.start_retrans_idx;
+		retrans = 1;
+	} else {
+		next_index = _get_next_idx(cur_priv, target_id);
+
+	}
+
 	// Check if entries must be appended
 	cur_index = _get_last_idx_safe(cur_priv);
-	next_index = _get_next_idx(cur_priv, target_id);
 
 	if (next_index == -1) {
 		asguard_dbg("Invalid target id resulted in invalid next_index!\n");
@@ -248,7 +256,8 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		// .. the next_index to the last known safe index of the receivers log.
 		// .. In this implementation the receiver sends the last known safe index
 		// .. with the append reply.
-		cur_priv->sm_log.next_index[target_id] += num_entries;
+		if(!retrans)
+			cur_priv->sm_log.next_index[target_id] += num_entries;
 
 		asguard_dbg("target_id=%d, cur_index=%d, next_index=%d, prev_log_term=%d, num_entries=%d\n",
 					target_id, cur_index, next_index, prev_log_term, num_entries);

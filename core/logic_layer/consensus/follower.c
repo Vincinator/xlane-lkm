@@ -356,7 +356,11 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	// 	commit_log(priv);
 	// }
 
-	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
+	if(unstable)
+		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.stable_idx);
+	else
+		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
+
 
 	priv->sdev->fire = 1;
 

@@ -126,8 +126,17 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 			update_commit_idx(priv);
 
+			// check for unstable logs at remote & init resubmission of missing part
 
-		} else {
+		} else if (param2 == 2){
+			asguard_dbg("Received Reply with State=retransmission.. param4=%d\n", param4);
+
+			/* store start index of entries to be retransmitted.
+			 * Will only transmit one packet, receiver may drop entry duplicates.
+			 */
+			priv->sm_log.start_retrans_idx = param4;
+
+		} else if(param2 == 0) {
 			// append rpc failed!
 			asguard_dbg("Received Reply with State=failed.. param3=%d\n", param3);
 
