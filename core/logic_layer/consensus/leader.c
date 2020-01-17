@@ -25,17 +25,21 @@ void initialze_indices(struct consensus_priv *priv)
 
 int _is_potential_commit_idx(struct consensus_priv *priv, int N)
 {
-	int i, hits, double_majority;
+	int i, hits;
 
 	hits = 0;
 
-	double_majority = priv->sdev->pminfo.num_of_targets + 1;
-
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
+
+		if(!priv->sdev->pminfo.pm_targets[i].alive){
+			hits++; // If node is dead, count as hit
+			continue;
+		}
+
 		if (priv->sm_log.match_index[i] >= N)
 			hits++;
 	}
-	return hits * 2 >= double_majority;
+	return hits >= priv->sdev->pminfo.num_of_targets;
 }
 
 void update_commit_idx(struct consensus_priv *priv)
