@@ -303,14 +303,26 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	 */
 
 	// unstable append?
-	if(*prev_log_idx > priv->sm_log.last_idx) {
+	if(*prev_log_idx > priv->sm_log.stable_idx) {
 		/* Only accept unstable entries if leader and term did not change!
 		 *
 		 *   If we have a leader change, we must reset last index to the stable index,
 		 *   and continue to build the log from there (throw away unstable items).
 		 */
 		if(*prev_log_term == priv->term && priv->leader_id == rcluster_id){
+
 			unstable = 1;
+
+			/* if next_retrans_req_idx is uninitialized (<0)
+			 * .. or request for retransmission is beyond a missing previous part!
+			 * .. then request retransmission from stable_idx onwards
+			 */
+			if(priv->sm_log.next_retrans_req_idx < 0 ||
+				priv->sm_log.next_retrans_req_idx > *prev_log_idx) {
+				// reupdate next_retrans_req_idx
+				priv->sm_log.next_retrans_req_idx = priv->sm_log.stable_idx;
+			}
+
 		} else {
 			asguard_dbg("Case unhandled!\n");
 		}
@@ -366,8 +378,24 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	// 	commit_log(priv);
 	// }
 
-	if(unstable)
-		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.stable_idx);
+
+	/* if unstable => request retransmission
+	 */
+	if(unstable){
+		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
+
+		for(i = priv->sm_log.next_retrans_req_idx; i < priv->sm_log.last_idx; i++) {
+			if(!priv->sm_log.entries[i]){
+				priv->sm_log.next_retrans_req_idx = i ;
+				break;
+			}
+
+			if(i == priv->sm_log.last_idx - 1) {
+				priv->sm_log.next_retrans_req_idx = priv->sm_log.last_idx;
+			}
+		}
+
+	}
 	else
 		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
 

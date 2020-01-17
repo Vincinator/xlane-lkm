@@ -70,6 +70,8 @@ struct state_machine_cmd_log {
 
 	s32 match_index[MAX_NODE_ID];
 
+	s32 retrans_index[MAX_NODE_ID];
+
 	s32 last_applied;
 
 	/* Index of the last valid entry in the entries array
@@ -84,7 +86,7 @@ struct state_machine_cmd_log {
 	 */
 	s32 stable_idx;
 
-	s32 start_retrans_idx;
+	s32 next_retrans_req_idx;
 
 	/* Maximum index of the entries array
 	 */

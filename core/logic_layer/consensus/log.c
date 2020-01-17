@@ -56,8 +56,6 @@ void print_log_state(struct state_machine_cmd_log *log)
 
 	asguard_dbg("\tstable_idx=%d\n", log->stable_idx);
 
-	asguard_dbg("\tstart_retrans_idx=%d\n", log->start_retrans_idx);
-
 	asguard_dbg("\tmax_entries=%d\n", log->max_entries);
 
 	asguard_dbg("\tlock=%d\n", log->lock);
@@ -104,9 +102,9 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 	if (log->last_idx < log_idx)
 		log->last_idx++;
 
-	if(!unstable)
+	if(!unstable){
 		log->stable_idx++; // this is a stable append, so we can increase the idx by 1
-
+	}
 	return 0;
 error:
 	asguard_dbg("Could not appen command to Logs!\n");
