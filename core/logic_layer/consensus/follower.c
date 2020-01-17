@@ -198,6 +198,11 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 		return;
 	}
 
+	if(start_idx < 0) {
+		asguard_error("start_idx=%d is invalid\n", start_idx);
+		return;
+	}
+
 	for (i = start_idx; i <= log->last_idx; i++){
 		if (log->entries[i]) // entries are NULL initialized
 			kfree(log->entries[i]);
@@ -247,7 +252,6 @@ u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 pr
 
 	return 0;
 }
-
 
 int check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_entries_per_pkt)
 {
@@ -307,18 +311,29 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		 */
 		if(*prev_log_term == priv->term && priv->leader_id == rcluster_id){
 			unstable = 1;
+		} else {
+			asguard_dbg("Case unhandled!\n");
 		}
 	}
+
 	start_idx = (*prev_log_idx) + 1;
+
 	mutex_lock(&priv->sm_log.mlock);
+
+	asguard_dbg("Handle append RPC. prev_log_term=%d, prev_log_idx=%d, start_idx=%d, unstable=%d, pkt_size=%d rcluster_id=%d\n",
+				*prev_log_term, *prev_log_idx, start_idx, unstable, pkt_size, rcluster_id);
+
+	print_log_state(priv->sm_log);
 
 	if (unstable){
 		asguard_dbg("Unstable append. num_entries=%d, prev_log_idx=%d\n",
 				num_entries, *prev_log_idx);
 
 	} else if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
-		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d, priv->sm_log.last_idx=%d\n",
-				*prev_log_term, *prev_log_idx, priv->sm_log.last_idx);
+		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
+				*prev_log_term, *prev_log_idx);
+
+		print_log_state(priv->sm_log);
 
 		goto reply_false_unlock;
 	}

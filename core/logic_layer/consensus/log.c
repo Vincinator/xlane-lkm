@@ -47,6 +47,24 @@ error:
 EXPORT_SYMBOL(commit_log);
 
 
+void print_log_state(struct state_machine_cmd_log *log)
+{
+
+	asguard_dbg("\tlast_applied=%d\n", log->last_applied);
+
+	asguard_dbg("\tlast_idx=%d\n", log->last_idx);
+
+	asguard_dbg("\tstable_idx=%d\n", log->stable_idx);
+
+	asguard_dbg("\tstart_retrans_idx=%d\n", log->start_retrans_idx);
+
+	asguard_dbg("\tmax_entries=%d\n", log->max_entries);
+
+	asguard_dbg("\tlock=%d\n", log->lock);
+
+}
+EXPORT_SYMBOL(print_log_state);
+
 int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s32 term, int log_idx, int unstable)
 {
 	int err;
