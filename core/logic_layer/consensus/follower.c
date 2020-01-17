@@ -320,11 +320,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	mutex_lock(&priv->sm_log.mlock);
 
-	asguard_dbg("Handle append RPC. prev_log_term=%d, prev_log_idx=%d, start_idx=%d, unstable=%d, pkt_size=%d rcluster_id=%d\n",
-				*prev_log_term, *prev_log_idx, start_idx, unstable, pkt_size, rcluster_id);
-
-	print_log_state(&priv->sm_log);
-
 	if (unstable){
 		asguard_dbg("Unstable append. num_entries=%d, prev_log_idx=%d\n",
 				num_entries, *prev_log_idx);
@@ -382,7 +377,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	return;
 reply_false_unlock:
 	mutex_unlock(&priv->sm_log.mlock);
-reply_false:
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
 	priv->sdev->fire = 1;
 
