@@ -200,7 +200,7 @@ void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx
 
 	for (i = start_idx; i <= log->last_idx; i++){
 		if (log->entries[i]) // entries are NULL initialized
-			kfree(log->entries[i])
+			kfree(log->entries[i]);
 	}
 
 	log->last_idx = start_idx - 1;
