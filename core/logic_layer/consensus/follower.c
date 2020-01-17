@@ -391,7 +391,12 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 			}
 
 			if(i == priv->sm_log.last_idx - 1) {
-				priv->sm_log.next_retrans_req_idx = priv->sm_log.last_idx;
+				 // available for restarting retransmissions from start
+				 // .. if a retransmission append from the leader drops..
+				 // ..... then this will be catched in the next retransmission iteration
+				 // ..... which ist started on the next unstable append
+				 // ..... after setting next_retrans_req_idx to -1
+				priv->sm_log.next_retrans_req_idx = -1;
 			}
 		}
 
