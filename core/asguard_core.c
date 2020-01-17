@@ -376,7 +376,6 @@ EXPORT_SYMBOL(asguard_core_register_nic);
 
 int asguard_core_remove_nic(int asguard_id)
 {
-	int i;
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	if (asguard_validate_asguard_device(asguard_id))

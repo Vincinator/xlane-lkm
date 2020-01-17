@@ -149,6 +149,8 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		break;
 	case ALIVE:
+
+		param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 		/* Received an ALIVE operation from a node that claims to be the new leader
 		 */
 		if (param1 > priv->term) {
@@ -192,9 +194,6 @@ int stop_leader(struct proto_instance *ins)
 int start_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
-	struct asguard_payload *pkt_payload;
-	struct pminfo *spminfo = &priv->sdev->pminfo;
-	int hb_passive_ix, i;
 
 	initialze_indices(priv);
 
@@ -203,16 +202,6 @@ int start_leader(struct proto_instance *ins)
 	priv->candidate_counter = 0;
 
 	//prepare_log_replication(priv->sdev);
-
-	// for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
-	// 	hb_passive_ix =
-	// 	     !!!spminfo->pm_targets[i].pkt_data.hb_active_ix;
-
-	// 	pkt_payload =
-	// 		spminfo->pm_targets[i].pkt_data.pkt_payload[hb_passive_ix];
-
-	// 	setup_append_msg(priv, pkt_payload, ins->instance_id, i);
-	// }
 
 	return 0;
 }

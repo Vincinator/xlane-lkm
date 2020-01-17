@@ -132,11 +132,9 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 
 int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_entries, int pkt_size, int start_log_idx, int unstable)
 {
-	int i, err, new_last, new_stable;
+	int i, err, new_last;
 	u32 *cur_ptr;
 	struct sm_command *cur_cmd;
-	struct state_machine_cmd_log *log = &priv->sm_log;
-
 
 	new_last = start_log_idx + num_entries - 1;
 
@@ -265,7 +263,7 @@ EXPORT_SYMBOL(check_append_rpc);
 void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id)
 {
 	u32 *prev_log_term, num_entries;
-	s32 *prev_log_idx, *leader_commit_idx;
+	s32 *prev_log_idx;
 	u16 pkt_size;
 	int unstable = 0;
 	int start_idx;

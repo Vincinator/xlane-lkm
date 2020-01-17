@@ -101,12 +101,12 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 	if (unlikely(!netif_running(ndev) ||
 			!netif_carrier_ok(ndev))) {
 		asguard_error("Network device offline!\n exiting pacemaker\n");
-		return -1;
+		return;
 	}
 
 	if( spminfo->num_of_targets == 0) {
 		asguard_dbg("No targets for pacemaker. \n");
-		return 0;
+		return;
 	}
 
 	local_irq_save(flags);
@@ -290,10 +290,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 	int i;
 	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
-	int batch = spminfo->num_of_targets;
 	enum tsstate ts_state = sdev->ts_state;
-	int ret;
-
 
 	/* Prepare heartbeat packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
