@@ -71,7 +71,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: REPLY APPEND append_success=%d, param1=%d,logged_idx=%d\n",
+		asguard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d,logged_idx=%d\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,
