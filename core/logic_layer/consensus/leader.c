@@ -78,7 +78,6 @@ void update_commit_idx(struct consensus_priv *priv)
 	if (priv->sm_log.commit_idx < N) {
 		priv->sm_log.commit_idx = N;
 		asguard_dbg("found new commit_idx %d", N);
-
 		write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, RDTSC_ASGUARD);
 	}
 

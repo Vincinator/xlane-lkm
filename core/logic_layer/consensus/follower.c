@@ -323,7 +323,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	asguard_dbg("Handle append RPC. prev_log_term=%d, prev_log_idx=%d, start_idx=%d, unstable=%d, pkt_size=%d rcluster_id=%d\n",
 				*prev_log_term, *prev_log_idx, start_idx, unstable, pkt_size, rcluster_id);
 
-	print_log_state(priv->sm_log);
+	print_log_state(&priv->sm_log);
 
 	if (unstable){
 		asguard_dbg("Unstable append. num_entries=%d, prev_log_idx=%d\n",
@@ -333,7 +333,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
 				*prev_log_term, *prev_log_idx);
 
-		print_log_state(priv->sm_log);
+		print_log_state(&priv->sm_log);
 
 		goto reply_false_unlock;
 	}

@@ -224,4 +224,6 @@ int consensus_is_alive(struct consensus_priv *sdev);
 int check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_entries_per_pkt);
 void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id);
 
+void print_log_state(struct state_machine_cmd_log *log);
+
 #endif /* _ASGUARD_CONSENSUS_H_ */
