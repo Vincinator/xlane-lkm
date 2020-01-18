@@ -18,7 +18,7 @@ void initialze_indices(struct consensus_priv *priv)
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		// initialize to leader last log index + 1
-		priv->sm_log.next_index[i] = priv->sm_log.last_idx + 1;
+		priv->sm_log.next_index[i] = priv->sm_log.stable_idx + 1;
 		priv->sm_log.match_index[i] = 0;
 		priv->sm_log.retrans_index[i] = -1;
 	}

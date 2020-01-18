@@ -402,7 +402,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	}
 	else
-		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.last_idx);
+		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
 
 
 	priv->sdev->fire = 1;
@@ -410,7 +410,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	return;
 reply_false_unlock:
 	mutex_unlock(&priv->sm_log.mlock);
-	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.last_idx);
+	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.stable_idx);
 	priv->sdev->fire = 1;
 
 }
