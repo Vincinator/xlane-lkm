@@ -53,7 +53,7 @@ void update_commit_idx(struct consensus_priv *priv)
 		return;
 	}
 
-	N = priv->sm_log.match_index[0];
+	N = -1;
 
 	// each match_index is a potential new commit_idx candidate
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
