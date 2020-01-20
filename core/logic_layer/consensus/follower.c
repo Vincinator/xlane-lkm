@@ -156,6 +156,9 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 
 	for (i = start_log_idx; i <= new_last; i++) {
 
+		if(priv->sm_log.entries[i] != NULL) // do not (re-)apply redundant retransmissions
+			continue; // TODO: can we return?
+
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
 		if (!cur_cmd) {
