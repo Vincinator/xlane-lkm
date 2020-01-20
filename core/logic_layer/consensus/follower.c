@@ -176,9 +176,10 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 			goto error;
 		}
 	}
+
 	if(!unstable) {
 		// fix stable index after stable append
-		for (i = 0; i < priv->sm_log.last_idx; i++) {
+		for (i = 0; i <= priv->sm_log.last_idx; i++) {
 
 			if (!priv->sm_log.entries[i]) // stop at first missing entry
 				break;
