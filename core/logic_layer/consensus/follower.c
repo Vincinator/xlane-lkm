@@ -241,6 +241,11 @@ u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 pr
 		return 1;
 	}
 
+	if(prev_log_idx > MAX_CONSENSUS_LOG) {
+		asguard_error("Entry at index %d does not exist. Expected stable append.\n", prev_log_idx);
+		return 1;
+	}
+
 	if (prev_log_idx > priv->sm_log.last_idx) {
 		asguard_error("Entry at index %d does not exist. Expected stable append.\n", prev_log_idx);
 		return 1;
