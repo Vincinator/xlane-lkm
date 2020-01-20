@@ -272,7 +272,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	s32 *prev_log_idx;
 	u16 pkt_size;
 	int unstable = 0;
-	int start_idx;
+	int start_idx, i;
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
@@ -313,13 +313,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 			unstable = 1;
 
-			/* if next_retrans_req_idx is uninitialized (<0)
-			 * .. or request for retransmission is beyond a missing previous part!
-			 * .. then request retransmission from stable_idx onwards
-			 */
-			if(priv->sm_log.next_retrans_req_idx < 0 ||
-				priv->sm_log.next_retrans_req_idx > *prev_log_idx) {
-				// reupdate next_retrans_req_idx
+			if(priv->sm_log.next_retrans_req_idx == -1) {
 				priv->sm_log.next_retrans_req_idx = priv->sm_log.stable_idx;
 			}
 
@@ -395,8 +389,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 				 // .. if a retransmission append from the leader drops..
 				 // ..... then this will be catched in the next retransmission iteration
 				 // ..... which ist started on the next unstable append
-				 // ..... after setting next_retrans_req_idx to -1
-				priv->sm_log.next_retrans_req_idx = -1;
+				 // ..... after setting next_retrans_req_idx to -2
+				 // ..... next HB will reset index to -1 which re-enables retransmission
+				priv->sm_log.next_retrans_req_idx = -2;
 			}
 		}
 
