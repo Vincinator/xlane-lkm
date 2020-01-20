@@ -175,7 +175,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 #endif
 
 
-	if (priv->votes * 2 >= (priv->sdev->pminfo.num_of_targets + 1)) {
+	if (priv->votes == priv->sdev->pminfo.num_of_targets + 1) {
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
