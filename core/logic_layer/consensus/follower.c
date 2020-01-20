@@ -338,6 +338,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		print_log_state(&priv->sm_log);
 
 		goto reply_false_unlock;
+	}else {
+		asguard_dbg("Stable append. num_entries=%d, prev_log_idx=%d\n",
+		num_entries, *prev_log_idx);
 	}
 
 	// append entries and if it fails, reply false
