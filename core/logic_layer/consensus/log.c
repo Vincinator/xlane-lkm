@@ -101,9 +101,7 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 	if (log->last_idx < log_idx)
 		log->last_idx = log_idx;
 
-	if(!unstable){
-		log->stable_idx = log_idx;
-	}
+
 	return 0;
 error:
 	asguard_dbg("Could not appen command to Logs!\n");
