@@ -148,6 +148,9 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			 * Will only transmit one packet, receiver may drop entry duplicates.
 			 */
 			priv->sm_log.retrans_index[remote_lid] = param3;
+			priv->sm_log.match_index[remote_lid] = param4;
+
+			update_commit_idx(priv);
 
 		} else if(param2 == 0) {
 			// append rpc failed!
