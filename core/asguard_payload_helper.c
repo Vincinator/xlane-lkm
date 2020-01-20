@@ -198,7 +198,7 @@ EXPORT_SYMBOL(setup_alive_msg);
 
 int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id)
 {
-	s32 next_index, cur_index;
+	s32 next_index, local_last_idx;
 	s32 prev_log_term, leader_commit_idx;
 	s32 num_entries = 0;
 	char *pkt_payload_sub;
@@ -212,7 +212,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 	if (cur_priv->sm_log.retrans_index[target_id] >= 0) {
 		next_index = cur_priv->sm_log.retrans_index[target_id];
-		asguard_dbg("retrans_index=%d",next_index);
+		asguard_dbg("retrans_index=%d", next_index);
 		cur_priv->sm_log.retrans_index[target_id]= -1;
 		retrans = 1;
 	} else {
@@ -221,14 +221,14 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	}
 
 	// Check if entries must be appended
-	cur_index = _get_last_idx_safe(cur_priv);
+	local_last_idx = _get_last_idx_safe(cur_priv);
 
 	if (next_index == -1) {
 		asguard_dbg("Invalid target id resulted in invalid next_index!\n");
 		return more;
 	}
 
-	// asguard_dbg("PREP AE: cur_index=%d, next_index=%d\n", cur_index, next_index);
+	// asguard_dbg("PREP AE: local_last_idx=%d, next_index=%d\n", local_last_idx, next_index);
 	prev_log_term = _get_prev_log_term(cur_priv, next_index - 1);
 
 	if (prev_log_term < 0) {
@@ -238,19 +238,19 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 	leader_commit_idx = cur_priv->sm_log.commit_idx;
 
-	if (cur_index >= next_index) {
+	if (local_last_idx >= next_index) {
 		// Facts:
-		//	- cur_index >= next_index
+		//	- local_last_idx >= next_index
 		//  - Must include entries in next consensus append message
 		//  - thus, num_of_entries will not be 0
 
 		// Decide how many entries to update for the current target
 
-		if (cur_priv->max_entries_per_pkt < cur_index - next_index + 1) {
+		if (cur_priv->max_entries_per_pkt < local_last_idx - next_index + 1) {
 			num_entries = cur_priv->max_entries_per_pkt;
 			more = 1;
 		} else {
-			num_entries = (cur_index - next_index + 1);
+			num_entries = (local_last_idx - next_index + 1);
 		}
 
 		// update next_index without receiving the response from the target
@@ -262,7 +262,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 			cur_priv->sm_log.next_index[target_id] += num_entries;
 
 		asguard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
-					retrans, target_id, cur_index, next_index, prev_log_term, num_entries);
+					retrans, target_id, local_last_idx, next_index, prev_log_term, num_entries);
 	}
 
 	// reserve space in asguard heartbeat for consensus LEAD

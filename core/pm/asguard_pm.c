@@ -343,12 +343,12 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 	if(sdev->consensus_priv->nstate != LEADER) {
 		update_leader(sdev, spminfo);
-		if(sdev->consensus_priv->sm_log.next_retrans_req_idx == -2)
-			sdev->consensus_priv->sm_log.next_retrans_req_idx = -1;
+		// if(sdev->consensus_priv->sm_log.next_retrans_req_idx == -2)
+		// 	sdev->consensus_priv->sm_log.next_retrans_req_idx = -1;
 	}
 
 	return 0;
-}
+z}
 
 
 static int _validate_pm(struct asguard_device *sdev,
