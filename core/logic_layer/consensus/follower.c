@@ -380,11 +380,10 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	/* if unstable => request retransmission
 	 */
 	if(unstable){
-		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
 
 		for(i = priv->sm_log.next_retrans_req_idx; i < priv->sm_log.last_idx; i++) {
 			if(!priv->sm_log.entries[i]){
-				priv->sm_log.next_retrans_req_idx = i ;
+				priv->sm_log.next_retrans_req_idx = i;
 				break;
 			}
 
@@ -398,6 +397,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 				priv->sm_log.next_retrans_req_idx = -2;
 			}
 		}
+		reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
+
 
 	}
 	else

@@ -83,7 +83,7 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 
 	if (log->commit_idx > log_idx) {
 		err = -EPROTO;
-		asguard_error("BUG - commit_idx=%d is greater than log_idx=%d!\n", log->commit_idx, log_idx);
+		asguard_error("BUG - commit_idx=%d is greater than idx(%d) of entry to commit!\n", log->commit_idx, log_idx);
 		goto error;
 	}
 
