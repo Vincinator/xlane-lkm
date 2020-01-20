@@ -138,7 +138,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			/* store start index of entries to be retransmitted.
 			 * Will only transmit one packet, receiver may drop entry duplicates.
 			 */
-			priv->sm_log.retrans_index[i] = param4;
+			priv->sm_log.retrans_index[remote_lid] = param4;
 
 		} else if(param2 == 0) {
 			// append rpc failed!
