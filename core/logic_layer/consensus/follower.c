@@ -344,6 +344,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	asguard_dbg("prev_log_idx=%d, stable_idx=%d, last_idx=%d\n",
 				*prev_log_idx, priv->sm_log.stable_idx, priv->sm_log.last_idx);
+	asguard_dbg("CPU: %d", get_cpu());
 
 	if (unstable){
 		printk(KERN_INFO "[Unstable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
@@ -357,7 +358,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_false_unlock;
 	}else {
 		printk(KERN_INFO "[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
-
 	}
 
 	// append entries and if it fails, reply false
