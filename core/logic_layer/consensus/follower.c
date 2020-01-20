@@ -406,7 +406,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
 	priv->sdev->fire = 1;
 	return;
-reply_retransmission;
+reply_retransmission:
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
 	priv->sdev->fire = 1;
 
