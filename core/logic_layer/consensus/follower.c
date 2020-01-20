@@ -318,6 +318,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	 * all previous entries exist (stable is not necessarily commited!).
 	 */
 
+	mutex_lock(&priv->sm_log.mlock);
+
 	// unstable append?
 	if(*prev_log_idx > priv->sm_log.stable_idx) {
 		/* Only accept unstable entries if leader and term did not change!
@@ -339,8 +341,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	}
 
 	start_idx = (*prev_log_idx) + 1;
-
-	mutex_lock(&priv->sm_log.mlock);
 
 	if (unstable){
 		asguard_dbg("Unstable append. num_entries=%d, prev_log_idx=%d, stable_idx=%d, last_idx=%d\n",
