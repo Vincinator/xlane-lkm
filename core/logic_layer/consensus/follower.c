@@ -183,7 +183,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 			if (!priv->sm_log.entries[i]) // stop at first missing entry
 				break;
 
-			priv->sm_log->stable_idx = i;
+			priv->sm_log.stable_idx = i;
 		}
 	}
 
