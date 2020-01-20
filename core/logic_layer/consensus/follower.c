@@ -342,9 +342,11 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	start_idx = (*prev_log_idx) + 1;
 
+
 	if (unstable){
 		asguard_dbg("Unstable append. num_entries=%d, prev_log_idx=%d, stable_idx=%d, last_idx=%d\n",
 				num_entries, *prev_log_idx, priv->sm_log.stable_idx, priv->sm_log.last_idx);
+		printk(KERN_INFO "[Unstable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
 
 	} else if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
 		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
@@ -354,8 +356,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 		goto reply_false_unlock;
 	}else {
-		asguard_dbg("Stable append. num_entries=%d, prev_log_idx=%d, stable_idx=%d, last_idx=%d\n",
-				num_entries, *prev_log_idx, priv->sm_log.stable_idx, priv->sm_log.last_idx);
+		printk(KERN_INFO "[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
+
 	}
 
 	// append entries and if it fails, reply false
