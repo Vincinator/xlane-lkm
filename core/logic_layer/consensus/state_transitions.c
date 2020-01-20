@@ -55,14 +55,14 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 	s32 term = priv->term;
 	s32 candidate_id = priv->node_id;
 
-	s32 last_log_idx = priv->sm_log.last_idx;
+	s32 last_log_idx = priv->sm_log.stable_idx;
 	s32 last_log_term;
 
-	if (priv->sm_log.last_idx == -1)
+	if (priv->sm_log.stable_idx == -1)
 		last_log_term = priv->term;
 	else{
-		asguard_dbg("riv->sm_log.last_idx=%d\n", priv->sm_log.last_idx);
-		last_log_term = priv->sm_log.entries[priv->sm_log.last_idx]->term;
+		asguard_dbg("priv->sm_log.stable_idx=%d\n", priv->sm_log.stable_idx);
+		last_log_term = priv->sm_log.entries[priv->sm_log.stable_idx]->term;
 	}
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
