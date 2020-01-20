@@ -331,7 +331,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 			unstable = 1;
 
-			if(priv->sm_log.next_retrans_req_idx == -1) {
+			if(priv->sm_log.next_retrans_req_idx == -2) {
 				priv->sm_log.next_retrans_req_idx = priv->sm_log.stable_idx;
 			}
 
@@ -404,10 +404,10 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 				break;
 			}
 			if(i == priv->sm_log.last_idx - 1) {
-				priv->sm_log.next_retrans_req_idx = -1;
+				priv->sm_log.next_retrans_req_idx = -2;
 			}
 		}
-		if(priv->sm_log.next_retrans_req_idx != -1)
+		if(priv->sm_log.next_retrans_req_idx != -2)
 			goto reply_retransmission;
 
 	}
