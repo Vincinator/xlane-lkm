@@ -147,7 +147,7 @@ int setup_nomination(struct proto_instance *ins)
 		(struct consensus_priv *)ins->proto_data;
 
 	priv->term++;
-	priv->votes = 1; // start with selfvote
+	//priv->votes = 1; // start with selfvote
 
 	setup_le_broadcast_msg(ins, NOMI);
 	priv->sdev->fire = 1;
@@ -171,11 +171,11 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 					RDTSC_ASGUARD,
 					priv->term,
 					priv->votes,
-					priv->sdev->pminfo.num_of_targets + 1);
+					priv->sdev->pminfo.num_of_targets);
 #endif
 
 
-	if (priv->votes == priv->sdev->pminfo.num_of_targets + 1) {
+	if (priv->votes == priv->sdev->pminfo.num_of_targets ) {
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
