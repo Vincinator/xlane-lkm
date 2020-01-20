@@ -71,13 +71,14 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d,logged_idx=%d\n",
+		asguard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,
 			append_success,
 			param1,
-			logged_idx);
+			logged_idx,
+			priv->sm_log.stable_idx);
 #endif
 
 	hb_passive_ix =
@@ -238,7 +239,7 @@ u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 pr
 	entry = priv->sm_log.entries[prev_log_idx];
 
 	if (entry == NULL) {
-		asguard_error("BUG! Entry is NULL at index %d", prev_log_idx);
+		asguard_dbg("Unstable commit at index %d was not detected previously! ", prev_log_idx);
 		return 1;
 	}
 
@@ -510,10 +511,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				//reset_ftimeout(ins);
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
-#if VERBOSE_DEBUG
-				if (sdev->verbose >= 5)
-					asguard_dbg("Received message from known leader (%d) term=%u\n", rcluster_id, param1);
-#endif
+// #if VERBOSE_DEBUG
+// 				if (sdev->verbose >= 5)
+// 					asguard_dbg("Received message from known leader (%d) term=%u\n", rcluster_id, param1);
+// #endif
 
 			} else {
 #if VERBOSE_DEBUG
