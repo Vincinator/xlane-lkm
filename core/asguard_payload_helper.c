@@ -210,7 +210,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	//	return;
 	// }
 
-	if (cur_priv->sm_log.retrans_index[target_id] != -1) {
+	if (cur_priv->sm_log.retrans_index[target_id] >= 0) {
 		next_index = cur_priv->sm_log.retrans_index[target_id];
 		asguard_dbg("retrans_index=%d",next_index);
 		cur_priv->sm_log.retrans_index[target_id]= -1;
