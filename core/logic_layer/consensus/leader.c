@@ -19,7 +19,7 @@ void initialze_indices(struct consensus_priv *priv)
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		// initialize to leader last log index + 1
 		priv->sm_log.next_index[i] = priv->sm_log.stable_idx + 1;
-		priv->sm_log.match_index[i] = 0;
+		priv->sm_log.match_index[i] = -1;
 		priv->sm_log.retrans_index[i] = -1;
 	}
 }
@@ -60,6 +60,9 @@ void update_commit_idx(struct consensus_priv *priv)
 
 		current_N = priv->sm_log.match_index[i];
 
+		if(current_N == -1)
+			return; // nothing to commit yet.
+
 		if (current_N >= MAX_CONSENSUS_LOG) {
 			asguard_error("current_N=%d is invalid\n", current_N);
 			return;
@@ -71,6 +74,11 @@ void update_commit_idx(struct consensus_priv *priv)
 			return;
 		}
 
+		if(!priv->sm_log.entries[current_N]) {
+			asguard_dbg("BUG! log entry at %d is NULL\n",
+					current_N );
+			return;
+		}
 		if (priv->sm_log.entries[current_N]->term == priv->term)
 			if (_is_potential_commit_idx(priv, current_N))
 				if (current_N > N)
