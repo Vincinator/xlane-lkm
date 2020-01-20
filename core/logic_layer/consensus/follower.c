@@ -137,7 +137,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 	u32 *cur_ptr;
 	struct sm_command *cur_cmd;
 
-	new_last = start_log_idx + num_entries - 1;
+	new_last = start_log_idx + num_entries;
 
 	if (new_last >= MAX_CONSENSUS_LOG) {
 		asguard_dbg("Local log is full!\n");
