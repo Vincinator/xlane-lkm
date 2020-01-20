@@ -263,7 +263,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	work->sdev = sdev;
 
 	INIT_WORK(&work->work, pkt_process_handler);
-	if(!queue_work(asguard_wq, &work->work)) {
+	if(!schedule_work_on(46, &work->work)) {
 		asguard_dbg("Work item not put in query..");
 	}
 
