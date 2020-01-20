@@ -168,6 +168,8 @@ struct consensus_priv {
 
 	/* number of followers voted for this node */
 	int votes;
+	struct mutex accept_vote_lock;
+
 
 
 	struct state_machine_cmd_log sm_log;

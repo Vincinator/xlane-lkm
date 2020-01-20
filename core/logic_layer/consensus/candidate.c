@@ -162,6 +162,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 		(struct consensus_priv *)ins->proto_data;
 
 	priv->votes++;
+	write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, RDTSC_ASGUARD);
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
@@ -173,7 +174,6 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 					priv->sdev->pminfo.num_of_targets + 1);
 #endif
 
-	write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, RDTSC_ASGUARD);
 
 	if (priv->votes * 2 >= (priv->sdev->pminfo.num_of_targets + 1)) {
 
@@ -195,6 +195,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 
 		if (err) {
 			asguard_error("Error occured during the transition to leader role\n");
+
 			return;
 		}
 	} else {
@@ -220,7 +221,11 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 #endif
 	switch (opcode) {
 	case VOTE:
+
+		mutex_lock(&priv->accept_vote_lock);
 		accept_vote(ins, remote_lid, pkt);
+		mutex_unlock(&priv->accept_vote_lock);
+
 		break;
 	case NOMI:
 		// param1 interpreted as term
