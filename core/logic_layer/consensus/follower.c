@@ -404,8 +404,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	/* if unstable => request retransmission
 	 */
-
-	for(i = priv->sm_log.stable_idx; i < priv->sm_log.last_idx; i++) {
+	for(i = 0 > priv->sm_log.stable_idx ? 0 : priv->sm_log.stable_idx; i < priv->sm_log.last_idx; i++) {
 		if(!priv->sm_log.entries[i]){
 			priv->sm_log.next_retrans_req_idx = i ;
 			break;
