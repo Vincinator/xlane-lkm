@@ -99,10 +99,10 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 	log->entries[log_idx] = entry;
 
 	if (log->last_idx < log_idx)
-		log->last_idx == log_idx;
+		log->last_idx = log_idx;
 
 	if(!unstable){
-		log->stable_idx++; // this is a stable append, so we can increase the idx by 1
+		log->stable_idx = log_idx;
 	}
 	return 0;
 error:
