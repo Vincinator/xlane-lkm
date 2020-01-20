@@ -348,7 +348,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 	}
 
 	return 0;
-z}
+}
 
 
 static int _validate_pm(struct asguard_device *sdev,
