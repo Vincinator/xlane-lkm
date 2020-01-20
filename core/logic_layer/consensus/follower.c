@@ -467,10 +467,13 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		if(param1 == priv->term && param2 != -1){
 			// Check if commit index must be updated
 			if (param2 > priv->sm_log.commit_idx) {
-				// min(leader_commit_idx, last_idx)
-				// note: stable_idx of local log can not be null if append_commands was successfully executed
-				priv->sm_log.commit_idx = param2 > priv->sm_log.stable_idx ? priv->sm_log.stable_idx : param2;
-				commit_log(priv);
+				if(param2 > priv->sm_log.stable_idx){
+					asguard_dbg("detected consensus BUG. commit idx is greater than local stable idx\n");
+					asguard_dbg("\t leader commit idx: %d, local stable idx: %d\n", param2, priv->sm_log.stable_idx);
+				} else {
+					priv->sm_log.commit_idx = param2;
+					commit_log(priv);
+				}
 			}
 		}
 

@@ -34,6 +34,7 @@ int _is_potential_commit_idx(struct consensus_priv *priv, int N)
 
 		if(!priv->sdev->pminfo.pm_targets[i].alive){
 			hits++; // If node is dead, count as hit
+			asguard_dbg("Did not consider dead node for consensus\n");
 			continue;
 		}
 
@@ -65,12 +66,12 @@ void update_commit_idx(struct consensus_priv *priv)
 		}
 
 		if(current_N > priv->sm_log.last_idx){
-			asguard_dbg("BUG! last_applied \n");
+			asguard_dbg("BUG! current_N (%d) > priv->sm_log.last_idx(%d) \n",
+					current_N, priv->sm_log.last_idx );
 			return;
 		}
 
 		if (priv->sm_log.entries[current_N]->term == priv->term)
-			// majority of match_index[j] >= N and sm_log.entries[N]->term == currentTerm
 			if (_is_potential_commit_idx(priv, current_N))
 				if (current_N > N)
 					N = current_N;
