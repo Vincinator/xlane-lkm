@@ -221,7 +221,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		next_index = cur_rereq->request_idx;
 		write_lock(&priv->sm_log.retrans_list_lock[target_id]);
 		list_del(cur_rereq->retrans_req_head);
-		kfree(cur_rereq)
+		kfree(cur_rereq);
 		write_unlock(&priv->sm_log.retrans_list_lock[target_id]);
 		retrans = 1;
 	} else {
