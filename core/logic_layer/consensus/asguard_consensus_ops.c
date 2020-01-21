@@ -139,29 +139,6 @@ int consensus_stop(struct proto_instance *ins)
 	return 0;
 }
 
-void clean_request_transmission_lists(struct consensus_priv *priv)
-{
-	struct list_head *pos, *q;
-	struct retrans_request *tmp;
-	int i;
-
-	asguard_dbg("clean request transmission list \n");
-
-	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
-		pos = NULL;
-		list_for_each_safe(pos, q, &priv->sm_log.retrans_head[i])
-		{
-			tmp = list_entry(pos, struct retrans_request, retrans_req_head);
-			if(tmp) {
-				list_del(&tmp->retrans_req_head);
-				kfree(tmp);
-			}
-
-		}
-	}
-	asguard_dbg("done cleaning request transmission list \n");
-
-}
 
 
 int consensus_clean(struct proto_instance *ins)

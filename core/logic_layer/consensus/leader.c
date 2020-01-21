@@ -243,11 +243,36 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 }
 
 
+void clean_request_transmission_lists(struct consensus_priv *priv)
+{
+	struct list_head *pos, *q;
+	struct retrans_request *tmp;
+	int i;
+
+	asguard_dbg("clean request transmission list \n");
+
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
+		pos = NULL;
+		list_for_each_safe(pos, q, &priv->sm_log.retrans_head[i])
+		{
+			tmp = list_entry(pos, struct retrans_request, retrans_req_head);
+			if(tmp) {
+				list_del(&tmp->retrans_req_head);
+				kfree(tmp);
+			}
+
+		}
+	}
+	asguard_dbg("done cleaning request transmission list \n");
+
+}
+
 int stop_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
 
 	priv->sdev->is_leader = 0;
+	clean_request_transmission_lists(priv);
 
 	return 0;
 }
