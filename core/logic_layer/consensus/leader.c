@@ -5,12 +5,13 @@
 #include "include/consensus_helper.h"
 #include "include/leader.h"
 #include <asguard/consensus.h>
+#include <linux/spinlock.h>
+#include <linux/list.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][LE][LEADER]"
 
 struct consensus_priv;
-
 
 void initialze_indices(struct consensus_priv *priv)
 {
@@ -20,7 +21,8 @@ void initialze_indices(struct consensus_priv *priv)
 		// initialize to leader last log index + 1
 		priv->sm_log.next_index[i] = priv->sm_log.stable_idx + 1;
 		priv->sm_log.match_index[i] = -1;
-		priv->sm_log.retrans_index[i] = -1;
+		priv->sm_log.retrans_list_lock[i] = RW_LOCK_UNLOCKED;
+		INIT_LIST_HEAD(&priv->sm_log.retrans_head[i]);
 	}
 }
 
@@ -93,6 +95,28 @@ void update_commit_idx(struct consensus_priv *priv)
 
 }
 
+void queue_retransmission(struct consensus_priv *priv, int remote_lid, int retrans_idx){
+
+	struct retrans_request *new_req;
+
+	new_req = (struct retrans_request *)
+		kmalloc(sizeof(struct retrans_request), GFP_ATOMIC);
+
+	if(!new_req) {
+		asguard_error("Could not allocate mem for new retransmission request list item\n");
+		return;
+	}
+
+	new_req->request_idx = param3;
+
+	write_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
+
+	list_add_tail(&(new_req->retrans_req_head), &priv->sm_log.retrans_head[remote_lid])
+
+	write_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
+
+}
+
 int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
 	struct consensus_priv *priv =
@@ -147,7 +171,9 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			/* store start index of entries to be retransmitted.
 			 * Will only transmit one packet, receiver may drop entry duplicates.
 			 */
-			priv->sm_log.retrans_index[remote_lid] = param3;
+
+			queue_retransmission(priv, remote_lid, param3);
+
 			priv->sm_log.match_index[remote_lid] = param4;
 
 			update_commit_idx(priv);
@@ -198,11 +224,30 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	return 0;
 }
 
+
+void clean_request_transmission_lists(struct consensus_priv *priv)
+{
+	struct list_head *pos, *q;
+	struct retrans_request *tmp;
+
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
+		list_for_each_safe(pos, q, &priv->sm_log.retrans_head[i])
+		{
+			tmp = list_entry(pos, struct retrans_request, retrans_req_head);
+			list_del(tmp);
+			free(tmp);
+		}
+	}
+}
+
+
 int stop_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
 
 	priv->sdev->is_leader = 0;
+
+	clean_request_transmission_lists(priv);
 
 	return 0;
 }

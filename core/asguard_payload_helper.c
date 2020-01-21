@@ -204,15 +204,24 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	char *pkt_payload_sub;
 	int more = 0;
 	int retrans = 0;
+	struct retrans_request *cur_rereq;
 
 	// if (unlikely(_log_is_faulty(cur_priv))) {
 	//	asguard_dbg("Log is faulty or not initialized.\n");
 	//	return;
 	// }
 
-	if (cur_priv->sm_log.retrans_index[target_id] >= 0) {
-		next_index = cur_priv->sm_log.retrans_index[target_id];
-		cur_priv->sm_log.retrans_index[target_id]= -1;
+	// get
+	cur_rereq = list_first_entry_or_null(
+					cur_priv->sm_log.retrans_head[target_id],
+					struct retrans_request,
+					retrans_req_head);
+
+	if (cur_rereq != NULL) {
+		next_index = cur_rereq->request_idx;
+		write_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
+		list_del(cur_rereq);
+		write_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
 		retrans = 1;
 	} else {
 		next_index = _get_next_idx(cur_priv, target_id);
@@ -392,9 +401,10 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
-	if(aw->sdev->consensus_priv->sm_log.retrans_index[aw->target_id] != -1 || more) {
+	if(!list_empty(aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
 		prepare_log_replication_for_target(aw->sdev, aw->target_id);
 	}
+
 	kfree(aw);
 }
 

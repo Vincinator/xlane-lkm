@@ -3,6 +3,8 @@
 
 #include <asguard/asguard.h>
 #include <asguard/logger.h>
+#include <linux/spinlock.h>
+#include <linux/list.h>
 
 #define MAX_NODE_ID 10
 
@@ -70,7 +72,9 @@ struct state_machine_cmd_log {
 
 	s32 match_index[MAX_NODE_ID];
 
-	s32 retrans_index[MAX_NODE_ID];
+	struct list_head retrans_head[MAX_NODE_ID];
+
+	rwlock_t retrans_list_lock[MAX_NODE_ID];
 
 	s32 last_applied;
 

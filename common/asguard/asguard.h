@@ -488,6 +488,12 @@ struct process_pkt_in {
 	spinlock_t *target_lock;
 };
 
+
+struct retrans_request {
+	int request_idx;
+	struct list_head retrans_req_head;
+};
+
 struct asguard_pkt_work_data {
     struct work_struct work;
 
