@@ -353,7 +353,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	// 			*prev_log_idx, priv->sm_log.stable_idx, priv->sm_log.last_idx);
 
 	if (unstable){
-		printk(KERN_INFO "[Unstable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
+		printk(KERN_INFO "[Unstable] appending entries %d - %d | re_idx=%d | stable_idx=%d\n",
+			start_idx, start_idx + num_entries, priv->sm_log.next_retrans_req_idx, priv->sm_log.stable_idx);
 
 	} else if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
 		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
