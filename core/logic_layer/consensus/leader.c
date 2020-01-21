@@ -107,7 +107,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, int retra
 		return;
 	}
 
-	new_req->request_idx = param3;
+	new_req->request_idx = retrans_idx;
 
 	write_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
