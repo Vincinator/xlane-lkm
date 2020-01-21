@@ -102,14 +102,15 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 	struct retrans_request  *cur = NULL ;
 	int cancel = 0;
 
-
-	list_for_each_entry (cur, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
+	read_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
+	list_for_each_prev_safe(cur, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
     {
-		 if(cur->request_idx == retrans_idx)
+		 if(cur != NULL && cur->request_idx == retrans_idx)
 			return;
     }
+	read_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
-	asguard_dbg ("\t new request idx = %d\n" , retrans_idx);
+	//asguard_dbg ("\t new request idx = %d\n" , retrans_idx);
 
 	new_req = (struct retrans_request *)
 		kmalloc(sizeof(struct retrans_request), GFP_ATOMIC);
