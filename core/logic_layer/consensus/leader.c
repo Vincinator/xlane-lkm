@@ -234,7 +234,7 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 		list_for_each_safe(pos, q, &priv->sm_log.retrans_head[i])
 		{
 			tmp = list_entry(pos, struct retrans_request, retrans_req_head);
-			list_del(tmp);
+			list_del(tmp->retrans_req_head);
 			kfree(tmp);
 		}
 	}
