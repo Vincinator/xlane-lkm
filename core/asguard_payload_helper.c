@@ -401,7 +401,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
-	if(!list_empty(aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
+	if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
 		prepare_log_replication_for_target(aw->sdev, aw->target_id);
 	}
 
