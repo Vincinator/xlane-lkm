@@ -99,7 +99,8 @@ void update_commit_idx(struct consensus_priv *priv)
 void queue_retransmission(struct consensus_priv *priv, int remote_lid, int retrans_idx){
 
 	struct retrans_request *new_req;
-
+	struct retrans_request  *cur = NULL ;
+	int cancel = 0;
 	new_req = (struct retrans_request *)
 		kmalloc(sizeof(struct retrans_request), GFP_ATOMIC);
 
@@ -109,6 +110,13 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, int retra
 	}
 
 	new_req->request_idx = retrans_idx;
+
+	list_for_each_entry (cur, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
+    {
+		 if(cur->request_idx == retrans_idx)
+			return;
+    }
+	asguard_dbg ("\t new request idx = %d\n" , cur->request_idx );
 
 	write_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
