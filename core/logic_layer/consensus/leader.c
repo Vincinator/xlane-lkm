@@ -21,7 +21,7 @@ void initialze_indices(struct consensus_priv *priv)
 		// initialize to leader last log index + 1
 		priv->sm_log.next_index[i] = priv->sm_log.stable_idx + 1;
 		priv->sm_log.match_index[i] = -1;
-		priv->sm_log.retrans_list_lock[i] = RW_LOCK_UNLOCKED;
+		rwlock_init(&priv->sm_log.retrans_list_lock[i])
 		INIT_LIST_HEAD(&priv->sm_log.retrans_head[i]);
 	}
 }
