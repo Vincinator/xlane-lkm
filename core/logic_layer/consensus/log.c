@@ -82,23 +82,29 @@ EXPORT_SYMBOL(update_stable_idx);
 void update_next_retransmission_request_idx(struct consensus_priv *priv)
 {
 	int i, start_re_idx;
+	int first_re_idx = -2;
+	int previous_re_idx = priv->sm_log.next_retrans_req_idx;
 
-	if(priv->sm_log.next_retrans_req_idx == -2)
-		start_re_idx = 0 > priv->sm_log.stable_idx ? 0 : priv->sm_log.stable_idx;
-	else
-		start_re_idx = 0 > priv->sm_log.next_retrans_req_idx ? 0 : priv->sm_log.next_retrans_req_idx;
+	start_re_idx = 0 > priv->sm_log.stable_idx ? 0 : priv->sm_log.stable_idx;
 
-	for(i =  start_re_idx; i < priv->sm_log.last_idx; i += priv->max_entries_per_pkt) {
-		if(priv->sm_log.next_retrans_req_idx == i)
+
+	for(i = start_re_idx; i < priv->sm_log.last_idx; i++) {
+
+		if(first_re_idx == -2)
+			first_re_idx = i;
+
+		if(previous_re_idx == i){
+			i += priv->max_entries_per_pkt - 1;
 			continue; // already sent that request
+		}
 
 		if(!priv->sm_log.entries[i]){
 			priv->sm_log.next_retrans_req_idx = i ;
 			return;
 		}
 	}
-	// nothing found, restart repair iteration
-	priv->sm_log.next_retrans_req_idx = -2;
+	// found no missing part after first_re_idx
+	priv->sm_log.next_retrans_req_idx = first_re_idx;
 
 }
 EXPORT_SYMBOL(update_next_retransmission_request_idx);
