@@ -229,6 +229,7 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 {
 	struct list_head *pos, *q;
 	struct retrans_request *tmp;
+	int i;
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		list_for_each_safe(pos, q, &priv->sm_log.retrans_head[i])
