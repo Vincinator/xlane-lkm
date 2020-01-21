@@ -1,6 +1,7 @@
 #include <asguard/logger.h>
 #include <asguard/asguard.h>
 #include <asguard/payload_helper.h>
+#include <linux/slab.h>
 
 #include "include/consensus_helper.h"
 #include "include/leader.h"
