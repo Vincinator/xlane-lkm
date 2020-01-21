@@ -63,6 +63,39 @@ void print_log_state(struct state_machine_cmd_log *log)
 }
 EXPORT_SYMBOL(print_log_state);
 
+
+void update_stable_idx(struct consensus_priv *priv)
+{
+	int i;
+		// fix stable index after stable append
+	for (i = 0; i <= priv->sm_log.last_idx; i++) {
+
+		if (!priv->sm_log.entries[i]) // stop at first missing entry
+			break;
+
+		priv->sm_log.stable_idx = i;
+	}
+}
+EXPORT_SYMBOL(update_stable_idx);
+
+
+void update_next_retransmission_request_idx(struct consensus_priv *priv)
+{
+	int i;
+
+	for(i = 0 > priv->sm_log.stable_idx ? 0 : priv->sm_log.stable_idx; i < priv->sm_log.last_idx; i++) {
+		if(!priv->sm_log.entries[i]){
+			priv->sm_log.next_retrans_req_idx = i ;
+			break;
+		}
+		if(i == priv->sm_log.last_idx - 1) {
+			priv->sm_log.next_retrans_req_idx = -2;
+		}
+	}
+}
+EXPORT_SYMBOL(update_next_retransmission_request_idx);
+
+
 int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s32 term, int log_idx, int unstable)
 {
 	int err;

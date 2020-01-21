@@ -131,6 +131,8 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 
 }
 
+
+
 int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_entries, int pkt_size, int start_log_idx, int unstable)
 {
 	int i, err, new_last;
@@ -181,14 +183,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 	}
 
 	if(!unstable) {
-		// fix stable index after stable append
-		for (i = 0; i <= priv->sm_log.last_idx; i++) {
-
-			if (!priv->sm_log.entries[i]) // stop at first missing entry
-				break;
-
-			priv->sm_log.stable_idx = i;
-		}
+		update_stable_idx(priv);
 	}
 
 	return 0;
@@ -286,21 +281,7 @@ int check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_
 EXPORT_SYMBOL(check_append_rpc);
 
 
-void update_next_retransmission_request_idx(struct consensus_priv *priv)
-{
-	int i;
 
-	for(i = 0 > priv->sm_log.stable_idx ? 0 : priv->sm_log.stable_idx; i < priv->sm_log.last_idx; i++) {
-		if(!priv->sm_log.entries[i]){
-			priv->sm_log.next_retrans_req_idx = i ;
-			break;
-		}
-		if(i == priv->sm_log.last_idx - 1) {
-			priv->sm_log.next_retrans_req_idx = -2;
-		}
-	}
-
-}
 
 void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id)
 {
