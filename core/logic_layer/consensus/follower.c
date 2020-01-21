@@ -300,17 +300,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
 
-	// if (check_append_rpc(pkt_size, *prev_log_term, *prev_log_idx, priv->max_entries_per_pkt)) {
-	// 	asguard_dbg("invalid data: pkt_size=%hu, prev_log_term=%d, prev_log_idx=%d\n",
-	// 			  pkt_size, *prev_log_term, *prev_log_idx);
-	// 	goto reply_false;
-	// }
-
-	// if (num_entries < 0 || num_entries > priv->max_entries_per_pkt) {
-	// 	asguard_dbg("invalid num_entries=%d\n", num_entries);
-	// 	goto reply_false;
-	// }
-
 	/*   If we receive a log replication from the current leader,
 	 * 	 we can continue to store it even if a previous part is missing.
 	 *
@@ -321,9 +310,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	mutex_lock(&priv->sm_log.mlock);
 
-	// unstable append?
 	if(*prev_log_idx < priv->sm_log.stable_idx){
-		// skip this!
 		mutex_unlock(&priv->sm_log.mlock);
 		return;
 	}
@@ -338,10 +325,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 			unstable = 1;
 
-			if(priv->sm_log.next_retrans_req_idx == -2) {
-				priv->sm_log.next_retrans_req_idx = priv->sm_log.stable_idx;
-			}
-
 		} else {
 			asguard_dbg("Case unhandled!\n");
 		}
@@ -349,31 +332,28 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	start_idx = (*prev_log_idx) + 1;
 
-	// asguard_dbg("prev_log_idx=%d, stable_idx=%d, last_idx=%d\n",
-	// 			*prev_log_idx, priv->sm_log.stable_idx, priv->sm_log.last_idx);
-
-	if (unstable){
-		printk(KERN_INFO "[Unstable] appending entries %d - %d | re_idx=%d | stable_idx=%d\n",
-			start_idx, start_idx + num_entries, priv->sm_log.next_retrans_req_idx, priv->sm_log.stable_idx);
-
-	} else if (_check_prev_log_match(priv, *prev_log_term, *prev_log_idx)) {
+	if (_check_prev_log_match(priv, *prev_log_term, priv->sm_log.stable_idx)) {
 		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
 				*prev_log_term, *prev_log_idx);
 
 		print_log_state(&priv->sm_log);
 
 		goto reply_false_unlock;
-	}else {
-		printk(KERN_INFO "[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
 	}
 
-	// append entries and if it fails, reply false
 	if (append_commands(priv, pkt, num_entries, pkt_size, start_idx, unstable)) {
 		asguard_dbg("append commands failed. start_idx=%d, unstable=%d\n", start_idx, unstable);
 		goto reply_false_unlock;
 	}
 
 	update_next_retransmission_request_idx(priv);
+
+	if (unstable){
+		printk(KERN_INFO "[Unstable] appending entries %d - %d | re_idx=%d | stable_idx=%d\n",
+			start_idx, start_idx + num_entries, priv->sm_log.next_retrans_req_idx, priv->sm_log.stable_idx);
+	} else {
+		printk(KERN_INFO "[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
+	}
 
 	if(priv->sm_log.next_retrans_req_idx != -2)
 		goto reply_retransmission;

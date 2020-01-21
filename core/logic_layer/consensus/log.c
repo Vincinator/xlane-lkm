@@ -81,9 +81,14 @@ EXPORT_SYMBOL(update_stable_idx);
 
 void update_next_retransmission_request_idx(struct consensus_priv *priv)
 {
-	int i;
+	int i, start_re_idx;
 
-	for(i = 0 > priv->sm_log.next_retrans_req_idx ? 0 : priv->sm_log.next_retrans_req_idx; i < priv->sm_log.last_idx; i += priv->max_entries_per_pkt) {
+	if(priv->sm_log.next_retrans_req_idx == -2)
+		start_re_idx = 0 > priv->sm_log.stable_idx ? 0 : priv->sm_log.stable_idx;
+	else
+		start_re_idx = 0 > priv->sm_log.next_retrans_req_idx ? 0 : priv->sm_log.next_retrans_req_idx;
+
+	for(i =  start_re_idx; i < priv->sm_log.last_idx; i += priv->max_entries_per_pkt) {
 		if(priv->sm_log.next_retrans_req_idx == i)
 			continue; // already sent that request
 
