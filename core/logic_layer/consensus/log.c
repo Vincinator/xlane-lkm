@@ -94,7 +94,7 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 
 		if(!priv->sm_log.entries[i]){
 			priv->sm_log.next_retrans_req_idx = i ;
-			break;
+			return;
 		}
 	}
 	// nothing found, restart repair iteration
