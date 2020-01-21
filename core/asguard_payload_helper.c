@@ -392,7 +392,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
-	if(aw->sdev->consensus_priv->sm_log.retrans_index[aw->target_id] == -1 && more) {
+	if(aw->sdev->consensus_priv->sm_log.retrans_index[aw->target_id] != -1 || more) {
 		prepare_log_replication_for_target(aw->sdev, aw->target_id);
 	}
 	kfree(aw);
