@@ -96,10 +96,10 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 			priv->sm_log.next_retrans_req_idx = i ;
 			break;
 		}
-		if(i == priv->sm_log.last_idx - 1) {
-			priv->sm_log.next_retrans_req_idx = -2;
-		}
 	}
+	// nothing found, restart repair iteration
+	priv->sm_log.next_retrans_req_idx = -2;
+
 }
 EXPORT_SYMBOL(update_next_retransmission_request_idx);
 
