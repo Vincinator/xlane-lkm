@@ -108,7 +108,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 	read_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 	list_for_each_safe(pos, n, &priv->sm_log.retrans_head[remote_lid])
     {
-		cur = container_of(pos, struct retrans_request, retrans_req_head);
+		cur = list_entry(pos, struct retrans_request, retrans_req_head);
 		if(pos != NULL && cur->request_idx == retrans_idx)
 			return;
     }
@@ -249,6 +249,8 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 	struct retrans_request *tmp;
 	int i;
 
+	asguard_dbg("clean request transmission list \n");
+
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		list_for_each_safe(pos, q, &priv->sm_log.retrans_head[i])
 		{
@@ -257,6 +259,8 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 			kfree(tmp);
 		}
 	}
+	asguard_dbg("done cleaning request transmission list \n");
+
 }
 
 
