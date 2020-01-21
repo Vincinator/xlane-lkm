@@ -235,7 +235,7 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 		{
 			tmp = list_entry(pos, struct retrans_request, retrans_req_head);
 			list_del(tmp);
-			free(tmp);
+			kfree(tmp);
 		}
 	}
 }
