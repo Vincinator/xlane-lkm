@@ -148,7 +148,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 	// check if entries would exceed pkt
 	if ((num_entries * AE_ENTRY_SIZE + ASGUARD_PROTO_CON_AE_BASE_SZ) > pkt_size) {
 		err = -EINVAL;
-		asguard_dbg("Claimed num of log entries would exceed packet size!\n");
+		asguard_dbg("Claimed num of log entries (%d) would exceed packet size!\n", num_entries);
 		goto error;
 	}
 
@@ -285,6 +285,23 @@ int check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_
 }
 EXPORT_SYMBOL(check_append_rpc);
 
+
+void update_next_retransmission_request_idx(struct consensus_priv *priv)
+{
+	int i;
+
+	for(i = 0 > priv->sm_log.stable_idx ? 0 : priv->sm_log.stable_idx; i < priv->sm_log.last_idx; i++) {
+		if(!priv->sm_log.entries[i]){
+			priv->sm_log.next_retrans_req_idx = i ;
+			break;
+		}
+		if(i == priv->sm_log.last_idx - 1) {
+			priv->sm_log.next_retrans_req_idx = -2;
+		}
+	}
+
+}
+
 void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id)
 {
 	u32 *prev_log_term, num_entries;
@@ -374,50 +391,10 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_false_unlock;
 	}
 
-	//mutex_unlock(&priv->sm_log.mlock);
-
-	// // check commit index
-	// leader_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
-
-	// // check if leader_commit_idx is out of bounds
-	// if (*leader_commit_idx < -1 || *leader_commit_idx > MAX_CONSENSUS_LOG) {
-	// 	asguard_dbg("Out of bounds: leader_commit_idx=%d", *leader_commit_idx);
-	// 	goto reply_false;
-	// }
-
-	// // check if leader_commit_idx points to a valid entry
-	// if (*leader_commit_idx > priv->sm_log.last_idx) {
-	// 	asguard_dbg("Not referencing a valid log entry: leader_commit_idx=%d, priv->sm_log.last_idx=%d",
-	// 			*leader_commit_idx, priv->sm_log.last_idx);
-	// 	goto reply_false;
-	// }
-
-
-	// // Check if commit index must be updated
-	// if (*leader_commit_idx > priv->sm_log.commit_idx) {
-	// 	// min(leader_commit_idx, last_idx)
-	// 	// note: last_idx of local log can not be null if append_commands was successfully executed
-	// 	priv->sm_log.commit_idx = *leader_commit_idx > priv->sm_log.last_idx ? priv->sm_log.last_idx : *leader_commit_idx;
-	// 	commit_log(priv);
-	// }
-
-
-	/* if unstable => request retransmission
-	 */
-	for(i = 0 > priv->sm_log.stable_idx ? 0 : priv->sm_log.stable_idx; i < priv->sm_log.last_idx; i++) {
-		if(!priv->sm_log.entries[i]){
-			priv->sm_log.next_retrans_req_idx = i ;
-			break;
-		}
-		if(i == priv->sm_log.last_idx - 1) {
-			priv->sm_log.next_retrans_req_idx = -2;
-		}
-	}
+	update_next_retransmission_request_idx(priv);
 
 	if(priv->sm_log.next_retrans_req_idx != -2)
 		goto reply_retransmission;
-
-
 
 // default: reply success
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);

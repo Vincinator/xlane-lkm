@@ -86,6 +86,12 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 
 	asguard_dbg("Incoming Client requests..\n");
 
+	if(priv->sm_log.last_idx >= MAX_CONSENSUS_LOG) {
+		asguard_dbg("Log is already Full. \n");
+		err = -ENOMEM;
+		goto error;
+	}
+
 	// write x random entries to local log (if node is leader)
 	for (i = start_idx; i < start_idx + test_data->x; i++) {
 
@@ -110,7 +116,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 
 	return HRTIMER_RESTART;
 error:
-	asguard_error("Evaluation Crashed errorcode=%d\n", err);
+	asguard_error("Evaluation Stopped errorcode=%d\n", err);
 	return HRTIMER_NORESTART;
 
 }
