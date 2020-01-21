@@ -87,7 +87,7 @@ void update_commit_idx(struct consensus_priv *priv)
 
 	if (priv->sm_log.commit_idx < N) {
 		priv->sm_log.commit_idx = N;
-		asguard_dbg("found new commit_idx %d", N);
+		asguard_dbg("Found new commit_idx %d", N);
 		write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, RDTSC_ASGUARD);
 	}
 
@@ -133,7 +133,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// index it has updated the follower log. As an alternative, the leader could remember a state
 			// including the index after emitting the udp packet..
 			//priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
-			asguard_dbg("Received Reply with State=success.. rcluster_id=%d, param4=%d\n", rcluster_id, param4);
+			// asguard_dbg("Received Reply with State=success.. rcluster_id=%d, param4=%d\n", rcluster_id, param4);
 
 			priv->sm_log.match_index[remote_lid] = param4;
 
@@ -142,7 +142,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// check for unstable logs at remote & init resubmission of missing part
 
 		} else if (param2 == 2){
-			asguard_dbg("Received Reply with State=retransmission.. rcluster_id=%d, param3=%d, param4=%d\n",rcluster_id, param3, param4);
+			// asguard_dbg("Received Reply with State=retransmission.. rcluster_id=%d, param3=%d, param4=%d\n",rcluster_id, param3, param4);
 
 			/* store start index of entries to be retransmitted.
 			 * Will only transmit one packet, receiver may drop entry duplicates.
@@ -154,7 +154,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		} else if(param2 == 0) {
 			// append rpc failed!
-			asguard_dbg("Received Reply with State=failed..rcluster_id=%d, param3=%d\n",rcluster_id, param3);
+			// asguard_dbg("Received Reply with State=failed..rcluster_id=%d, param3=%d\n",rcluster_id, param3);
 
 			// decrement nextIndex for follower with <remote_lid>
 			priv->sm_log.next_index[remote_lid] = param3 + 1;
@@ -174,10 +174,10 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 
-#if VERBOSE_DEBUG
-			if (sdev->verbose >= 2)
-				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
-#endif
+// #if VERBOSE_DEBUG
+// 			if (sdev->verbose >= 2)
+// 				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
+// #endif
 		}
 
 		/* Ignore other cases for ALIVE operation*/
