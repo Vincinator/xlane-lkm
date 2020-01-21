@@ -139,6 +139,31 @@ int consensus_stop(struct proto_instance *ins)
 	return 0;
 }
 
+void clean_request_transmission_lists(struct consensus_priv *priv)
+{
+	struct list_head *pos, *q;
+	struct retrans_request *tmp;
+	int i;
+
+	asguard_dbg("clean request transmission list \n");
+
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
+		pos = NULL;
+		list_for_each_safe(pos, q, &priv->sm_log.retrans_head[i])
+		{
+			tmp = list_entry(pos, struct retrans_request, retrans_req_head);
+			if(tmp) {
+				list_del(&tmp->retrans_req_head);
+				kfree(tmp);
+			}
+
+		}
+	}
+	asguard_dbg("done cleaning request transmission list \n");
+
+}
+
+
 int consensus_clean(struct proto_instance *ins)
 {
 	struct consensus_priv *priv =
@@ -151,7 +176,6 @@ int consensus_clean(struct proto_instance *ins)
 		asguard_dbg("Consensus is running, stop it first.\n");
 		return 0;
 	}
-
 
 	le_state_transition_to(priv, LE_UNINIT);
 
@@ -168,6 +192,8 @@ int consensus_clean(struct proto_instance *ins)
 
 	remove_proc_entry(name_buf, NULL);
 
+	clean_request_transmission_lists(priv);
+
 	if (priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
 		for (i = 0; i < priv->sm_log.last_idx; i++)
 			if (priv->sm_log.entries[i] != NULL) // entries are NULL initialized
@@ -177,6 +203,7 @@ int consensus_clean(struct proto_instance *ins)
 	}
 
 	kfree(priv->sm_log.entries);
+
 
 
 	return 0;
