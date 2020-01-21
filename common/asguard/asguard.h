@@ -490,7 +490,7 @@ struct process_pkt_in {
 
 
 struct retrans_request {
-	int request_idx;
+	s32 request_idx;
 	struct list_head retrans_req_head;
 };
 
