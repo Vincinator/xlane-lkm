@@ -99,15 +99,17 @@ void update_commit_idx(struct consensus_priv *priv)
 void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retrans_idx){
 
 	struct retrans_request *new_req;
-	struct retrans_request  *pos = NULL;
-	struct retrans_request  *n = NULL ;
+	struct list_head  *pos = NULL;
+	struct list_head  *n = NULL ;
+	struct retrans_request  *cur = NULL ;
 
 	int cancel = 0;
 
 	read_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 	list_for_each_safe(pos, n, &priv->sm_log.retrans_head[remote_lid])
     {
-		 if(pos != NULL && pos->request_idx == retrans_idx)
+		cur = container_of(pos, struct retrans_request, retrans_req_head);
+		if(pos != NULL && cur->request_idx == retrans_idx)
 			return;
     }
 	read_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
