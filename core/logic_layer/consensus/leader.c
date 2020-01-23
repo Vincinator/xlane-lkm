@@ -266,6 +266,7 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 	asguard_dbg("done cleaning request transmission list \n");
 
 }
+EXPORT_SYMBOL(clean_request_transmission_lists);
 
 int stop_leader(struct proto_instance *ins)
 {

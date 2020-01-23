@@ -236,5 +236,5 @@ void print_log_state(struct state_machine_cmd_log *log);
 
 void update_stable_idx(struct consensus_priv *priv);
 void update_next_retransmission_request_idx(struct consensus_priv *priv);
-
+void clean_request_transmission_lists(struct consensus_priv *priv);
 #endif /* _ASGUARD_CONSENSUS_H_ */
