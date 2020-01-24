@@ -99,11 +99,12 @@ void update_commit_idx(struct consensus_priv *priv)
 void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retrans_idx){
 
 	struct retrans_request *new_req, *entry, *tmp_entry;
-
 	int cancel = 0;
 
 	read_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 	asguard_dbg("Start read section of list %d \n", remote_lid);
+
+
 	list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
     {
 		if(entry->request_idx == retrans_idx){
@@ -255,6 +256,12 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 	asguard_dbg("clean request transmission list \n");
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
+
+		if(list_empty(&priv->sm_log.retrans_head[i])) {
+			asguard_dbg("list %d empty - nothing to clean \n", i);
+			continue;
+		}
+
 		read_lock(&priv->sm_log.retrans_list_lock[i]);
 		asguard_dbg("start cleaning list %d \n", i);
 
