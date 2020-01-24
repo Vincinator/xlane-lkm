@@ -81,31 +81,41 @@ EXPORT_SYMBOL(update_stable_idx);
 
 void update_next_retransmission_request_idx(struct consensus_priv *priv)
 {
-	int i, start_re_idx;
+	int i;
 	int first_re_idx = -2;
-	int previous_re_idx = priv->sm_log.next_retrans_req_idx;
+	int cur_idx = -2;
 
-	start_re_idx = 0 > priv->sm_log.stable_idx ? 0 : priv->sm_log.stable_idx;
+	if(priv->sm_log.last_idx == -1){
+		asguard_dbg("Nothing has been received yet!\n");
+		return;
+	}
 
+	/* stable_idx + 1 always points to an invalid entry and
+	 * if stable_idx != last_idx is also true, we have found
+	 * a missing entry. The latter case is true for all loop iterations
+	 *
+	 *
+	 */
+	for(i = priv->sm_log.stable_idx + 1; i < priv->sm_log.last_idx; i++) {
 
-	for(i = start_re_idx; i < priv->sm_log.last_idx; i++) {
-
-		if(first_re_idx == -2)
-			first_re_idx = i;
-
-		if(previous_re_idx == i){
+		// if request has already been sent, skip indicies that may be included
+		// ... in the next log replication packet
+		if(priv->sm_log.next_retrans_req_idx == i){
 			i += priv->max_entries_per_pkt - 1;
-			continue; // already sent that request
+			continue;
 		}
 
 		if(!priv->sm_log.entries[i]){
-			priv->sm_log.next_retrans_req_idx = i ;
-			return;
+			cur_idx = i;
+			if (first_re_idx != -2)
+				first_re_idx = i;
 		}
 	}
-	// found no missing part after first_re_idx
-	priv->sm_log.next_retrans_req_idx = first_re_idx;
 
+	// note: with next_retrans_req_idx = -2, we would start with requesting the last missing idx
+	// .... this should not be a problem though
+	priv->sm_log.next_retrans_req_idx
+			= priv->sm_log.next_retrans_req_idx < cur_idx ? cur_idx : first_re_idx;
 }
 EXPORT_SYMBOL(update_next_retransmission_request_idx);
 
