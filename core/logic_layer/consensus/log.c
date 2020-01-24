@@ -84,6 +84,7 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 	int i;
 	int first_re_idx = -2;
 	int cur_idx = -2;
+	int skipped = 0;
 
 	if(priv->sm_log.last_idx == -1){
 		asguard_dbg("Nothing has been received yet!\n");
@@ -102,13 +103,23 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 		// ... in the next log replication packet
 		if(priv->sm_log.next_retrans_req_idx == i){
 			i += priv->max_entries_per_pkt - 1;
+			skipped = 1;
 			continue;
 		}
 
 		if(!priv->sm_log.entries[i]){
 			cur_idx = i;
+
 			if (first_re_idx != -2)
 				first_re_idx = i;
+
+			// we can use first found idx
+			if(priv->sm_log.next_retrans_req_idx == -2)
+				break;
+
+			// found next missing entry after prev request
+			if(i > priv->sm_log.next_retrans_req_idx)
+				break;
 		}
 	}
 
