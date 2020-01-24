@@ -90,7 +90,7 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 	}
 }
 
-static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spminfo)
+static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spminfo, int fire)
 {
 	struct netdev_queue *txq;
 	struct sk_buff *skb;
@@ -127,6 +127,10 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 
 	/* send packets in batch processing mode */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
+
+		if(!fire && !spminfo->pm_targets[i].fire)
+			continue;
+
 		skb = spminfo->pm_targets[i].skb;
 
 		skb_get(skb);
@@ -316,7 +320,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 	/* Send heartbeats to all targets */
 	// TODO: send hb to only one target if hb triggered via sdev->fire!?
-	asguard_send_hbs(ndev, spminfo);
+	asguard_send_hbs(ndev, spminfo, fire);
 
 	if(ts_state == ASGUARD_TS_RUNNING) {
 		asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
