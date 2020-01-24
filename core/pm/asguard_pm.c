@@ -140,6 +140,8 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 		 * Locking and preparation overhead is reduced, because preparation
 		 * work can be done once per batch process (vs. for each pkt).
 		 */
+
+		// TODO: if single fire, do not use batch!
 		ret = netdev_start_xmit(skb, ndev, txq, i + 1 != spminfo->num_of_targets);
 
 		if(ret != NETDEV_TX_OK) {
@@ -310,6 +312,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 	}
 
 	/* Send heartbeats to all targets */
+	// TODO: send hb to only one target if hb triggered via sdev->fire!?
 	asguard_send_hbs(ndev, spminfo);
 
 	if(ts_state == ASGUARD_TS_RUNNING) {
@@ -434,7 +437,6 @@ static int asguard_pm_loop(void *data)
 
 		if (!sdev->fire && !can_fire(prev_time, cur_time, interval))
 			continue;
-
 
 		prev_time = cur_time;
 

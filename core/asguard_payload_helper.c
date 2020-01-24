@@ -325,13 +325,15 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 	pkt_payload =
 			spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
 
+	if(spminfo->pm_targets[target_id].alive == 0) {
+		return 0; // Current target is not alive!
+	}
+
 	if(spminfo->pm_targets[target_id].pkt_data.active_dirty){
 		return 0; // previous pkt has not been emitted yet, thus we can not switch buffer at the end of this function
 	}
 
-	if(spminfo->pm_targets[target_id].alive == 0) {
-		return 0; // Current target is not alive!
-	}
+	spminfo->pm_targets[target_id].pkt_data.active_dirty = 1;
 
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
@@ -351,7 +353,6 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 		}
 	}
 
-	spminfo->pm_targets[target_id].pkt_data.active_dirty = 1;
 	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 
 	return more;
