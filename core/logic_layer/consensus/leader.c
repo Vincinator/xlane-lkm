@@ -284,16 +284,16 @@ void print_leader_stats(struct consensus_priv *priv)
 
 		asguard_dbg("\t pending retransmissions: \n" );
 
-		read_lock(&cur_priv->sm_log.retrans_list_lock[i]);
+		read_lock(&priv->sm_log.retrans_list_lock[i]);
 		if(!list_empty(&priv->sdev->consensus_priv->sm_log.retrans_head[i])) {
 			list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[i], retrans_req_head)
 			{
-				asguard_dbg("\t\t %d \n", entry->request_id);
+				asguard_dbg("\t\t %d \n", entry->request_idx);
 			}
 		} else
 			asguard_dbg("\t\t empty \n");
 
-		read_unlock(&cur_priv->sm_log.retrans_list_lock[i]);
+		read_unlock(&priv->sm_log.retrans_list_lock[i]);
 
 	}
 
