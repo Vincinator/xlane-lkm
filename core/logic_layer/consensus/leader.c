@@ -211,7 +211,6 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		/* Received an ALIVE operation from a node that claims to be the new leader
 		 */
 		if (param1 > priv->term) {
-			//reset_ftimeout(ins);
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 
@@ -300,7 +299,6 @@ void print_leader_stats(struct consensus_priv *priv)
 	asguard_dbg("last_idx %d \n", priv->sm_log.last_idx );
 	asguard_dbg("stable_idx %d\n", priv->sm_log.stable_idx );
 	asguard_dbg("next_retrans_req_idx %d\n", priv->sm_log.next_retrans_req_idx );
-	asguard_dbg("max_entries %d\n", priv->sm_log.max_entries );
 	asguard_dbg("max_entries %d\n", priv->sm_log.max_entries );
 
 }

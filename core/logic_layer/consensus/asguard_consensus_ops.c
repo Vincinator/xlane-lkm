@@ -20,8 +20,6 @@ int consensus_init(struct proto_instance *ins)
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 	int i;
 
-	priv->ctimer_init = 0;
-	priv->ftimer_init = 0;
 	priv->voted = -1;
 	priv->term = 0;
 	priv->state = LE_READY;

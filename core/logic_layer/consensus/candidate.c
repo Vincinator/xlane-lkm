@@ -84,63 +84,6 @@ static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
 
 }
 
-void reset_ctimeout(struct proto_instance *ins)
-{
-	ktime_t timeout;
-	struct consensus_priv *priv =
-			(struct consensus_priv *)ins->proto_data;
-
-	priv->c_retries = 0;
-	timeout = ktime_set(0, priv->ct_min);
-	// 	timeout = get_rnd_timeout(priv->ct_min, priv->ct_max);
-
-	hrtimer_cancel(&priv->ctimer);
-	hrtimer_set_expires_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS);
-	hrtimer_start_expires(&priv->ctimer, HRTIMER_MODE_REL_PINNED);
-#if VERBOSE_DEBUG
-	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: Set candidate timeout to %lld ms\n",
-			nstate_string(priv->nstate),
-			RDTSC_ASGUARD,
-			priv->term,
-			ktime_to_ms(timeout));
-#endif
-
-}
-
-void init_ctimeout(struct proto_instance *ins)
-{
-	ktime_t timeout;
-
-	struct consensus_priv *priv =
-		(struct consensus_priv *)ins->proto_data;
-
-	if (priv->ctimer_init == 1) {
-		reset_ctimeout(ins);
-		return;
-	}
-
-	priv->c_retries = 0;
-	timeout = ktime_set(0, priv->ct_min);
-	// 	timeout = get_rnd_timeout(priv->ct_min, priv->ct_max);
-
-	hrtimer_init(&priv->ctimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
-	priv->ctimer_init = 1;
-
-	priv->ctimer.function = &_handle_candidate_timeout;
-
-#if VERBOSE_DEBUG
-	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: Init Candidate timeout to %lld ms.\n",
-			nstate_string(priv->nstate),
-			RDTSC_ASGUARD,
-			priv->term,
-			ktime_to_ms(timeout));
-#endif
-
-	hrtimer_start_range_ns(&priv->ctimer, timeout, TOLERANCE_CTIMEOUT_NS, HRTIMER_MODE_REL_PINNED);
-}
-
 int setup_nomination(struct proto_instance *ins)
 {
 	struct consensus_priv *priv =
@@ -315,7 +258,6 @@ int start_candidate(struct proto_instance *ins)
 	priv->sdev->tx_port = 3319;
 
 	setup_nomination(ins);
-	//init_ctimeout(ins);
 
 
 	return 0;

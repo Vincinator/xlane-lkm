@@ -70,6 +70,8 @@ struct state_machine_cmd_log {
 
 	int num_retransmissions[MAX_NODE_ID];
 
+	int unstable_commits;
+
 	s32 next_index[MAX_NODE_ID];
 
 	s32 match_index[MAX_NODE_ID];
@@ -157,14 +159,10 @@ struct consensus_priv {
 	u32 started_log;
 
 	/* follower timeout */
-	struct hrtimer ftimer;
-	int ftimer_init;
 	int ft_max;
 	int ft_min;
 
 	/* candidate timeout */
-	struct hrtimer ctimer;
-	int ctimer_init;
 	int c_retries;
 
 	int ct_min;

@@ -11,55 +11,8 @@
 #include "include/follower.h"
 #include "include/consensus_helper.h"
 
-
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][LE][FOLLOWER]"
-
-
-static enum hrtimer_restart _handle_follower_timeout(struct hrtimer *timer)
-{
-	int err;
-	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ftimer);
-	struct asguard_device *sdev = priv->sdev;
-	ktime_t timeout;
-
-	if(sdev->verbose)
-		asguard_dbg(" follower timeout: llts_before_ftime=%llu and last_leader_ts=%llu\n", priv->llts_before_ftime, sdev->last_leader_ts);
-
-	if (priv->ftimer_init == 0 || priv->nstate != FOLLOWER)
-		return HRTIMER_NORESTART;
-
-	write_log(&priv->ins->logger, FOLLOWER_TIMEOUT, RDTSC_ASGUARD);
-
-	// optimistical timestamping from leader pkt -> do not start candidature, restart follower timeout
-	if(priv->llts_before_ftime != sdev->last_leader_ts) {
-		priv->llts_before_ftime = sdev->last_leader_ts;
-		if(sdev->verbose)
-			asguard_dbg("optimistical timestamping of leader pkt prevented follower timeout\n");
-	 	timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
-		hrtimer_forward_now (timer, timeout);
-		return HRTIMER_RESTART;
-	}
-
-#if VERBOSE_DEBUG
-	if(sdev->verbose)
-		asguard_log_le("%s, %llu, %d: Follower timer timed out\n",
-			nstate_string(priv->nstate),
-			RDTSC_ASGUARD,
-			priv->term);
-#endif
-
-	err = node_transition(priv->ins, CANDIDATE);
-
-	write_log(&priv->ins->logger, FOLLOWER_BECOME_CANDIDATE, RDTSC_ASGUARD);
-
-	if (err) {
-		asguard_dbg("Error occured during the transition to candidate role\n");
-		return HRTIMER_NORESTART;
-	}
-
-	return HRTIMER_NORESTART;
-}
 
 void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remote_lid, int rcluster_id, int param1, int append_success, u32 logged_idx)
 {
@@ -351,6 +304,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	if (unstable){
 		printk(KERN_INFO "[Unstable] appending entries %d - %d | re_idx=%d | stable_idx=%d\n",
 			start_idx, start_idx + num_entries, priv->sm_log.next_retrans_req_idx, priv->sm_log.stable_idx);
+		priv->sm_log.unstable_commits++;
 	}
 	// else {
 	// 		printk(KERN_INFO "[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
@@ -406,7 +360,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 		if (check_handle_nomination(priv, param1, param2, param3, param4, rcluster_id, remote_lid)) {
-			//reset_ftimeout(ins);
 			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}
 		break;
@@ -418,7 +371,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		/* Received an ALIVE operation from a node that claims to be the new leader
 		 */
 		if (param1 > priv->term) {
-			//reset_ftimeout(ins);
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 
@@ -475,8 +427,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		else if (param1 == priv->term) {
 
 			if (priv->leader_id == rcluster_id) {
-				// follower timeout already handled.
-				//reset_ftimeout(ins);
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 // #if VERBOSE_DEBUG
@@ -516,74 +466,27 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	return 0;
 }
 
-void init_timeout(struct proto_instance *ins)
+void print_follower_stats(struct consensus_priv *priv)
 {
-	ktime_t timeout;
-	struct consensus_priv *priv =
-		(struct consensus_priv *)ins->proto_data;
+	int i;
 
-	if (priv->ftimer_init == 1) {
-		reset_ftimeout(ins);
-		return;
-	}
+	asguard_dbg("unstable commits %d\n", priv->sm_log.unstable_commits );
+	asguard_dbg("last_idx %d \n", priv->sm_log.last_idx );
+	asguard_dbg("stable_idx %d\n", priv->sm_log.stable_idx );
+	asguard_dbg("next_retrans_req_idx %d\n", priv->sm_log.next_retrans_req_idx );
+	asguard_dbg("max_entries %d\n", priv->sm_log.max_entries );
 
-	timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
-
-	hrtimer_init(&priv->ftimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_PINNED);
-	priv->ftimer_init = 1;
-
-	priv->ftimer.function = &_handle_follower_timeout;
-
-	priv->accu_rand = timeout; // first rand timeout of this follower
-
-#if VERBOSE_DEBUG
-	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: Init follower timeout to %lld ms.\n",
-			nstate_string(priv->nstate),
-			RDTSC_ASGUARD,
-			priv->term,
-			ktime_to_ms(timeout));
-#endif
-
-	hrtimer_start_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS, HRTIMER_MODE_REL_PINNED);
 }
 
-void reset_ftimeout(struct proto_instance *ins)
-{
-	ktime_t timeout;
-	struct consensus_priv *priv =
-		(struct consensus_priv *)ins->proto_data;
-
-	 timeout = get_rnd_timeout(priv->ft_min, priv->ft_max);
-
-	 hrtimer_cancel(&priv->ftimer);
-	 hrtimer_set_expires_range_ns(&priv->ftimer, timeout, TOLERANCE_FTIMEOUT_NS);
-
-	 priv->llts_before_ftime = priv->sdev->last_leader_ts;
-
-	 hrtimer_start_expires(&priv->ftimer, HRTIMER_MODE_REL_PINNED);
-
-#if VERBOSE_DEBUG
-	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: reset follower timeout occured: new timeout is %lld ms\n",
-			nstate_string(priv->nstate),
-			RDTSC_ASGUARD,
-			priv->term,
-			ktime_to_ms(timeout));
-#endif
-}
 
 int stop_follower(struct proto_instance *ins)
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
-	if (priv->ftimer_init == 0)
-		return 0;
+	print_follower_stats(priv);
 
-	priv->ftimer_init = 0;
-
-	return hrtimer_cancel(&priv->ftimer) == 1;
+	return 0;
 }
 
 int start_follower(struct proto_instance *ins)
@@ -599,14 +502,13 @@ int start_follower(struct proto_instance *ins)
 
 	priv->sdev->tx_port = 3319;
 	priv->sdev->is_leader = 0;
+	priv->sm_log.unstable_commits = 0;
 	mutex_init(&priv->sm_log.mlock);
 	mutex_init(&priv->accept_vote_lock);
 
 	priv->votes = 0;
 	priv->nstate = FOLLOWER;
 	priv->candidate_counter = 0;
-
-	//init_timeout(ins);
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
