@@ -22,6 +22,7 @@ void initialze_indices(struct consensus_priv *priv)
 		// initialize to leader last log index + 1
 		priv->sm_log.next_index[i] = priv->sm_log.stable_idx + 1;
 		priv->sm_log.match_index[i] = -1;
+		priv->sm_log.num_retransmissions[i] = 0;
 		rwlock_init(&priv->sm_log.retrans_list_lock[i]);
 		INIT_LIST_HEAD(&priv->sm_log.retrans_head[i]);
 	}
@@ -126,7 +127,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 	asguard_dbg(" Added request idx %d to list %d \n",retrans_idx, remote_lid);
 
 	list_add_tail(&(new_req->retrans_req_head), &priv->sm_log.retrans_head[remote_lid]);
-
+	priv->num_retransmissions[remote_lid]++;
 	write_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
 }
@@ -269,6 +270,42 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 }
 EXPORT_SYMBOL(clean_request_transmission_lists);
 
+void print_leader_stats(struct consensus_priv *priv)
+{
+	int i;
+	struct retrans_request *entry, *tmp_entry;
+
+
+	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
+		asguard_dbg("Stats for target %d \n", i);
+		asguard_dbg("\t number of retransmissions: %d\n", priv->sm_log.num_retransmissions[i] );
+		asguard_dbg("\t match index: %d \n", priv->sm_log.match_index[i] );
+		asguard_dbg("\t next index: %d \n", priv->sm_log.match_index[i] );
+
+		asguard_dbg("\t pending retransmissions: \n" );
+
+		read_lock(&cur_priv->sm_log.retrans_list_lock[i]);
+		if(!list_empty(&priv->sdev->consensus_priv->sm_log.retrans_head[i])) {
+			list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[i], retrans_req_head)
+			{
+				asguard_dbg("\t\t %d \n", entry->request_id);
+			}
+		} else
+			asguard_dbg("\t\t empty \n");
+
+		read_unlock(&cur_priv->sm_log.retrans_list_lock[i]);
+
+	}
+
+	asguard_dbg("last_idx %d \n", priv->sm_log.last_idx );
+	asguard_dbg("stable_idx %d\n", priv->sm_log.stable_idx );
+	asguard_dbg("next_retrans_req_idx %d\n", priv->sm_log.next_retrans_req_idx );
+	asguard_dbg("max_entries %d\n", priv->sm_log.max_entries );
+	asguard_dbg("max_entries %d\n", priv->sm_log.max_entries );
+
+}
+
+
 int stop_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
@@ -276,6 +313,8 @@ int stop_leader(struct proto_instance *ins)
 	priv->sdev->is_leader = 0;
 
 	// Stop Current send tasks!
+
+	print_leader_stats(priv);
 
 	clean_request_transmission_lists(priv);
 

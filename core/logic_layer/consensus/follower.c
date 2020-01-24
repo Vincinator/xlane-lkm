@@ -351,9 +351,10 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	if (unstable){
 		printk(KERN_INFO "[Unstable] appending entries %d - %d | re_idx=%d | stable_idx=%d\n",
 			start_idx, start_idx + num_entries, priv->sm_log.next_retrans_req_idx, priv->sm_log.stable_idx);
-	} else {
-		printk(KERN_INFO "[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
 	}
+	// else {
+	// 		printk(KERN_INFO "[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
+	// }
 
 	if(priv->sm_log.next_retrans_req_idx != -2)
 		goto reply_retransmission;
