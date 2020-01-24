@@ -91,7 +91,7 @@ void update_commit_idx(struct consensus_priv *priv)
 
 	if (priv->sm_log.commit_idx < N) {
 		priv->sm_log.commit_idx = N;
-		asguard_dbg("Found new commit_idx %d", N);
+		// asguard_dbg("Found new commit_idx %d", N);
 		write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, RDTSC_ASGUARD);
 	}
 
@@ -124,7 +124,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 
 	new_req->request_idx = retrans_idx;
 
-	asguard_dbg(" Added request idx %d to list %d \n",retrans_idx, remote_lid);
+	// asguard_dbg(" Added request idx %d to list %d \n",retrans_idx, remote_lid);
 
 	list_add_tail(&(new_req->retrans_req_head), &priv->sm_log.retrans_head[remote_lid]);
 	priv->sm_log.num_retransmissions[remote_lid]++;
