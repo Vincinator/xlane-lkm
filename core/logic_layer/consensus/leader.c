@@ -101,21 +101,16 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 	struct retrans_request *new_req, *entry, *tmp_entry;
 	int cancel = 0;
 
-	read_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
-	asguard_dbg("Start read section of list %d \n", remote_lid);
-
+	write_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
 	list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
     {
 		if(entry->request_idx == retrans_idx){
 			asguard_dbg("End read section of list %d (request already present) \n", remote_lid);
-			read_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
+			write_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
 			return;
 		}
     }
-
-	asguard_dbg("End read section of list %d \n", remote_lid);
-	read_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
 	//asguard_dbg ("\t new request idx = %d\n" , retrans_idx);
 
@@ -128,9 +123,6 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 	}
 
 	new_req->request_idx = retrans_idx;
-
-
-	write_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
 	list_add_tail(&(new_req->retrans_req_head), &priv->sm_log.retrans_head[remote_lid]);
 
@@ -253,17 +245,17 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 	int i;
 
 
-	asguard_dbg("clean request transmission list \n");
+	// asguard_dbg("clean request transmission list \n");
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 
 		if(list_empty(&priv->sm_log.retrans_head[i])) {
-			asguard_dbg("list %d empty - nothing to clean \n", i);
+			// asguard_dbg("list %d empty - nothing to clean \n", i);
 			continue;
 		}
 
 		read_lock(&priv->sm_log.retrans_list_lock[i]);
-		asguard_dbg("start cleaning list %d \n", i);
+		// asguard_dbg("start cleaning list %d \n", i);
 
 		list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[i], retrans_req_head)
 		{
@@ -273,12 +265,12 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 			}
 
 		}
-		asguard_dbg("end cleaning list %d \n", i);
+		// asguard_dbg("end cleaning list %d \n", i);
 		read_unlock(&priv->sm_log.retrans_list_lock[i]);
 
 	}
 
-	asguard_dbg("done cleaning request transmission list \n");
+	// asguard_dbg("done cleaning request transmission list \n");
 
 }
 EXPORT_SYMBOL(clean_request_transmission_lists);

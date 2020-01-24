@@ -206,12 +206,8 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	int retrans = 0;
 	struct retrans_request *cur_rereq;
 
-	// if (unlikely(_log_is_faulty(cur_priv))) {
-	//	asguard_dbg("Log is faulty or not initialized.\n");
-	//	return;
-	// }
+	write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
-	// get
 	cur_rereq = list_first_entry_or_null(
 					&cur_priv->sm_log.retrans_head[target_id],
 					struct retrans_request,
@@ -219,19 +215,16 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 	if (cur_rereq != NULL) {
 		next_index = cur_rereq->request_idx;
-		write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
-		asguard_dbg("start write section accessing list %d \n", target_id);
 
 		list_del(&cur_rereq->retrans_req_head);
-		kfree(cur_rereq);
 
-		asguard_dbg("end write section accessing list %d \n", target_id);
-		write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
+		kfree(cur_rereq);
 		retrans = 1;
 	} else {
 		next_index = _get_next_idx(cur_priv, target_id);
-
 	}
+
+	write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
 	// Check if entries must be appended
 	local_last_idx = _get_last_idx_safe(cur_priv);
