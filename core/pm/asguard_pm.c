@@ -149,6 +149,7 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 			goto unlock;
 		}
 
+		spminfo->pm_targets[i].pkt_tx_counter++;
 
 	}
 

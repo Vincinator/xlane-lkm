@@ -333,6 +333,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 		return 0; // previous pkt has not been emitted yet, thus we can not switch buffer at the end of this function
 	}
 
+
 	spminfo->pm_targets[target_id].pkt_data.active_dirty = 1;
 
 	// iterate through consensus protocols and include LEAD messages if node is leader

@@ -251,6 +251,8 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 		return;
 	}
 
+	spminfo->pm_targets[remote_lid].pkt_rx_counter++;
+
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
 	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
@@ -541,6 +543,8 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->chb_ts = 0;
 	pmtarget->resp_factor = 4;
 	pmtarget->cur_waiting_interval = 2;
+	pmtarget->pkt_tx_counter = 0;
+	pmtarget->pkt_rx_counter = 0;
 
 	pmtarget->pkt_data.pkt_payload[0] =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);

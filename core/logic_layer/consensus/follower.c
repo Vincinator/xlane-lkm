@@ -470,6 +470,15 @@ void print_follower_stats(struct consensus_priv *priv)
 {
 	int i;
 
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
+		asguard_dbg("Target infos %d:", i);
+		asguard_dbg("\t pkt TX counter: %d\n",i, priv->sdev->pminfo.pm_targets[i].pkt_tx_counter);
+		asguard_dbg("\t pkt RX counter: %d\n",i, priv->sdev->pminfo.pm_targets[i].pkt_rx_counter);
+
+	}
+
+
+
 	asguard_dbg("unstable commits %d\n", priv->sm_log.unstable_commits );
 	asguard_dbg("last_idx %d \n", priv->sm_log.last_idx );
 	asguard_dbg("stable_idx %d\n", priv->sm_log.stable_idx );

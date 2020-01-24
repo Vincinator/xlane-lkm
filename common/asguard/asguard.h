@@ -325,8 +325,8 @@ struct asguard_pacemaker_test_data {
 struct asguard_pm_target_info {
 	int target_id;
 
-
-	spinlock_t rx_process_lock;
+	int pkt_tx_counter;
+	int pkt_rx_counter;
 
 	/* Timestamp of heartbeat from last check*/
 	uint64_t lhb_ts;

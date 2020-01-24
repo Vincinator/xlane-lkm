@@ -277,6 +277,7 @@ void print_leader_stats(struct consensus_priv *priv)
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
 		asguard_dbg("Stats for target %d \n", i);
+		asguard_dbg("\t pkt TX counter: %d\n", priv->sdev->pminfo.pm_targets[i].pkt_tx_counter);
 		asguard_dbg("\t number of retransmissions: %d\n", priv->sm_log.num_retransmissions[i] );
 		asguard_dbg("\t match index: %d \n", priv->sm_log.match_index[i] );
 		asguard_dbg("\t next index: %d \n", priv->sm_log.match_index[i] );
