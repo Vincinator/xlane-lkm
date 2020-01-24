@@ -290,6 +290,9 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		num_entries,
 		more);
 
+	cur_priv->sdev->fire = 1;
+	cur_priv->sdev->pminfo.pm_targets[target_id].fire = 1;
+
 	return more;
 }
 EXPORT_SYMBOL(setup_append_msg);

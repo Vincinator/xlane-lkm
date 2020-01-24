@@ -325,6 +325,8 @@ struct asguard_pacemaker_test_data {
 struct asguard_pm_target_info {
 	int target_id;
 
+	int fire;
+
 	int pkt_tx_counter;
 	int pkt_rx_counter;
 

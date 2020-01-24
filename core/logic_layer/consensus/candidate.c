@@ -36,6 +36,10 @@ int setup_nomination(struct proto_instance *ins)
 	//priv->votes = 1; // start with selfvote
 
 	setup_le_broadcast_msg(ins, NOMI);
+
+	for(i = 0; i < cur_priv->sdev->pminfo.num_of_targets; i++)
+		cur_priv->sdev->pminfo.pm_targets[target_id].fire = 1;
+
 	priv->sdev->fire = 1;
 	return 0;
 }
