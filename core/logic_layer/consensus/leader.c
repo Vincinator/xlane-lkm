@@ -106,8 +106,11 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 	asguard_dbg("Start read section of list %d \n", remote_lid);
 	list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
     {
-		if(entry->request_idx == retrans_idx)
+		if(entry->request_idx == retrans_idx){
+			asguard_dbg("End read section of list %d (request already present) \n", remote_lid);
+			read_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
 			return;
+		}
     }
 
 	asguard_dbg("End read section of list %d \n", remote_lid);
@@ -257,8 +260,11 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 
 		list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[i], retrans_req_head)
 		{
-			list_del(&entry->retrans_req_head);
-			kfree(entry);
+			if(entry) {
+				list_del(&entry->retrans_req_head);
+				kfree(entry);
+			}
+
 		}
 		asguard_dbg("end cleaning list %d \n", i);
 		read_unlock(&priv->sm_log.retrans_list_lock[i]);
