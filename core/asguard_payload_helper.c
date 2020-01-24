@@ -351,6 +351,9 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 			// TODO: optimize append calls that do not contain any log updates
 			more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, target_id);
 
+			priv->sdev->pminfo.pm_targets[remote_lid].scheduled_log_replications++;
+
+
 		}
 	}
 

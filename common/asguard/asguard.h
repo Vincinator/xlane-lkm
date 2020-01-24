@@ -328,6 +328,9 @@ struct asguard_pm_target_info {
 	int pkt_tx_counter;
 	int pkt_rx_counter;
 
+	int scheduled_log_replications;
+	int received_log_replications;
+
 	/* Timestamp of heartbeat from last check*/
 	uint64_t lhb_ts;
 

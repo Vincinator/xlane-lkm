@@ -246,6 +246,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
+	priv->sdev->pminfo.pm_targets[remote_lid].received_log_replications++;
+
 	if (num_entries == 0)
 		return;	// no reply if nothing to append!
 
@@ -474,10 +476,8 @@ void print_follower_stats(struct consensus_priv *priv)
 		asguard_dbg("Target infos %d:", i);
 		asguard_dbg("\t pkt TX counter: %d\n",i, priv->sdev->pminfo.pm_targets[i].pkt_tx_counter);
 		asguard_dbg("\t pkt RX counter: %d\n",i, priv->sdev->pminfo.pm_targets[i].pkt_rx_counter);
-
+		asguard_dbg("\t received log reps(all): %d\n", priv->sdev->pminfo.pm_targets[i].received_log_replications);
 	}
-
-
 
 	asguard_dbg("unstable commits %d\n", priv->sm_log.unstable_commits );
 	asguard_dbg("last_idx %d \n", priv->sm_log.last_idx );
