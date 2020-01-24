@@ -121,9 +121,6 @@ error:
 
 }
 
-/*
- *
- */
 void _init_testcase_timeout(struct consensus_test_container *test_data)
 {
 	ktime_t timeout;

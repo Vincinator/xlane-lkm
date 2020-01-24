@@ -475,7 +475,6 @@ void print_follower_stats(struct consensus_priv *priv)
 	asguard_dbg("stable_idx %d\n", priv->sm_log.stable_idx );
 	asguard_dbg("next_retrans_req_idx %d\n", priv->sm_log.next_retrans_req_idx );
 	asguard_dbg("max_entries %d\n", priv->sm_log.max_entries );
-
 }
 
 

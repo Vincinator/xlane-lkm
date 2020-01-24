@@ -110,6 +110,20 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 
 	priv->votes = 0; // start with 0 votes on every transition
 
+	switch (priv->nstate) {
+	case FOLLOWER:
+		err = stop_follower(ins);
+		break;
+	case CANDIDATE:
+		err = stop_candidate(ins);
+		break;
+	case LEADER:
+		err = stop_leader(ins);
+		break;
+	default:
+		asguard_error("Unknown node state %d\n - abort", state);
+		err = -EINVAL;
+	}
 
 	switch (state) {
 	case FOLLOWER:
