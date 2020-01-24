@@ -98,10 +98,7 @@ void update_commit_idx(struct consensus_priv *priv)
 
 void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retrans_idx){
 
-	struct retrans_request *new_req;
-	struct list_head  *entry = NULL;
-	struct list_head  *tmp_entry = NULL ;
-	struct retrans_request  *cur = NULL ;
+	struct retrans_request *new_req, *entry, *tmp_entry;
 
 	int cancel = 0;
 
@@ -247,7 +244,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 void clean_request_transmission_lists(struct consensus_priv *priv)
 {
-	struct list_head *pos, *q;
+	struct retrans_request *entry, *tmp_entry;
 	struct retrans_request *tmp;
 	int i;
 
@@ -258,10 +255,10 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 		read_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 		asguard_dbg("start cleaning list %d \n", i);
 
-		list_for_each_entry_safe(pos, q, &priv->sm_log.retrans_head[i], retrans_req_head)
+		list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[i], retrans_req_head)
 		{
-			list_del(&pos->retrans_req_head);
-			kfree(pos);
+			list_del(&entry->retrans_req_head);
+			kfree(entry);
 		}
 		asguard_dbg("end cleaning list %d \n", i);
 		read_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
