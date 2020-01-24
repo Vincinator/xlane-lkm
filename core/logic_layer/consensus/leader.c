@@ -106,7 +106,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 	list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
     {
 		if(entry->request_idx == retrans_idx){
-			asguard_dbg("End read section of list %d (request already present) \n", remote_lid);
+			asguard_dbg("End read section of list %d (request %d already present) \n", remote_lid, retrans_idx);
 			write_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
 			return;
 		}
@@ -123,6 +123,8 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 	}
 
 	new_req->request_idx = retrans_idx;
+
+	asguard_dbg(" Added request idx %d to list %d \n",retrans_idx, remote_lid);
 
 	list_add_tail(&(new_req->retrans_req_head), &priv->sm_log.retrans_head[remote_lid]);
 
@@ -243,7 +245,6 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 	struct retrans_request *entry, *tmp_entry;
 	struct retrans_request *tmp;
 	int i;
-
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 
