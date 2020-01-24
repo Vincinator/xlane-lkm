@@ -99,19 +99,21 @@ void update_commit_idx(struct consensus_priv *priv)
 void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retrans_idx){
 
 	struct retrans_request *new_req;
-	struct list_head  *pos = NULL;
-	struct list_head  *n = NULL ;
+	struct list_head  *entry = NULL;
+	struct list_head  *tmp_entry = NULL ;
 	struct retrans_request  *cur = NULL ;
 
 	int cancel = 0;
 
 	read_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
-	list_for_each_safe(pos, n, &priv->sm_log.retrans_head[remote_lid])
+	asguard_dbg("Start read section of list %d \n", remote_lid);
+	list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
     {
-		cur = list_entry(pos, struct retrans_request, retrans_req_head);
-		if(pos != NULL && cur->request_idx == retrans_idx)
+		if(entry->request_idx == retrans_idx)
 			return;
     }
+
+	asguard_dbg("End read section of list %d \n", remote_lid);
 	read_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
 	//asguard_dbg ("\t new request idx = %d\n" , retrans_idx);
@@ -249,20 +251,23 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 	struct retrans_request *tmp;
 	int i;
 
+
 	asguard_dbg("clean request transmission list \n");
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
-		pos = NULL;
-		list_for_each_safe(pos, q, &priv->sm_log.retrans_head[i])
-		{
-			tmp = list_entry(pos, struct retrans_request, retrans_req_head);
-			if(tmp) {
-				list_del(&tmp->retrans_req_head);
-				kfree(tmp);
-			}
+		read_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
+		asguard_dbg("start cleaning list %d \n", i);
 
+		list_for_each_entry_safe(pos, q, &priv->sm_log.retrans_head[i], retrans_req_head)
+		{
+			list_del(&pos->retrans_req_head);
+			kfree(pos);
 		}
+		asguard_dbg("end cleaning list %d \n", i);
+		read_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
+
 	}
+
 	asguard_dbg("done cleaning request transmission list \n");
 
 }
@@ -273,6 +278,9 @@ int stop_leader(struct proto_instance *ins)
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
 
 	priv->sdev->is_leader = 0;
+
+	// Stop Current send tasks!
+
 	clean_request_transmission_lists(priv);
 
 	return 0;

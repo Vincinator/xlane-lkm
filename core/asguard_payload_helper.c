@@ -220,8 +220,12 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	if (cur_rereq != NULL) {
 		next_index = cur_rereq->request_idx;
 		write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
+		asguard_dbg("start write section accessing list %d \n", target_id);
+
 		list_del(&cur_rereq->retrans_req_head);
 		kfree(cur_rereq);
+
+		asguard_dbg("end write section accessing list %d \n", target_id);
 		write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 		retrans = 1;
 	} else {
@@ -319,6 +323,8 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 	struct asguard_payload *pkt_payload;
 	int more = 0;
 
+	if(sdev->is_leader == 0)
+		return 0; // node lost leadership
 
 	hb_passive_ix =
 			!!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
