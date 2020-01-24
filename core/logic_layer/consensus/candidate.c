@@ -25,64 +25,7 @@
  */
 #define CANDIDATE_RETRY_TIMEOUT_GROWTH 20
 
-static enum hrtimer_restart _handle_candidate_timeout(struct hrtimer *timer)
-{
-	struct consensus_priv *priv = container_of(timer, struct consensus_priv, ctimer);
-	ktime_t timeout;
 
-	if (priv->ctimer_init == 0 || priv->nstate != CANDIDATE)
-		return HRTIMER_NORESTART;
-
-	priv->c_retries++;
-	write_log(&priv->ins->logger, CANDIDATE_TIMEOUT, RDTSC_ASGUARD);
-
-	/* The candidate can not get a majority from the cluster.
-	 * Probably less than the required majority of nodes are alive.
-	 *
-	 * Option 1: start the process over and retry as follower
-	 * Option 2: become Leader without majority (interim Leader)
-	 * Option 3: Unreachable, retry only manually - shutdown leader election.
-	 *
-	 */
-	if (priv->c_retries >= CANDIDATURE_RETRY_LIMIT) {
-#if VERBOSE_DEBUG
-	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu: reached maximum of candidature retries\n",
-			nstate_string(priv->nstate),
-			RDTSC_ASGUARD);
-#endif
-		// (Option 1)
-		//node_transition(sdev, FOLLOWER);
-
-		// (Option 2)
-		// node_transition(sdev, LEADER);
-
-		// (Option 3)
-		le_state_transition_to(priv, LE_READY);
-
-
-		return HRTIMER_NORESTART;
-	}
-
-	setup_nomination(priv->ins);
-
-	timeout = ktime_set(0, priv->c_retries * priv->ct_min);
-	// ... get_rnd_timeout(priv->c_retries * priv->ct_min, priv->c_retries * priv->ct_max);
-
-	hrtimer_forward_now(timer, timeout);
-#if VERBOSE_DEBUG
-	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: Restart candidate timer with %lld ms timeout - Candidature retry %d.\n",
-			nstate_string(priv->nstate),
-			RDTSC_ASGUARD,
-			priv->term,
-			ktime_to_ms(timeout),
-			priv->c_retries);
-#endif
-
-	return HRTIMER_RESTART;
-
-}
 
 int setup_nomination(struct proto_instance *ins)
 {
@@ -234,15 +177,10 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 int stop_candidate(struct proto_instance *ins)
 {
 
-	struct consensus_priv *priv =
-		(struct consensus_priv *)ins->proto_data;
+	// struct consensus_priv *priv =
+	// 	(struct consensus_priv *)ins->proto_data;
 
-	if (priv->ctimer_init == 0)
-		return 0;
-
-	priv->ctimer_init = 0;
-
-	return hrtimer_cancel(&priv->ctimer) == 1;
+	return 0;
 }
 
 int start_candidate(struct proto_instance *ins)
