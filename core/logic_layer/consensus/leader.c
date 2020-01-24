@@ -245,17 +245,14 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 	int i;
 
 
-	// asguard_dbg("clean request transmission list \n");
-
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 
+		write_lock(&priv->sm_log.retrans_list_lock[i]);
+
 		if(list_empty(&priv->sm_log.retrans_head[i])) {
-			// asguard_dbg("list %d empty - nothing to clean \n", i);
+			write_unlock(&priv->sm_log.retrans_list_lock[i]);
 			continue;
 		}
-
-		read_lock(&priv->sm_log.retrans_list_lock[i]);
-		// asguard_dbg("start cleaning list %d \n", i);
 
 		list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[i], retrans_req_head)
 		{
@@ -265,12 +262,9 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 			}
 
 		}
-		// asguard_dbg("end cleaning list %d \n", i);
-		read_unlock(&priv->sm_log.retrans_list_lock[i]);
+		write_unlock(&priv->sm_log.retrans_list_lock[i]);
 
 	}
-
-	// asguard_dbg("done cleaning request transmission list \n");
 
 }
 EXPORT_SYMBOL(clean_request_transmission_lists);
