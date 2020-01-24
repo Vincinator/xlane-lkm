@@ -127,7 +127,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 	asguard_dbg(" Added request idx %d to list %d \n",retrans_idx, remote_lid);
 
 	list_add_tail(&(new_req->retrans_req_head), &priv->sm_log.retrans_head[remote_lid]);
-	priv->num_retransmissions[remote_lid]++;
+	priv->sm_log.num_retransmissions[remote_lid]++;
 	write_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
 }

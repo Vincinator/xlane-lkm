@@ -67,6 +67,7 @@ struct sm_log_entry {
 
 
 struct state_machine_cmd_log {
+
 	int num_retransmissions[MAX_NODE_ID];
 
 	s32 next_index[MAX_NODE_ID];
