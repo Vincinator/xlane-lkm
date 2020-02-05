@@ -358,7 +358,6 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 		if(spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix]){
 			spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix] = 0;
-			asguard_dbg("unlocking.. \n");
 			mutex_unlock(&spminfo->pm_targets[i].pkt_data.active_dirty_lock);
 		}
 

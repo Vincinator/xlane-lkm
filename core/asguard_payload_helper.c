@@ -409,9 +409,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
 
-	asguard_dbg("trying to lock.. \n");
 	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
-    asguard_dbg("locked.. \n");
 
 	more = _do_prepare_log_replication(aw->sdev, aw->target_id);
 
