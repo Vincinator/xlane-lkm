@@ -302,7 +302,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 	/* Prepare heartbeat packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
-		if(!fire && !spminfo->pm_targets[i].fire)
+		if(fire && !spminfo->pm_targets[i].fire)
 			continue;
 		// Always update payload to avoid jitter!
 		hb_active_ix =
@@ -329,7 +329,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 	/* Leave Heartbeat pkts in clean state */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
-		if(!fire && !spminfo->pm_targets[i].fire)
+		if(fire && !spminfo->pm_targets[i].fire)
 			continue;
 
 		hb_active_ix =
@@ -353,7 +353,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		// after alive msg has been added, the current active buffer can be used again
 		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
 
-		if(!fire)
+		if(fire)
 			spminfo->pm_targets[i].fire = 0;
 
 		if(spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix]){
