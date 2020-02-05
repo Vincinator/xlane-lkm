@@ -291,7 +291,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		more);
 
 	// wait until pkt has been emited
-	cur_priv->sdev->pminfo.pm_targets[target_id].pkt_data.contains_log_rep[hb_active_ix] = 1;
+	cur_priv->sdev->pminfo.pm_targets[target_id].pkt_data.contains_log_rep[hb_passive_ix] = 1;
 	// fire as soon as possible
 	cur_priv->sdev->fire = 1;
 	// fire only for the target with targetid
