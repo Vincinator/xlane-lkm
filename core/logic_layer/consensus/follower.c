@@ -408,7 +408,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case APPEND:
 
 		if(priv->leader_id != rcluster_id) {
-			asguard_error("received APPEND from a node that is not accepted as leader \n");
+			// asguard_error("received APPEND from a node that is not accepted as leader \n");
 			break;
 		}
 		/* Received a LEAD operation from a node with a higher term,

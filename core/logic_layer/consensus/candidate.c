@@ -156,7 +156,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	case APPEND:
 
 		if(priv->leader_id != rcluster_id) {
-			asguard_error("received APPEND from a node that is not accepted as leader \n");
+			// asguard_error("received APPEND from a node that is not accepted as leader \n");
 			break;
 		}
 
