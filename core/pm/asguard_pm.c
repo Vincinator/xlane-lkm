@@ -128,7 +128,8 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 	/* send packets in batch processing mode */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
-		if(!fire && !spminfo->pm_targets[i].fire)
+		// if emission was scheduled via fire, only emit pkts marked with fire
+		if(fire && !spminfo->pm_targets[i].fire)
 			continue;
 
 		skb = spminfo->pm_targets[i].skb;
@@ -231,20 +232,6 @@ u32 get_lowest_alive_id(struct asguard_device *sdev, struct pminfo *spminfo)
 			}
 		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	return cur_low;
 }
 

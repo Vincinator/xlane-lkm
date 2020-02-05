@@ -376,13 +376,15 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id)
 	struct asguard_leader_pkt_work_data *work = NULL;
 
 	// if leadership has been dropped, do not schedule leader work
-	if(sdev->is_leader == 0)
-		return;
-
+	if(sdev->is_leader == 0) {
+		asguard_dbg("node is not a leader\n");
+		return
+	}
 	// if pacemaker has been stopped, do not schedule leader tx work
-	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
+	if(sdev->pminfo.state != ASGUARD_PM_EMITTING){
+		asguard_dbg("pacemaker not in emitting state\n");
 		return;
-
+	}
 
 	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
 	work->sdev = sdev;
