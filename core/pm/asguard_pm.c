@@ -232,6 +232,19 @@ u32 get_lowest_alive_id(struct asguard_device *sdev, struct pminfo *spminfo)
 		}
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	return cur_low;
 }
 

@@ -214,10 +214,10 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 
-// #if VERBOSE_DEBUG
-// 			if (sdev->verbose >= 2)
-// 				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
-// #endif
+#if VERBOSE_DEBUG
+			if (sdev->verbose >= 2)
+				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
+#endif
 		}
 
 		/* Ignore other cases for ALIVE operation*/
