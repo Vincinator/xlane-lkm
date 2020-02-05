@@ -22,17 +22,17 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	char *pkt_payload_sub;
 	int hb_passive_ix;
 
-#if VERBOSE_DEBUG
-	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
-			nstate_string(priv->nstate),
-			RDTSC_ASGUARD,
-			priv->term,
-			append_success,
-			param1,
-			logged_idx,
-			priv->sm_log.stable_idx);
-#endif
+// #if VERBOSE_DEBUG
+// 	if(priv->sdev->verbose)
+// 		asguard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
+// 			nstate_string(priv->nstate),
+// 			RDTSC_ASGUARD,
+// 			priv->term,
+// 			append_success,
+// 			param1,
+// 			logged_idx,
+// 			priv->sm_log.stable_idx);
+// #endif
 
 	hb_passive_ix =
 	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
@@ -437,10 +437,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			if (priv->leader_id == rcluster_id) {
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
-#if VERBOSE_DEBUG
-				if (sdev->verbose >= 5)
-					asguard_dbg("Received message from known leader (%d) term=%u\n", rcluster_id, param1);
-#endif
+// #if VERBOSE_DEBUG
+// 				if (sdev->verbose >= 5)
+// 					asguard_dbg("Received message from known leader (%d) term=%u\n", rcluster_id, param1);
+// #endif
 
 			} else {
 #if VERBOSE_DEBUG
