@@ -196,7 +196,7 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spa
 }
 EXPORT_SYMBOL(setup_alive_msg);
 
-int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id)
+int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, int hb_passive_ix)
 {
 	s32 next_index, local_last_idx;
 	s32 prev_log_term, leader_commit_idx;
@@ -290,7 +290,11 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		num_entries,
 		more);
 
+	// wait until pkt has been emited
+	cur_priv->sdev->pminfo.pm_targets[target_id].pkt_data.contains_log_rep[hb_active_ix] = 1;
+	// fire as soon as possible
 	cur_priv->sdev->fire = 1;
+	// fire only for the target with targetid
 	cur_priv->sdev->pminfo.pm_targets[target_id].fire = 1;
 
 	return more;
@@ -320,16 +324,16 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 	int more = 0;
 
 	if(sdev->is_leader == 0)
-		return 0; // node lost leadership
+		return -1; // node lost leadership
 
 	if(spminfo->pm_targets[target_id].pkt_data.active_dirty){
-		return 0; // previous pkt has not been emitted yet, thus we can not switch buffer at the end of this function
+		return -1; // previous pkt has not been emitted yet, thus we can not switch buffer at the end of this function
 	}
 
 	spminfo->pm_targets[target_id].pkt_data.active_dirty = 1;
 
 	if(spminfo->pm_targets[target_id].alive == 0) {
-		return 0; // Current target is not alive!
+		return -1; // Current target is not alive!
 	}
 
 	hb_passive_ix =
@@ -351,7 +355,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 				continue;
 
 			// TODO: optimize append calls that do not contain any log updates
-			more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, target_id);
+			more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, target_id, hb_passive_ix);
 
 			sdev->pminfo.pm_targets[target_id].scheduled_log_replications++;
 
@@ -397,6 +401,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 	struct asguard_leader_pkt_work_data *aw = NULL;
 	int more = 0;
 
+
 	// wait until the previous packet has been sent.
 	// ... do not wait for reply from target
 
@@ -408,10 +413,15 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
+	/* not ready to prepare log replication */
+	if(more < 0)
+		goto cleanup;
+
 	if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
 		prepare_log_replication_for_target(aw->sdev, aw->target_id);
 	}
 
+cleanup:
 	kfree(aw);
 }
 

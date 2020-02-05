@@ -549,6 +549,9 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->scheduled_log_replications = 0;
 	pmtarget->received_log_replications = 0;
 
+	pmtarget->pkt_data.contains_log_rep[0] = 0;
+	pmtarget->pkt_data.contains_log_rep[1] = 0;
+
 	pmtarget->pkt_data.pkt_payload[0] =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 

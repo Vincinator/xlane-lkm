@@ -302,6 +302,8 @@ struct asguard_packet_data {
 
 	int hb_active_ix;
 
+	int contains_log_rep[2];
+
 	/* Do not reupdate until the active has been emitted (only for leader logic) */
 	int active_dirty;
 

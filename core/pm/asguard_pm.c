@@ -351,6 +351,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
+
 		/* Protocols have been emitted, do not sent them again ..
 		 * .. and free the reservations for new protocols */
 		invalidate_proto_data(sdev, pkt_payload, i);
@@ -368,7 +369,10 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		if(!fire)
 			spminfo->pm_targets[i].fire = 0;
 
-		mutex_unlock(&spminfo->pm_targets[i].pkt_data.active_dirty_lock);
+		if(spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix]){
+			spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix] = 0;
+			mutex_unlock(&pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
+		}
 
 	}
 
