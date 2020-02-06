@@ -166,6 +166,9 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
 	}
 
+	if(instances - 1 > 0) {
+		asguard_dbg("processing another msg of payload.. (%d) \n", instances);
+	}
 	// handle next payload
 	_handle_sub_payloads(sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset);
 }
@@ -254,7 +257,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	spminfo->pm_targets[remote_lid].pkt_rx_counter++;
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
-	asguard_dbg("received %d instances in payload from %d\n", received_proto_instances, remote_lid);
+
 	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
 
 	work->cqe_bcnt = cqe_bcnt;
