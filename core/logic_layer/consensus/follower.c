@@ -242,6 +242,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 {
 	u32 *prev_log_term, num_entries;
 	s32 *prev_log_idx;
+	s32 *prev_log_commit_idx;
 	u16 pkt_size;
 	int unstable = 0;
 	int start_idx, i;
@@ -256,6 +257,11 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
+	prev_log_commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(okt)
+
+
+	// TODO: check!
+	priv->sm_log.commit_idx = prev_log_commit_idx;
 
 	/*   If we receive a log replication from the current leader,
 	 * 	 we can continue to store it even if a previous part is missing.
@@ -436,6 +442,9 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			if (priv->leader_id == rcluster_id) {
 				_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
+
+				// Commit log!
+				commit_log(priv);
 
 // #if VERBOSE_DEBUG
 // 				if (sdev->verbose >= 5)
