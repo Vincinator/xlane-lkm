@@ -284,7 +284,7 @@ static void update_alive_msg(struct asguard_device *sdev, struct asguard_payload
 			// get corresponding local instance data for consensus
 			setup_alive_msg((struct consensus_priv *)sdev->protos[j]->proto_data,
 							pkt_payload, sdev->protos[j]->instance_id);
-
+			asguard_dbg("set alive msg..\n");
 		}
 	}
 

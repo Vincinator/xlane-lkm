@@ -57,11 +57,11 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 
 	cur_proto = spay->proto_data;
 
-	// Check if protocol instance already existis in payload
+	// Check if protocol instance already exists in payload
 	for (i = 0; i < spay->protocols_included; i++) {
 
-		if (instance_id == GET_PROTO_TYPE_VAL(cur_proto))
-			goto reuse; // reuse existing payload part for this instance id
+		// if (instance_id == GET_PROTO_TYPE_VAL(cur_proto))
+		// 	goto reuse; // reuse existing payload part for this instance id
 
 		cur_offset = GET_PROTO_OFFSET_VAL(cur_proto);
 		cur_proto = cur_proto + cur_offset;
