@@ -32,6 +32,8 @@ int commit_log(struct consensus_priv *priv)
 	int err;
 	struct state_machine_cmd_log *log = &priv->sm_log;
 
+	write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, RDTSC_ASGUARD);
+
 	err = apply_log_to_sm(priv);
 
 	if (err)
@@ -170,7 +172,7 @@ int append_command(struct consensus_priv *priv, struct sm_command *cmd, s32 term
 		priv->sm_log.last_idx = log_idx;
 
 	if(log_idx == 0){
-		asguard_dbg("Appended first Entry to leader log\n");
+		asguard_dbg("Appended first Entry to log\n");
 		write_log(&priv->ins->logger, START_LOG_REP, RDTSC_ASGUARD);
 	}
 
