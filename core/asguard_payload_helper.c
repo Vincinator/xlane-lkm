@@ -308,7 +308,6 @@ void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *
 	// free previous piggybacked protocols
 	spay->protocols_included = 0;
 
-
 }
 EXPORT_SYMBOL(invalidate_proto_data);
 
