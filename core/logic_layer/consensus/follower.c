@@ -425,7 +425,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 			// write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
 
 			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
-
+			commit_log(priv);
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received APPEND op from leader with higher term=%d local term=%d\n", param1, priv->term);
