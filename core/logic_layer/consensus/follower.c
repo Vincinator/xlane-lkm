@@ -398,6 +398,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				} else {
 					priv->sm_log.commit_idx = param2;
 					commit_log(priv);
+					asguard_dbg("commiting..\n");
 				}
 			}
 		}
