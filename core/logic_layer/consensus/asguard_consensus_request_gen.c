@@ -47,7 +47,7 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
 		}
 		cur_cmd->sm_logvar_id = rand_id;
 		cur_cmd->sm_logvar_value = rand_value;
-		err = append_command(&priv->sm_log, cur_cmd, priv->term, i, 0);
+		err = append_command(priv, cur_cmd, priv->term, i, 0);
 
 		if (err)
 			goto error;
@@ -105,12 +105,13 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 		}
 		cur_cmd->sm_logvar_id = rand_id;
 		cur_cmd->sm_logvar_value = rand_value;
-		err = append_command(&priv->sm_log, cur_cmd, priv->term, i, 0);
+		err = append_command(priv, cur_cmd, priv->term, i, 0);
 		write_log(&priv->ins->logger, CONSENSUS_REQUEST, RDTSC_ASGUARD);
 
 		if (err)
 			goto error;
 	}
+
 	// notify the leader to start the log replication (application logic)
 	prepare_log_replication(priv->sdev);
 

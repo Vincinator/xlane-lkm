@@ -131,12 +131,12 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 EXPORT_SYMBOL(update_next_retransmission_request_idx);
 
 
-int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s32 term, int log_idx, int unstable)
+int append_command(struct consensus_priv *priv, struct sm_command *cmd, s32 term, int log_idx, int unstable)
 {
 	int err;
 	struct sm_log_entry *entry;
 
-	if (!log) {
+	if (!priv || !priv->log) {
 		err = -EINVAL;
 		asguard_error("Log ptr points to NULL\n");
 		goto error;
@@ -149,7 +149,7 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 		goto error;
 	}
 
-	if (log->commit_idx > log_idx) {
+	if (priv->log->commit_idx > log_idx) {
 		err = -EPROTO;
 		asguard_error("BUG - commit_idx=%d is greater than idx(%d) of entry to commit!\n", log->commit_idx, log_idx);
 		goto error;
@@ -164,15 +164,19 @@ int append_command(struct state_machine_cmd_log *log, struct sm_command *cmd, s3
 
 	entry->cmd = cmd;
 	entry->term = term;
-	log->entries[log_idx] = entry;
+	priv->log->entries[log_idx] = entry;
 
-	if (log->last_idx < log_idx)
-		log->last_idx = log_idx;
+	if (priv->log->last_idx < log_idx)
+		priv->log->last_idx = log_idx;
 
+	if(log_idx == 0){
+		asguard_dbg("Appended first Entry to leader log\n");
+		write_log(&priv->ins->logger, START_CONSENSUS, RDTSC_ASGUARD);
+	}
 
 	return 0;
 error:
-	asguard_dbg("Could not appen command to Logs!\n");
+	asguard_dbg("Could not append command to Logs!\n");
 	return err;
 }
 EXPORT_SYMBOL(append_command);
