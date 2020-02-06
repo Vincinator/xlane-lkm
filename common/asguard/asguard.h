@@ -161,6 +161,7 @@ enum le_event_type {
 
 	CONSENSUS_REQUEST = 12,
 	GOT_CONSENSUS_ON_VALUE = 13,
+	START_LOG_REP = 14,
 };
 
 struct le_event {

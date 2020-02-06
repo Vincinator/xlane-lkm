@@ -136,9 +136,9 @@ int append_command(struct consensus_priv *priv, struct sm_command *cmd, s32 term
 	int err;
 	struct sm_log_entry *entry;
 
-	if (!priv || !priv->log) {
+	if (!priv) {
 		err = -EINVAL;
-		asguard_error("Log ptr points to NULL\n");
+		asguard_error("Priv ptr points to NULL\n");
 		goto error;
 	}
 
@@ -149,7 +149,7 @@ int append_command(struct consensus_priv *priv, struct sm_command *cmd, s32 term
 		goto error;
 	}
 
-	if (priv->log->commit_idx > log_idx) {
+	if (priv->sm_log.commit_idx > log_idx) {
 		err = -EPROTO;
 		asguard_error("BUG - commit_idx=%d is greater than idx(%d) of entry to commit!\n", log->commit_idx, log_idx);
 		goto error;
@@ -164,14 +164,14 @@ int append_command(struct consensus_priv *priv, struct sm_command *cmd, s32 term
 
 	entry->cmd = cmd;
 	entry->term = term;
-	priv->log->entries[log_idx] = entry;
+	priv->sm_log.entries[log_idx] = entry;
 
-	if (priv->log->last_idx < log_idx)
-		priv->log->last_idx = log_idx;
+	if (priv->sm_log.last_idx < log_idx)
+		priv->sm_log.last_idx = log_idx;
 
 	if(log_idx == 0){
 		asguard_dbg("Appended first Entry to leader log\n");
-		write_log(&priv->ins->logger, START_CONSENSUS, RDTSC_ASGUARD);
+		write_log(&priv->ins->logger, START_LOG_REP, RDTSC_ASGUARD);
 	}
 
 	return 0;
