@@ -52,11 +52,11 @@
 	5 /* Number of allowed mlx5 devices that can connect to ASGUARD */
 #define MAX_CPU_NUMBER 55
 
+#define ASGUARD_HEADER_BYTES 64 // TODO: this should be more than enough for UDP/ipv4
 
-#define MAX_ASGUARD_PAYLOAD_BYTES 1300 // asuming an ethernet mtu of ~1500 bytes
+#define MAX_ASGUARD_PAYLOAD_BYTES (1500 - ASGUARD_HEADER_BYTES) // asuming an ethernet mtu of ~1500 bytes
 
 #define ASGUARD_PAYLOAD_BYTES MAX_ASGUARD_PAYLOAD_BYTES
-#define ASGUARD_HEADER_BYTES 64 // TODO: this should be more than enough for UDP/ipv4
 #define ASGUARD_PKT_BYTES (ASGUARD_PAYLOAD_BYTES + ASGUARD_HEADER_BYTES)
 
 int asguard_core_register_nic(int ifindex, int asguard_id);
