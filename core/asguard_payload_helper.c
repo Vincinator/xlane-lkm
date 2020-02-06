@@ -68,7 +68,6 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 		proto_offset += cur_offset;
 
 	}
-
 	spay->protocols_included++;
 
 reuse:

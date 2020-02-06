@@ -254,7 +254,7 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	spminfo->pm_targets[remote_lid].pkt_rx_counter++;
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
-
+	asguard_dbg("received %d instances in payload\n", received_proto_instances);
 	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
 
 	work->cqe_bcnt = cqe_bcnt;
