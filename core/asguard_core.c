@@ -166,10 +166,9 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
 	}
 
-	if(instances - 1 > 0) {
-		asguard_dbg("processing another msg of payload.. (%d) \n", instances);
-		asguard_dbg("bcnt=%u, cur_offset=%u, remaining_offset=%u", bcnt, cur_offset, bcnt - cur_offset);
-	}
+	asguard_dbg("processing another msg of payload.. (%d) \n", instances);
+	asguard_dbg("bcnt=%u, cur_offset=%u, remaining_offset=%u", bcnt, cur_offset, bcnt - cur_offset);
+
 	// handle next payload
 	_handle_sub_payloads(sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset);
 }
