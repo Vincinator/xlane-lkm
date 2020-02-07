@@ -406,10 +406,8 @@ void prepare_log_replication_handler(struct work_struct *w)
 	// ... do not wait for reply from target
 
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
-	asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 
 	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
-	asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 
 	more = _do_prepare_log_replication(aw->sdev, aw->target_id);
 
@@ -421,7 +419,10 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
 		prepare_log_replication_for_target(aw->sdev, aw->target_id);
-	}
+		asguard_dbg("schedule more\n");
+	} else
+		asguard_dbg("nothing to schedule\n");
+
 
 cleanup:
 	kfree(aw);
