@@ -292,9 +292,8 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	// wait until pkt has been emited
 	cur_priv->sdev->pminfo.pm_targets[target_id].pkt_data.contains_log_rep[hb_passive_ix] = 1;
 
-	// // fire only for the target with targetid
+	// fire only for the target with targetid
 	cur_priv->sdev->pminfo.pm_targets[target_id].fire = 1;
-	// // fire as soon as possible
 
 
 	return more;
@@ -443,7 +442,7 @@ void prepare_log_replication_for_target(struct asguard_device *sdev, int target_
 		return;
 
 	if (sdev->pminfo.pm_targets[target_id].pkt_data.updating) {
-		//asguard_dbg("Work not scheduled: Only schedule one log rep work item per target in parallel \n");
+		asguard_dbg("Work not scheduled: Only schedule one log rep work item per target in parallel \n");
 		return;
 	}
 
