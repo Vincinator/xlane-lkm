@@ -443,6 +443,8 @@ static int asguard_pm_loop(void *data)
 	struct pminfo *spminfo = &sdev->pminfo;
 	uint64_t interval = spminfo->hbi;
 	int err;
+	int scheduled_hb = 0;
+	int out_of_sched_hb = 0;
 
 	__prepare_pm_loop(sdev, spminfo);
 
@@ -452,20 +454,24 @@ static int asguard_pm_loop(void *data)
 
 		cur_time = RDTSC_ASGUARD;
 
+		scheduled_hb = can_fire(prev_time, cur_time, interval);
+		out_of_sched_hb = sdev->fire;
+
 		// if (!can_fire(prev_time, cur_time, interval))
 		//	continue;
 
-		if (!sdev->fire && !can_fire(prev_time, cur_time, interval))
+		if (scheduled_hb == 0 && out_of_sched_hb == 0)
 			continue;
 
-		if(sdev->fire)
+		if(out_of_sched_hb){
+			sdev->fire = 0;
 			asguard_dbg("out of hb interval emit\n");
+		}
 
 		prev_time = cur_time;
 
-		err = _emit_pkts(sdev, spminfo, sdev->fire);
+		err = _emit_pkts(sdev, spminfo, out_of_sched_hb);
 
-		sdev->fire = 0;
 
 		if (err) {
 			asguard_pm_stop(spminfo);
