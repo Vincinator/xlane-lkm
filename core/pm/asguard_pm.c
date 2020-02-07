@@ -469,7 +469,7 @@ static int asguard_pm_loop(void *data)
 emit:
 		prev_time = cur_time;
 
-		// Reset fire everytime, because we will sent that packet now anyways
+		// Reset fire everytime, because we will send that packet now anyways
 		sdev->fire = 0;
 
 		err = _emit_pkts(sdev, spminfo, out_of_sched_hb);
