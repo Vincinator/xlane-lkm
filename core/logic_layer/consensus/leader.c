@@ -50,7 +50,7 @@ int _is_potential_commit_idx(struct consensus_priv *priv, int N)
 
 void update_commit_idx(struct consensus_priv *priv)
 {
-	int N, current_N, i;
+	s32 N, current_N, i;
 
 	if (!priv) {
 		asguard_error("priv is NULL!\n");
@@ -91,7 +91,7 @@ void update_commit_idx(struct consensus_priv *priv)
 
 	if (priv->sm_log.commit_idx < N) {
 		priv->sm_log.commit_idx = N;
-		// asguard_dbg("Found new commit_idx %d", N);
+		asguard_dbg("Found new commit_idx %d", N);
 	}
 
 }
