@@ -112,8 +112,10 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 #endif
 	switch (opcode) {
 	case VOTE:
+		asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 
 		mutex_lock(&priv->accept_vote_lock);
+		asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 		accept_vote(ins, remote_lid, pkt);
 		mutex_unlock(&priv->accept_vote_lock);
 

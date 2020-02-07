@@ -344,8 +344,11 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 		// only update aliveness states if not fired out of schedule!
 		if(!fire){
+			asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 			update_aliveness_states(sdev, spminfo, i);
+			asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 			update_alive_msg(sdev, pkt_payload, i);
+			asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 		}
 
 		// after alive msg has been added, the current active buffer can be used again
@@ -356,6 +359,7 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 		if(spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix]){
 			spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix] = 0;
+			asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 			mutex_unlock(&spminfo->pm_targets[i].pkt_data.active_dirty_lock);
 		}
 

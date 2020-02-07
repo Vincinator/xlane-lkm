@@ -273,8 +273,10 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	 * A stable index points to the last entry in the the log, where
 	 * all previous entries exist (stable is not necessarily commited!).
 	 */
+	asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 
 	mutex_lock(&priv->sm_log.mlock);
+	asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 
 	if(*prev_log_idx < priv->sm_log.stable_idx){
 		mutex_unlock(&priv->sm_log.mlock);
