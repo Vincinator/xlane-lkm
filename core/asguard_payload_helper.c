@@ -293,9 +293,8 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	cur_priv->sdev->pminfo.pm_targets[target_id].pkt_data.contains_log_rep[hb_passive_ix] = 1;
 
 	// // fire only for the target with targetid
-	// cur_priv->sdev->pminfo.pm_targets[target_id].fire = 1;
+	cur_priv->sdev->pminfo.pm_targets[target_id].fire = 1;
 	// // fire as soon as possible
-	// cur_priv->sdev->fire = 1;
 
 
 	return more;
@@ -322,6 +321,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 	int hb_passive_ix;
 	struct asguard_payload *pkt_payload;
 	int more = 0;
+	int should_fire = 0;
 
 	if(sdev->is_leader == 0)
 		return -1; // node lost leadership
@@ -359,9 +359,12 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 
 			sdev->pminfo.pm_targets[target_id].scheduled_log_replications++;
 
-
+			should_fire = 1;
 		}
 	}
+
+	if(should_fire)
+		cur_priv->sdev->fire = 1; // fire after all log rep pkts have been prepared.
 
 	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 
