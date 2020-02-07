@@ -40,6 +40,7 @@ int commit_log(struct consensus_priv *priv)
 		goto error;
 
 	log->last_applied = log->commit_idx;
+	asguard_dbg("Commit Index %d\n", log->commit_idx);
 
 	return 0;
 error:
