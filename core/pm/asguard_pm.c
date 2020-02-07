@@ -147,7 +147,7 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 		 */
 
 		// if fire, then do not xmit in batch mode
-		if(fire)
+		if(!fire)
 			ret = netdev_start_xmit(skb, ndev, txq, i + 1 != spminfo->num_of_targets);
 		else
 			ret = netdev_start_xmit(skb, ndev, txq, 0);
@@ -457,6 +457,9 @@ static int asguard_pm_loop(void *data)
 
 		if (!sdev->fire && !can_fire(prev_time, cur_time, interval))
 			continue;
+
+		if(sdev->fire)
+			asguard_dbg("out of hb interval emit\n");
 
 		prev_time = cur_time;
 
