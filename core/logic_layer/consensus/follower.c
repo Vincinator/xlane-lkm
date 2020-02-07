@@ -406,8 +406,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 					asguard_dbg("detected consensus BUG. commit idx is greater than local stable idx\n");
 					asguard_dbg("\t leader commit idx: %d, local stable idx: %d\n", param2, priv->sm_log.stable_idx);
 				} else {
-					priv->sm_log.commit_idx = param2;
-					commit_log(priv);
+					// priv->sm_log.commit_idx = param2;
+					// commit_log(priv);
 				}
 			}
 		}
