@@ -198,8 +198,6 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			priv->sm_log.next_index[remote_lid] = param3 + 1;
 
 		}
-		// send next append (DEBUG ONLY.. )
-		prepare_log_replication_for_target(priv->sdev, remote_lid);
 
 		break;
 	case ALIVE:
