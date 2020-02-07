@@ -261,10 +261,10 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 
 	// TODO: check!
-	if(priv->sm_log.commit_idx > prev_log_commit_idx)
-		asguard_dbg("Recevied commit index is lower than local commit idx!\n ");
+	if(priv->sm_log.commit_idx > *prev_log_commit_idx)
+		asguard_dbg("Recevied commit index is lower than local commit idx! %d\n ");
 	else
-		priv->sm_log.commit_idx = prev_log_commit_idx;
+		priv->sm_log.commit_idx = *prev_log_commit_idx;
 
 	/*   If we receive a log replication from the current leader,
 	 * 	 we can continue to store it even if a previous part is missing.
