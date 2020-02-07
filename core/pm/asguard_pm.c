@@ -343,11 +343,10 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		invalidate_proto_data(sdev, pkt_payload, i);
 
 		// only update aliveness states if not fired out of schedule!
-		if(!fire)
+		if(!fire){
 			update_aliveness_states(sdev, spminfo, i);
-
-		// append alive msg before others can append more consensus operations
-		update_alive_msg(sdev, pkt_payload, i);
+			update_alive_msg(sdev, pkt_payload, i);
+		}
 
 		// after alive msg has been added, the current active buffer can be used again
 		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
