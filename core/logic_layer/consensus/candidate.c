@@ -38,10 +38,10 @@ int setup_nomination(struct proto_instance *ins)
 
 	setup_le_broadcast_msg(ins, NOMI);
 
-	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
-		priv->sdev->pminfo.pm_targets[i].fire = 1;
+	// for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
+	// 	priv->sdev->pminfo.pm_targets[i].fire = 1;
 
-	priv->sdev->fire = 1;
+	// priv->sdev->fire = 1;
 	return 0;
 }
 
