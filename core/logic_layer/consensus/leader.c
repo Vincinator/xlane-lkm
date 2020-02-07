@@ -174,9 +174,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// asguard_dbg("Received Reply with State=success.. rcluster_id=%d, param4=%d\n", rcluster_id, param4);
 
 			priv->sm_log.match_index[remote_lid] = param4;
-			asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 			update_commit_idx(priv);
-			asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 
 			// check for unstable logs at remote & init resubmission of missing part
 
@@ -186,14 +184,11 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			/* store start index of entries to be retransmitted.
 			 * Will only transmit one packet, receiver may drop entry duplicates.
 			 */
-			asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 
 			queue_retransmission(priv, remote_lid, param3);
 
 			priv->sm_log.match_index[remote_lid] = param4;
-			asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 			update_commit_idx(priv);
-			asguard_dbg("DEBUG: Passed %s %d \n", __FUNCTION__,__LINE__);
 
 		} else if(param2 == 0) {
 			// append rpc failed!
