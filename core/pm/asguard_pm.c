@@ -454,7 +454,6 @@ static int asguard_pm_loop(void *data)
 
 		cur_time = RDTSC_ASGUARD;
 
-
 		scheduled_hb = can_fire(prev_time, cur_time, interval);
 
 		if(scheduled_hb)
@@ -465,16 +464,13 @@ static int asguard_pm_loop(void *data)
 		if(out_of_sched_hb)
 			goto emit;
 
-
-
 		continue;
 
 emit:
 		prev_time = cur_time;
 
-		if(out_of_sched_hb){
-			sdev->fire = 0;
-		}
+		// Reset fire everytime, because we will sent that packet now anyways
+		sdev->fire = 0;
 
 		err = _emit_pkts(sdev, spminfo, out_of_sched_hb);
 
