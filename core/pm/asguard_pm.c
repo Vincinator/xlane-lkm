@@ -68,8 +68,7 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 {
 	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
-	int hb_active_ix;
-	struct asguard_payload *pkt_payload, *hb_pkt_payload;
+	struct asguard_payload *hb_pkt_payload;
 	struct node_addr *naddr;
 
 	// BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
@@ -299,7 +298,6 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 {
 	struct asguard_payload *pkt_payload;
 	int i;
-	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
 	enum tsstate ts_state = sdev->ts_state;
 
@@ -562,7 +560,7 @@ static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 	local_irq_save(flags);
 	local_bh_disable();
 
-	_emit_pkts(sdev, spminfo, sdev->fire);
+	//_emit_pkts(sdev, spminfo, sdev->fire);
 
 	local_bh_enable();
 	local_irq_restore(flags);
