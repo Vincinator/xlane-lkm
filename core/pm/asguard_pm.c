@@ -468,6 +468,12 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 		if (sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL)
 			sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
 
+	for(i = 0; i < sdev->pminfo.number_of_targets; i++){
+		if(mutex_is_locked(&sdev->pminfo.pm_targets[i].pkt_data.active_dirty_lock))
+			mutex_unlock(&sdev->pminfo.pm_targets[i].pkt_data.active_dirty_lock);
+	}
+
+
 }
 #endif // ! CONFIG_KUNIT
 
