@@ -301,6 +301,11 @@ struct asguard_packet_data {
 	 */
 	struct asguard_payload *pkt_payload[2];
 
+	struct asguard_payload *hb_pkt_payload;
+
+
+	strict
+
 	int hb_active_ix;
 
 	int contains_log_rep[2];

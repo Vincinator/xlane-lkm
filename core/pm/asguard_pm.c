@@ -69,23 +69,25 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
 	int hb_active_ix;
-	struct asguard_payload *pkt_payload;
+	struct asguard_payload *pkt_payload, *hb_pkt_payload;
 	struct node_addr *naddr;
 
 	// BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
+		// hb_active_ix =
+		//      spminfo->pm_targets[i].pkt_data.hb_active_ix;
 
-		hb_active_ix =
-		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
+		// pkt_payload =
+		// 	spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
-		pkt_payload =
-			spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
+		hb_pkt_payload =
+			spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
 
 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
 
 		/* Setup SKB */
-		spminfo->pm_targets[i].skb = compose_skb(sdev, naddr, pkt_payload);
+		spminfo->pm_targets[i].skb = compose_skb(sdev, naddr, hb_pkt_payload);
 		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
 	}
 }
@@ -292,8 +294,8 @@ static void update_alive_msg(struct asguard_device *sdev, struct asguard_payload
 
 }
 
-static inline int _emit_pkts(struct asguard_device *sdev,
-		struct pminfo *spminfo, int fire)
+static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
+		struct pminfo *spminfo)
 {
 	struct asguard_payload *pkt_payload;
 	int i;
@@ -304,8 +306,59 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 	/* Prepare heartbeat packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
-		if(fire && !spminfo->pm_targets[i].fire)
+		pkt_payload =
+		     spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
+		//asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
+		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
+					 pkt_payload);
+	}
+
+	/* Send heartbeats to all targets */
+	asguard_send_hbs(ndev, spminfo, 0);
+
+	// TODO: timestamp for scheduled
+	if(ts_state == ASGUARD_TS_RUNNING)
+		asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
+
+	/* Leave Heartbeat pkts in clean state */
+	for (i = 0; i < spminfo->num_of_targets; i++) {
+
+		pkt_payload =
+		     spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
+
+		/* Protocols have been emitted, do not send them again ..
+		 * .. and free the reservations for new protocols */
+		invalidate_proto_data(sdev, pkt_payload, i);
+
+		update_aliveness_states(sdev, spminfo, i);
+		update_alive_msg(sdev, pkt_payload, i);
+
+	}
+
+	if(sdev->consensus_priv->nstate != LEADER) {
+		update_leader(sdev, spminfo);
+	}
+
+	return 0;
+}
+
+
+
+static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
+		struct pminfo *spminfo)
+{
+	struct asguard_payload *pkt_payload;
+	int i;
+	int hb_active_ix;
+	struct net_device *ndev = sdev->ndev;
+	enum tsstate ts_state = sdev->ts_state;
+
+	/* Prepare heartbeat packets */
+	for (i = 0; i < spminfo->num_of_targets; i++) {
+
+		if(!spminfo->pm_targets[i].fire)
 			continue;
+
 		// Always update payload to avoid jitter!
 		hb_active_ix =
 		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
@@ -322,16 +375,17 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 
 	/* Send heartbeats to all targets */
 	// TODO: send hb to only one target if hb triggered via sdev->fire!?
-	asguard_send_hbs(ndev, spminfo, fire);
+	asguard_send_hbs(ndev, spminfo, 1);
 
-	if(ts_state == ASGUARD_TS_RUNNING) {
+	// TODO: timestamp for non-scheduled
+	if(ts_state == ASGUARD_TS_RUNNING)
 		asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
-	}
+
 
 	/* Leave Heartbeat pkts in clean state */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
-		if(fire && !spminfo->pm_targets[i].fire)
+		if(!spminfo->pm_targets[i].fire)
 			continue;
 
 		hb_active_ix =
@@ -340,34 +394,19 @@ static inline int _emit_pkts(struct asguard_device *sdev,
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
-
 		/* Protocols have been emitted, do not sent them again ..
 		 * .. and free the reservations for new protocols */
 		invalidate_proto_data(sdev, pkt_payload, i);
 
-		// only update aliveness states if not fired out of schedule!
-		if(!fire){
-			update_aliveness_states(sdev, spminfo, i);
-			update_alive_msg(sdev, pkt_payload, i);
-		}
-
 		// after alive msg has been added, the current active buffer can be used again
 		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
-
-		if(fire)
-			spminfo->pm_targets[i].fire = 0;
+		spminfo->pm_targets[i].fire = 0;
 
 		if(spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix]){
 			spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix] = 0;
 			mutex_unlock(&spminfo->pm_targets[i].pkt_data.active_dirty_lock);
 		}
 
-	}
-
-	if(sdev->consensus_priv->nstate != LEADER) {
-		update_leader(sdev, spminfo);
-		// if(sdev->consensus_priv->sm_log.next_retrans_req_idx == -2)
-		// 	sdev->consensus_priv->sm_log.next_retrans_req_idx = -1;
 	}
 
 	return 0;
@@ -469,10 +508,12 @@ static int asguard_pm_loop(void *data)
 emit:
 		prev_time = cur_time;
 
-		if(out_of_sched_hb)
+		if(scheduled_hb) {
+			err = _emit_pkts_scheduled(sdev, spminfo);
+		} else if (out_of_sched_hb){
 			sdev->fire = 0;
-
-		err = _emit_pkts(sdev, spminfo, out_of_sched_hb);
+			err = _emit_pkts_non_scheduled(sdev, spminfo);
+		}
 
 		if (err) {
 			asguard_pm_stop(spminfo);
