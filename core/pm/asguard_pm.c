@@ -153,11 +153,11 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 		 * work can be done once per batch process (vs. for each pkt).
 		 */
 
-		// if fire, then do not xmit in batch mode
-		if(!fire)
-			ret = netdev_start_xmit(skb, ndev, txq, i + 1 != spminfo->num_of_targets);
-		else
-			ret = netdev_start_xmit(skb, ndev, txq, 0);
+		// // if fire, then do not xmit in batch mode
+		// if(!fire)
+		// 	ret = netdev_start_xmit(skb, ndev, txq, i + 1 != spminfo->num_of_targets);
+		// else
+		ret = netdev_start_xmit(skb, ndev, txq, 0);
 
 		switch (ret) {
 		case NETDEV_TX_OK:
