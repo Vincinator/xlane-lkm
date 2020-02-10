@@ -535,7 +535,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->pkt_data.hb_active_ix = 0;
 	pmtarget->pkt_data.active_dirty = 0;
 	mutex_init(&pmtarget->pkt_data.active_dirty_lock);
-	pmtarget->pkt_data.updating = -1;
+	pmtarget->pkt_data.scheduled_idx = -1;
 	pmtarget->pkt_data.naddr.dst_ip = ip;
 	pmtarget->pkt_data.naddr.cluster_id = cluster_id;
 	pmtarget->pkt_data.protocol_id = protocol_id;

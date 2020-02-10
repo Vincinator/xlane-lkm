@@ -312,11 +312,6 @@ struct asguard_packet_data {
 
 	struct mutex active_dirty_lock;
 
-	/* if updating != 0, then pacemaker will not update skb
-	 * uses old values in skb until updating == 0
-	 */
-	int updating;
-
 	/* pacemaker locks payload if it is using it */
 	spinlock_t lock;
 };
