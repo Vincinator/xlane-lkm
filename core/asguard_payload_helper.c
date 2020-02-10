@@ -381,6 +381,7 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id)
 		asguard_dbg("node is not a leader\n");
 		return;
 	}
+
 	// if pacemaker has been stopped, do not schedule leader tx work
 	if(sdev->pminfo.state != ASGUARD_PM_EMITTING) {
 		asguard_dbg("pacemaker not in emitting state\n");
