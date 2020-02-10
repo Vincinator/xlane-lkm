@@ -422,6 +422,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 		asguard_dbg("skipping reschedule - more=%d\n", more);
 		goto cleanup;
 	}
+
 	if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
 		prepare_log_replication_for_target(aw->sdev, aw->target_id);
 	} else
