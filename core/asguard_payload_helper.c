@@ -480,7 +480,7 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 
 	if(next_index == match_index) {
 		asguard_dbg("nothing to send for target %d\n", target_id);
-		continue;
+		return;
 	}
 
 	if (sdev->pminfo.pm_targets[target_id].pkt_data.updating) {
