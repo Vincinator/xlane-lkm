@@ -419,25 +419,10 @@ cleanup:
 	kfree(aw);
 }
 
-int get_next_idx_for_target(struct asguard_device *sdev, int target_id, int &retrans)
+int get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int &retrans)
 {
 	int next_index = -1;
 	int match_index;
-
-	struct consensus_priv *cur_priv = sdev->ins;
-
-	// TODO: utilise all protocol instances, currently only support for one consensus proto instance - the first
-	for (j = 0; j < sdev->num_of_proto_instances; j++) {
-		if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
-			// get corresponding local instance data for consensus
-			cur_priv =
-				(struct consensus_priv *)sdev->protos[j]->proto_data;
-			break;
-		}
-	}
-
-	if(cur_priv == NULL)
-		return -2;
 
 	write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
@@ -463,7 +448,9 @@ int get_next_idx_for_target(struct asguard_device *sdev, int target_id, int &ret
 
 void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id)
 {
-	int next_index, match_index, int retrans;
+	int next_index, match_index;
+	int retrans;
+	struct consensus_priv *cur_priv = NULL;
 
 	if(sdev->is_leader == 0)
 		return;
@@ -471,14 +458,27 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
 		return;
 
-	next_index = get_next_idx_for_target(sdev, target_id, &retrans);
+	// TODO: utilise all protocol instances, currently only support for one consensus proto instance - the first
+	for (j = 0; j < sdev->num_of_proto_instances; j++) {
+		if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
+			// get corresponding local instance data for consensus
+			cur_priv =
+				(struct consensus_priv *)sdev->protos[j]->proto_data;
+			break;
+		}
+	}
+
+	if(cur_priv == NULL)
+		return -2;
+
+	next_index = get_next_idx_for_target(cur_priv, target_id, &retrans);
 
 	if(next_index == -2){
 		asguard_error("BUG. Invalid local protocol data. \n ");
 		return;
 	}
 
-	match_index = _get_match_idx(sdev, target_id);
+	match_index = _get_match_idx(cur_priv, target_id);
 
 	if(next_index == match_index) {
 		asguard_dbg("nothing to send for target %d\n", target_id);
