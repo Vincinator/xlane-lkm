@@ -493,8 +493,8 @@ void print_follower_stats(struct consensus_priv *priv)
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
 		asguard_dbg("Target infos %d:", i);
-		asguard_dbg("\t pkt TX counter: %d\n",i, priv->sdev->pminfo.pm_targets[i].pkt_tx_counter);
-		asguard_dbg("\t pkt RX counter: %d\n",i, priv->sdev->pminfo.pm_targets[i].pkt_rx_counter);
+		asguard_dbg("\t pkt TX counter: %d\n",  priv->sdev->pminfo.pm_targets[i].pkt_tx_counter);
+		asguard_dbg("\t pkt RX counter: %d\n", priv->sdev->pminfo.pm_targets[i].pkt_rx_counter);
 		asguard_dbg("\t received log reps(all): %d\n", priv->sdev->pminfo.pm_targets[i].received_log_replications);
 	}
 
