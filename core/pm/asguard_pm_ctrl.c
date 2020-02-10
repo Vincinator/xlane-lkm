@@ -224,6 +224,67 @@ static int asguard_hbi_open(struct inode *inode, struct file *file)
 }
 
 
+static ssize_t asguard_ww_write(struct file *file,
+					const char __user *buffer, size_t count,
+					loff_t *data)
+{
+	int err;
+	char kernel_buffer[MAX_PROCFS_BUF];
+	struct pminfo *spminfo =
+		(struct pminfo *)PDE_DATA(file_inode(file));
+	long new_ww = -1;
+
+	if (!spminfo)
+		return -ENODEV;
+
+	if (count == 0) {
+		err = -EINVAL;
+		goto error;
+	}
+
+	err = copy_from_user(kernel_buffer, buffer, count);
+
+	if (err) {
+		asguard_error("Copy from user failed%s\n", __func__);
+		goto error;
+	}
+
+	kernel_buffer[count] = '\0';
+
+	err = kstrtol(kernel_buffer, 0, &new_ww);
+
+	if (err) {
+		asguard_error("Error converting input%s\n", __func__);
+		goto error;
+	}
+
+	spminfo->waiting_window = new_ww;
+
+	return count;
+error:
+	asguard_error("Setting of waiting Window failed\n", __func__);
+	return err;
+}
+
+static int asguard_ww_show(struct seq_file *m, void *v)
+{
+	struct pminfo *spminfo =
+		(struct pminfo *)m->private;
+
+	if (!spminfo)
+		return -ENODEV;
+
+	seq_printf(m, "%llu\n", spminfo->ww);
+	return 0;
+}
+
+static int asguard_ww_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, asguard_ww_show,
+			   PDE_DATA(file_inode(file)));
+}
+
+
 static ssize_t asguard_payload_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
 				   loff_t *data)
@@ -557,6 +618,14 @@ static const struct file_operations asguard_hbi_ops = {
 	.release = single_release,
 };
 
+static const struct file_operations asguard_ww_ops = {
+	.owner = THIS_MODULE,
+	.open = asguard_ww_open,
+	.write = asguard_ww_write,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = single_release,
+};
 
 static const struct file_operations asguard_payload_ops = {
 	.owner = THIS_MODULE,
@@ -596,7 +665,14 @@ void init_asguard_pm_ctrl_interfaces(struct asguard_device *sdev)
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/hbi",
 		 sdev->ifindex);
+
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_hbi_ops,
+			 &sdev->pminfo);
+
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/waiting_window",
+		 sdev->ifindex);
+
+	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_ww_ops,
 			 &sdev->pminfo);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/targets",
@@ -630,6 +706,10 @@ void clean_asguard_pm_ctrl_interfaces(struct asguard_device *sdev)
 	remove_proc_entry(name_buf, NULL);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/hbi",
+		 sdev->ifindex);
+	remove_proc_entry(name_buf, NULL);
+
+	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/waiting_window",
 		 sdev->ifindex);
 	remove_proc_entry(name_buf, NULL);
 

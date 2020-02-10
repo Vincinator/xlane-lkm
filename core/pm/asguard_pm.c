@@ -33,9 +33,15 @@ static inline bool asguard_pacemaker_is_alive(struct pminfo *spminfo)
 	return spminfo->state == ASGUARD_PM_EMITTING;
 }
 
-static inline bool can_fire(uint64_t prev_time, uint64_t cur_time, uint64_t interval)
+static inline bool out_of_schedule_tx(uint64_t prev_time, uint64_t cur_time, uint64_t interval)
 {
 	return (cur_time - prev_time) >= interval;
+}
+
+
+static inline bool scheduled_tx(uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t waiting_window, int fire)
+{
+	return (fire && ((cur_time - prev_time) <= (interval - waiting_window)));
 }
 
 const char *pm_state_string(enum pmstate state)
@@ -497,12 +503,12 @@ static int asguard_pm_loop(void *data)
 
 		cur_time = RDTSC_ASGUARD;
 
-		scheduled_hb = can_fire(prev_time, cur_time, interval);
+		scheduled_hb = scheduled_tx(prev_time, cur_time, interval);
 
 		if(scheduled_hb)
 			goto emit;
 
-		out_of_sched_hb = sdev->fire;
+		out_of_sched_hb = out_of_schedule_tx(prev_time, cur_time, interval, spminfo->waiting_window, sdev->fire);
 
 		if(out_of_sched_hb)
 			goto emit;
