@@ -419,7 +419,7 @@ cleanup:
 	kfree(aw);
 }
 
-int get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int &retrans)
+int get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int *retrans)
 {
 	int next_index = -1;
 	int match_index;
