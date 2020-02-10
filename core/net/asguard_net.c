@@ -326,6 +326,24 @@ void send_pkt(struct net_device *ndev, struct sk_buff *skb)
 	}
 
 	ret = netdev_start_xmit(skb, ndev, txq, 0);
+	switch (ret) {
+	case NETDEV_TX_OK:
+		asguard_dbg("NETDEV TX OK\n");
+		break;
+	case NET_XMIT_DROP:
+		asguard_dbg("NETDEV TX DROP\n");
+		break;
+	case NET_XMIT_CN:
+		asguard_dbg("NETDEV XMIT CN\n");
+		break;
+	default:
+		asguard_dbg("NETDEV UNKNOWN \n");
+		/* fall through */
+	case NETDEV_TX_BUSY:
+		asguard_dbg("NETDEV TX BUSY\n");
+		break;
+	}
+
 unlock:
 	HARD_TX_UNLOCK(ndev, txq);
 }
