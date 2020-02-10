@@ -200,6 +200,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			 */
 			queue_retransmission(priv, remote_lid, param3);
 
+			check_pending_log_rep(sdev);
 			// priv->sm_log.match_index[remote_lid] = param4;
 			// update_commit_idx(priv);
 
@@ -345,8 +346,7 @@ int start_leader(struct proto_instance *ins)
 	priv->sdev->tx_port = 3320;
 	priv->candidate_counter = 0;
 
-	//prepare_log_replication(priv->sdev);
-
+	check_pending_log_rep(priv->sdev);
 	return 0;
 }
 EXPORT_SYMBOL(start_leader);

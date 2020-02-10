@@ -113,8 +113,7 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	}
 
 	// notify the leader to start the log replication (application logic)
-	prepare_log_replication(priv->sdev);
-
+	check_pending_log_rep(priv->sdev);
 	return HRTIMER_RESTART;
 error:
 	asguard_error("Evaluation Stopped errorcode=%d\n", err);

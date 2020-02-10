@@ -115,6 +115,7 @@ s32 _get_match_idx(struct consensus_priv *priv, int target_id)
 
 	return match_index;
 }
+EXPORT_SYMBOL(_get_match_idx);
 
 s32 _get_next_idx(struct consensus_priv *priv, int target_id)
 {
@@ -195,7 +196,7 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spa
 }
 EXPORT_SYMBOL(setup_alive_msg);
 
-int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, int hb_passive_ix)
+int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, int hb_passive_ix, int next_index)
 {
 	s32 next_index, local_last_idx;
 	s32 prev_log_term, leader_commit_idx;
@@ -205,22 +206,6 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	int retrans = 0;
 	struct retrans_request *cur_rereq;
 
-	write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
-
-	cur_rereq = list_first_entry_or_null(
-					&cur_priv->sm_log.retrans_head[target_id],
-					struct retrans_request,
-					retrans_req_head);
-
-	if (cur_rereq != NULL) {
-		next_index = cur_rereq->request_idx;
-		asguard_dbg("retransmission: %d", next_index);
-		list_del(&cur_rereq->retrans_req_head);
-		kfree(cur_rereq);
-		retrans = 1;
-	} else {
-		next_index = _get_next_idx(cur_priv, target_id);
-	}
 
 	write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
@@ -311,7 +296,7 @@ void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *
 EXPORT_SYMBOL(invalidate_proto_data);
 
 
-int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
+int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, int next_index)
 {
 	struct consensus_priv *cur_priv = NULL;
 	int j;
@@ -353,7 +338,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 				continue;
 
 			// TODO: optimize append calls that do not contain any log updates
-			more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, target_id, hb_passive_ix);
+			more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, target_id, hb_passive_ix, next_index);
 
 			sdev->pminfo.pm_targets[target_id].scheduled_log_replications++;
 
@@ -372,7 +357,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id)
 
 void prepare_log_replication_handler(struct work_struct *w);
 
-void _schedule_log_rep(struct asguard_device *sdev, int target_id)
+void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_index)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
 
@@ -391,6 +376,7 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id)
 	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
 	work->sdev = sdev;
 	work->target_id = target_id;
+	work->next_index = next_index;
 
 	INIT_WORK(&work->work, prepare_log_replication_handler);
 	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
@@ -413,7 +399,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
 
-	more = _do_prepare_log_replication(aw->sdev, aw->target_id);
+	more = _do_prepare_log_replication(aw->sdev, aw->target_id, aw->next_index);
 
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
@@ -424,7 +410,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 	}
 
 	if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
-		prepare_log_replication_for_target(aw->sdev, aw->target_id);
+		check_pending_log_rep_for_target(aw->sdev, aw->target_id);
 	} else
 		asguard_dbg("nothing to schedule\n");
 
@@ -433,14 +419,70 @@ cleanup:
 	kfree(aw);
 }
 
-void prepare_log_replication_for_target(struct asguard_device *sdev, int target_id)
+int get_next_idx_for_target(struct asguard_device *sdev, int target_id)
 {
+	int next_index = -1;
+	int match_index;
+
+	struct consensus_priv *cur_priv = sdev->ins;
+
+	// TODO: utilise all protocol instances, currently only support for one consensus proto instance - the first
+	for (j = 0; j < sdev->num_of_proto_instances; j++) {
+		if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
+			// get corresponding local instance data for consensus
+			cur_priv =
+				(struct consensus_priv *)sdev->protos[j]->proto_data;
+			break;
+		}
+	}
+
+	if(cur_priv == NULL)
+		return -2;
+
+	write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
+
+	cur_rereq = list_first_entry_or_null(
+					&cur_priv->sm_log.retrans_head[target_id],
+					struct retrans_request,
+					retrans_req_head);
+
+	if (cur_rereq != NULL) {
+		next_index = cur_rereq->request_idx;
+		asguard_dbg("reschedule index: %d", next_index);
+		list_del(&cur_rereq->retrans_req_head);
+		kfree(cur_rereq);
+		retrans = 1;
+	} else {
+		next_index = _get_next_idx(cur_priv, target_id);
+	}
+	write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
+
+	return next_index;
+}
+
+void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id)
+{
+	int next_index, match_index;
 
 	if(sdev->is_leader == 0)
 		return;
 
 	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
 		return;
+
+	next_index = get_next_idx_for_target(sdev, target_id);
+
+	if(next_index == -2){
+		asguard_error("BUG. Invalid local protocol data. \n ");
+		return;
+	}
+
+	match_index = _get_match_idx(sdev, target_id);
+
+	if(next_index == match_index) {
+		asguard_dbg("nothing to send for target %d\n", target_id);
+		continue;
+	}
 
 	if (sdev->pminfo.pm_targets[target_id].pkt_data.updating) {
 		asguard_dbg("Work not scheduled: Only schedule one log rep work item per target in parallel \n");
@@ -449,17 +491,21 @@ void prepare_log_replication_for_target(struct asguard_device *sdev, int target_
 
 	sdev->pminfo.pm_targets[target_id].pkt_data.updating = 1;
 
-	_schedule_log_rep(sdev, target_id);
-
+	_schedule_log_rep(sdev, target_id, next_index);
 }
-EXPORT_SYMBOL(prepare_log_replication_for_target);
+EXPORT_SYMBOL(check_pending_log_rep_for_target);
 
-void prepare_log_replication(struct asguard_device *sdev)
+
+void check_pending_log_rep(struct asguard_device *sdev)
 {
 	int i;
 
 	for(i = 0; i < sdev->pminfo.num_of_targets; i++)
-		prepare_log_replication_for_target(sdev, i);
+		check_pending_log_rep_for_target(sdev, i);
 
 }
-EXPORT_SYMBOL(prepare_log_replication);
+EXPORT_SYMBOL(check_pending_log_rep);
+
+
+
+

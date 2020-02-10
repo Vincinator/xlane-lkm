@@ -112,10 +112,11 @@ int get_proto_offset(char *cur);
 char *asguard_get_proto(struct asguard_payload *spay, int n);
 char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 proto_size);
 void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay, int i);
-int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, int hb_passive_ix);
+int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, int hb_passive_ix, int next_index);
 int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id);
-void prepare_log_replication(struct asguard_device *sdev);
-void prepare_log_replication_for_target(struct asguard_device *sdev, int target_id);
+void check_pending_log_rep(struct asguard_device *sdev);
+s32 _get_match_idx(struct consensus_priv *priv, int target_id);
+void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id);
 
 
 #endif  /* _ASGUARD_PHELP_H_ */
