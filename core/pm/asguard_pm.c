@@ -159,10 +159,28 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 		else
 			ret = netdev_start_xmit(skb, ndev, txq, 0);
 
-		if(ret != NETDEV_TX_OK) {
-			asguard_error("netdev_start_xmit returned %d - DEBUG THIS - exiting PM now. \n", ret);
-			goto unlock;
+		switch (ret) {
+		case NETDEV_TX_OK:
+			asguard_dbg("NETDEV TX OK\n");
+			break;
+		case NET_XMIT_DROP:
+			asguard_dbg("NETDEV TX DROP\n");
+			break;
+		case NET_XMIT_CN:
+			asguard_dbg("NETDEV XMIT CN\n");
+			break;
+		default:
+			asguard_dbg("NETDEV UNKNOWN \n");
+			/* fall through */
+		case NETDEV_TX_BUSY:
+			asguard_dbg("NETDEV TX BUSY\n");
+			break;
 		}
+
+		// if(ret != NETDEV_TX_OK) {
+		// 	asguard_error("netdev_start_xmit returned %d - DEBUG THIS - exiting PM now. \n", ret);
+		// 	goto unlock;
+		// }
 
 		spminfo->pm_targets[i].pkt_tx_counter++;
 
