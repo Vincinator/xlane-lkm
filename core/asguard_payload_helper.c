@@ -443,6 +443,8 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 		*retrans = 1;
 	} else {
 		next_index = _get_next_idx(cur_priv, target_id);
+		asguard_dbg("next index: %d", next_index);
+
 		*retrans = 0;
 	}
 	write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
