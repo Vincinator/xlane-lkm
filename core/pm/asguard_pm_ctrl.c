@@ -274,7 +274,7 @@ static int asguard_ww_show(struct seq_file *m, void *v)
 	if (!spminfo)
 		return -ENODEV;
 
-	seq_printf(m, "%llu\n", spminfo->ww);
+	seq_printf(m, "%llu\n", spminfo->waiting_window);
 	return 0;
 }
 
