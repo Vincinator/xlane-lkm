@@ -196,15 +196,13 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spa
 }
 EXPORT_SYMBOL(setup_alive_msg);
 
-int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, int hb_passive_ix, int next_index, int retrans)
+int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, int hb_passive_ix, s32 next_index, int retrans)
 {
-	s32 next_index, local_last_idx;
+	s32 local_last_idx;
 	s32 prev_log_term, leader_commit_idx;
 	s32 num_entries = 0;
 	char *pkt_payload_sub;
 	int more = 0;
-	struct retrans_request *cur_rereq;
-
 
 	write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
@@ -295,7 +293,7 @@ void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *
 EXPORT_SYMBOL(invalidate_proto_data);
 
 
-int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, int next_index, int retrans)
+int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 next_index, int retrans)
 {
 	struct consensus_priv *cur_priv = NULL;
 	int j;
@@ -356,7 +354,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, int 
 
 void prepare_log_replication_handler(struct work_struct *w);
 
-void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_index, int retrans)
+void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_index, s32 retrans)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
 
@@ -419,9 +417,9 @@ cleanup:
 	kfree(aw);
 }
 
-int get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int *retrans)
+s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int *retrans)
 {
-	int next_index = -1;
+	s32 next_index = -1;
 	int match_index;
 
 	write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
@@ -448,7 +446,7 @@ int get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 
 void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id)
 {
-	int next_index, match_index;
+	s32 next_index, match_index;
 	int retrans;
 	struct consensus_priv *cur_priv = NULL;
 	int j;
