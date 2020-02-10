@@ -312,6 +312,8 @@ struct asguard_packet_data {
 
 	struct mutex active_dirty_lock;
 
+	s32 scheduled_idx;
+
 	/* pacemaker locks payload if it is using it */
 	spinlock_t lock;
 };
