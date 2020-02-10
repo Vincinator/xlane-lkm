@@ -214,9 +214,8 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 	if (cur_rereq != NULL) {
 		next_index = cur_rereq->request_idx;
-
+		asguard_dbg("retransmission: %d", next_index);
 		list_del(&cur_rereq->retrans_req_head);
-
 		kfree(cur_rereq);
 		retrans = 1;
 	} else {
