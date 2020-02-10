@@ -172,7 +172,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			//priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
 			// asguard_dbg("Received Reply with State=success.. rcluster_id=%d, param4=%d\n", rcluster_id, param4);
 
-			if(priv->sm_log.last_idx > param4) {
+			if(priv->sm_log.last_idx < param4) {
 				asguard_error("(1) match index (%d) is greater than local last idx (%d)!\n", param4, priv->sm_log.last_idx);
 				break; // ignore this faulty packet
 			}
