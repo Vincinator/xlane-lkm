@@ -421,6 +421,8 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 {
 	s32 next_index = -1;
 	int match_index;
+	struct retrans_request *cur_rereq = NULL;
+
 
 	write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
