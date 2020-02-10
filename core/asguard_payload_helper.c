@@ -451,6 +451,7 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 	int next_index, match_index;
 	int retrans;
 	struct consensus_priv *cur_priv = NULL;
+	int j;
 
 	if(sdev->is_leader == 0)
 		return;
@@ -468,15 +469,12 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 		}
 	}
 
-	if(cur_priv == NULL)
-		return -2;
-
-	next_index = get_next_idx_for_target(cur_priv, target_id, &retrans);
-
-	if(next_index == -2){
-		asguard_error("BUG. Invalid local protocol data. \n ");
+	if(cur_priv == NULL){
+		asguard_error("BUG. Invalid local proto data");
 		return;
 	}
+
+	next_index = get_next_idx_for_target(cur_priv, target_id, &retrans);
 
 	match_index = _get_match_idx(cur_priv, target_id);
 
