@@ -384,7 +384,7 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 
 	return;
 exit:
-	sdev->pminfo.pm_targets[target_id].pkt_data.updating = 0;
+	sdev->pminfo.pm_targets[target_id].pkt_data.updating = -1;
 
 }
 
@@ -401,10 +401,10 @@ void prepare_log_replication_handler(struct work_struct *w)
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
 
 	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
+	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = -1;
 
 	more = _do_prepare_log_replication(aw->sdev, aw->target_id, aw->next_index, aw->retrans);
 
-	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
 	/* not ready to prepare log replication */
 	if(more < 0){
@@ -488,12 +488,12 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 		return;
 	}
 
-	if (sdev->pminfo.pm_targets[target_id].pkt_data.updating) {
-		asguard_dbg("Work not scheduled: Only schedule one log rep work item per target in parallel \n");
+	if (sdev->pminfo.pm_targets[target_id].pkt_data.updating == next_index) {
+		asguard_dbg("Already scheduled %d for target %d\n", next_index, target_id);
 		return;
 	}
 
-	sdev->pminfo.pm_targets[target_id].pkt_data.updating = 1;
+	sdev->pminfo.pm_targets[target_id].pkt_data.updating = next_index;
 
 	_schedule_log_rep(sdev, target_id, next_index, retrans);
 }
