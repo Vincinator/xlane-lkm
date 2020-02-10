@@ -173,7 +173,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// asguard_dbg("Received Reply with State=success.. rcluster_id=%d, param4=%d\n", rcluster_id, param4);
 
 			if(priv->sm_log.last_idx > param4) {
-				asguard_error("match index (%d) is greater than local last idx!\n", param4);
+				asguard_error("(1) match index (%d) is greater than local last idx (%d)!\n", param4, priv->sm_log.last_idx);
 				break; // ignore this faulty packet
 			}
 
@@ -186,12 +186,12 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// asguard_dbg("Received Reply with State=retransmission.. rcluster_id=%d, param3=%d, param4=%d\n",rcluster_id, param3, param4);
 
 			if(priv->sm_log.last_idx < param4) {
-				asguard_error("match index (%d) is greater than local last idx!\n", param4);
+				asguard_error("(2) match index (%d) is greater than local last idx (%d)!\n", param4, priv->sm_log.last_idx);
 				break; // ignore this faulty packet
 			}
 
 			if(priv->sm_log.last_idx < param3) {
-				asguard_error("follower requested log with invalid index (%d)", param3);
+				asguard_error("(2) follower requested log with invalid index (%d)\n", param3);
 				break; // ignore this faulty packet
 			}
 
@@ -208,7 +208,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// asguard_dbg("Received Reply with State=failed..rcluster_id=%d, param3=%d\n",rcluster_id, param3);
 
 			if(priv->sm_log.last_idx < param3) {
-				asguard_error("Received invalid next index from follower (%d)", param3);
+				asguard_error("(0) Received invalid next index from follower (%d)\n", param3);
 				break; // ignore this faulty packet
 			}
 
