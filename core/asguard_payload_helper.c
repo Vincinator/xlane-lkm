@@ -459,11 +459,6 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 	struct consensus_priv *cur_priv = NULL;
 	int j;
 
-	if(sdev->is_leader == 0)
-		return;
-
-	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
-		return;
 
 	// TODO: utilise all protocol instances, currently only support for one consensus proto instance - the first
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
@@ -505,6 +500,13 @@ EXPORT_SYMBOL(check_pending_log_rep_for_target);
 void check_pending_log_rep(struct asguard_device *sdev)
 {
 	int i;
+
+
+	if(sdev->is_leader == 0)
+		return;
+
+	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
+		return;
 
 	for(i = 0; i < sdev->pminfo.num_of_targets; i++)
 		check_pending_log_rep_for_target(sdev, i);

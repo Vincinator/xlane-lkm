@@ -541,7 +541,6 @@ emit:
 
 		if(scheduled_hb) {
 			err = _emit_pkts_scheduled(sdev, spminfo);
-			check_pending_log_rep(sdev);
 		} else if (out_of_sched_hb){
 			sdev->fire = 0;
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
