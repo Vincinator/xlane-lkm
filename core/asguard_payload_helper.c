@@ -196,14 +196,13 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spa
 }
 EXPORT_SYMBOL(setup_alive_msg);
 
-int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, int hb_passive_ix, int next_index)
+int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, int hb_passive_ix, int next_index, int retrans)
 {
 	s32 next_index, local_last_idx;
 	s32 prev_log_term, leader_commit_idx;
 	s32 num_entries = 0;
 	char *pkt_payload_sub;
 	int more = 0;
-	int retrans = 0;
 	struct retrans_request *cur_rereq;
 
 
@@ -296,7 +295,7 @@ void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *
 EXPORT_SYMBOL(invalidate_proto_data);
 
 
-int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, int next_index)
+int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, int next_index, int retrans)
 {
 	struct consensus_priv *cur_priv = NULL;
 	int j;
@@ -338,7 +337,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, int 
 				continue;
 
 			// TODO: optimize append calls that do not contain any log updates
-			more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, target_id, hb_passive_ix, next_index);
+			more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, target_id, hb_passive_ix, next_index, retrans);
 
 			sdev->pminfo.pm_targets[target_id].scheduled_log_replications++;
 
@@ -357,7 +356,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, int 
 
 void prepare_log_replication_handler(struct work_struct *w);
 
-void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_index)
+void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_index, int retrans)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
 
@@ -377,6 +376,7 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 	work->sdev = sdev;
 	work->target_id = target_id;
 	work->next_index = next_index;
+	work->retrans = retrans;
 
 	INIT_WORK(&work->work, prepare_log_replication_handler);
 	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
@@ -399,7 +399,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
 
-	more = _do_prepare_log_replication(aw->sdev, aw->target_id, aw->next_index);
+	more = _do_prepare_log_replication(aw->sdev, aw->target_id, aw->next_index, aw->retrans);
 
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
 
@@ -419,7 +419,7 @@ cleanup:
 	kfree(aw);
 }
 
-int get_next_idx_for_target(struct asguard_device *sdev, int target_id)
+int get_next_idx_for_target(struct asguard_device *sdev, int target_id, int &retrans)
 {
 	int next_index = -1;
 	int match_index;
@@ -451,9 +451,10 @@ int get_next_idx_for_target(struct asguard_device *sdev, int target_id)
 		asguard_dbg("reschedule index: %d", next_index);
 		list_del(&cur_rereq->retrans_req_head);
 		kfree(cur_rereq);
-		retrans = 1;
+		*retrans = 1;
 	} else {
 		next_index = _get_next_idx(cur_priv, target_id);
+		*retrans = 0;
 	}
 	write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
@@ -462,7 +463,7 @@ int get_next_idx_for_target(struct asguard_device *sdev, int target_id)
 
 void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id)
 {
-	int next_index, match_index;
+	int next_index, match_index, int retrans;
 
 	if(sdev->is_leader == 0)
 		return;
@@ -470,7 +471,7 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
 		return;
 
-	next_index = get_next_idx_for_target(sdev, target_id);
+	next_index = get_next_idx_for_target(sdev, target_id, &retrans);
 
 	if(next_index == -2){
 		asguard_error("BUG. Invalid local protocol data. \n ");
@@ -491,7 +492,7 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 
 	sdev->pminfo.pm_targets[target_id].pkt_data.updating = 1;
 
-	_schedule_log_rep(sdev, target_id, next_index);
+	_schedule_log_rep(sdev, target_id, next_index, retrans);
 }
 EXPORT_SYMBOL(check_pending_log_rep_for_target);
 
