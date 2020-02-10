@@ -328,16 +328,16 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_retransmission;
 
 // default: reply success
+	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 	priv->sdev->fire = 1;
-	mutex_unlock(&priv->sm_log.mlock);
 	return;
 reply_retransmission:
+	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 	priv->sdev->fire = 1;
-	mutex_unlock(&priv->sm_log.mlock);
 	return;
 reply_false_unlock:
 	mutex_unlock(&priv->sm_log.mlock);
