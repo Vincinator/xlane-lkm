@@ -391,6 +391,9 @@ struct pminfo {
 	// 2.4 GHz (must be fixed)
 	uint64_t hbi;
 
+	/* interval*/
+	uint64_t waiting_window;
+
 	struct asguard_pm_target_info pm_targets[MAX_REMOTE_SOURCES];
 
 	/* Test Data */
