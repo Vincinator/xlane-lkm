@@ -172,6 +172,11 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			//priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
 			// asguard_dbg("Received Reply with State=success.. rcluster_id=%d, param4=%d\n", rcluster_id, param4);
 
+			if(priv->sm_log.last_idx > param4) {
+				asguard_error("match index (%d) is greater than local last idx!\n", param4);
+				break; // ignore this faulty packet
+			}
+
 			priv->sm_log.match_index[remote_lid] = param4;
 			update_commit_idx(priv);
 
@@ -180,10 +185,19 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		} else if (param2 == 2){
 			// asguard_dbg("Received Reply with State=retransmission.. rcluster_id=%d, param3=%d, param4=%d\n",rcluster_id, param3, param4);
 
+			if(priv->sm_log.last_idx < param4) {
+				asguard_error("match index (%d) is greater than local last idx!\n", param4);
+				break; // ignore this faulty packet
+			}
+
+			if(priv->sm_log.last_idx < param3) {
+				asguard_error("follower requested log with invalid index (%d)", param3);
+				break; // ignore this faulty packet
+			}
+
 			/* store start index of entries to be retransmitted.
 			 * Will only transmit one packet, receiver may drop entry duplicates.
 			 */
-
 			queue_retransmission(priv, remote_lid, param3);
 
 			priv->sm_log.match_index[remote_lid] = param4;
@@ -192,6 +206,11 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		} else if(param2 == 0) {
 			// append rpc failed!
 			// asguard_dbg("Received Reply with State=failed..rcluster_id=%d, param3=%d\n",rcluster_id, param3);
+
+			if(priv->sm_log.last_idx < param3) {
+				asguard_error("Received invalid next index from follower (%d)", param3);
+				break; // ignore this faulty packet
+			}
 
 			// decrement nextIndex for follower with <remote_lid>
 			priv->sm_log.next_index[remote_lid] = param3 + 1;
