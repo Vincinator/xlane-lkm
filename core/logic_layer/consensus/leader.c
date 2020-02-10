@@ -200,8 +200,8 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			 */
 			queue_retransmission(priv, remote_lid, param3);
 
-			priv->sm_log.match_index[remote_lid] = param4;
-			update_commit_idx(priv);
+			// priv->sm_log.match_index[remote_lid] = param4;
+			// update_commit_idx(priv);
 
 		} else if(param2 == 0) {
 			// append rpc failed!
