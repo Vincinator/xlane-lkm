@@ -395,12 +395,15 @@ void prepare_log_replication_handler(struct work_struct *w)
 	int more = 0;
 
 
-	// wait until the previous packet has been sent.
-	// ... do not wait for reply from target
 
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
 
+	// wait until the previous packet has been sent.
+	// ... do not wait for reply from target
+	asguard_dbg("before lock\n");
 	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
+	asguard_dbg("after lock\n");
+
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.scheduled_idx = -1;
 
 	more = _do_prepare_log_replication(aw->sdev, aw->target_id, aw->next_index, aw->retrans);
