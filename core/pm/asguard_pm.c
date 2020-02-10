@@ -425,8 +425,12 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 
 		if(spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix]){
 			spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix] = 0;
-			spminfo->pm_targets[i].pkt_data.scheduled_idx = -1;
 			mutex_unlock(&spminfo->pm_targets[i].pkt_data.active_dirty_lock);
+		}
+
+		if(spminfo->pm_targets[i].pkt_data.scheduled_idx != -1){
+			spminfo->pm_targets[i].pkt_data.scheduled_idx = -1;
+
 		}
 
 	}
