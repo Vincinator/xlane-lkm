@@ -433,12 +433,13 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 
 	write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
-	cur_rereq = list_first_entry_or_null(
-					&cur_priv->sm_log.retrans_head[target_id],
-					struct retrans_request,
-					retrans_req_head);
+	if(!list_empty(&cur_priv->sm_log.retrans_head[target_id])) {
 
-	if (cur_rereq != NULL) {
+		cur_rereq = list_first_entry_or_null(
+				&cur_priv->sm_log.retrans_head[target_id],
+				struct retrans_request,
+				retrans_req_head);
+
 		next_index = cur_rereq->request_idx;
 		asguard_dbg("reschedule index: %d", next_index);
 		list_del(&cur_rereq->retrans_req_head);
@@ -463,6 +464,7 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 	int j;
 
 
+
 	// TODO: utilise all protocol instances, currently only support for one consensus proto instance - the first
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
 		if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
@@ -477,6 +479,12 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 		asguard_error("BUG. Invalid local proto data");
 		return;
 	}
+
+	if(sdev->is_leader == 0)
+		return;
+
+	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
+		return;
 
 	next_index = get_next_idx_for_target(cur_priv, target_id, &retrans);
 
