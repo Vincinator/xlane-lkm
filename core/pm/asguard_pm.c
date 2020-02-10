@@ -33,13 +33,13 @@ static inline bool asguard_pacemaker_is_alive(struct pminfo *spminfo)
 	return spminfo->state == ASGUARD_PM_EMITTING;
 }
 
-static inline bool out_of_schedule_tx(uint64_t prev_time, uint64_t cur_time, uint64_t interval)
+static inline bool scheduled_tx(uint64_t prev_time, uint64_t cur_time, uint64_t interval)
 {
 	return (cur_time - prev_time) >= interval;
 }
 
 
-static inline bool scheduled_tx(uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t waiting_window, int fire)
+static inline bool out_of_schedule_tx(uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t waiting_window, int fire)
 {
 	return (fire && ((cur_time - prev_time) <= (interval - waiting_window)));
 }
