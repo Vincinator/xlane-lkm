@@ -491,6 +491,7 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 		asguard_dbg("Already scheduled %d for target %d\n", next_index, target_id);
 		return;
 	}
+	asguard_dbg("scheduling stuff... \n");
 
 	sdev->pminfo.pm_targets[target_id].pkt_data.scheduled_idx = next_index;
 
