@@ -523,6 +523,8 @@ struct asguard_leader_pkt_work_data {
 	struct asguard_device *sdev;
 
 	int target_id;
+	int next_index;
+	int retrans;
 
 };
 
