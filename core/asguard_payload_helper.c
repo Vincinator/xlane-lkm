@@ -384,9 +384,7 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 
 	return;
 exit:
-	sdev->pminfo.pm_targets[aw->target_id].pkt_data.updating = 0;
-
-
+	sdev->pminfo.pm_targets[target_id].pkt_data.updating = 0;
 
 }
 
