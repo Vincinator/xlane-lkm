@@ -39,7 +39,7 @@ static inline bool scheduled_tx(uint64_t prev_time, uint64_t cur_time, uint64_t 
 }
 
 
-static inline bool out_of_schedule_tx(asguard_device *sdev, uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t waiting_window)
+static inline bool out_of_schedule_tx(struct asguard_device *sdev, uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t waiting_window)
 {
 	int i, fire = 0;
 
