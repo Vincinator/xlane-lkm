@@ -260,8 +260,8 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 	int i;
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
-
 		write_lock(&priv->sm_log.retrans_list_lock[i]);
+		asguard_dbg("deleting retransmission list for target %d\n", i);
 
 		if(list_empty(&priv->sm_log.retrans_head[i])) {
 			write_unlock(&priv->sm_log.retrans_list_lock[i]);
