@@ -326,7 +326,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->ts_state = ASGUARD_TS_UNINIT;
 	score->sdevices[asguard_id]->last_leader_ts = 0;
 	score->sdevices[asguard_id]->num_of_proto_instances = 0;
-	score->sdevices[asguard_id]->fire = 0;
+	score->sdevices[asguard_id]->hold_fire = 0;
 	score->sdevices[asguard_id]->tx_port = 3319;
 	score->sdevices[asguard_id]->cur_leader_lid = -1;
 	score->sdevices[asguard_id]->pkt_proc_sts = 0;
