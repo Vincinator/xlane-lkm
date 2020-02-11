@@ -39,9 +39,18 @@ static inline bool scheduled_tx(uint64_t prev_time, uint64_t cur_time, uint64_t 
 }
 
 
-static inline bool out_of_schedule_tx(uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t waiting_window, int fire)
+static inline bool out_of_schedule_tx(asguard_device *sdev, uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t waiting_window)
 {
-	return (fire && ((cur_time - prev_time) <= (interval - waiting_window)));
+	int i, fire = 0;
+
+	if(sdev->hold_fire)
+		return 0;
+
+	for (i = 0; i < sdev->pminfo.num_of_instances; i++)
+		fire += sdev->pminfo.pm_targets[i].fire;
+
+
+	return ((fire > 0) && ((cur_time - prev_time) <= (interval - waiting_window)));
 }
 
 const char *pm_state_string(enum pmstate state)
@@ -529,7 +538,7 @@ static int asguard_pm_loop(void *data)
 		if(scheduled_hb)
 			goto emit;
 
-		out_of_sched_hb = out_of_schedule_tx(prev_time, cur_time, interval, spminfo->waiting_window, sdev->fire);
+		out_of_sched_hb = out_of_schedule_tx(sdev, prev_time, cur_time, interval, spminfo->waiting_window);
 
 		if(out_of_sched_hb)
 			goto emit;
@@ -542,7 +551,6 @@ emit:
 		if(scheduled_hb) {
 			err = _emit_pkts_scheduled(sdev, spminfo);
 		} else if (out_of_sched_hb){
-			sdev->fire = 0;
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
 		}
 

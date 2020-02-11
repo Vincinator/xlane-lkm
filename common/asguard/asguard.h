@@ -405,7 +405,7 @@ struct proto_instance;
 struct asguard_device {
 	int ifindex; /* corresponds to ifindex of net_device */
 	int asguard_id;
-	int fire;
+	int hold_fire;
 	int cur_leader_lid;
 	struct consensus_priv *consensus_priv;
 

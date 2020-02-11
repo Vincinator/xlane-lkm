@@ -344,7 +344,6 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 	}
 
 	if(should_fire) {
-		sdev->fire = 1; // fire after all log rep pkts have been prepared.
 		spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 	}
 

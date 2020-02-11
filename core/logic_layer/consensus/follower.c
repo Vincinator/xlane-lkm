@@ -80,7 +80,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 	priv->voted = param1;
 
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
-	priv->sdev->fire = 1;
+
 
 	write_log(&ins->logger, VOTE_FOR_CANDIDATE, RDTSC_ASGUARD);
 
@@ -331,19 +331,16 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
-	priv->sdev->fire = 1;
 	return;
 reply_retransmission:
 	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
-	priv->sdev->fire = 1;
 	return;
 reply_false_unlock:
 	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
-	priv->sdev->fire = 1;
 
 
 }
