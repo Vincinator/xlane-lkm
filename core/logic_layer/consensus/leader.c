@@ -25,6 +25,7 @@ void initialze_indices(struct consensus_priv *priv)
 		priv->sm_log.num_retransmissions[i] = 0;
 		rwlock_init(&priv->sm_log.retrans_list_lock[i]);
 		INIT_LIST_HEAD(&priv->sm_log.retrans_head[i]);
+		priv->sm_log.retrans_entries = 0;
 	}
 }
 
@@ -126,6 +127,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 
 	list_add_tail(&(new_req->retrans_req_head), &priv->sm_log.retrans_head[remote_lid]);
 	priv->sm_log.num_retransmissions[remote_lid]++;
+	priv->sm_log.retrans_entries++;
 	write_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
 }
@@ -274,6 +276,8 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 				list_del(&entry->retrans_req_head);
 				kfree(entry);
 			}
+			priv->sm_log.retrans_entries--;
+
 
 		}
 		write_unlock(&priv->sm_log.retrans_list_lock[i]);

@@ -80,6 +80,8 @@ struct state_machine_cmd_log {
 
 	rwlock_t retrans_list_lock[MAX_NODE_ID];
 
+	int retrans_entries;
+
 	s32 last_applied;
 
 	/* Index of the last valid entry in the entries array
