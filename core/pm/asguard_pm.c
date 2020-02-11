@@ -46,7 +46,7 @@ static inline bool out_of_schedule_tx(struct asguard_device *sdev, uint64_t prev
 	if(sdev->hold_fire)
 		return 0;
 
-	for (i = 0; i < sdev->pminfo.num_of_instances; i++)
+	for (i = 0; i < sdev->pminfo.num_of_targets; i++)
 		fire += sdev->pminfo.pm_targets[i].fire;
 
 
