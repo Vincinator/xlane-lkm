@@ -106,7 +106,7 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 	}
 }
 
-static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spminfo, int fire)
+static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spminfo, int fire, int target_fire[MAX_NODE_ID])
 {
 	struct netdev_queue *txq;
 	struct sk_buff *skb;
@@ -145,7 +145,7 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
 		// if emission was scheduled via fire, only emit pkts marked with fire
-		if(fire && !spminfo->pm_targets[i].fire)
+		if(fire && !target_fire[i])
 			continue;
 
 		skb = spminfo->pm_targets[i].skb;
@@ -344,7 +344,7 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 	}
 
 	/* Send heartbeats to all targets */
-	asguard_send_hbs(ndev, spminfo, 0);
+	asguard_send_hbs(ndev, spminfo, 0, NULL);
 
 	// TODO: timestamp for scheduled
 	if(ts_state == ASGUARD_TS_RUNNING)
@@ -372,8 +372,6 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 	return 0;
 }
 
-
-
 static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		struct pminfo *spminfo)
 {
@@ -382,11 +380,17 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
 	enum tsstate ts_state = sdev->ts_state;
+	int target_fire[MAX_NODE_ID];
+
+
+	for (i = 0; i < spminfo->num_of_targets; i++) {
+		target_fire[i] = spminfo->pm_targets[i].fire;
+	}
 
 	/* Prepare heartbeat packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
-		if(!spminfo->pm_targets[i].fire)
+		if(!target_fire[i])
 			continue;
 
 		// Always update payload to avoid jitter!
@@ -401,28 +405,22 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
-	}
 
+
+	}
 	/* Send heartbeats to all targets */
 	// TODO: send hb to only one target if hb triggered via sdev->fire!?
-	asguard_send_hbs(ndev, spminfo, 1);
+	asguard_send_hbs(ndev, spminfo, 1, target_fire);
 
-	// TODO: timestamp for non-scheduled
-	if(ts_state == ASGUARD_TS_RUNNING)
-		asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
+	// // TODO: timestamp for non-scheduled
+	// if(ts_state == ASGUARD_TS_RUNNING)
+	// 	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
 
+	// /* Leave Heartbeat pkts in clean state */
+	 for (i = 0; i < spminfo->num_of_targets; i++) {
 
-	/* Leave Heartbeat pkts in clean state */
-	for (i = 0; i < spminfo->num_of_targets; i++) {
-
-		if(!spminfo->pm_targets[i].fire)
+		if(!target_fire[i])
 			continue;
-
-		hb_active_ix =
-		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
-
-		pkt_payload =
-		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
 		/* Protocols have been emitted, do not sent them again ..
 		 * .. and free the reservations for new protocols */
