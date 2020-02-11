@@ -437,9 +437,9 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 
 		if(!cur_rereq) {
 			asguard_dbg("entry is null!");
-			write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
-			return -1;
+			goto regular;
 		}
+
 		cur_priv->sm_log.retrans_entries[target_id]--;
 
 		next_index = cur_rereq->request_idx;
@@ -447,6 +447,7 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 		kfree(cur_rereq);
 		*retrans = 1;
 	} else {
+regular:
 		next_index = _get_next_idx(cur_priv, target_id);
 
 		*retrans = 0;

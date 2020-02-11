@@ -53,6 +53,7 @@ void update_commit_idx(struct consensus_priv *priv)
 {
 	s32 N, current_N, i;
 
+	asguard_dbg(" \n");
 	if (!priv) {
 		asguard_error("priv is NULL!\n");
 		return;
