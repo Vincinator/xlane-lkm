@@ -437,6 +437,7 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 
 		if(!cur_rereq) {
 			asguard_dbg("entry is null!");
+			write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 			return -1;
 		}
 		cur_priv->sm_log.retrans_entries[target_id]--;
