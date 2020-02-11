@@ -394,15 +394,11 @@ void prepare_log_replication_handler(struct work_struct *w)
 	struct asguard_leader_pkt_work_data *aw = NULL;
 	int more = 0;
 
-
-
 	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
 
 	// wait until the previous packet has been sent.
 	// ... do not wait for reply from target
-	asguard_dbg("before lock\n");
 	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
-	asguard_dbg("after lock\n");
 
 	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.scheduled_idx = -1;
 
@@ -439,6 +435,11 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 				&cur_priv->sm_log.retrans_head[target_id],
 				struct retrans_request,
 				retrans_req_head);
+
+		if(!cur_rereq) {
+			asguard_dbg("entry is null!");
+			return -1;
+		}
 
 		next_index = cur_rereq->request_idx;
 		asguard_dbg("reschedule index: %d", next_index);
@@ -488,6 +489,9 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 
 	next_index = get_next_idx_for_target(cur_priv, target_id, &retrans);
 
+	if(next_index == -1)
+		return;
+
 	match_index = _get_match_idx(cur_priv, target_id);
 
 	if(next_index == match_index) {
@@ -511,7 +515,6 @@ EXPORT_SYMBOL(check_pending_log_rep_for_target);
 void check_pending_log_rep(struct asguard_device *sdev)
 {
 	int i;
-
 
 	if(sdev->is_leader == 0)
 		return;
