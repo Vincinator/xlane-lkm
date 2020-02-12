@@ -5,6 +5,9 @@
 #include <asguard/asguard.h>
 
 
+/* forward declaration. defined in asguard.h*/
+struct node_addr;
+
 struct asguard_async_head_of_queues_priv {
 
     /* List head for asguard_async_queue_list_items */
