@@ -309,7 +309,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 		return -1; // Current target is not alive!
 	}
 
-	apkt = create_async_pkt(sdev->ndev, spminfo->pm_targets[target_id].pkt_data.naddr);
+	apkt = create_async_pkt(sdev->ndev, &spminfo->pm_targets[target_id].pkt_data.naddr);
 
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
