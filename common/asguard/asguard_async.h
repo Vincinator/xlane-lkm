@@ -32,7 +32,7 @@ struct asguard_async_pkt {
     struct sk_buff *skb;
 
     /* Ptr to the payload in the skb */
-    void *payload_ptr;
+    char *payload_ptr;
 
     int target_id;
 
