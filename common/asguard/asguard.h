@@ -370,6 +370,10 @@ struct asguard_pm_target_info {
 	/* Data for transmitting the packet  */
 	struct sk_buff *skb;
 	struct netdev_queue *txq;
+
+	/* async packet queue for pm target*/
+	struct asguard_async_queue_priv aapriv;
+
 };
 
 struct asguard_test_procfile_container {
@@ -397,6 +401,8 @@ struct pminfo {
 	struct asguard_pacemaker_test_data tdata;
 
 	struct hrtimer pm_timer;
+
+	struct asguard_async_head_of_queues_priv async_priv;
 
 };
 
