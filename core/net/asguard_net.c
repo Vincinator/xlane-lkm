@@ -210,9 +210,9 @@ inline void add_L4_header(struct sk_buff *skb)
 
 #ifndef CONFIG_KUNIT
 
-struct asguard_payload * reserve_payload(struct sk_buff *skb)
+char * reserve_payload(struct sk_buff *skb)
 {
-	struct asguard_payload *data = (struct asguard_payload *) skb_put(skb, ASGUARD_PAYLOAD_BYTES);
+	char *data = (char *) skb_put(skb, ASGUARD_PAYLOAD_BYTES);
 
 	if (!data) {
 		asguard_error("Could not get data ptr to skb data\n (%s)",
