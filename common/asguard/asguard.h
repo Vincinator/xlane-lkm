@@ -561,7 +561,7 @@ struct sk_buff *compose_skb(struct net_device *dev, struct node_addr *naddr,
 									struct asguard_payload *payload);
 
 struct sk_buff *reserve_skb(struct asguard_device *sdev, struct node_addr *naddr,
-									void *data_ptr);
+									char *data_ptr);
 
 struct net_device *asguard_get_netdevice(int ifindex);
 
