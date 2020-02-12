@@ -557,8 +557,9 @@ u32 asguard_ip_convert(const char *str);
  */
 unsigned char *asguard_convert_mac(const char *str);
 
-struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr,
+struct sk_buff *compose_skb(struct net_device *dev, struct node_addr *naddr,
 									struct asguard_payload *payload);
+
 struct sk_buff *reserve_skb(struct asguard_device *sdev, struct node_addr *naddr,
 									void *data_ptr);
 
