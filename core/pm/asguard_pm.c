@@ -22,6 +22,7 @@
 #include <asguard/asguard.h>
 #include <asguard/payload_helper.h>
 #include <asguard/consensus.h>
+#include <asguard/asguard_async.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][PACEMAKER]"
@@ -39,7 +40,24 @@ static inline bool scheduled_tx(uint64_t prev_time, uint64_t cur_time, uint64_t 
 }
 
 
-static inline bool out_of_schedule_tx(struct asguard_device *sdev, uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t waiting_window)
+static inline bool check_sync_window(uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t sync_window)
+{
+	return (cur_time - prev_time) >= (interval - sync_window)
+}
+
+
+static inline bool check_async_door(struct pminfo *spminfo)
+{
+	int i;
+	int doorbell = 0;
+
+	for (i = 0; i < sdev->pminfo.num_of_targets; i++)
+		doorbell += sdev->pminfo.pm_targets[i].aapriv.doorbell;
+
+	return doorbell > 0;
+}
+
+static inline bool out_of_schedule_tx(struct asguard_device *sdev)
 {
 	int i, fire = 0;
 
@@ -49,8 +67,7 @@ static inline bool out_of_schedule_tx(struct asguard_device *sdev, uint64_t prev
 	for (i = 0; i < sdev->pminfo.num_of_targets; i++)
 		fire += sdev->pminfo.pm_targets[i].fire;
 
-
-	return ((fire > 0) && ((cur_time - prev_time) <= (interval - waiting_window)));
+	return fire > 0;
 }
 
 const char *pm_state_string(enum pmstate state)
@@ -101,7 +118,7 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
 
 		/* Setup SKB */
-		spminfo->pm_targets[i].skb = compose_skb(sdev, naddr, hb_pkt_payload);
+		spminfo->pm_targets[i].skb = compose_skb(sdev->ndev, naddr, hb_pkt_payload);
 		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
 	}
 }
@@ -382,7 +399,6 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 	enum tsstate ts_state = sdev->ts_state;
 	int target_fire[MAX_NODE_ID];
 
-
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 		target_fire[i] = spminfo->pm_targets[i].fire;
 	}
@@ -400,21 +416,11 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
 
-		//asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
-		//asguard_dbg("sending to cluster node %d to udp target port %d", i, sdev->tx_port);
-
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
-
-
 	}
-	/* Send heartbeats to all targets */
-	// TODO: send hb to only one target if hb triggered via sdev->fire!?
-	asguard_send_hbs(ndev, spminfo, 1, target_fire);
 
-	// // TODO: timestamp for non-scheduled
-	// if(ts_state == ASGUARD_TS_RUNNING)
-	// 	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
+	asguard_send_hbs(ndev, spminfo, 1, target_fire);
 
 	// /* Leave Heartbeat pkts in clean state */
 	 for (i = 0; i < spminfo->num_of_targets; i++) {
@@ -430,20 +436,67 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
 		spminfo->pm_targets[i].fire = 0;
 
-		if(spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix]){
-			spminfo->pm_targets[i].pkt_data.contains_log_rep[hb_active_ix] = 0;
-			mutex_unlock(&spminfo->pm_targets[i].pkt_data.active_dirty_lock);
-		}
-
-		if(spminfo->pm_targets[i].pkt_data.scheduled_idx != -1){
-			spminfo->pm_targets[i].pkt_data.scheduled_idx = -1;
-		}
-
 	}
 
 	return 0;
 }
 
+void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_async_pkt *apkt)
+{
+	struct netdev_queue *txq;
+	int tx_index = smp_processor_id();
+	unsigned long flags;
+	int i, ret;
+
+	if (unlikely(!netif_running(ndev) ||
+			!netif_carrier_ok(ndev))) {
+		asguard_error("Network device offline!\n exiting pacemaker\n");
+		return;
+	}
+
+	local_irq_save(flags);
+	local_bh_disable();
+
+	/* The queue mapping is the same for each target <i>
+	 * Since we pinned the pacemaker to a single cpu,
+	 * we can use the smp_processor_id() directly.
+	 */
+	txq = &ndev->_tx[tx_index];
+
+	if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
+		asguard_error("Device Busy unlocking in async window.\n");
+		goto unlock;
+	}
+
+	// skb_get(apkt->skb); // do we really need to inc the reference?
+
+	netdev_start_xmit(apkt->skb, ndev, txq, 0);
+
+	kfree(apkt); // apkt has already been dequeued from the list, skb should have been freed now.
+
+unlock:
+	HARD_TX_UNLOCK(ndev, txq);
+
+	local_bh_enable();
+	local_irq_restore(flags);
+}
+
+
+
+int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo) 
+{
+	int i;
+ 	struct asguard_async_pkt *cur_apkt;
+	
+	for (i = 0; i < spminfo->num_of_targets; i++) {
+		if(spminfo->pm_targets[i].aapriv.doorbell > 0) {
+			cur_apkt = dequeue_async_pkt(spminfo->pm_targets[i].aapriv);
+			
+			if(cur_apkt)
+				emit_apkt(sdev->ndev, spminfo, cur_apkt);
+		}
+	}
+}
 
 static int _validate_pm(struct asguard_device *sdev,
 							struct pminfo *spminfo)
@@ -522,6 +575,7 @@ static int asguard_pm_loop(void *data)
 	int err;
 	int scheduled_hb = 0;
 	int out_of_sched_hb = 0;
+	int async_pkts = 0;
 
 	__prepare_pm_loop(sdev, spminfo);
 
@@ -536,9 +590,18 @@ static int asguard_pm_loop(void *data)
 		if(scheduled_hb)
 			goto emit;
 
-		out_of_sched_hb = out_of_schedule_tx(sdev, prev_time, cur_time, interval, spminfo->waiting_window);
+		/* If in Sync Window, do not send anything until the Heartbeat has been sent */
+		if (check_sync_window(prev_time, cur_time, interval, spminfo->waiting_window))
+			continue;
+
+		out_of_sched_hb = out_of_schedule_tx(sdev);
 
 		if(out_of_sched_hb)
+			goto emit;
+
+		async_pkts = check_async_door(spminfo);
+
+		if(async_pkts)
 			goto emit;
 
 		continue;
@@ -550,6 +613,8 @@ emit:
 			err = _emit_pkts_scheduled(sdev, spminfo);
 		} else if (out_of_sched_hb){
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
+		} else if (async_pkts) {
+			err = _emit_async_pkts(sdev, spminfo);
 		}
 
 		if (err) {

@@ -20,9 +20,7 @@
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
 #include <linux/time.h>
-
-
-
+#include <asguard/asguard_async.h>
 
 
 #include "logger.h"

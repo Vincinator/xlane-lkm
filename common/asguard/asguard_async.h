@@ -1,6 +1,8 @@
 #ifndef _ASGUARD_ASYNC_H_
 #define _ASGUARD_ASYNC_H_
 
+#include <linux/list.h>
+#include <asguard/asguard.h>
 
 
 struct asguard_async_head_of_queues_priv {
@@ -18,6 +20,8 @@ struct asguard_async_queue_priv {
     /* List head for asguard async pkt*/
     struct list_head head_of_async_pkt_queue;
 
+    int doorbell;
+
 };
 
 struct asguard_async_pkt {
@@ -26,6 +30,10 @@ struct asguard_async_pkt {
     struct list_head async_pkts_head;
 
     struct sk_buff *skb;
+
+    /* Ptr to the payload in the skb */
+    void *payload_ptr;
+
     int target_id;
 
 };
