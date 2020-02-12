@@ -52,6 +52,11 @@ int enqueue_async_pkt(struct list_head *queue, struct asguard_async_pkt *apkt);
 int push_front_async_pkt(struct list_head *queue, struct asguard_async_pkt *apkt);
 
 /* Dequeue and return tail of async pkt queue */
- struct asguard_async_pkt * dequeue_async_pkt(struct list_head *queue);
+struct asguard_async_pkt * dequeue_async_pkt(struct list_head *queue);
+
+struct asguard_async_pkt * create_async_pkt(struct net_device *ndev, struct node_addr *naddr);
+
+void ring_aa_doorbell(struct asguard_async_queue_priv *aqueue);
+
 
 #endif /* _ASGUARD_ASYNC_H_ */
