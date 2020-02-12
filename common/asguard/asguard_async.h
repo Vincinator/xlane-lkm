@@ -46,13 +46,13 @@ int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *
 int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, struct asguard_async_queue_priv *new_queue);
 
 /* Enqueues a pkt to the back of the async pkt queue */
-int enqueue_async_pkt(struct list_head *queue, struct asguard_async_pkt *apkt);
+int enqueue_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard_async_pkt *apkt);
 
 /* Adds the pkt to the front of the queue */
-int push_front_async_pkt(struct list_head *queue, struct asguard_async_pkt *apkt);
+int push_front_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard_async_pkt *apkt);
 
 /* Dequeue and return tail of async pkt queue */
-struct asguard_async_pkt * dequeue_async_pkt(struct list_head *queue);
+struct asguard_async_pkt * dequeue_async_pkt(struct asguard_async_queue_priv *aqueue);
 
 struct asguard_async_pkt * create_async_pkt(struct net_device *ndev, struct node_addr *naddr);
 
