@@ -255,7 +255,7 @@ int is_ip_local(struct net_device *dev,	u32 ip_addr)
 }
 EXPORT_SYMBOL(is_ip_local);
 
-struct sk_buff *reserve_skb(struct net_device *dev, u32 dst_ip, unsigned char *dst_mac, char *data_ptr)
+struct sk_buff *reserve_skb(struct net_device *dev, u32 dst_ip, unsigned char *dst_mac, char **data_ptr)
 {
 	struct sk_buff *skb = NULL;
 
