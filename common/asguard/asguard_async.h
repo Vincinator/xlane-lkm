@@ -2,11 +2,8 @@
 #define _ASGUARD_ASYNC_H_
 
 #include <linux/list.h>
+
 #include <asguard/asguard.h>
-
-
-/* forward declaration. defined in asguard.h*/
-struct node_addr;
 
 struct asguard_async_head_of_queues_priv {
 

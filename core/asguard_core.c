@@ -95,6 +95,7 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 }
 EXPORT_SYMBOL(asguard_post_ts);
 
+
 void set_all_targets_dead(struct asguard_device *sdev)
 {
 	struct pminfo *spminfo = &sdev->pminfo;
@@ -580,6 +581,7 @@ static int __init asguard_connection_core_init(void)
 	int err = -EINVAL;
 
 	if (ifindex < 0) {
+
 		asguard_error("ifindex parameter is missing\n");
 		goto error;
 	}
@@ -644,6 +646,9 @@ void asguard_stop_timestamping(struct asguard_device *adev)
 		asguard_error("ASGuard Device is Null.\n");
 		return;
 	}
+
+
+
 	asguard_ts_stop(adev);
 
 

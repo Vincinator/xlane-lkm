@@ -117,6 +117,6 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spa
 void check_pending_log_rep(struct asguard_device *sdev);
 s32 _get_match_idx(struct consensus_priv *priv, int target_id);
 void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id);
-
+struct sk_buff *reserve_skb(struct net_device *dev, struct node_addr *naddr, char *data_ptr);
 
 #endif  /* _ASGUARD_PHELP_H_ */

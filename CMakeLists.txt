@@ -4,7 +4,7 @@ project(asguard C)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(ASGUARD_KERNEL_ROOT ${CMAKE_SOURCE_DIR}/../asguard-kernel-kunit)
+set(ASGUARD_KERNEL_ROOT ${CMAKE_SOURCE_DIR}/../asguard-kernel)
 
 execute_process(
         COMMAND git rev-parse --short HEAD
@@ -36,7 +36,7 @@ set(KERNEL_HEADERS
 
 
 include_directories(${KERNEL_HEADERS})
-add_definitions(-include ${ASGUARD_KERNEL_ROOT}/include/linux/kconfig.h)
+#add_definitions(-include ${ASGUARD_KERNEL_ROOT}/include/linux/kconfig.h)
 
 include_directories(common)
 include_directories(common/asguard)
@@ -82,6 +82,7 @@ add_executable(sassy
         core/logic_layer/fd/asguard_fd_ops.c
         core/logic_layer/fd/asguard_fdtx.c
         core/net/asguard_net.c
+        core/net/asguard_async_queue.c
         core/net/payload_helper.c
         core/pm/asguard_pm.c
         core/pm/asguard_pm_ctrl.c
