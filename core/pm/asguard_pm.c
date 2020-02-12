@@ -101,7 +101,7 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
 
 		/* Setup SKB */
-		spminfo->pm_targets[i].skb = compose_skb(sdev, naddr, hb_pkt_payload);
+		spminfo->pm_targets[i].skb = compose_skb(sdev->ndev, naddr, hb_pkt_payload);
 		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
 	}
 }

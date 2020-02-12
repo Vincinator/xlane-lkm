@@ -209,6 +209,23 @@ inline void add_L4_header(struct sk_buff *skb)
 #endif
 
 #ifndef CONFIG_KUNIT
+
+struct asguard_payload * reserve_payload(struct sk_buff *skb)
+{
+	struct asguard_payload *data = (struct asguard_payload *) skb_put(skb, ASGUARD_PAYLOAD_BYTES);
+
+	if (!data) {
+		asguard_error("Could not get data ptr to skb data\n (%s)",
+			    __func__);
+		return;
+	}
+
+	return data;
+
+//	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1, data,
+//		       ASGUARD_PAYLOAD_BYTES, 0);
+}
+
 inline void add_payload(struct sk_buff *skb, struct asguard_payload *payload)
 {
 	void *data = (void *)skb_put(skb, ASGUARD_PAYLOAD_BYTES);
@@ -238,24 +255,15 @@ int is_ip_local(struct net_device *dev,	u32 ip_addr)
 }
 EXPORT_SYMBOL(is_ip_local);
 
-
-struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr,
-							struct asguard_payload *payload)
+struct sk_buff *reserve_skb(struct net_device *dev, struct node_addr *naddr, void *data_ptr)
 {
-	struct sk_buff *nomination_pkt = NULL;
-	struct pminfo *spminfo = &sdev->pminfo;
-	struct net_device *dev = sdev->ndev;
+	struct sk_buff *skb = NULL;
 
 	u32 local_ipaddr;
 
-	if (!spminfo) {
-		asguard_error("spminfo is invalid\n");
-		return NULL;
-	}
+	skb = prepare_heartbeat_skb(dev);
 
-	nomination_pkt = prepare_heartbeat_skb(dev);
-
-	if (!nomination_pkt) {
+	if (!skb) {
 		asguard_error("Could not compose packet (%s)\n",
 			    __func__);
 		return NULL;
@@ -263,10 +271,40 @@ struct sk_buff *compose_skb(struct asguard_device *sdev, struct node_addr *naddr
 
 	local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
 
-	add_L2_header(nomination_pkt, dev->dev_addr, naddr->dst_mac);
-	add_L3_header(nomination_pkt, local_ipaddr, naddr->dst_ip);
-	add_L4_header(nomination_pkt);
-	add_payload(nomination_pkt, payload);
+	add_L2_header(skb, dev->dev_addr, naddr->dst_mac);
+	add_L3_header(skb, local_ipaddr, naddr->dst_ip);
+	add_L4_header(skb);
+	
+	*data_ptr = reserve_payload(skb);
+
+	return nomination_pkt;
+}
+EXPORT_SYMBOL(compose_skb);
+
+
+struct sk_buff *compose_skb(struct net_device *dev, struct node_addr *naddr,
+							struct asguard_payload *payload)
+{
+	struct sk_buff *skb = NULL;
+
+	u32 local_ipaddr;
+
+	skb = prepare_heartbeat_skb(dev);
+
+	if (!skb) {
+		asguard_error("Could not compose packet (%s)\n",
+			    __func__);
+		return NULL;
+	}
+
+	local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
+
+	add_L2_header(skb, dev->dev_addr, naddr->dst_mac);
+	add_L3_header(skb, local_ipaddr, naddr->dst_ip);
+	add_L4_header(skb);
+
+
+	add_payload(skb, payload);
 
 #if VERBOSE_DEBUG
 //	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1,

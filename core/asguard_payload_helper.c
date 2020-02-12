@@ -196,15 +196,13 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spa
 }
 EXPORT_SYMBOL(setup_alive_msg);
 
-int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, int hb_passive_ix, s32 next_index, int retrans)
+int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, s32 next_index, int retrans)
 {
 	s32 local_last_idx;
 	s32 prev_log_term, leader_commit_idx;
 	s32 num_entries = 0;
 	char *pkt_payload_sub;
 	int more = 0;
-
-	write_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
 	// Check if entries must be appended
 	local_last_idx = _get_last_idx_safe(cur_priv);
@@ -270,13 +268,6 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		num_entries,
 		more);
 
-	// wait until pkt has been emited
-	cur_priv->sdev->pminfo.pm_targets[target_id].pkt_data.contains_log_rep[hb_passive_ix] = 1;
-
-	// fire only for the target with targetid
-	cur_priv->sdev->pminfo.pm_targets[target_id].fire = 1;
-
-
 	return more;
 }
 EXPORT_SYMBOL(setup_append_msg);
@@ -302,6 +293,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 	struct asguard_payload *pkt_payload;
 	int more = 0;
 	int should_fire = 0;
+	struct asguard_async_pkt *apkt = NULL;
 
 	if(sdev->is_leader == 0)
 		return -1; // node lost leadership
@@ -316,11 +308,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 		return -1; // Current target is not alive!
 	}
 
-	hb_passive_ix =
-			!!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
-
-	pkt_payload =
-			spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
+	apkt = create_async_pkt(sdev->ndev, spminfo->pm_targets[target_id].pkt_data.naddr);
 
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
@@ -335,16 +323,17 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 				continue;
 
 			// TODO: optimize append calls that do not contain any log updates
-			more += setup_append_msg(cur_priv, pkt_payload, sdev->protos[j]->instance_id, target_id, hb_passive_ix, next_index, retrans);
+			more += setup_append_msg(cur_priv, (struct asguard_payload *) apkt->payload_ptr, sdev->protos[j]->instance_id, target_id, next_index, retrans);
 
 			sdev->pminfo.pm_targets[target_id].scheduled_log_replications++;
 
-			should_fire = 1;
+			if(retrans)
+				push_front_async_pkt(&spminfo->pm_targets[target_id].aapriv, apkt);
+			else
+				enqueue_async_pkt(&spminfo->pm_targets[target_id].aapriv, apkt);
+			
+			ring_aa_doorbell(&spminfo->pm_targets[target_id].aapriv);
 		}
-	}
-
-	if(should_fire) {
-		spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
 	}
 
 	return more;
