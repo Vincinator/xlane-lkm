@@ -56,13 +56,13 @@ EXPORT_SYMBOL(push_front_async_pkt);
 EXPORT_SYMBOL(dequeue_async_pkt);
 
 
-struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, struct node_addr *naddr)
+struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, unsigned char dst_mac[6])
 {
     struct asguard_async_pkt *apkt = NULL;
 
     apkt = kmalloc(sizeof(struct asguard_async_pkt), GFP_KERNEL);
 
-    apkt->skb = reserve_skb(ndev, naddr, &apkt->payload_ptr);
+    apkt->skb = reserve_skb(ndev, dst_ip, dst_mac, &apkt->payload_ptr);
 
     return apkt;
 }

@@ -255,7 +255,7 @@ int is_ip_local(struct net_device *dev,	u32 ip_addr)
 }
 EXPORT_SYMBOL(is_ip_local);
 
-struct sk_buff *reserve_skb(struct net_device *dev, struct node_addr *naddr, char *data_ptr)
+struct sk_buff *reserve_skb(struct net_device *dev, u32 dst_ip, unsigned char *dst_mac, char *data_ptr)
 {
 	struct sk_buff *skb = NULL;
 
@@ -271,8 +271,8 @@ struct sk_buff *reserve_skb(struct net_device *dev, struct node_addr *naddr, cha
 
 	local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
 
-	add_L2_header(skb, dev->dev_addr, naddr->dst_mac);
-	add_L3_header(skb, local_ipaddr, naddr->dst_ip);
+	add_L2_header(skb, dev->dev_addr, dst_mac);
+	add_L3_header(skb, local_ipaddr, dst_ip);
 	add_L4_header(skb);
 
 	*data_ptr = reserve_payload(skb);
