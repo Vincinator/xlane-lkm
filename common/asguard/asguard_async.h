@@ -2,8 +2,8 @@
 #define _ASGUARD_ASYNC_H_
 
 #include <linux/list.h>
-
-#include <asguard/asguard.h>
+#include <linux/netdevice.h>
+#include <linux/skbuff.h>
 
 struct asguard_async_head_of_queues_priv {
 

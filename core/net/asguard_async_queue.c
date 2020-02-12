@@ -1,6 +1,8 @@
 #include <asguard/asguard_async.h>
 #include <asguard/payload_helper.h>
 #include <linux/slab.h>
+#include <asguard/asguard.h>
+
 
 int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *aapriv)
 {
