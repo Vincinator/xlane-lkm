@@ -274,12 +274,12 @@ struct sk_buff *reserve_skb(struct net_device *dev, struct node_addr *naddr, voi
 	add_L2_header(skb, dev->dev_addr, naddr->dst_mac);
 	add_L3_header(skb, local_ipaddr, naddr->dst_ip);
 	add_L4_header(skb);
-	
+
 	*data_ptr = reserve_payload(skb);
 
-	return nomination_pkt;
+	return skb;
 }
-EXPORT_SYMBOL(compose_skb);
+EXPORT_SYMBOL(reserve_skb);
 
 
 struct sk_buff *compose_skb(struct net_device *dev, struct node_addr *naddr,
@@ -314,7 +314,7 @@ struct sk_buff *compose_skb(struct net_device *dev, struct node_addr *naddr,
 	asguard_dbg("Composed packet\n");
 #endif
 
-	return nomination_pkt;
+	return skb;
 }
 EXPORT_SYMBOL(compose_skb);
 
