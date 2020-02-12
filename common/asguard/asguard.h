@@ -22,7 +22,6 @@
 #include <linux/time.h>
 #include <asguard/asguard_async.h>
 
-
 #include "logger.h"
 
 #define MAX_ASGUARD_PROC_NAME 256
@@ -322,6 +321,8 @@ struct asguard_pacemaker_test_data {
 	struct asguard_process_info pinfos[MAX_PROCESSES_PER_HOST];
 };
 
+struct asguard_async_queue_priv;
+
 struct asguard_pm_target_info {
 	int target_id;
 
@@ -378,6 +379,8 @@ struct asguard_test_procfile_container {
 	struct pminfo *spminfo;
 	int procid;
 };
+
+struct asguard_async_head_of_queues_priv;
 
 struct pminfo {
 	enum pmstate state;
