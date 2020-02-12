@@ -51,8 +51,8 @@ static inline bool check_async_door(struct pminfo *spminfo)
 	int i;
 	int doorbell = 0;
 
-	for (i = 0; i < spminfo.num_of_targets; i++)
-		doorbell += spminfo.pm_targets[i].aapriv.doorbell;
+	for (i = 0; i < spminfo->num_of_targets; i++)
+		doorbell += spminfo->pm_targets[i].aapriv.doorbell;
 
 	return doorbell > 0;
 }

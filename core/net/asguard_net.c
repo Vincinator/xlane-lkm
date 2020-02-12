@@ -217,7 +217,7 @@ struct asguard_payload * reserve_payload(struct sk_buff *skb)
 	if (!data) {
 		asguard_error("Could not get data ptr to skb data\n (%s)",
 			    __func__);
-		return;
+		return NULL;
 	}
 
 	return data;
@@ -228,7 +228,7 @@ struct asguard_payload * reserve_payload(struct sk_buff *skb)
 
 inline void add_payload(struct sk_buff *skb, struct asguard_payload *payload)
 {
-	void *data = (void *)skb_put(skb, ASGUARD_PAYLOAD_BYTES);
+	void *data = skb_put(skb, ASGUARD_PAYLOAD_BYTES);
 
 	if (!data) {
 		asguard_error("Could not get data ptr to skb data\n (%s)",

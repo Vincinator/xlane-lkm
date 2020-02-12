@@ -384,7 +384,7 @@ void prepare_log_replication_handler(struct work_struct *w)
 	struct asguard_leader_pkt_work_data *aw = NULL;
 	int more = 0;
 
-	aw = (struct asguard_leader_pkt_work_data *) container_of(w, struct asguard_leader_pkt_work_data, work);
+	aw = container_of(w, struct asguard_leader_pkt_work_data, work);
 
 	// wait until the previous packet has been sent.
 	// ... do not wait for reply from target

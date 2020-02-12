@@ -206,7 +206,7 @@ void pkt_process_handler(struct work_struct *w) {
 	struct asguard_pkt_work_data *aw = NULL;
 
 
-	aw = (struct asguard_pkt_work_data *) container_of(w, struct asguard_pkt_work_data, work);
+	aw = container_of(w, struct asguard_pkt_work_data, work);
 
 
 	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
