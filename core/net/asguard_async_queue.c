@@ -99,7 +99,7 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
     if(!apkt->skb) {
         asguard_error("Could not allocate SKB!\n");
     } else {
-        asguard_dbg("Packet created\n");
+        asguard_dbg("Packet reserved\n");
     }
 
     return apkt;

@@ -269,7 +269,6 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		cur_priv,
 		num_entries,
 		more);
-
 	return more;
 }
 EXPORT_SYMBOL(setup_append_msg);
@@ -308,9 +307,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 		return -1; // Current target is not alive!
 	}
 
-	apkt = create_async_pkt(sdev->ndev,
-	        spminfo->pm_targets[target_id].pkt_data.naddr.dst_ip,
-	        spminfo->pm_targets[target_id].pkt_data.naddr.dst_mac);
+
 
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
@@ -324,12 +321,23 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 			if (cur_priv->nstate != LEADER)
 				continue;
 
-            ret = setup_append_msg(cur_priv, (struct asguard_payload *) apkt->payload_ptr, sdev->protos[j]->instance_id, target_id, next_index, retrans);
+            apkt = create_async_pkt(sdev->ndev,
+                                    spminfo->pm_targets[target_id].pkt_data.naddr.dst_ip,
+                                    spminfo->pm_targets[target_id].pkt_data.naddr.dst_mac);
+
+            ret = setup_append_msg(cur_priv,
+                    (struct asguard_payload *) apkt->payload_ptr,
+                            sdev->protos[j]->instance_id,
+                            target_id,
+                            next_index,
+                            retrans);
 
             if(ret < 0) {
                 asguard_error("setup append msg failed\n");
                 return ret;
             }
+
+            asguard_dbg("Written Log Reps to Pkt\n");
 
             more += ret;
 
