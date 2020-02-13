@@ -321,7 +321,7 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 }
 EXPORT_SYMBOL(update_leader);
 
-static void update_alive_msg(struct asguard_device *sdev, struct asguard_payload *pkt_payload, int target_id)
+void update_alive_msg(struct asguard_device *sdev, struct asguard_payload *pkt_payload, int target_id)
 {
 	int j;
 
@@ -339,8 +339,9 @@ static void update_alive_msg(struct asguard_device *sdev, struct asguard_payload
 							pkt_payload, sdev->protos[j]->instance_id);
 		}
 	}
-
 }
+EXPORT_SYMBOL(update_alive_msg);
+
 
 static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 		struct pminfo *spminfo)

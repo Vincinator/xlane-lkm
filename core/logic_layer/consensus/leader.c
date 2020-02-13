@@ -14,19 +14,32 @@
 
 struct consensus_priv;
 
-void initialze_indices(struct consensus_priv *priv)
+void initialize_indices(struct consensus_priv *priv)
 {
 	int i;
+    struct asguard_payload *pkt_payload;
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
+
 		// initialize to leader last log index + 1
 		priv->sm_log.next_index[i] = priv->sm_log.stable_idx + 1;
 		priv->sm_log.match_index[i] = -1;
 		priv->sm_log.num_retransmissions[i] = 0;
+
 		rwlock_init(&priv->sm_log.retrans_list_lock[i]);
+
 		INIT_LIST_HEAD(&priv->sm_log.retrans_head[i]);
+
 		priv->sm_log.retrans_entries[i] = 0;
-	}
+
+        pkt_payload =
+                priv->sdev->pminfo.pm_targets[i].pkt_data.hb_pkt_payload;
+
+        update_alive_msg(priv->sdev, pkt_payload, i);
+
+
+    }
+
 }
 
 int _is_potential_commit_idx(struct consensus_priv *priv, int N)
@@ -345,7 +358,7 @@ int start_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
 
-	initialze_indices(priv);
+    initialize_indices(priv);
 
 	priv->sdev->is_leader = 1;
 	priv->sdev->tx_port = 3320;
