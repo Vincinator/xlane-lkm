@@ -31,7 +31,7 @@ int init_asguard_async_queue(struct asguard_async_head_of_queues_priv **aapriv, 
 
     INIT_LIST_HEAD(&new_queue->head_of_async_pkt_queue);
 
-    list_add_tail(&new_queue->head_of_async_pkt_queue, &aapriv->head_of_aa_queues);
+    list_add_tail(&new_queue->head_of_async_pkt_queue, &((*aapriv)->head_of_aa_queues));
     
     return 0;
 
