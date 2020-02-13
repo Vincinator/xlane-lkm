@@ -4,15 +4,30 @@
 #include <asguard/asguard.h>
 
 
-int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *aapriv)
+int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv **aapriv)
 {
-    INIT_LIST_HEAD(&aapriv->head_of_aa_queues);
+
+    *aapriv = kmalloc(sizeof(struct asguard_async_head_of_queues_priv), GFP_KERNEL);
+
+    if(!*aapriv){
+        asguard_error("Could not allocate mem for async queue\n");
+        return -1;
+    }
+
+    INIT_LIST_HEAD(&((*aapriv)->head_of_aa_queues));
 
     return 0;
 }
 
-int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, struct asguard_async_queue_priv *new_queue)
+int init_asguard_async_queue(struct asguard_async_head_of_queues_priv **aapriv, struct asguard_async_queue_priv *new_queue)
 {
+
+    *aapriv = kmalloc(sizeof(struct asguard_async_head_of_queues_priv), GFP_KERNEL);
+
+    if(!(*aapriv)) {
+        asguard_error("Could not allocate mem for async queue\n");
+        return -1;
+    }
 
     INIT_LIST_HEAD(&new_queue->head_of_async_pkt_queue);
 

@@ -372,7 +372,8 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	pm_state_transition_to(&score->sdevices[asguard_id]->pminfo,
 				   ASGUARD_PM_UNINIT);
 
-	init_asguard_async_list_of_queues(&score->sdevices[asguard_id]->pminfo.async_priv);
+	init_asguard_async_list_of_queues(&(score->sdevices[asguard_id]->pminfo.async_priv));
+
 
 	return asguard_id;
 }
@@ -514,7 +515,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct asguard_pm_target_info *pmtarget;
-	int ifindex;
+	int ifindex, ret;
 
 	if (!mac) {
 		asguard_error("input mac is NULL!\n");
@@ -568,9 +569,9 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 
 	sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 
-	init_asguard_async_queue(&(sdev->pminfo.async_priv), &(pmtarget->aapriv));
+	ret = init_asguard_async_queue(&(sdev->pminfo.async_priv), &(pmtarget->aapriv));
 
-	return 0;
+	return ret;
 }
 EXPORT_SYMBOL(asguard_core_register_remote_host);
 

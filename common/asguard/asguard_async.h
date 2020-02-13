@@ -39,11 +39,11 @@ struct asguard_async_pkt {
 };
 
 /* Initializes the list of queues*/
-int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *aapriv);
+int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv **aapriv);
 
 
 /* Initializes an async asguard queue and registers it int the head_of_aa_queues list */
-int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, struct asguard_async_queue_priv *new_queue);
+int init_asguard_async_queue(struct asguard_async_head_of_queues_priv **aapriv, struct asguard_async_queue_priv *new_queue);
 
 /* Enqueues a pkt to the back of the async pkt queue */
 int enqueue_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard_async_pkt *apkt);

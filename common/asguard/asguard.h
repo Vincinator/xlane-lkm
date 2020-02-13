@@ -321,8 +321,6 @@ struct asguard_pacemaker_test_data {
 	struct asguard_process_info pinfos[MAX_PROCESSES_PER_HOST];
 };
 
-struct asguard_async_queue_priv;
-
 struct asguard_pm_target_info {
 	int target_id;
 
@@ -371,7 +369,7 @@ struct asguard_pm_target_info {
 	struct netdev_queue *txq;
 
 	/* async packet queue for pm target*/
-	struct asguard_async_queue_priv aapriv;
+	struct asguard_async_queue_priv *aapriv;
 
 };
 
@@ -403,7 +401,7 @@ struct pminfo {
 
 	struct hrtimer pm_timer;
 
-	struct asguard_async_head_of_queues_priv async_priv;
+	struct asguard_async_head_of_queues_priv *async_priv;
 
 };
 
