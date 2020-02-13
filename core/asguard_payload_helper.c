@@ -274,6 +274,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		cur_priv,
 		num_entries,
 		more);
+
 	return more;
 }
 EXPORT_SYMBOL(setup_append_msg);

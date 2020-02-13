@@ -508,7 +508,10 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             else
                 asguard_dbg("cur apkt is NULL!\n");
 
-/*			if(cur_apkt)
+            // Pkt has been handled. So we can
+            spminfo->pm_targets[i].aapriv->doorbell--;
+
+            /*			if(cur_apkt)
 				emit_apkt(sdev->ndev, spminfo, cur_apkt);*/
 		}
 	}
