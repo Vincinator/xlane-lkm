@@ -505,6 +505,8 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
 
 			if(cur_apkt)
 			    async_pkt_dump(cur_apkt);
+            else
+                asguard_dbg("cur apkt is NULL!\n");
 
 /*			if(cur_apkt)
 				emit_apkt(sdev->ndev, spminfo, cur_apkt);*/
