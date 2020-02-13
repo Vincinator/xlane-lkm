@@ -373,13 +373,13 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 	// if leadership has been dropped, do not schedule leader work
 	if(sdev->is_leader == 0) {
 		asguard_dbg("node is not a leader\n");
-		goto exit;
+        return;
 	}
 
 	// if pacemaker has been stopped, do not schedule leader tx work
 	if(sdev->pminfo.state != ASGUARD_PM_EMITTING) {
 		asguard_dbg("pacemaker not in emitting state\n");
-		goto exit;
+		return;
 	}
 
 	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
@@ -391,12 +391,10 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 	INIT_WORK(&work->work, prepare_log_replication_handler);
 	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
 		asguard_dbg("Work item not put in queue ..");
-		goto exit;
+		return;
 	}
 
-	return;
-exit:
-	sdev->pminfo.pm_targets[target_id].pkt_data.scheduled_idx = -1;
+
 
 }
 
@@ -509,13 +507,7 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 		return;
 	}
 
-	if (sdev->pminfo.pm_targets[target_id].pkt_data.scheduled_idx == next_index) {
-		asguard_dbg("Already scheduled %d for target %d\n", next_index, target_id);
-		return;
-	}
 	// asguard_dbg("scheduling stuff... \n");
-
-	sdev->pminfo.pm_targets[target_id].pkt_data.scheduled_idx = next_index;
 
 	_schedule_log_rep(sdev, target_id, next_index, retrans);
 }
