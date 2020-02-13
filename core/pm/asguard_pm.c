@@ -40,9 +40,9 @@ static inline bool scheduled_tx(uint64_t prev_time, uint64_t cur_time, uint64_t 
 }
 
 
-static inline bool check_sync_window(uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t sync_window)
+static inline bool check_async_window(uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t sync_window)
 {
-	return (cur_time - prev_time) >= (interval - sync_window);
+	return (cur_time - prev_time) <= (interval - sync_window);
 }
 
 
@@ -54,7 +54,6 @@ static inline bool check_async_door(struct pminfo *spminfo)
 	for (i = 0; i < spminfo->num_of_targets; i++)
 		doorbell += spminfo->pm_targets[i].aapriv->doorbell;
 
-	asguard_dbg("doorbell: %d\n, doorbell);
 	return doorbell > 0;
 }
 
@@ -606,7 +605,7 @@ static int asguard_pm_loop(void *data)
 			goto emit;
 
 		/* If in Sync Window, do not send anything until the Heartbeat has been sent */
-		if (check_sync_window(prev_time, cur_time, interval, spminfo->waiting_window))
+		if (!check_async_window(prev_time, cur_time, interval, spminfo->waiting_window))
 			continue;
 
 		out_of_sched_hb = out_of_schedule_tx(sdev);
@@ -630,6 +629,7 @@ emit:
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
 		} else if (async_pkts) {
 			err = _emit_async_pkts(sdev, spminfo);
+			asguard_dbg("Async packet emit!\n");
 		}
 
 		if (err) {
