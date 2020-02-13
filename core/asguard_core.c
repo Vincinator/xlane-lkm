@@ -569,7 +569,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 
 	sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 
-	ret = init_asguard_async_queue(&(sdev->pminfo.async_priv), pmtarget->aapriv);
+	ret = init_asguard_async_queue(sdev->pminfo.async_priv, &(pmtarget->aapriv));
 
 	return ret;
 }

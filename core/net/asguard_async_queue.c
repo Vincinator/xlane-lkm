@@ -19,19 +19,19 @@ int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *
     return 0;
 }
 
-int init_asguard_async_queue(struct asguard_async_head_of_queues_priv **aapriv, struct asguard_async_queue_priv *new_queue)
+int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, struct asguard_async_queue_priv **new_queue)
 {
 
-    *aapriv = kmalloc(sizeof(struct asguard_async_head_of_queues_priv), GFP_KERNEL);
+    *new_queue = kmalloc(sizeof(struct asguard_async_head_of_queues_priv), GFP_KERNEL);
 
-    if(!(*aapriv)) {
+    if(!(*new_queue)) {
         asguard_error("Could not allocate mem for async queue\n");
         return -1;
     }
 
-    INIT_LIST_HEAD(&new_queue->head_of_async_pkt_queue);
+    INIT_LIST_HEAD(&(*new_queue)->head_of_async_pkt_queue);
 
-    list_add_tail(&new_queue->head_of_async_pkt_queue, &((*aapriv)->head_of_aa_queues));
+    list_add_tail(&(*new_queue)->head_of_async_pkt_queue, &aapriv->head_of_aa_queues);
     
     return 0;
 

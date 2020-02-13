@@ -330,11 +330,11 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 			sdev->pminfo.pm_targets[target_id].scheduled_log_replications++;
 
 			if(retrans)
-				push_front_async_pkt(&(spminfo->pm_targets[target_id].aapriv), apkt);
+				push_front_async_pkt(spminfo->pm_targets[target_id].aapriv, apkt);
 			else
-				enqueue_async_pkt(&(spminfo->pm_targets[target_id].aapriv), apkt);
+				enqueue_async_pkt(spminfo->pm_targets[target_id].aapriv, apkt);
 			
-			ring_aa_doorbell(&spminfo->pm_targets[target_id].aapriv);
+			ring_aa_doorbell(spminfo->pm_targets[target_id].aapriv);
 		}
 	}
 
