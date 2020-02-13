@@ -408,12 +408,6 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	aw = container_of(w, struct asguard_leader_pkt_work_data, work);
 
-	// wait until the previous packet has been sent.
-	// ... do not wait for reply from target
-	mutex_lock(&aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.active_dirty_lock);
-
-	aw->sdev->pminfo.pm_targets[aw->target_id].pkt_data.scheduled_idx = -1;
-
 	more = _do_prepare_log_replication(aw->sdev, aw->target_id, aw->next_index, aw->retrans);
 
 	/* not ready to prepare log replication */
@@ -503,8 +497,10 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 
 	next_index = get_next_idx_for_target(cur_priv, target_id, &retrans);
 
-	if(next_index == -1)
-		return;
+	if(next_index < 0){
+	    asguard_dbg("next index is %d - Abort\n", next_index);
+	    return;
+	}
 
 	match_index = _get_match_idx(cur_priv, target_id);
 
