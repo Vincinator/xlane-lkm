@@ -474,9 +474,8 @@ void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_a
         goto unlock;
     }
 
-	skb_get(apkt->skb); // do we really need to inc the reference?
-
-
+    // if we do not want the skb to be freed, we have to call skb_get to inc the ref count
+	//skb_get(apkt->skb);
 
 	netdev_start_xmit(apkt->skb, ndev, txq, 0);
 
