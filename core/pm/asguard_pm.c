@@ -54,6 +54,7 @@ static inline bool check_async_door(struct pminfo *spminfo)
 	for (i = 0; i < spminfo->num_of_targets; i++)
 		doorbell += spminfo->pm_targets[i].aapriv->doorbell;
 
+	asguard_dbg("doorbell: %d\n, doorbell);
 	return doorbell > 0;
 }
 
@@ -447,7 +448,6 @@ void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_a
 	struct netdev_queue *txq;
 	int tx_index = smp_processor_id();
 	unsigned long flags;
-	int i, ret;
 
 	if (unlikely(!netif_running(ndev) ||
 			!netif_carrier_ok(ndev))) {
