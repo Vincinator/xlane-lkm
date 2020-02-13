@@ -124,10 +124,13 @@ void async_pkt_dump(struct asguard_async_pkt *apkt)
         return;
     }
 
+
     if(!apkt->skb) {
         asguard_dbg("skb is NULL\n");
         return;
     }
+
+    skb_get(apkt->skb);
 
     if (apkt->skb->protocol != htons(ETH_P_IP)){
         asguard_dbg("SKB is not IP protocol \n");
