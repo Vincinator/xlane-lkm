@@ -58,5 +58,7 @@ struct asguard_async_pkt * create_async_pkt(struct net_device *ndev, u32 dst_ip,
 
 void ring_aa_doorbell(struct asguard_async_queue_priv *aqueue);
 
+void async_pkt_dump(struct asguard_async_pkt *apkt);
+
 
 #endif /* _ASGUARD_ASYNC_H_ */

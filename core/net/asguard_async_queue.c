@@ -1,8 +1,16 @@
 #include <asguard/asguard_async.h>
 #include <linux/slab.h>
 #include <asguard/asguard.h>
+#include <linux/ip.h>
 
 #define LOG_PREFIX "[ASGUARD][ASYNC QUEUE]"
+
+#define NIPQUAD(addr) \
+    ((unsigned char *)&addr)[0], \
+    ((unsigned char *)&addr)[1], \
+    ((unsigned char *)&addr)[2], \
+    ((unsigned char *)&addr)[3]
+
 
 int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv **aapriv)
 {
@@ -105,3 +113,35 @@ void ring_aa_doorbell(struct asguard_async_queue_priv *aqueue)
 
 }
 EXPORT_SYMBOL(ring_aa_doorbell);
+
+
+void async_pkt_dump(struct asguard_async_pkt *apkt)
+{
+    struct iphdr *iph;
+
+    if(!apkt)
+        asguard_dbg("pkt is NULL\n");
+
+    if(!apkt->skb)
+        asguard_dbg("skb is NULL\n");
+
+    if (apkt->skb->protocol != htons(ETH_P_IP)){
+        asguard_dbg("SKB is not IP protocol \n");
+        return;
+    }
+
+    iph = ip_hdr(apkt->skb);
+
+    if(!iph){
+        asguard_dbg("IP Header is NULL \n");
+        return;
+    }
+
+    asguard_dbg("FROM: %d.%d.%d.%d TO:%d.%d.%d.%d\n",
+           NIPQUAD(iph->saddr), NIPQUAD(iph->daddr));
+
+
+    asguard_dbg("Protocols Included: %u", ((struct asguard_payload* ) apkt->payload_ptr)->protocols_included);
+
+}
+EXPORT_SYMBOL(async_pkt_dump);

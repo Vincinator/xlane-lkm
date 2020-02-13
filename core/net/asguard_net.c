@@ -32,6 +32,13 @@ void asguard_hex_to_ip(char *retval, u32 dst_ip)
 		((dst_ip & 0x000000ff)));
 }
 
+void asguard_hex_to_ip(u32 dst_ip)
+{
+    sprintf(retval, "%d.%d.%d.%d", ((dst_ip & 0xff000000) >> 24),
+            ((dst_ip & 0x00ff0000) >> 16), ((dst_ip & 0x0000ff00) >> 8),
+            ((dst_ip & 0x000000ff)));
+}
+
 #ifndef CONFIG_KUNIT
 struct net_device *asguard_get_netdevice(int ifindex)
 {
@@ -255,7 +262,7 @@ int is_ip_local(struct net_device *dev,	u32 ip_addr)
 }
 EXPORT_SYMBOL(is_ip_local);
 
-struct sk_buff *reserve_skb(struct net_device *dev, u32 dst_ip, unsigned char *dst_mac, char **data_ptr)
+struct sk_buff *reserve_skb(struct net_device *dev, u32 dst_ip, unsigned char dst_mac[6], char **data_ptr)
 {
 	struct sk_buff *skb = NULL;
 
