@@ -468,10 +468,14 @@ void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_a
 		goto unlock;
 	}
 
-	// skb_get(apkt->skb); // do we really need to inc the reference?
+	skb_get(apkt->skb); // do we really need to inc the reference?
 
 	netdev_start_xmit(apkt->skb, ndev, txq, 0);
 
+	if(apkt->skb) {
+        asguard_dbg("SKB is not NULL!\n");
+        kfree_skb(apkt->skb);
+	}
 	kfree(apkt); // apkt has already been dequeued from the list, skb should have been freed now.
 
 unlock:
