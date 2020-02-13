@@ -221,6 +221,8 @@ char * reserve_payload(struct sk_buff *skb)
 		return NULL;
 	}
 
+    memset(data, 0,ASGUARD_PAYLOAD_BYTES );
+
 	return data;
 
 //	print_hex_dump(KERN_DEBUG, "Payload: ", DUMP_PREFIX_NONE, 16, 1, data,
