@@ -210,7 +210,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 	if (next_index == -1) {
 		asguard_dbg("Invalid target id resulted in invalid next_index!\n");
-		return more;
+		return -1;
 	}
 
 	// asguard_dbg("PREP AE: local_last_idx=%d, next_index=%d\n", local_last_idx, next_index);
@@ -218,7 +218,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 	if (prev_log_term < 0) {
 		asguard_error("BUG! - prev_log_term is invalid\n");
-		return more;
+		return -1;
 	}
 
 	leader_commit_idx = cur_priv->sm_log.commit_idx;
@@ -236,6 +236,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 			more = 1;
 		} else {
 			num_entries = (local_last_idx - next_index + 1);
+			more = 0;
 		}
 
 		// update next_index without receiving the response from the target
@@ -256,7 +257,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 						ASGUARD_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
 	if (!pkt_payload_sub)
-		return 0;
+		return -1;
 
 	set_ae_data(pkt_payload_sub,
 		cur_priv->term,
@@ -288,12 +289,10 @@ EXPORT_SYMBOL(invalidate_proto_data);
 int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 next_index, int retrans)
 {
 	struct consensus_priv *cur_priv = NULL;
-	int j;
+	int j, ret;
 	struct pminfo *spminfo = &sdev->pminfo;
-	int hb_passive_ix;
 	struct asguard_payload *pkt_payload;
 	int more = 0;
-	int should_fire = 0;
 	struct asguard_async_pkt *apkt = NULL;
 
 	if(sdev->is_leader == 0)
@@ -325,9 +324,16 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 			if (cur_priv->nstate != LEADER)
 				continue;
 
-			more += setup_append_msg(cur_priv, (struct asguard_payload *) apkt->payload_ptr, sdev->protos[j]->instance_id, target_id, next_index, retrans);
+            ret = setup_append_msg(cur_priv, (struct asguard_payload *) apkt->payload_ptr, sdev->protos[j]->instance_id, target_id, next_index, retrans);
 
-			sdev->pminfo.pm_targets[target_id].scheduled_log_replications++;
+            if(ret < 0) {
+                asguard_error("setup append msg failed\n");
+                return ret;
+            }
+
+            more += ret;
+
+            sdev->pminfo.pm_targets[target_id].scheduled_log_replications++;
 
 			if(retrans)
 				push_front_async_pkt(spminfo->pm_targets[target_id].aapriv, apkt);

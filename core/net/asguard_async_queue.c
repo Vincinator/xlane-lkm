@@ -1,8 +1,8 @@
 #include <asguard/asguard_async.h>
-#include <asguard/payload_helper.h>
 #include <linux/slab.h>
 #include <asguard/asguard.h>
 
+#define LOG_PREFIX "[ASGUARD][ASYNC QUEUE]"
 
 int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv **aapriv)
 {
@@ -42,7 +42,6 @@ EXPORT_SYMBOL(init_asguard_async_queue);
 
 int enqueue_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard_async_pkt *apkt)
 {   
-
 
     list_add_tail(&apkt->async_pkts_head, &aqueue->head_of_async_pkt_queue);
     asguard_dbg("Packet enqueued\n");
