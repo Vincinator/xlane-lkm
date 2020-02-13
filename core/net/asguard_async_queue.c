@@ -70,12 +70,14 @@ EXPORT_SYMBOL(push_front_async_pkt);
 
     queued_apkt = list_first_entry_or_null(&aqueue->head_of_async_pkt_queue, struct asguard_async_pkt, async_pkts_head);
 
-    if(queued_apkt != NULL)
+    if(queued_apkt != NULL) {
         list_del(&queued_apkt->async_pkts_head);
+        asguard_dbg("Packet dequeued\n");
+    }else {
+        asguard_dbg("apkt is NULL. \n");
+    }
 
-     asguard_dbg("Packet dequeued\n");
-
-     return queued_apkt;
+    return queued_apkt;
 }
 EXPORT_SYMBOL(dequeue_async_pkt);
 
@@ -87,7 +89,11 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
     apkt = kmalloc(sizeof(struct asguard_async_pkt), GFP_KERNEL);
 
     apkt->skb = reserve_skb(ndev, dst_ip, dst_mac, &apkt->payload_ptr);
-    asguard_dbg("Packet created\n");
+    if(!apkt->skb) {
+        asguard_error("Could not allocate SKB!\n");
+    } else {
+        asguard_dbg("Packet created\n");
+    }
 
     return apkt;
 }

@@ -468,12 +468,14 @@ void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_a
 		goto unlock;
 	}
 
+    if(!apkt->skb){
+        asguard_error("BUG! skb is NULL!\n");
+        goto unlock;
+    }
+
 	skb_get(apkt->skb); // do we really need to inc the reference?
 
-	if(!apkt->skb){
-	    asguard_error("BUG! skb is NULL!\n");
-	    goto unlock;
-	}
+
 
 	netdev_start_xmit(apkt->skb, ndev, txq, 0);
 
