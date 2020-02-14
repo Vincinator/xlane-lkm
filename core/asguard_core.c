@@ -198,6 +198,7 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 	return 0;
 }
 
+
 // Note: this function will not explicitly run on the same isolated cpu
 //		.. for consecutive packets (even from the same host)
 //   ... Timestamping may be
