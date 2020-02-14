@@ -10,6 +10,8 @@ struct asguard_async_head_of_queues_priv {
     /* List head for asguard_async_queue_list_items */
    struct list_head head_of_aa_queues;
 
+    rwlock_t top_list_rwlock;
+
 };
 
 struct asguard_async_queue_priv {
@@ -21,6 +23,8 @@ struct asguard_async_queue_priv {
     struct list_head head_of_async_pkt_queue;
 
     int doorbell;
+
+    rwlock_t queue_rwlock;
 
 };
 
@@ -59,6 +63,8 @@ struct asguard_async_pkt * create_async_pkt(struct net_device *ndev, u32 dst_ip,
 void ring_aa_doorbell(struct asguard_async_queue_priv *aqueue);
 
 void async_pkt_dump(struct asguard_async_pkt *apkt);
+
+void async_clear_queues(struct asguard_async_head_of_queues_priv *aapriv);
 
 
 #endif /* _ASGUARD_ASYNC_H_ */
