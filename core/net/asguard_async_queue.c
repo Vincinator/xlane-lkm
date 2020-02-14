@@ -17,7 +17,7 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
 {
     struct asguard_async_pkt *entry, *tmp_entry;
 
-    write_lock(queue->queue_rwlock);
+    write_lock(&queue->queue_rwlock);
 
     list_for_each_entry_safe(entry, tmp_entry, &queue->head_of_async_pkt_queue, async_pkts_head)
     {
@@ -32,13 +32,13 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
         }
     }
 
-    write_unlock(queue->queue_rwlock);
+    write_unlock(&queue->queue_rwlock);
 }
 
 void async_clear_queues(struct asguard_async_head_of_queues_priv *aapriv)
 {
     struct asguard_async_queue_priv *entry, *tmp_entry;
-    write_lock(aapriv->top_list_rwlock);
+    write_lock(&aapriv->top_list_rwlock);
 
     list_for_each_entry_safe(entry, tmp_entry, &aapriv->head_of_aa_queues, aa_queues_head)
     {
@@ -50,7 +50,7 @@ void async_clear_queues(struct asguard_async_head_of_queues_priv *aapriv)
         }
     }
 
-   write_unlock(aapriv->top_list_rwlock);
+   write_unlock(&aapriv->top_list_rwlock);
 
 }
 
@@ -103,11 +103,11 @@ EXPORT_SYMBOL(init_asguard_async_queue);
 int enqueue_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard_async_pkt *apkt)
 {   
 
-    write_lock(aqueue->queue_rwlock);
+    write_lock(&aqueue->queue_rwlock);
 
     list_add_tail(&apkt->async_pkts_head, &aqueue->head_of_async_pkt_queue);
 
-    write_unlock(aqueue->queue_rwlock);
+    write_unlock(&aqueue->queue_rwlock);
 
 
     asguard_dbg("Packet enqueued\n");
@@ -120,9 +120,9 @@ EXPORT_SYMBOL(enqueue_async_pkt);
 int push_front_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard_async_pkt *apkt)
 {
 
-    write_lock(aqueue->queue_rwlock);
+    write_lock(&aqueue->queue_rwlock);
     list_add(&apkt->async_pkts_head, &aqueue->head_of_async_pkt_queue);
-    write_unlock(aqueue->queue_rwlock);
+    write_unlock(&aqueue->queue_rwlock);
 
     asguard_dbg("Packet pushed to front of queue\n");
 
@@ -136,7 +136,7 @@ EXPORT_SYMBOL(push_front_async_pkt);
  {
     struct asguard_async_pkt *queued_apkt;
 
-     write_lock(aqueue->queue_rwlock);
+     write_lock(&aqueue->queue_rwlock);
 
      queued_apkt = list_first_entry_or_null(&aqueue->head_of_async_pkt_queue, struct asguard_async_pkt, async_pkts_head);
 
@@ -147,7 +147,7 @@ EXPORT_SYMBOL(push_front_async_pkt);
         asguard_dbg("apkt is NULL. \n");
     }
 
-    write_unlock(aqueue->queue_rwlock);
+    write_unlock(&aqueue->queue_rwlock);
 
     return queued_apkt;
 }
