@@ -83,6 +83,8 @@ int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, s
         return -1;
     }
 
+    (*new_queue)->doorbell = 0;
+
     rwlock_init(&(*new_queue)->queue_rwlock);
 
     INIT_LIST_HEAD(&(*new_queue)->head_of_async_pkt_queue);
