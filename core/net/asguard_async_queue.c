@@ -22,9 +22,8 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
 
     write_lock(&queue->queue_rwlock);
 
-    if(list_empty(&queue->head_of_async_pkt_queue)) {
+    if(list_empty(&queue->head_of_async_pkt_queue))
         goto unlock;
-    }
 
     list_for_each_entry_safe(entry, tmp_entry, &queue->head_of_async_pkt_queue, async_pkts_head)
     {
@@ -49,9 +48,8 @@ void async_clear_queues(struct asguard_async_head_of_queues_priv *aapriv)
 
     write_lock(&aapriv->top_list_rwlock);
 
-    if(list_empty(&aapriv->head_of_aa_queues)) {
+    if(list_empty(&aapriv->head_of_aa_queues))
         goto unlock;
-    }
 
     list_for_each_entry_safe(entry, tmp_entry, &aapriv->head_of_aa_queues, aa_queues_head)
     {
