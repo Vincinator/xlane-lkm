@@ -2,6 +2,7 @@
 #include <linux/slab.h>
 #include <asguard/asguard.h>
 #include <linux/ip.h>
+#include <linux/rwlock_types.h>
 
 #define LOG_PREFIX "[ASGUARD][ASYNC QUEUE]"
 
