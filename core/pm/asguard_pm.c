@@ -488,7 +488,6 @@ unlock:
 }
 
 
-
 int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo) 
 {
 	int i;
@@ -506,8 +505,8 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             // Pkt has been handled. So we can
             spminfo->pm_targets[i].aapriv->doorbell--;
 
-            /*			if(cur_apkt)
-				emit_apkt(sdev->ndev, spminfo, cur_apkt);*/
+            if(cur_apkt)
+				emit_apkt(sdev->ndev, spminfo, cur_apkt);
 		}
 	}
 }
@@ -548,7 +547,7 @@ static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminf
 {
 	asguard_setup_hb_skbs(sdev);
 
-	pm_state_transition_to(spminfo, ASGUARD_PM_EMITTING);
+    pm_state_transition_to(spminfo, ASGUARD_PM_EMITTING);
 
 	sdev->warmup_state = WARMING_UP;
 
@@ -629,7 +628,6 @@ emit:
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
 		} else if (async_pkts) {
 			err = _emit_async_pkts(sdev, spminfo);
-			asguard_dbg("Async packet emit!\n");
 		}
 
 		if (err) {
