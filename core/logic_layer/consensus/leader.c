@@ -351,7 +351,7 @@ int stop_leader(struct proto_instance *ins)
 
 	clean_request_transmission_lists(priv);
 
-    async_clear_queues(priv->sdev->pminfo.async_priv);
+    async_clear_queues(priv->sdev->pminfo.0);
 
 	return 0;
 }

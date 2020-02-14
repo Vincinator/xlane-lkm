@@ -647,8 +647,6 @@ void asguard_stop_timestamping(struct asguard_device *adev)
 		return;
 	}
 
-
-
 	asguard_ts_stop(adev);
 
 
