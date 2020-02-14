@@ -87,11 +87,11 @@ int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, s
 
     INIT_LIST_HEAD(&(*new_queue)->head_of_async_pkt_queue);
 
-    write_lock(aapriv->top_list_rwlock);
+    write_lock(&aapriv->top_list_rwlock);
 
     list_add_tail(&(*new_queue)->head_of_async_pkt_queue, &aapriv->head_of_aa_queues);
 
-    write_unlock(aapriv->top_list_rwlock);
+    write_unlock(&aapriv->top_list_rwlock);
 
     asguard_dbg("Async Queue initialized\n");
 
