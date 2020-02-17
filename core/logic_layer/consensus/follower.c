@@ -346,6 +346,7 @@ reply_false_unlock:
 }
 EXPORT_SYMBOL(_handle_append_rpc);
 
+
 int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {
 	struct consensus_priv *priv =

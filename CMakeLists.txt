@@ -16,6 +16,7 @@ if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Darwin")
 else()
     MESSAGE(${CMAKE_HOST_SYSTEM_NAME})
     set(TARGET_ENV 1)
+
 endif()
 
 
@@ -72,16 +73,17 @@ SET( MODULE_SOURCE_FILES
 # Use KBuild System in Container to compile
 if (TARGET_ENV EQUAL 1)
     MESSAGE("Using Container")
+    SET(CMAKE_USE_RELATIVE_PATHS On)
 
-    SET( ASGUARD_LKM_BIN    /home/cerebro/asguard-module/bin/asguard.ko )
-    SET( MODULE_SOURCE_DIR  /home/cerebro/asguard-module)
+    SET( ASGUARD_LKM_BIN    /home/cerebro/asguard-kernel/net/asguard/asguard.ko )
+    SET( MODULE_SOURCE_DIR  /home/cerebro/asguard-kernel/net/asguard)
 
     MESSAGE("y")
     MESSAGE(${MODULE_SOURCE_DIR})
 
     Set( KERNEL_DIR "/home/cerebro/asguard-kernel")
 
-    Set( KBUILD_CMD "${CMAKE_MAKE_PROGRAM} -C ${KERNEL_DIR} M=${MODULE_SOURCE_DIR} modules")
+    Set( KBUILD_CMD ${CMAKE_MAKE_PROGRAM} -C ${KERNEL_DIR} M=${MODULE_SOURCE_DIR} modules -j8)
     MESSAGE(${KBUILD_CMD})
     MESSAGE(${KBUILD_CMD})
 
