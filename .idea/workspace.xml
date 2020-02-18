@@ -7,19 +7,20 @@
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
     <configurations>
-      <configuration PROFILE_NAME="Debug-Local Linux Container" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Local Linux Container">
-        <ADDITIONAL_GENERATION_ENVIRONMENT>
-          <envs>
-            <env name="-DCONTAINER_ENV" value="1" />
-          </envs>
-        </ADDITIONAL_GENERATION_ENVIRONMENT>
-      </configuration>
+      <configuration PROFILE_NAME="Debug (1)" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Default" />
       <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Default" />
+      <configuration PROFILE_NAME="Local Container" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Local Linux Container" BUILD_OPTIONS="-j 16" />
     </configurations>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f8a417d1-ed3f-4c8b-a51f-a952ef4f6582" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/core/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/ts/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/core/ts/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/ts/asguard_ts.c" beforeDir="false" afterPath="$PROJECT_DIR$/core/ts/asguard_ts.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +44,7 @@
     <expand />
     <select />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug-Local Linux Container" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Local Container" />
   <component name="FavoritesManager">
     <favorites_list name="asguard" />
   </component>
@@ -70,7 +71,7 @@
     <property name="cf.advertisement.text.has.clang-format" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="settings.editor.selected.configurable" value="CMakeSettings" />
   </component>
   <component name="RunManager">
     <configuration name="asguard" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="asguard" TARGET_NAME="asguard" CONFIG_NAME="Debug">
@@ -107,6 +108,10 @@
       <workItem from="1581582764283" duration="15292000" />
       <workItem from="1581664567738" duration="16221000" />
       <workItem from="1581699623705" duration="4053000" />
+      <workItem from="1581707688886" duration="411000" />
+      <workItem from="1581922569894" duration="2054000" />
+      <workItem from="1581927751350" duration="9000" />
+      <workItem from="1581928219606" duration="4230000" />
     </task>
     <task id="LOCAL-00001" summary="async queue Data stored as pointer and allocated during init">
       <created>1581586273388</created>
@@ -144,10 +149,10 @@
       <screen x="1792" y="-152" width="1920" height="1080" />
     </state>
     <state x="2352" y="53" key="#Notifications/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581526346796" />
-    <state x="2216" y="51" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1581701933761">
+    <state x="2216" y="51" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1581928558369">
       <screen x="1792" y="-152" width="1920" height="1080" />
     </state>
-    <state x="2216" y="51" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581701933761" />
+    <state x="2216" y="51" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581928558369" />
     <state x="2216" y="51" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1792.1097/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581673840140" />
     <state x="2480" y="234" key="#com.intellij.ide.actions.ChooseComponentsToExportDialog" timestamp="1581707715797">
       <screen x="1792" y="-152" width="1920" height="1080" />
@@ -174,10 +179,10 @@
       <screen x="1792" y="-152" width="1920" height="1080" />
     </state>
     <state x="1892" y="-52" width="1720" height="880" key="DirDiffDialog/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581695687104" />
-    <state x="2214" y="-62" width="1392" height="722" key="SettingsEditor" timestamp="1581707795516">
+    <state x="2007" y="-24" width="1392" height="722" key="SettingsEditor" timestamp="1582011939534">
       <screen x="1792" y="-152" width="1920" height="1080" />
     </state>
-    <state x="2207" y="21" width="1392" height="722" key="SettingsEditor/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581703309025" />
+    <state x="2007" y="-24" width="1392" height="722" key="SettingsEditor/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1582011939534" />
     <state x="2214" y="-62" key="SettingsEditor/0.23.1792.1097/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581707795516" />
     <state x="2214" y="90" key="SettingsEditor/3712.-657.1080.1920/1792.0.1920.1080/0.0.1792.1120@1792.0.1920.1080" timestamp="1581600744636" />
     <state x="2352" y="268" key="Vcs.Push.Dialog.v2" timestamp="1581586286842">
@@ -198,18 +203,18 @@
     <state x="2429" y="34" width="645" height="708" key="find.popup/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581677412595" />
     <state x="2429" y="186" width="689" height="708" key="find.popup/1792.0.1920.1080/3712.-657.1080.1920/0.0.1792.1120@1792.0.1920.1080" timestamp="1581582846013" />
     <state x="2429" y="186" width="689" height="708" key="find.popup/3712.-657.1080.1920/1792.0.1920.1080/0.0.1792.1120@1792.0.1920.1080" timestamp="1581614327206" />
-    <state x="2490" y="142" width="534" height="519" key="ftp.server.browser" timestamp="1581695582852">
+    <state x="2490" y="142" width="534" height="519" key="ftp.server.browser" timestamp="1581928402938">
       <screen x="1792" y="-152" width="1920" height="1080" />
     </state>
-    <state x="2490" y="142" width="534" height="519" key="ftp.server.browser/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581695582852" />
+    <state x="2490" y="142" width="534" height="519" key="ftp.server.browser/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581928402938" />
     <state x="2417" y="179" key="run.anything.popup" timestamp="1581689010823">
       <screen x="1792" y="-152" width="1920" height="1080" />
     </state>
     <state x="2417" y="179" key="run.anything.popup/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581689010823" />
-    <state x="2417" y="89" width="670" height="676" key="search.everywhere.popup" timestamp="1581668141519">
+    <state x="2417" y="89" width="670" height="676" key="search.everywhere.popup" timestamp="1581928626467">
       <screen x="1792" y="-152" width="1920" height="1080" />
     </state>
-    <state x="2417" y="89" width="670" height="676" key="search.everywhere.popup/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581668141519" />
+    <state x="2417" y="89" width="670" height="676" key="search.everywhere.popup/0.0.1792.1120/1792.-152.1920.1080@1792.-152.1920.1080" timestamp="1581928626467" />
     <state x="2417" y="241" width="670" height="676" key="search.everywhere.popup/3712.-657.1080.1920/1792.0.1920.1080/0.0.1792.1120@1792.0.1920.1080" timestamp="1581608563502" />
   </component>
   <component name="XDebuggerManager">
@@ -219,6 +224,11 @@
           <url>file://$PROJECT_DIR$/common/asguard/asguard.h</url>
           <line>11</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/core/asguard_core.c</url>
+          <line>245</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

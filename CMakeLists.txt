@@ -10,6 +10,10 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 #
 # KBuild does a lot of work for us. We can call KBuild from CMake via ADD_CUSTOM_TARGET
 # Using a CMake "native" method would require a reimplementation of the KBuild functionality with CMake logic.
+#
+# The following part of this hack is the "dirty" part:
+#    Before you configure the container to be used as remote host via ssh,
+#    you have to run the clion code indexing first - then
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Darwin")
     MESSAGE(${CMAKE_HOST_SYSTEM_NAME})
     set(TARGET_ENV 0)
@@ -74,18 +78,19 @@ SET( MODULE_SOURCE_FILES
 if (TARGET_ENV EQUAL 1)
     MESSAGE("Using Container")
     SET(CMAKE_USE_RELATIVE_PATHS On)
-
     SET( ASGUARD_LKM_BIN    /home/cerebro/asguard-kernel/net/asguard/asguard.ko )
     SET( MODULE_SOURCE_DIR  /home/cerebro/asguard-kernel/net/asguard)
 
-    MESSAGE("y")
-    MESSAGE(${MODULE_SOURCE_DIR})
+    execute_process (
+            COMMAND bash -c "ls"
+            OUTPUT_VARIABLE outVar
+    )
 
-    Set( KERNEL_DIR "/home/cerebro/asguard-kernel")
+    SET( KERNEL_DIR "/home/cerebro/asguard-kernel")
+    SET(CCACHE_PROGRAM "ccache gcc")
+    SET(MAKE_PROGRAM $(MAKE))
 
-    Set( KBUILD_CMD ${CMAKE_MAKE_PROGRAM} -C ${KERNEL_DIR} M=${MODULE_SOURCE_DIR} modules -j8)
-    MESSAGE(${KBUILD_CMD})
-    MESSAGE(${KBUILD_CMD})
+    SET( KBUILD_CMD ${MAKE_PROGRAM} CC=${CCACHE_PROGRAM} ARCH=x86 -C ${KERNEL_DIR} M=${MODULE_SOURCE_DIR} modules -j 16)
 
     ADD_CUSTOM_COMMAND(OUTPUT ASGUARD_LKM_BIN
             COMMAND ${KBUILD_CMD}

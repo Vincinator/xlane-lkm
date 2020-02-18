@@ -5,11 +5,12 @@
       <paths name="Local Linux Container (84e2f5bb-d6d2-4463-8827-7f4a4fed7f39)">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/cerebro/asguard-module" local="$PROJECT_DIR$" web="asguard-module" />
+            <mapping deploy="/home/cerebro/asguard-kernel/net/asguard" local="$PROJECT_DIR$" />
           </mappings>
           <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug-local-linux-container" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-local-container" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug-1" />
           </excludedPaths>
         </serverdata>
       </paths>

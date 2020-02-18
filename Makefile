@@ -35,12 +35,11 @@ clean:
 	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) clean
 
 else
+$(info =================== ASGuard Top Level Make ===================)
 
 EXTRA_CFLAGS += -I$(src)/common/
 
 # Core ASGUARD Components
-obj-$(CONFIG_ASGUARD_MODULE) := core/
-obj-$(CONFIG_ASGUARD_FOLLOWER_TEST) += tests/raft/kunit_follower.o
-obj-$(CONFIG_ASGUARD_FOLLOWER_TEST) += tests/core/kunit_net.o
+obj-m := core/
 
 endif
