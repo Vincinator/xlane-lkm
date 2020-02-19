@@ -28,10 +28,6 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
     list_for_each_entry_safe(entry, tmp_entry, &queue->head_of_async_pkt_queue, async_pkts_head)
     {
         if(entry) {
-            if(entry->skb) {
-                kfree_skb(entry->skb);
-                asguard_dbg("freed skb\n");
-            }
             list_del(&entry->async_pkts_head);
             kfree(entry);
             asguard_dbg("freed apkt entry\n");
@@ -115,6 +111,8 @@ EXPORT_SYMBOL(init_asguard_async_queue);
 
 int enqueue_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard_async_pkt *apkt)
 {   
+    if(!apkt || !aqueue)
+        return -1;
 
     write_lock(&aqueue->queue_rwlock);
 
