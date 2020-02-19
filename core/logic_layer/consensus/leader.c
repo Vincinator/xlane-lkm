@@ -113,7 +113,6 @@ void update_commit_idx(struct consensus_priv *priv)
 void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retrans_idx){
 
 	struct retrans_request *new_req, *entry, *tmp_entry;
-	int cancel = 0;
 
 	write_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
@@ -272,7 +271,6 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 void clean_request_transmission_lists(struct consensus_priv *priv)
 {
 	struct retrans_request *entry, *tmp_entry;
-	struct retrans_request *tmp;
 	int i;
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {

@@ -71,8 +71,6 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 	}
 	spay->protocols_included++;
 
-reuse:
-
 	if (unlikely(proto_offset + proto_size > MAX_ASGUARD_PAYLOAD_BYTES)) {
 		asguard_error("Not enough space in asguard payload\n");
 		spay->protocols_included--;
@@ -298,7 +296,6 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 	struct consensus_priv *cur_priv = NULL;
 	int j, ret;
 	struct pminfo *spminfo = &sdev->pminfo;
-	struct asguard_payload *pkt_payload;
 	int more = 0;
 	struct asguard_async_pkt *apkt = NULL;
 
@@ -437,7 +434,6 @@ cleanup:
 s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int *retrans)
 {
 	s32 next_index = -1;
-	int match_index;
 	struct retrans_request *cur_rereq = NULL;
 
 

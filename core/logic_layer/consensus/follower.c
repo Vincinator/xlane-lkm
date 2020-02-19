@@ -245,7 +245,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	s32 *prev_log_commit_idx;
 	u16 pkt_size;
 	int unstable = 0;
-	int start_idx, i;
+	int start_idx;
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 

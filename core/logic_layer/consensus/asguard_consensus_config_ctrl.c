@@ -23,7 +23,6 @@ static ssize_t asguard_le_config_write(struct file *file,
 	static const char delimiters[] = " ,;()";
 	int state = 0;
 	int fmin_tmp, fmax_tmp, cmin_tmp, cmax_tmp, max_entries_per_pkt_tmp;
-	int waiting_window;
 	int tmp;
 
 	max_entries_per_pkt_tmp = -1;

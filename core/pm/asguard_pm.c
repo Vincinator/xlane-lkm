@@ -118,7 +118,7 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
 
 		/* Setup SKB */
-		spminfo->pm_targets[i].skb = compose_skb(sdev->ndev, naddr, hb_pkt_payload);
+		spminfo->pm_targets[i].skb = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, hb_pkt_payload);
 		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
 	}
 }
@@ -393,11 +393,10 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		struct pminfo *spminfo)
 {
-	struct asguard_payload *pkt_payload;
+	struct asguard_payload *pkt_payload = NULL;
 	int i;
 	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
-	enum tsstate ts_state = sdev->ts_state;
 	int target_fire[MAX_NODE_ID];
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
@@ -503,13 +502,14 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             else
                 asguard_dbg("cur apkt is NULL!\n");
 
-            // Pkt has been handled. So we can
+            // Pkt has been handled
             spminfo->pm_targets[i].aapriv->doorbell--;
 
             if(cur_apkt)
 				emit_apkt(sdev->ndev, spminfo, cur_apkt);
 		}
 	}
+	return 0;
 }
 
 static int _validate_pm(struct asguard_device *sdev,

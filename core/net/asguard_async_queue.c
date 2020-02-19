@@ -172,7 +172,8 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
 
     apkt = kmalloc(sizeof(struct asguard_async_pkt), GFP_KERNEL);
 
-    apkt->skb = reserve_skb(ndev, dst_ip, dst_mac);
+    apkt->skb = asguard_reserve_skb(ndev, dst_ip, dst_mac, NULL);
+
     if(!apkt->skb) {
         asguard_error("Could not allocate SKB!\n");
     } else {
@@ -224,7 +225,7 @@ void async_pkt_dump(struct asguard_async_pkt *apkt)
     asguard_dbg("FROM: %d.%d.%d.%d TO:%d.%d.%d.%d\n",
            NIPQUAD(iph->saddr), NIPQUAD(iph->daddr));
 
-    if(skb->data)
+    if(apkt->skb && apkt->skb->data)
         asguard_dbg("Protocols Included: %u", ((struct asguard_payload* ) apkt->skb->data)->protocols_included);
 
 }
