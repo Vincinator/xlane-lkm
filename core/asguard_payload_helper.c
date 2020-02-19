@@ -333,8 +333,18 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
                                     spminfo->pm_targets[target_id].pkt_data.naddr.dst_ip,
                                     spminfo->pm_targets[target_id].pkt_data.naddr.dst_mac);
 
+            if(!apkt) {
+                asguard_error("Could not allocate async pkt!\n");
+                continue;
+            }
+
+            if(! apkt->skb->data) {
+                asguard_error("SKB Data mem is NULL!\n");
+                return -1;
+            }
+            /* Directly write to the skb data memory. */
             ret = setup_append_msg(cur_priv,
-                    (struct asguard_payload *) apkt->payload_ptr,
+                    (struct asguard_payload *) apkt->skb->data,
                             sdev->protos[j]->instance_id,
                             target_id,
                             next_index,

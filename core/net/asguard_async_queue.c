@@ -34,6 +34,7 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
         }
     }
 
+
 unlock:
     write_unlock(&queue->queue_rwlock);
 }
@@ -171,7 +172,7 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
 
     apkt = kmalloc(sizeof(struct asguard_async_pkt), GFP_KERNEL);
 
-    apkt->skb = reserve_skb(ndev, dst_ip, dst_mac, &apkt->payload_ptr);
+    apkt->skb = reserve_skb(ndev, dst_ip, dst_mac);
     if(!apkt->skb) {
         asguard_error("Could not allocate SKB!\n");
     } else {
@@ -223,8 +224,8 @@ void async_pkt_dump(struct asguard_async_pkt *apkt)
     asguard_dbg("FROM: %d.%d.%d.%d TO:%d.%d.%d.%d\n",
            NIPQUAD(iph->saddr), NIPQUAD(iph->daddr));
 
-
-    asguard_dbg("Protocols Included: %u", ((struct asguard_payload* ) apkt->payload_ptr)->protocols_included);
+    if(skb->data)
+        asguard_dbg("Protocols Included: %u", ((struct asguard_payload* ) apkt->skb->data)->protocols_included);
 
 }
 EXPORT_SYMBOL(async_pkt_dump);

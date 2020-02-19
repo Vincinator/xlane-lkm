@@ -258,7 +258,7 @@ int is_ip_local(struct net_device *dev,	u32 ip_addr)
 }
 EXPORT_SYMBOL(is_ip_local);
 
-struct sk_buff *reserve_skb(struct net_device *dev, u32 dst_ip, unsigned char dst_mac[6], char **data_ptr)
+struct sk_buff *reserve_skb(struct net_device *dev, u32 dst_ip, unsigned char dst_mac[6])
 {
 	struct sk_buff *skb = NULL;
 
@@ -277,9 +277,9 @@ struct sk_buff *reserve_skb(struct net_device *dev, u32 dst_ip, unsigned char ds
 	add_L2_header(skb, dev->dev_addr, dst_mac);
 	add_L3_header(skb, local_ipaddr, dst_ip);
 	add_L4_header(skb);
-
-	*data_ptr = reserve_payload(skb);
-
+    asguard_dbg("about to reserve payload for skb\n");
+	reserve_payload(skb);
+    asguard_dbg("reserved payload for skb\n");
 
 	return skb;
 }
