@@ -176,11 +176,14 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
 
     apkt->payload = kmalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
+
     if(!apkt->skb || !apkt->payload) {
         asguard_error("Could not allocate SKB!\n");
     } else {
         asguard_dbg("Packet reserved\n");
     }
+
+    memset(apkt->payload, 0, sizeof(struct asguard_payload));
 
     return apkt;
 }

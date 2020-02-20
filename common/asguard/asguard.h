@@ -269,7 +269,7 @@ struct asguard_payload {
 	 * If 0, then this payload is interpreted as "noop" operation
 	 *		.. for all local proto instances
 	 */
-	u16 protocols_included;
+	u8 protocols_included;
 
 	/* Pointer to the first protocol payload.
 	 *
@@ -281,7 +281,7 @@ struct asguard_payload {
 	 * If protocol payload does not fit in the asguard payload,
 	 * then the protocol payload is queued to be stored in the next asguard payload.
 	 */
-	char proto_data[MAX_ASGUARD_PAYLOAD_BYTES - 2];
+	char proto_data[MAX_ASGUARD_PAYLOAD_BYTES - 1];
 };
 
 

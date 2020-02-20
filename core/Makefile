@@ -13,9 +13,9 @@ clean:
 else
 
 
-EXTRA_CFLAGS += -I$(src)/../common/
 
 $(info =================== ASGuard Core Make ===================)
+EXTRA_CFLAGS += -I$(src)/../common/
 
 obj-m := asguard.o
 
