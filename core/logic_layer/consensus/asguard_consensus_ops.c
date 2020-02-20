@@ -148,7 +148,7 @@ int consensus_clean(struct proto_instance *ins)
 
 	clear_logger(&ins->logger);
 
-	clear_logger(&priv->throughput_logger);
+	//clear_logger(&priv->throughput_logger);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
 		 priv->sdev->ifindex, ins->instance_id);

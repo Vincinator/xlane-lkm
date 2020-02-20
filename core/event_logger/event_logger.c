@@ -221,6 +221,7 @@ int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char 
 
     slog->instance_id = instance_id;
     slog->ifindex = ifindex;
+    slog->name = kmalloc(MAX_LOGGER_NAME, GFP_KERNEL);
     strncpy(slog->name, name, MAX_LOGGER_NAME);
 
     // freed by clear_logger
