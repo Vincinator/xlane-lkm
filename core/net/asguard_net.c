@@ -129,14 +129,20 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
 
     refcount_set(&skb->users, 1);
 
-    // data == tail == head + LL_RESERVED_SPACE_EXTRA(dev, 0)
+    // data == tail == head + LL_RESERVED_SPACE_EXTRA(dev, 0) + ETH_HLEN + sizeof(struct iphdr)+ sizeof(struct udphdr)
     // end = head + allocated skb size
-    skb_reserve(skb, LL_RESERVED_SPACE_EXTRA(dev, 0));
+    // reserving headroom for header to expand
+    skb_reserve(skb,   LL_RESERVED_SPACE_EXTRA(dev, 0) + ETH_HLEN + sizeof(struct iphdr)+ sizeof(struct udphdr));
 
     skb->dev = dev;
 
     asguard_dbg("LL_RESERVED_SPACE_EXTRA(dev, 0) = %d \n", LL_RESERVED_SPACE_EXTRA(dev, 0));
 
+    // data == tail - sizeof(struct asguard_payload)
+    // reserve space for payload
+    skb_put(skb, sizeof(struct asguard_payload));
+
+    // data = data - sizeof(struct udphdr)
     skb_push(skb, sizeof(struct udphdr));
     asguard_dbg("sizeof(struct udphdr) = %d \n", sizeof(struct udphdr));
 
@@ -158,6 +164,9 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     if (udph->check == 0)
         udph->check = CSUM_MANGLED_0;
 
+
+
+    // data = data - sizeof(struct iphdr)
     skb_push(skb, sizeof(struct iphdr));
 
     skb_reset_network_header(skb);
@@ -180,6 +189,7 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     iph->check
         = ip_fast_csum((unsigned char *)iph, iph->ihl);
 
+    // data = data - ETH_HLEN
     eth = skb_push(skb, ETH_HLEN);
 
     skb_reset_mac_header(skb);
