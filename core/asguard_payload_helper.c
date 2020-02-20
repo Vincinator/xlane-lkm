@@ -340,7 +340,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 
             /* Directly write to the skb data memory. */
             ret = setup_append_msg(cur_priv,
-                    (struct asguard_payload *) apkt->skb->tail - sizeof(struct asguard_payload),
+                    (struct asguard_payload *) (apkt->skb->tail - sizeof(struct asguard_payload)),
                             sdev->protos[j]->instance_id,
                             target_id,
                             next_index,
