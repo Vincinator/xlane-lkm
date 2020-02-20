@@ -170,23 +170,17 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     asguard_dbg("%d \n", __LINE__);
 
     udph->check = csum_tcpudp_magic(local_ipaddr, dst_ip, udp_len, IPPROTO_UDP,csum_partial(udph, udp_len, 0));
-    asguard_dbg("%d \n", __LINE__);
 
     if (udph->check == 0)
         udph->check = CSUM_MANGLED_0;
-    asguard_dbg("%d \n", __LINE__);
 
     skb_push(skb, sizeof(struct iphdr));
-    asguard_dbg("%d \n", __LINE__);
 
     skb_reset_network_header(skb);
-    asguard_dbg("%d \n", __LINE__);
 
     iph = ip_hdr(skb);
-    asguard_dbg("%d \n", __LINE__);
 
     put_unaligned(0x45, (unsigned char *)iph);
-    asguard_dbg("%d \n", __LINE__);
 
     iph->tos      = 0;
     put_unaligned(htons(ip_len), &(iph->tot_len));
@@ -195,26 +189,20 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     iph->ttl      = 64;
     iph->protocol = IPPROTO_UDP;
     iph->check    = 0;
-    asguard_dbg("%d \n", __LINE__);
 
     put_unaligned(local_ipaddr, &(iph->saddr));
     put_unaligned(dst_ip, &(iph->daddr));
-    asguard_dbg("%d \n", __LINE__);
 
     iph->check
         = ip_fast_csum((unsigned char *)iph, iph->ihl);
-    asguard_dbg("%d \n", __LINE__);
 
     eth = skb_push(skb, ETH_HLEN);
-    asguard_dbg("%d \n", __LINE__);
 
     skb_reset_mac_header(skb);
     skb->protocol = eth->h_proto = htons(ETH_P_IP);
-    asguard_dbg("%d \n", __LINE__);
 
     ether_addr_copy(eth->h_source, dev->dev_addr);
     ether_addr_copy(eth->h_dest, dst_mac);
-    asguard_dbg("%d \n", __LINE__);
 
     skb->dev = dev;
     asguard_dbg("%d \n", __LINE__);
