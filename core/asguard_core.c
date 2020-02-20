@@ -144,6 +144,14 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 	if (instances <= 0 || bcnt <= 0)
 		return;
 
+	/* Protect this kernel from buggy packets.
+	 * In the current state, more than 4 instances are not intentional.
+	 */
+	if (instances > 4) {
+	    asguard_error("Received packet that claimed to include %d instances.\n", instances);
+	    return;
+	}
+
 	// if (sdev->verbose >= 3)
 	//	asguard_dbg("recursion. instances %d bcnt %d", instances, bcnt);
 
@@ -218,7 +226,9 @@ void pkt_process_handler(struct work_struct *w) {
 
 }
 
-void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
+#define ASG_ETH_HEADER_SIZE 14
+
+void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct pminfo *spminfo = &sdev->pminfo;
@@ -226,6 +236,15 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	u16 received_proto_instances;
 	struct asguard_pkt_work_data *work;
 	uint64_t ts2, ts3;
+
+	char *remote_mac = ((char *) payload) + headroom + 6;
+
+    print_hex_dump(KERN_DEBUG, "ASGUARD pkt: ", DUMP_PREFIX_NONE, 16, 1,
+                    payload, cqe_bcnt, 0);
+
+    asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);
+
+    return;
 
 	ts2 = RDTSC_ASGUARD;
 

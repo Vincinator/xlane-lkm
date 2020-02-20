@@ -564,7 +564,7 @@ struct net_device *asguard_get_netdevice(int ifindex);
 int asguard_validate_asguard_device(int asguard_id);
 void asguard_reset_remote_host_counter(int asguard_id);
 
-void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt);
+void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_bcnt);
 
 const char *asguard_get_protocol_name(enum asguard_protocol_type protocol_type);
 
