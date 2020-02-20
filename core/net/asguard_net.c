@@ -91,28 +91,11 @@ unsigned char *asguard_convert_mac(const char *str)
 EXPORT_SYMBOL(asguard_convert_mac);
 
 #ifndef CONFIG_KUNIT
-inline struct sk_buff *prepare_asguard_skb(struct net_device *dev, int len)
+inline struct sk_buff *prepare_asguard_skb(struct net_device *dev, int total_len, int headspace_len)
 {
 	struct sk_buff *skb;
 
-    // head == data == tail
-    // end = head + allocated skb size
-    skb = alloc_skb(len, GFP_ATOMIC);
 
-    if (!skb) {
-        // Handle this case?
-        asguard_error("Could not allocate SKB\n");
-        return NULL;
-    }
-
-    refcount_set(&skb->users, 1);
-
-    // data == tail == head + LL_RESERVED_SPACE(dev)
-    // end = head + allocated skb size
-
-    skb_reserve(skb, len);
-
-    skb->dev = dev;
 
     return skb;
 }
@@ -140,21 +123,33 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     struct udphdr *udph;
     static atomic_t ip_ident;
     u32 local_ipaddr;
-    asguard_dbg("%d \n", __LINE__);
+
     local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
-    asguard_dbg("%d \n", __LINE__);
 
     asguard_len = sizeof(struct asguard_payload);
-    asguard_dbg("%d \n", __LINE__);
-
     udp_len = asguard_len + sizeof(struct udphdr);
-    asguard_dbg("%d \n", __LINE__);
-
     ip_len = udp_len + sizeof(struct iphdr);
-    asguard_dbg("%d \n", __LINE__);
 
-    prepare_asguard_skb(dev, total_len - asguard_len);
-    asguard_dbg("%d \n", __LINE__);
+    total_len = ip_len + LL_RESERVED_SPACE(dev);
+
+    asguard_dbg("Allocating %d Bytes for SKB\n", total_len);
+
+    // head == data == tail
+    // end = head + allocated skb size
+    skb = alloc_skb(total_len, GFP_ATOMIC);
+
+    if (!skb) {
+        asguard_error("Could not allocate SKB\n");
+        return NULL;
+    }
+
+    refcount_set(&skb->users, 1);
+
+    // data == tail == head + LL_RESERVED_SPACE_EXTRA(dev, 64)
+    // end = head + allocated skb size
+    skb_reserve(skb, LL_RESERVED_SPACE_EXTRA(dev, 64));
+
+    skb->dev = dev;
 
     asguard_dbg("%d \n", __LINE__);
 
