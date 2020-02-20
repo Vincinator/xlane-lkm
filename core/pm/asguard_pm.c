@@ -574,7 +574,7 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
     // free fixed skbs again
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
         if(sdev->pminfo.pm_targets[i].skb != NULL)
-            dev_kfree_skb(sdev->pminfo.pm_targets[i].skb):
+            dev_kfree_skb(sdev->pminfo.pm_targets[i].skb);
     }
 
     // unlock active dirty locks

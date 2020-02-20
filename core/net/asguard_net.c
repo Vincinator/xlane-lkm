@@ -90,22 +90,6 @@ unsigned char *asguard_convert_mac(const char *str)
 }
 EXPORT_SYMBOL(asguard_convert_mac);
 
-#ifndef CONFIG_KUNIT
-inline struct sk_buff *prepare_asguard_skb(struct net_device *dev, int total_len, int headspace_len)
-{
-	struct sk_buff *skb;
-
-
-
-    return skb;
-}
-#else
-inline struct sk_buff *prepare_heartbeat_skb(struct net_device *dev)
-{
-	return NULL;
-}
-#endif
-
 
 int is_ip_local(struct net_device *dev,	u32 ip_addr)
 {
