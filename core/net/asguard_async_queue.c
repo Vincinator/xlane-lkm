@@ -20,19 +20,20 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
     if(!queue)
         return;
 
-    write_lock(&queue->queue_rwlock);
-
-    if(list_empty(&queue->head_of_async_pkt_queue))
-        goto unlock;
-
-
     if(queue->doorbell <= 0)
+        return;
+
+    write_lock(&(queue->queue_rwlock));
+
+    if(list_empty(&(queue->head_of_async_pkt_queue)))
         goto unlock;
+
+
 
     list_for_each_entry_safe(entry, tmp_entry, &queue->head_of_async_pkt_queue, async_pkts_head)
     {
         if(entry) {
-            list_del(&entry->async_pkts_head);
+            list_del(&(entry->async_pkts_head));
             kfree(entry);
             asguard_dbg("freed apkt entry\n");
         }
@@ -50,16 +51,16 @@ void async_clear_queues(struct asguard_async_head_of_queues_priv *aapriv)
     if(!aapriv)
         return;
 
-    write_lock(&aapriv->top_list_rwlock);
+    write_lock(&(aapriv->top_list_rwlock));
 
-    if(list_empty(&aapriv->head_of_aa_queues))
+    if(list_empty(&(aapriv->head_of_aa_queues)))
         goto unlock;
 
     list_for_each_entry_safe(entry, tmp_entry, &aapriv->head_of_aa_queues, aa_queues_head)
     {
         if(entry) {
             async_clear_queue(entry);
-            list_del(&entry->aa_queues_head);
+            list_del(&(entry->aa_queues_head));
             kfree(entry);
         }
     }
@@ -77,7 +78,8 @@ int clean_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv 
 
     async_clear_queues(aapriv);
 
-    kfree(aapriv);
+    if(aapriv)
+        kfree(aapriv);
 
     asguard_dbg("Async Queues List cleaned\n");
 
@@ -114,15 +116,15 @@ int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, s
 
     (*new_queue)->doorbell = 0;
 
-    rwlock_init(&(*new_queue)->queue_rwlock);
+    rwlock_init(&((*new_queue)->queue_rwlock));
 
-    INIT_LIST_HEAD(&(*new_queue)->head_of_async_pkt_queue);
+    INIT_LIST_HEAD(&((*new_queue)->head_of_async_pkt_queue));
 
     write_lock(&aapriv->top_list_rwlock);
 
-    list_add_tail(&(*new_queue)->head_of_async_pkt_queue, &aapriv->head_of_aa_queues);
+    list_add_tail(&((*new_queue)->head_of_async_pkt_queue), &(aapriv->head_of_aa_queues));
 
-    write_unlock(&aapriv->top_list_rwlock);
+    write_unlock(&(aapriv->top_list_rwlock));
 
     asguard_dbg("Async Queue initialized\n");
     asguard_dbg("ASGUARD_PAYLOAD_BYTES=%d\n", ASGUARD_PAYLOAD_BYTES);
