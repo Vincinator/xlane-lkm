@@ -27,7 +27,7 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
 
 
     if(queue->doorbell <= 0)
-        return;
+        goto unlock;
 
     list_for_each_entry_safe(entry, tmp_entry, &queue->head_of_async_pkt_queue, async_pkts_head)
     {
