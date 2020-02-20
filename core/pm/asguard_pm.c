@@ -502,11 +502,16 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             // Pkt has been handled
             spminfo->pm_targets[i].aapriv->doorbell--;
 
-            // update payload
-            asguard_update_skb_payload(cur_apkt->skb, apkt->payload);
+            if(!cur_apkt) {
+                asguard_error("cur apkt is NULL! \n");
+                continue;
+            }
 
-            if(cur_apkt)
-				emit_apkt(sdev->ndev, spminfo, cur_apkt);
+            // update payload
+            asguard_update_skb_payload(cur_apkt->skb, cur_apkt->payload);
+
+
+            emit_apkt(sdev->ndev, spminfo, cur_apkt);
 		}
 	}
 	return 0;
