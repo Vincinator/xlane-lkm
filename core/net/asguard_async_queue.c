@@ -104,6 +104,8 @@ int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, s
     write_unlock(&aapriv->top_list_rwlock);
 
     asguard_dbg("Async Queue initialized\n");
+    asguard_dbg("ASGUARD_PAYLOAD_BYTES=%d\n", ASGUARD_PAYLOAD_BYTES);
+    asguard_dbg("size of asguard_payload struct=%d\n", sizeof(struct asguard_payload));
 
     return 0;
 

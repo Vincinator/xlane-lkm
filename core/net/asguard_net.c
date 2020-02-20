@@ -140,6 +140,9 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     // reserve space for payload
     skb_put(skb, sizeof(struct asguard_payload));
 
+    // init skb user payload with 0
+	memset(skb->tail - sizeof(struct asguard_payload), 0,sizeof(struct asguard_payload));
+
     // data = data - sizeof(struct udphdr)
     skb_push(skb, sizeof(struct udphdr));
 
