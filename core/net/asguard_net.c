@@ -121,32 +121,41 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     // head == data == tail
     // end = head + allocated skb size
     skb = alloc_skb(total_len, GFP_ATOMIC);
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     if (!skb) {
         asguard_error("Could not allocate SKB\n");
         return NULL;
     }
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     refcount_set(&skb->users, 1);
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     // data == tail == head + LL_RESERVED_SPACE_EXTRA(dev, 0) + ETH_HLEN + sizeof(struct iphdr)+ sizeof(struct udphdr)
     // end = head + allocated skb size
     // reserving headroom for header to expand
     skb_reserve(skb,   LL_RESERVED_SPACE_EXTRA(dev, 0) + ETH_HLEN + sizeof(struct iphdr)+ sizeof(struct udphdr));
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     skb->dev = dev;
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     // data == tail - sizeof(struct asguard_payload)
     // reserve space for payload
     skb_put(skb, sizeof(struct asguard_payload));
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     // init skb user payload with 0
 	memset(skb->tail - sizeof(struct asguard_payload), 0,sizeof(struct asguard_payload));
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     // data = data - sizeof(struct udphdr)
     skb_push(skb, sizeof(struct udphdr));
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     skb_reset_transport_header(skb);
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     udph = udp_hdr(skb);
 
@@ -159,12 +168,14 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     udph->check = 0;
 
     udph->check = csum_tcpudp_magic(local_ipaddr, dst_ip, udp_len, IPPROTO_UDP,csum_partial(udph, udp_len, 0));
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     if (udph->check == 0)
         udph->check = CSUM_MANGLED_0;
 
     // data = data - sizeof(struct iphdr)
     skb_push(skb, sizeof(struct iphdr));
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     skb_reset_network_header(skb);
 
@@ -179,23 +190,30 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     iph->ttl      = 64;
     iph->protocol = IPPROTO_UDP;
     iph->check    = 0;
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     put_unaligned(local_ipaddr, &(iph->saddr));
     put_unaligned(dst_ip, &(iph->daddr));
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     iph->check
         = ip_fast_csum((unsigned char *)iph, iph->ihl);
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     // data = data - ETH_HLEN
     eth = skb_push(skb, ETH_HLEN);
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     skb_reset_mac_header(skb);
     skb->protocol = eth->h_proto = htons(ETH_P_IP);
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     ether_addr_copy(eth->h_source, dev->dev_addr);
     ether_addr_copy(eth->h_dest, dst_mac);
+	asguard_dbg("LINE=%d\n", __LINE__);
 
     skb->dev = dev;
+	asguard_dbg("LINE=%d\n", __LINE__);
 
 	return skb;
 }
