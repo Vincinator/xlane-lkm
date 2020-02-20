@@ -306,8 +306,6 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 	struct pminfo *spminfo = &sdev->pminfo;
 	int more = 0;
 	struct asguard_async_pkt *apkt = NULL;
-    unsigned char *tail_ptr;
-    unsigned char *data_ptr;
 
 	if(sdev->is_leader == 0)
 		return -1; // node lost leadership
@@ -348,15 +346,8 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 
             asguard_dbg("Writing to skb now! \n");
 
-
-
-            tail_ptr = skb_tail_pointer(apkt->skb);
-            data_ptr = (tail_ptr - ASGUARD_PAYLOAD_BYTES);
-
-
-            /* Directly write to the skb data memory. */
             ret = setup_append_msg(cur_priv,
-                    (struct asguard_payload *) data_ptr,
+                            &apkt->payload,
                             sdev->protos[j]->instance_id,
                             target_id,
                             next_index,

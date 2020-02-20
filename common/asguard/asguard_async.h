@@ -35,6 +35,8 @@ struct asguard_async_pkt {
 
     struct sk_buff *skb;
 
+    struct asguard_payload payload;
+
     int target_id;
 
 };

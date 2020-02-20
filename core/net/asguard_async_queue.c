@@ -225,8 +225,6 @@ void async_pkt_dump(struct asguard_async_pkt *apkt)
     asguard_dbg("FROM: %d.%d.%d.%d TO:%d.%d.%d.%d\n",
            NIPQUAD(iph->saddr), NIPQUAD(iph->daddr));
 
-    if(apkt->skb && apkt->skb->data)
-        asguard_dbg("Protocols Included: %u", ((struct asguard_payload* ) (apkt->skb->tail - sizeof(struct asguard_payload)))->protocols_included);
 
 }
 EXPORT_SYMBOL(async_pkt_dump);
