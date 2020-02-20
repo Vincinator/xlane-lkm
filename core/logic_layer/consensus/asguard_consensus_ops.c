@@ -34,7 +34,6 @@ int consensus_init(struct proto_instance *ins)
     priv->sdev->consensus_priv = priv; /* reference for pacemaker */
 
 
-    // freed by consensus_clean
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
 
 	if (!priv->sm_log.entries)
@@ -170,10 +169,6 @@ int consensus_clean(struct proto_instance *ins)
 	} else {
 		asguard_dbg("last_idx is -1, no logs to clean.\n");
 	}
-
-	kfree(priv->sm_log.entries);
-
-
 
 	return 0;
 }

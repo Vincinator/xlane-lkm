@@ -211,7 +211,7 @@ int asguard_clean_timestamping(struct asguard_device *sdev)
 	for (i = 0; i < log_types; i++) {
 		if(!sdev->stats->timestamp_logs[i])
 			continue;
-		kfree(sdev->stats->timestamp_logs[i]->timestamp_items);
+		//kfree(sdev->stats->timestamp_logs[i]->timestamp_items);
 		kfree(sdev->stats->timestamp_logs[i]);
 	}
 

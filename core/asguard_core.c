@@ -524,9 +524,6 @@ void clear_protocol_instances(struct asguard_device *sdev)
 
 	}
 
-    if(sdev->protos)
-        kfree(sdev->protos);
-
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		sdev->instance_id_mapping[i] = -1;
 
