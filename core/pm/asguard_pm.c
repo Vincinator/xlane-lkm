@@ -510,6 +510,8 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             // update payload
             asguard_update_skb_payload(cur_apkt->skb, cur_apkt->payload);
 
+            // free the payload tmp mem
+            kfree(cur_apkt->payload);
 
             emit_apkt(sdev->ndev, spminfo, cur_apkt);
 		}

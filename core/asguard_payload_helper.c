@@ -347,7 +347,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
             asguard_dbg("Writing to skb now! \n");
 
             ret = setup_append_msg(cur_priv,
-                            &apkt->payload,
+                            apkt->payload,
                             sdev->protos[j]->instance_id,
                             target_id,
                             next_index,
