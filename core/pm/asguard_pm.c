@@ -470,7 +470,7 @@ void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_a
 	}
 
     if(!apkt->skb){
-        asguard_error("BUG! skb is NULL!\n");
+        asguard_error("BUG! skb is not set!\n");
         goto unlock;
     }
 
@@ -479,7 +479,6 @@ void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_a
 
 	netdev_start_xmit(apkt->skb, ndev, txq, 0);
 
-    kfree(apkt); // apkt has already been dequeued from the list, skb should have been freed now.
 
 unlock:
 	HARD_TX_UNLOCK(ndev, txq);
@@ -502,8 +501,8 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             // Pkt has been handled
             spminfo->pm_targets[i].aapriv->doorbell--;
 
-            if(!cur_apkt) {
-                asguard_error("cur apkt is NULL! \n");
+            if(!cur_apkt || !spminfo->pm_targets[i].skb) {
+                asguard_error("pkt or skb is NULL! \n");
                 continue;
             }
 
@@ -512,11 +511,16 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
 
             cur_apkt->skb = spminfo->pm_targets[i].skb;
 
-            // free the payload tmp mem
-            kfree(cur_apkt->payload);
-
             emit_apkt(sdev->ndev, spminfo, cur_apkt);
-		}
+
+            if(cur_apkt) {
+                if(cur_apkt->payload)
+                    kfree(cur_apkt->payload);
+                kfree(cur_apkt);
+            }
+            // do not free skb!
+
+        }
 	}
 	return 0;
 }
