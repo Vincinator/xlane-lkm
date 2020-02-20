@@ -136,15 +136,12 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
 
     skb->dev = dev;
 
-    asguard_dbg("LL_RESERVED_SPACE_EXTRA(dev, 0) = %d \n", LL_RESERVED_SPACE_EXTRA(dev, 0));
-
     // data == tail - sizeof(struct asguard_payload)
     // reserve space for payload
     skb_put(skb, sizeof(struct asguard_payload));
 
     // data = data - sizeof(struct udphdr)
     skb_push(skb, sizeof(struct udphdr));
-    asguard_dbg("sizeof(struct udphdr) = %d \n", sizeof(struct udphdr));
 
     skb_reset_transport_header(skb);
 
@@ -157,14 +154,11 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     udph->len = htons(udp_len);
 
     udph->check = 0;
-    asguard_dbg("%d \n", __LINE__);
 
     udph->check = csum_tcpudp_magic(local_ipaddr, dst_ip, udp_len, IPPROTO_UDP,csum_partial(udph, udp_len, 0));
 
     if (udph->check == 0)
         udph->check = CSUM_MANGLED_0;
-
-
 
     // data = data - sizeof(struct iphdr)
     skb_push(skb, sizeof(struct iphdr));
@@ -199,7 +193,6 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     ether_addr_copy(eth->h_dest, dst_mac);
 
     skb->dev = dev;
-    asguard_dbg("%d \n", __LINE__);
 
 	return skb;
 }

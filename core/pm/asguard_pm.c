@@ -475,7 +475,7 @@ void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_a
     }
 
     // if we do not want the skb to be freed, we have to call skb_get to inc the ref count
-	//skb_get(apkt->skb);
+	skb_get(apkt->skb);
 
 	netdev_start_xmit(apkt->skb, ndev, txq, 0);
 
@@ -508,7 +508,9 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             }
 
             // update payload
-            asguard_update_skb_payload(cur_apkt->skb, cur_apkt->payload);
+            asguard_update_skb_payload(spminfo->pm_targets[i].skb, cur_apkt->payload);
+
+            cur_apkt->skb = spminfo->pm_targets[i].skb;
 
             // free the payload tmp mem
             kfree(cur_apkt->payload);
