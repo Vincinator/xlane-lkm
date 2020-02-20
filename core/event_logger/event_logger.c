@@ -206,11 +206,12 @@ error:
 }
 
 
-int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char name[])
+int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char name[MAX_LOGGER_NAME])
 {
 	int err;
 
 	err = 0;
+    asguard_error("allocating logger %s\n", __func__);
 
 	if (!slog) {
 		err = -EINVAL;
@@ -220,7 +221,7 @@ int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char 
 
     slog->instance_id = instance_id;
     slog->ifindex = ifindex;
-    slog->name = name;
+    strncpy(slog->name, name, MAX_LOGGER_NAME);
 
     // freed by clear_logger
 	slog->events = kmalloc_array(LOGGER_EVENT_LIMIT, sizeof(struct logger_event), GFP_KERNEL);

@@ -590,7 +590,7 @@ static int _validate_pm(struct asguard_device *sdev,
 #ifndef  CONFIG_KUNIT
 static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminfo)
 {
-	//asguard_setup_hb_skbs(sdev);
+	asguard_setup_hb_skbs(sdev);
 
     pm_state_transition_to(spminfo, ASGUARD_PM_EMITTING);
 
@@ -652,7 +652,6 @@ static int asguard_pm_loop(void *data)
 
 		cur_time = RDTSC_ASGUARD;
 
-		continue; // debug..
 		scheduled_hb = scheduled_tx(prev_time, cur_time, interval);
 
 		if(scheduled_hb)

@@ -617,7 +617,7 @@ void init_log_ctrl_base(struct asguard_device *sdev);
 void init_logger_ctrl(struct asguard_logger *slog);
 
 
-int init_logger(struct asguard_logger *slog, u16 i, int i1, char string[13]);
+int init_logger(struct asguard_logger *slog, u16 i, int i1, char string[MAX_LOGGER_NAME]);
 void clear_logger(struct asguard_logger *slog);
 
 int asguard_log_stop(struct asguard_logger *slog);
