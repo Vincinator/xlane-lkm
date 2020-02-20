@@ -519,7 +519,8 @@ void clear_protocol_instances(struct asguard_device *sdev)
 		if(sdev->protos[i]->proto_data)
 		    kfree(sdev->protos[i]->proto_data);
 
-		kfree(sdev->protos[i]); // is non-NULL, see continue condition above
+		if(!sdev->protos[i])
+		    kfree(sdev->protos[i]); // is non-NULL, see continue condition above
 
 	}
 
