@@ -105,6 +105,11 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 
     asguard_dbg("setup hb skbs. \n");
 
+    if(!spminfo){
+        asguard_error("spminfo is NULL \n");
+        BUG();
+    }
+
 	// BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
@@ -119,7 +124,7 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 
 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
 
-		/* Setup SKB */
+        /* Setup SKB */
 		spminfo->pm_targets[i].skb = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
 		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
 	}
@@ -454,36 +459,44 @@ void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_a
 	int tx_index = smp_processor_id();
 	unsigned long flags;
 
-	if (unlikely(!netif_running(ndev) ||
-			!netif_carrier_ok(ndev))) {
-		asguard_error("Network device offline!\n exiting pacemaker\n");
-		return;
-	}
-
-	local_irq_save(flags);
-	local_bh_disable();
-
-	/* The queue mapping is the same for each target <i>
-	 * Since we pinned the pacemaker to a single cpu,
-	 * we can use the smp_processor_id() directly.
-	 */
-	txq = &ndev->_tx[tx_index];
-
-	if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
-		asguard_error("Device Busy unlocking in async window.\n");
-		goto unlock;
-	}
+    if (unlikely(!netif_running(ndev) ||
+                 !netif_carrier_ok(ndev))) {
+        asguard_error("Network device offline!\n exiting pacemaker\n");
+        return;
+    }
 
     if(!apkt->skb){
         asguard_error("BUG! skb is not set!\n");
         goto unlock;
     }
 
-    // if we do not want the skb to be freed, we have to call skb_get to inc the ref count
-	skb_get(apkt->skb);
+    local_irq_save(flags);
+    local_bh_disable();
+
+
+    /* The queue mapping is the same for each target <i>
+     * Since we pinned the pacemaker to a single cpu,
+     * we can use the smp_processor_id() directly.
+     */
+    txq = &ndev->_tx[tx_index];
+
+
+    HARD_TX_LOCK(ndev, txq, smp_processor_id());
+
+    if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
+		asguard_error("Device Busy unlocking in async window.\n");
+		goto unlock;
+	}
+
+    if(!apkt->skb){
+        asguard_error("BUG! skb is not set (second check)\n");
+        goto unlock;
+    }
+
+    skb_get(apkt->skb);
+
 
 	netdev_start_xmit(apkt->skb, ndev, txq, 0);
-
 
 unlock:
 	HARD_TX_UNLOCK(ndev, txq);
