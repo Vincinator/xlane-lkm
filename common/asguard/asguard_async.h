@@ -41,6 +41,9 @@ struct asguard_async_pkt {
 
 };
 
+/* Clean and free the list of queues*/
+int clean_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *aapriv);
+
 /* Initializes the list of queues*/
 int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv **aapriv);
 

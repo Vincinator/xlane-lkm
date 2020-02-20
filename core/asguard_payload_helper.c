@@ -397,6 +397,7 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 		return;
 	}
 
+    // freed by prepare_log_replication_handler
 	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_KERNEL);
 	work->sdev = sdev;
 	work->target_id = target_id;
@@ -436,7 +437,8 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 
 cleanup:
-	kfree(aw);
+    if(aw)
+	    kfree(aw);
 }
 
 s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int *retrans)

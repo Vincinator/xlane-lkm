@@ -116,6 +116,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		if(priv->sm_log.entries[i] != NULL) // do not (re-)apply redundant retransmissions
 			continue; // TODO: can we return?
 
+        // freed by consensus_clean
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
 		if (!cur_cmd) {

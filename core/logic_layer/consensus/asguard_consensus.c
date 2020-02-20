@@ -253,6 +253,7 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
     struct consensus_priv *cpriv;
     struct proto_instance *ins;
 
+    // freed by get_echo_proto_instance
     ins = kmalloc (sizeof(struct proto_instance), GFP_KERNEL);
 
     if (!ins)
@@ -266,7 +267,7 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
     ins->logger.instance_id = ins->instance_id;
     ins->logger.ifindex = sdev->ifindex;
 
-
+    // freed by clear_protocol_instances
     ins->proto_data = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
 
     cpriv = (struct consensus_priv *)ins->proto_data;

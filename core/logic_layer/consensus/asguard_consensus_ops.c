@@ -31,24 +31,10 @@ int consensus_init(struct proto_instance *ins)
 	priv->sm_log.last_applied = -1;
 	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
 	priv->sm_log.lock = 0;
-
-	ins->logger.name = "consensus_le";
-	ins->logger.instance_id = ins->instance_id;
-	ins->logger.ifindex = priv->sdev->ifindex;
-
-	priv->throughput_logger.instance_id = ins->instance_id;
-	priv->throughput_logger.ifindex = priv->sdev->ifindex;
-	priv->throughput_logger.name = "consensus_throughput";
-	priv->sdev->consensus_priv = priv; /* reference for pacemaker */
-
-	priv->throughput_logger.events = kmalloc_array(MAX_THROUGPUT_LOGGER_EVENTS, sizeof(struct logger_event *), GFP_KERNEL);
+    priv->sdev->consensus_priv = priv; /* reference for pacemaker */
 
 
-	if (!priv->throughput_logger.events) {
-		asguard_dbg("Not enough memory for throughput_logger of size %d", MAX_THROUGPUT_LOGGER_EVENTS);
-		//BUG();
-	}
-
+    // freed by consensus_clean
 	priv->sm_log.entries = kmalloc_array(MAX_CONSENSUS_LOG, sizeof(struct sm_log_entry *), GFP_KERNEL);
 
 	if (!priv->sm_log.entries)
@@ -69,9 +55,11 @@ int consensus_init(struct proto_instance *ins)
 	init_eval_ctrl_interfaces(priv);
 
 	// requires "proto_instances/%d"
-	init_logger(&ins->logger);
+    init_logger(&ins->logger, ins->instance_id, priv->sdev->ifindex, "consensus_le");
 
-	init_logger(&priv->throughput_logger);
+
+    init_logger(&priv->throughput_logger, ins->instance_id, priv->sdev->ifindex, "consensus_throughput");
+
 
 	return 0;
 }
@@ -168,9 +156,17 @@ int consensus_clean(struct proto_instance *ins)
 	remove_proc_entry(name_buf, NULL);
 
 	if (priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
-		for (i = 0; i < priv->sm_log.last_idx; i++)
-			if (priv->sm_log.entries[i] != NULL) // entries are NULL initialized
-				kfree(priv->sm_log.entries[i]);
+		for (i = 0; i < priv->sm_log.last_idx; i++){
+
+            // entries are NULL initialized
+            if (priv->sm_log.entries[i] != NULL){
+                if(priv->sm_log.entries[i]->cmd != NULL){
+                    kfree(priv->sm_log.entries[i]->cmd);
+                }
+                kfree(priv->sm_log.entries[i]);
+            }
+		}
+
 	} else {
 		asguard_dbg("last_idx is -1, no logs to clean.\n");
 	}

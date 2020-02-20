@@ -39,7 +39,9 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
 
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
-		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
+
+        // freed by consensus_clean
+        cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
 		if (!cur_cmd) {
 			err = -ENOMEM;
@@ -97,7 +99,9 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 
 		rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
-		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
+
+        // freed by consensus_clean
+        cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
 		if (!cur_cmd) {
 			err = -ENOMEM;

@@ -125,7 +125,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
     }
 
 	asguard_dbg ("\t new request idx = %d\n" , retrans_idx);
-
+    // freed by clean_request_transmission_lists
 	new_req = (struct retrans_request *)
 		kmalloc(sizeof(struct retrans_request), GFP_KERNEL);
 

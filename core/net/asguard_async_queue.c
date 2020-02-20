@@ -43,6 +43,9 @@ void async_clear_queues(struct asguard_async_head_of_queues_priv *aapriv)
 {
     struct asguard_async_queue_priv *entry, *tmp_entry;
 
+    if(!aapriv)
+        return;
+
     write_lock(&aapriv->top_list_rwlock);
 
     if(list_empty(&aapriv->head_of_aa_queues))
@@ -62,9 +65,23 @@ unlock:
 
 }
 
-int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv **aapriv)
+int clean_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *aapriv)
 {
 
+    if(!aapriv)
+        return;
+
+    async_clear_queues(aapriv);
+
+    kfree(aapriv);
+
+    asguard_dbg("Async Queues List cleaned\n");
+
+}
+
+int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv **aapriv)
+{
+    // freed by clean_asguard_async_list_of_queues
     *aapriv = kmalloc(sizeof(struct asguard_async_head_of_queues_priv), GFP_KERNEL);
 
     if(!*aapriv){
@@ -83,7 +100,7 @@ int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *
 
 int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, struct asguard_async_queue_priv **new_queue)
 {
-
+    // freed in async_clear_queues (via clean_asguard_async_list_of_queues)
     *new_queue = kmalloc(sizeof(struct asguard_async_head_of_queues_priv), GFP_KERNEL);
 
     if(!(*new_queue)) {
@@ -171,11 +188,12 @@ EXPORT_SYMBOL(dequeue_async_pkt);
 struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, unsigned char dst_mac[6])
 {
     struct asguard_async_pkt *apkt = NULL;
-
+    // freed by _emit_async_pkts
     apkt = kmalloc(sizeof(struct asguard_async_pkt), GFP_KERNEL);
 
     //apkt->skb = asguard_reserve_skb(ndev, dst_ip, dst_mac, NULL);
 
+    // freed by _emit_async_pkts
     apkt->payload = kmalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
 

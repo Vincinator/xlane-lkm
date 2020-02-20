@@ -92,6 +92,7 @@ static const struct file_operations asguard_event_ctrl_ops = {
 void clear_logger(struct asguard_logger *slog)
 {
 	char name_buf[MAX_ASGUARD_PROC_NAME];
+    int i;
 
 	snprintf(name_buf, sizeof(name_buf),
 			"asguard/%d/proto_instances/%d/log_%s",
@@ -105,7 +106,11 @@ void clear_logger(struct asguard_logger *slog)
 
 	remove_proc_entry(name_buf, NULL);
 
-	//kfree(slog->events);
+	for(i = 0; i < slog->current_entries; i++){
+	    if(slog->events)
+            kfree(slog->events);
+    }
+
 }
 EXPORT_SYMBOL(clear_logger);
 

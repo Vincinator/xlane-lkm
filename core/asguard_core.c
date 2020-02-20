@@ -214,16 +214,13 @@ void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw = NULL;
 
-
 	aw = container_of(w, struct asguard_pkt_work_data, work);
-
 
 	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
 		aw->received_proto_instances, aw->cqe_bcnt);
 
 	if(aw)
 		kfree(aw);
-
 }
 
 #define ASG_ETH_HEADER_SIZE 14
@@ -276,7 +273,8 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
-	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
+    // freed by pkt_process_handler
+    work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
 
 	work->cqe_bcnt = cqe_bcnt;
 	work->payload = payload;
@@ -332,7 +330,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	}
 
 	asguard_dbg("register nic at asguard core. ifindex=%d, asguard_id=%d\n", ifindex, asguard_id);
-
+    // freed by asguard_connection_core_exit
 	score->sdevices[asguard_id] =
 		kmalloc(sizeof(struct asguard_device), GFP_KERNEL);
 
@@ -361,7 +359,8 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		score->sdevices[asguard_id]->instance_id_mapping[i] = -1;
 
-	score->sdevices[asguard_id]->protos =
+    // freed by clear_protocol_instances
+    score->sdevices[asguard_id]->protos =
 				kmalloc_array(MAX_PROTO_INSTANCES, sizeof(struct proto_instance *), GFP_KERNEL);
 
 	if (!score->sdevices[asguard_id]->protos)
@@ -407,7 +406,9 @@ int asguard_core_remove_nic(int asguard_id)
 	if (asguard_validate_asguard_device(asguard_id))
 		return -1;
 
-	asguard_clean_timestamping(score->sdevices[asguard_id]);
+    clean_asguard_async_list_of_queues(score->sdevices[asguard_id]->pminfo.async_priv);
+
+    asguard_clean_timestamping(score->sdevices[asguard_id]);
 
 	/* Remove Ctrl Interfaces for NIC */
 	clean_asguard_pm_ctrl_interfaces(score->sdevices[asguard_id]);
@@ -515,12 +516,15 @@ void clear_protocol_instances(struct asguard_device *sdev)
 		}
 
 		// timer are not finished yet!?
-		kfree(sdev->protos[i]->proto_data);
+		if(sdev->protos[i]->proto_data)
+		    kfree(sdev->protos[i]->proto_data);
 
-
-		kfree(sdev->protos[i]);
+		kfree(sdev->protos[i]); // is non-NULL, see continue condition above
 
 	}
+
+    if(sdev->protos)
+        kfree(sdev->protos);
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		sdev->instance_id_mapping[i] = -1;
@@ -611,7 +615,8 @@ static int __init asguard_connection_core_init(void)
 	if (err)
 		goto error;
 
-	score = kmalloc(sizeof(struct asguard_core), GFP_KERNEL);
+    // freed by asguard_connection_core_exit
+    score = kmalloc(sizeof(struct asguard_core), GFP_KERNEL);
 
 	if (!score) {
 		asguard_error("allocation of asguard core failed\n");
@@ -620,6 +625,7 @@ static int __init asguard_connection_core_init(void)
 
 	score->num_devices = 0;
 
+    // freed by asguard_connection_core_exit
 	score->sdevices = kmalloc_array(
 		MAX_NIC_DEVICES, sizeof(struct asguard_device *), GFP_KERNEL);
 
@@ -717,7 +723,11 @@ static void __exit asguard_connection_core_exit(void)
 		kfree(score->sdevices[i]);
 	}
 
-	kfree(score);
+	if(score->sdevices)
+        kfree(score->sdevices);
+
+	if(score)
+	    kfree(score);
 
 	remove_proc_entry("asguard", NULL);
 

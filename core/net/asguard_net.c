@@ -74,6 +74,7 @@ EXPORT_SYMBOL(asguard_ip_convert);
 unsigned char *asguard_convert_mac(const char *str)
 {
 	unsigned int tmp_data[6];
+    // must be freed by caller
 	unsigned char *bytestring_mac =
 		kmalloc(sizeof(unsigned char) * 6, GFP_KERNEL);
 	int i;

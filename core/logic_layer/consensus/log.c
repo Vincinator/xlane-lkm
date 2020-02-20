@@ -156,8 +156,8 @@ int append_command(struct consensus_priv *priv, struct sm_command *cmd, s32 term
 		asguard_error("BUG - commit_idx=%d is greater than idx(%d) of entry to commit!\n", priv->sm_log.commit_idx, log_idx);
 		goto error;
 	}
-
-	entry = kmalloc(sizeof(struct sm_log_entry), GFP_KERNEL);
+    // freed by consensus_clean
+    entry = kmalloc(sizeof(struct sm_log_entry), GFP_KERNEL);
 
 	if (!entry) {
 		err = -ENOMEM;

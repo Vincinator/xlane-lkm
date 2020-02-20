@@ -31,7 +31,8 @@ struct proto_instance *get_fd_proto_instance(struct asguard_device *sdev)
 	struct proto_instance *ins;
 	struct asguard_fd_priv *fpriv;
 
-	ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
+    // freed by clear_protocol_instances
+    ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
 
 	if (!ins)
 		goto error;

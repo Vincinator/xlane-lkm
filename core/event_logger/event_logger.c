@@ -206,7 +206,7 @@ error:
 }
 
 
-int init_logger(struct asguard_logger *slog)
+int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char name[])
 {
 	int err;
 
@@ -218,6 +218,11 @@ int init_logger(struct asguard_logger *slog)
 		goto error;
 	}
 
+    slog->instance_id = instance_id;
+    slog->ifindex = ifindex;
+    slog->name = name;
+
+    // freed by clear_logger
 	slog->events = kmalloc_array(LOGGER_EVENT_LIMIT, sizeof(struct logger_event), GFP_KERNEL);
 
 	if (!slog->events) {

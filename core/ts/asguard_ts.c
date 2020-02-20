@@ -280,6 +280,7 @@ int init_timestamping(struct asguard_device *sdev)
 		goto error;
 	}
 
+	// freed by asguard_clean_timestamping
 	sdev->stats = kmalloc(sizeof(const struct asguard_stats), GFP_KERNEL);
 	if (!sdev->stats) {
 		err = -ENOMEM;
@@ -288,6 +289,8 @@ int init_timestamping(struct asguard_device *sdev)
 		goto error;
 	}
 
+
+    // freed by asguard_clean_timestamping
 	sdev->stats->timestamp_logs =
 		kmalloc_array(log_types,
 			      sizeof(struct asguard_timestamp_logs *),
@@ -304,7 +307,8 @@ int init_timestamping(struct asguard_device *sdev)
 	sdev->stats->timestamp_amount = 0;
 
 	for (i = 0; i < log_types; i++) {
-		sdev->stats->timestamp_logs[i] = kmalloc(
+        // freed by asguard_clean_timestamping
+        sdev->stats->timestamp_logs[i] = kmalloc(
 			sizeof(struct asguard_timestamp_logs), GFP_KERNEL);
 
 		if (!sdev->stats->timestamp_logs[i]) {
@@ -317,7 +321,9 @@ int init_timestamping(struct asguard_device *sdev)
 
 		sdev->stats->timestamp_amount++;
 
-		sdev->stats->timestamp_logs[i]->timestamp_items =
+
+        // freed by asguard_clean_timestamping
+        sdev->stats->timestamp_logs[i]->timestamp_items =
 			kmalloc_array(TIMESTAMP_ARRAY_LIMIT,
 				      sizeof(const struct asguard_timestamp_item),
                           GFP_KERNEL);

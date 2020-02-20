@@ -254,7 +254,7 @@ static ssize_t asguard_ww_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_ww);
 
 	if (err) {
-		asguard_error("Error converting input%s\n", __func__);
+		asguard_error("Error converting input %s\n", __func__);
 		goto error;
 	}
 
@@ -262,7 +262,7 @@ static ssize_t asguard_ww_write(struct file *file,
 
 	return count;
 error:
-	asguard_error("Setting of waiting Window failed\n", __func__);
+	asguard_error("Setting of waiting Window failed\n");
 	return err;
 }
 
@@ -347,7 +347,9 @@ static int asguard_payload_show(struct seq_file *m, void *v)
 	struct pminfo *spminfo =
 		(struct pminfo *)m->private;
 	int i;
+    // freed in this function
 	char *current_payload = kmalloc(16, GFP_KERNEL);
+    // freed in this function
 	char *current_ip =
 		kmalloc(16, GFP_KERNEL); /* strlen of 255.255.255.255 is 15*/
 	int ret = 0;
@@ -487,6 +489,8 @@ static ssize_t asguard_target_write(struct file *file,
 
 	return count;
 error:
+    if (current_mac)
+        kfree(current_mac);
 	asguard_error("Error during parsing of input.%s\n", __func__);
 	return err;
 }
@@ -496,6 +500,7 @@ static int asguard_target_show(struct seq_file *m, void *v)
 	struct pminfo *spminfo =
 		(struct pminfo *)m->private;
 	int i;
+    // freed in this function
 	char *current_ip =
 		kmalloc(16, GFP_KERNEL); /* strlen of 255.255.255.255 is 15*/
 
