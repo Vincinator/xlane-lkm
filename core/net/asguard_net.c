@@ -147,7 +147,7 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
 	asguard_dbg("LINE=%d\n", __LINE__);
 
     // init skb user payload with 0
-	memset(skb->tail - sizeof(struct asguard_payload), 0,sizeof(struct asguard_payload));
+	memset(skb_tail_pointer(skb) - sizeof(struct asguard_payload), 0, sizeof(struct asguard_payload));
 	asguard_dbg("LINE=%d\n", __LINE__);
 
     // data = data - sizeof(struct udphdr)
