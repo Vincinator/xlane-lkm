@@ -499,11 +499,6 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
 
 			cur_apkt = dequeue_async_pkt(spminfo->pm_targets[i].aapriv);
 
-			if(cur_apkt)
-			    async_pkt_dump(cur_apkt);
-            else
-                asguard_dbg("cur apkt is NULL!\n");
-
             // Pkt has been handled
             spminfo->pm_targets[i].aapriv->doorbell--;
 
