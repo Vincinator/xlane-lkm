@@ -312,6 +312,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 		return -1; // Current target is not alive!
 	}
 
+    asguard_dbg("do log rep setup and write to skb in this function. \n");
 
 
 	// iterate through consensus protocols and include LEAD messages if node is leader

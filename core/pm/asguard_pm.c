@@ -103,6 +103,8 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 	struct asguard_payload *hb_pkt_payload;
 	struct node_addr *naddr;
 
+    asguard_dbg("setup hb skbs. \n");
+
 	// BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
