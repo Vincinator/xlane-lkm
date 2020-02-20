@@ -185,6 +185,8 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
 
     memset(apkt->payload, 0, sizeof(struct asguard_payload));
 
+    asguard_dbg("Created async packet! \n");
+
     return apkt;
 }
 EXPORT_SYMBOL(create_async_pkt);
