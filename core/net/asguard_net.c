@@ -144,7 +144,7 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
     asguard_dbg("%d \n", __LINE__);
 
-    asguard_len = ASGUARD_PAYLOAD_BYTES;
+    asguard_len = sizeof(struct asguard_payload);
     asguard_dbg("%d \n", __LINE__);
 
     udp_len = asguard_len + sizeof(struct udphdr);
@@ -157,7 +157,8 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     asguard_dbg("%d \n", __LINE__);
 
     if(payload)
-        skb_copy_to_linear_data(skb, payload, asguard_len);
+        skb_copy_to_linear_data(skb, payload, sizeof(struct asguard_payload));
+
     asguard_dbg("%d \n", __LINE__);
 
     skb_push(skb, sizeof(struct udphdr));
