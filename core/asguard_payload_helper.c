@@ -56,6 +56,11 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 
 	u16 *pid, *poff;
 
+	if(!spay){
+	    asguard_error("payload is NULL\N");
+	    return NULL;
+	}
+
 	cur_proto = spay->proto_data;
 
 	// Check if protocol instance already exists in payload
@@ -189,6 +194,9 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spa
 
 	pkt_payload_sub = asguard_reserve_proto(instance_id, spay, ASGUARD_PROTO_CON_PAYLOAD_SZ);
 
+	if(!pkt_payload_sub)
+	    return -1;
+
 	set_le_opcode((unsigned char *)pkt_payload_sub, ALIVE, cur_priv->term, cur_priv->sm_log.commit_idx, 0, 0);
 
 	return 0;
@@ -298,6 +306,8 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 	struct pminfo *spminfo = &sdev->pminfo;
 	int more = 0;
 	struct asguard_async_pkt *apkt = NULL;
+    unsigned char *tail_ptr;
+    unsigned char *data_ptr;
 
 	if(sdev->is_leader == 0)
 		return -1; // node lost leadership
@@ -338,9 +348,15 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 
             asguard_dbg("Writing to skb now! \n");
 
+
+
+            tail_ptr = skb_tail_pointer(apkt->skb);
+            data_ptr = (tail_ptr - ASGUARD_PAYLOAD_BYTES);
+
+
             /* Directly write to the skb data memory. */
             ret = setup_append_msg(cur_priv,
-                    (struct asguard_payload *) (apkt->skb->tail - sizeof(struct asguard_payload)),
+                    (struct asguard_payload *) data_ptr,
                             sdev->protos[j]->instance_id,
                             target_id,
                             next_index,
