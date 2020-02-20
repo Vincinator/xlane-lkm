@@ -151,10 +151,10 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
 
     skb->dev = dev;
 
-    asguard_dbg("%d \n", __LINE__);
+    asguard_dbg("LL_RESERVED_SPACE_EXTRA(dev, 64) = %d \n", LL_RESERVED_SPACE_EXTRA(dev, 64));
 
     skb_push(skb, sizeof(struct udphdr));
-    asguard_dbg("%d \n", __LINE__);
+    asguard_dbg("sizeof(struct udphdr) = %d \n", sizeof(struct udphdr));
 
     skb_reset_transport_header(skb);
     asguard_dbg("%d \n", __LINE__);
