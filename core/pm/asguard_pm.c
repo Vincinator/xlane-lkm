@@ -365,6 +365,12 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
+
+		if(!pkt_payload) {
+		    asguard_error("packet payload is NULL! \n");
+		    return -1;
+		}
+
 		//asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
@@ -382,6 +388,11 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
+
+		if(!pkt_payload){
+		    asguard_error("pkt payload become NULL! \n");
+		    continue;
+		}
 
 		/* Protocols have been emitted, do not send them again ..
 		 * .. and free the reservations for new protocols */
@@ -579,7 +590,7 @@ static int _validate_pm(struct asguard_device *sdev,
 #ifndef  CONFIG_KUNIT
 static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminfo)
 {
-	asguard_setup_hb_skbs(sdev);
+	//asguard_setup_hb_skbs(sdev);
 
     pm_state_transition_to(spminfo, ASGUARD_PM_EMITTING);
 
@@ -641,6 +652,7 @@ static int asguard_pm_loop(void *data)
 
 		cur_time = RDTSC_ASGUARD;
 
+		continue; // debug..
 		scheduled_hb = scheduled_tx(prev_time, cur_time, interval);
 
 		if(scheduled_hb)
