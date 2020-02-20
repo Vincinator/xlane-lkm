@@ -353,6 +353,8 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 	struct net_device *ndev = sdev->ndev;
 	enum tsstate ts_state = sdev->ts_state;
 
+    asguard_dbg(" _emit_pkts_scheduled\n");
+
 	/* Prepare heartbeat packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
@@ -401,7 +403,10 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 	struct net_device *ndev = sdev->ndev;
 	int target_fire[MAX_NODE_ID];
 
-	for (i = 0; i < spminfo->num_of_targets; i++) {
+    asguard_dbg(" _emit_pkts_non_scheduled\n");
+
+
+    for (i = 0; i < spminfo->num_of_targets; i++) {
 		target_fire[i] = spminfo->pm_targets[i].fire;
 	}
 
@@ -492,8 +497,10 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
 {
 	int i;
  	struct asguard_async_pkt *cur_apkt;
-	
-	for (i = 0; i < spminfo->num_of_targets; i++) {
+
+    asguard_dbg(" _emit_async_pkts\n");
+
+    for (i = 0; i < spminfo->num_of_targets; i++) {
 		if(spminfo->pm_targets[i].aapriv->doorbell > 0) {
 
 			cur_apkt = dequeue_async_pkt(spminfo->pm_targets[i].aapriv);
