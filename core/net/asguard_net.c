@@ -145,18 +145,16 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
 
     asguard_len = ASGUARD_PAYLOAD_BYTES;
 
-    udp_len = asguard_len + sizeof(*udph);
+    udp_len = asguard_len + sizeof(struct udphdr);
 
-    ip_len = udp_len + sizeof(*iph);
-
-    udp_len = asguard_len + sizeof(*udph);
+    ip_len = udp_len + sizeof(struct iphdr);
 
     prepare_asguard_skb(dev, total_len - asguard_len);
 
     if(payload)
         skb_copy_to_linear_data(skb, payload, asguard_len);
 
-    skb_push(skb, sizeof(*udph));
+    skb_push(skb, sizeof(struct udphdr));
     skb_reset_transport_header(skb);
     udph = udp_hdr(skb);
     udph->source = htons((u16) 1111);
@@ -169,7 +167,7 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     if (udph->check == 0)
         udph->check = CSUM_MANGLED_0;
 
-    skb_push(skb, sizeof(*iph));
+    skb_push(skb, sizeof(struct iphdr));
     skb_reset_network_header(skb);
     iph = ip_hdr(skb);
 
