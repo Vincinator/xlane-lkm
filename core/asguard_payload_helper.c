@@ -336,16 +336,11 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
                 continue;
             }
 
-            if(! apkt->skb->data) {
-                asguard_error("SKB Data mem is NULL!\n");
-                return -1;
-            }
-
             asguard_dbg("Writing to skb now! \n");
 
             /* Directly write to the skb data memory. */
             ret = setup_append_msg(cur_priv,
-                    (struct asguard_payload *) apkt->skb->data,
+                    (struct asguard_payload *) apkt->skb->tail - sizeof(struct asguard_payload),
                             sdev->protos[j]->instance_id,
                             target_id,
                             next_index,
