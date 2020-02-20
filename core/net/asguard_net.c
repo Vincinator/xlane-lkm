@@ -156,9 +156,6 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     prepare_asguard_skb(dev, total_len - asguard_len);
     asguard_dbg("%d \n", __LINE__);
 
-    if(payload)
-        skb_copy_to_linear_data(skb, payload, sizeof(struct asguard_payload));
-
     asguard_dbg("%d \n", __LINE__);
 
     skb_push(skb, sizeof(struct udphdr));
