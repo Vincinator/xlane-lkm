@@ -120,7 +120,7 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
 
     // head == data == tail
     // end = head + allocated skb size
-    skb = alloc_skb(total_len, GFP_ATOMIC);
+    skb = alloc_skb(total_len, GFP_KERNEL);
 	asguard_dbg("LINE=%d\n", __LINE__);
 
     if (!skb) {

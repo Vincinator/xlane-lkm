@@ -280,7 +280,7 @@ int init_timestamping(struct asguard_device *sdev)
 		goto error;
 	}
 
-	sdev->stats = kmalloc(sizeof(const struct asguard_stats), GFP_ATOMIC);
+	sdev->stats = kmalloc(sizeof(const struct asguard_stats), GFP_KERNEL);
 	if (!sdev->stats) {
 		err = -ENOMEM;
 		asguard_error(" Could not allocate memory for stats.%s\n",
@@ -291,7 +291,7 @@ int init_timestamping(struct asguard_device *sdev)
 	sdev->stats->timestamp_logs =
 		kmalloc_array(log_types,
 			      sizeof(struct asguard_timestamp_logs *),
-			      GFP_ATOMIC);
+                      GFP_KERNEL);
 	if (!sdev->stats->timestamp_logs) {
 		err = -ENOMEM;
 		asguard_error(
@@ -305,7 +305,7 @@ int init_timestamping(struct asguard_device *sdev)
 
 	for (i = 0; i < log_types; i++) {
 		sdev->stats->timestamp_logs[i] = kmalloc(
-			sizeof(struct asguard_timestamp_logs), GFP_ATOMIC);
+			sizeof(struct asguard_timestamp_logs), GFP_KERNEL);
 
 		if (!sdev->stats->timestamp_logs[i]) {
 			err = -ENOMEM;
@@ -320,7 +320,7 @@ int init_timestamping(struct asguard_device *sdev)
 		sdev->stats->timestamp_logs[i]->timestamp_items =
 			kmalloc_array(TIMESTAMP_ARRAY_LIMIT,
 				      sizeof(const struct asguard_timestamp_item),
-				      GFP_ATOMIC);
+                          GFP_KERNEL);
 
 		if (!sdev->stats->timestamp_logs[i]->timestamp_items) {
 			err = -ENOMEM;

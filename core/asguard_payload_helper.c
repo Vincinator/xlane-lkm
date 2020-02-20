@@ -397,7 +397,7 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 		return;
 	}
 
-	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
+	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_KERNEL);
 	work->sdev = sdev;
 	work->target_id = target_id;
 	work->next_index = next_index;
