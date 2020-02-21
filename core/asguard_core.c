@@ -236,10 +236,10 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 	char *remote_mac = ((char *) payload) + headroom + 6;
 	char *user_data = ((char *) payload) + headroom + 42;
 
-    print_hex_dump(KERN_DEBUG, "ASGUARD pkt: ", DUMP_PREFIX_NONE, 16, 1,
+  /*  print_hex_dump(KERN_DEBUG, "ASGUARD pkt: ", DUMP_PREFIX_NONE, 16, 1,
                     payload + headroom + 42, 32 , 0);
 
-    asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);
+    asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);*/
 
 	ts2 = RDTSC_ASGUARD;
 
