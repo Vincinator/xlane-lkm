@@ -233,7 +233,6 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 	u16 received_proto_instances;
 	struct asguard_pkt_work_data *work;
 	uint64_t ts2, ts3;
-    return;
 	char *remote_mac = ((char *) payload) + headroom + 6;
 
     print_hex_dump(KERN_DEBUG, "ASGUARD pkt: ", DUMP_PREFIX_NONE, 16, 1,
@@ -242,6 +241,7 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
     asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);
 
 
+    return;
 
 	ts2 = RDTSC_ASGUARD;
 
