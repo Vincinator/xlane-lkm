@@ -37,7 +37,9 @@ clean:
 else
 $(info =================== ASGuard Top Level Make ===================)
 
+#GIT_VERSION := "$(shell git describe --abbrev=4 --dirty --always --tags)"
 EXTRA_CFLAGS += -I$(src)/common/
+#EXTRA_CFLAGS += -DASGUARD_MODULE_VERSION=\"$(GIT_VERSION)\"
 
 # Core ASGUARD Components
 obj-m := core/

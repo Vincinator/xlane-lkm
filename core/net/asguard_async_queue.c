@@ -60,7 +60,7 @@ int init_asguard_async_queue(struct asguard_async_queue_priv *new_queue)
 
     INIT_LIST_HEAD(&(new_queue->head_of_async_pkt_queue));
 
-    asguard_dbg("Async Queue initialized\n");
+    asguard_dbg("Async Queue initialized - updated version\n");
     asguard_dbg("ASGUARD_PAYLOAD_BYTES=%d\n", ASGUARD_PAYLOAD_BYTES);
     asguard_dbg("size of asguard_payload struct=%d\n", sizeof(struct asguard_payload));
 

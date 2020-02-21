@@ -617,9 +617,6 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 			mutex_unlock(&sdev->pminfo.pm_targets[i].pkt_data.active_dirty_lock);
 	}
 
-
-
-
 }
 #endif // ! CONFIG_KUNIT
 
