@@ -8,7 +8,9 @@
 struct asguard_async_head_of_queues_priv {
 
     /* List head for asguard_async_queue_list_items */
-   struct list_head head_of_aa_queues;
+    struct list_head head_of_aa_queues;
+
+    int num_of_queues;
 
     rwlock_t top_list_rwlock;
 

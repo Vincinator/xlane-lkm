@@ -391,6 +391,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	pm_state_transition_to(&score->sdevices[asguard_id]->pminfo,
 				   ASGUARD_PM_UNINIT);
 
+	/* Every asguard nodes initialize async queues */
 	init_asguard_async_list_of_queues(&(score->sdevices[asguard_id]->pminfo.async_priv));
 
 

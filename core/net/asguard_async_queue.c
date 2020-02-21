@@ -17,8 +17,10 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
 {
     struct asguard_async_pkt *entry, *tmp_entry;
 
-    if(!queue)
-        return;
+    if(!queue) {
+        asguard_error("BUG - tried to clear uninitialized async queue\n");
+        return -ENODEV;
+    }
 
     if(queue->doorbell <= 0)
         return;
@@ -27,8 +29,6 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
 
     if(list_empty(&(queue->head_of_async_pkt_queue)))
         goto unlock;
-
-
 
     list_for_each_entry_safe(entry, tmp_entry, &queue->head_of_async_pkt_queue, async_pkts_head)
     {
@@ -48,13 +48,22 @@ void async_clear_queues(struct asguard_async_head_of_queues_priv *aapriv)
 {
     struct asguard_async_queue_priv *entry, *tmp_entry;
 
-    if(!aapriv)
+    if(!aapriv) {
+        asguard_error("BUG - tried to clear uninitialized aapriv\n");
         return;
+    }
+
+    if(aapriv->num_of_queues <= 0){
+        asguard_dbg("No async pkts in queue\n");
+        return;
+    }
 
     write_lock(&(aapriv->top_list_rwlock));
 
-    if(list_empty(&(aapriv->head_of_aa_queues)))
+    if(list_empty(&(aapriv->head_of_aa_queues))){
+        asguard_dbg("list empty but aapriv->num_of_queues = %d\n", aapriv->num_of_queues);
         goto unlock;
+    }
 
     list_for_each_entry_safe(entry, tmp_entry, &aapriv->head_of_aa_queues, aa_queues_head)
     {
@@ -72,10 +81,10 @@ unlock:
 
 int clean_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *aapriv)
 {
-
-    if(!aapriv)
-        return;
-
+    if(!aapriv) {
+        asguard_error("BUG - tried to clean uninitialized aapriv\n");
+        return -ENODEV;
+    }
     async_clear_queues(aapriv);
 
     if(aapriv)
@@ -83,6 +92,7 @@ int clean_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv 
 
     asguard_dbg("Async Queues List cleaned\n");
 
+    return 0;
 }
 
 int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv **aapriv)
@@ -98,6 +108,8 @@ int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *
     rwlock_init(&(*aapriv)->top_list_rwlock);
 
     INIT_LIST_HEAD(&((*aapriv)->head_of_aa_queues));
+
+    (*aapriv)->num_of_queues = 0;
 
     asguard_dbg("Async Queues List initialized\n");
 
@@ -126,6 +138,8 @@ int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, s
 
     write_unlock(&(aapriv->top_list_rwlock));
 
+    aapriv->num_of_queues++;
+
     asguard_dbg("Async Queue initialized\n");
     asguard_dbg("ASGUARD_PAYLOAD_BYTES=%d\n", ASGUARD_PAYLOAD_BYTES);
     asguard_dbg("size of asguard_payload struct=%d\n", sizeof(struct asguard_payload));
@@ -143,6 +157,7 @@ int enqueue_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard_as
     write_lock(&aqueue->queue_rwlock);
 
     list_add_tail(&apkt->async_pkts_head, &aqueue->head_of_async_pkt_queue);
+
 
     write_unlock(&aqueue->queue_rwlock);
 
