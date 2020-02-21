@@ -23,12 +23,16 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 		(struct pminfo *)PDE_DATA(file_inode(file));
 	long new_hb_state = -1;
 
-	if (!spminfo)
-		return -ENODEV;
+    asguard_error("hb ctrl interface accessed!\n");
 
+    if (!spminfo) {
+        asguard_error("pacemaker info is not initialized!\n");
+        return -ENODEV;
+    }
 	if (count == 0) {
 		err = -EINVAL;
-		goto error;
+        asguard_error("invalid interface access\n");
+        goto error;
 	}
 
 	err = copy_from_user(kernel_buffer, buffer, count);
