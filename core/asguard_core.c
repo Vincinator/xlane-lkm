@@ -234,14 +234,12 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 	struct asguard_pkt_work_data *work;
 	uint64_t ts2, ts3;
 	char *remote_mac = ((char *) payload) + headroom + 6;
+	char *user_data = ((char *) payload) headroom + 42;
 
     print_hex_dump(KERN_DEBUG, "ASGUARD pkt: ", DUMP_PREFIX_NONE, 16, 1,
-                    payload, 800 , 0);
+                    payload + headroom + 42, 32 , 0);
 
     asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);
-
-
-    return;
 
 	ts2 = RDTSC_ASGUARD;
 
@@ -277,7 +275,7 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
     work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
 
 	work->cqe_bcnt = cqe_bcnt;
-	work->payload = payload;
+	work->payload = user_data;
 	work->rcluster_id = rcluster_id;
 	work->remote_lid = remote_lid;
 	work->received_proto_instances = received_proto_instances;
