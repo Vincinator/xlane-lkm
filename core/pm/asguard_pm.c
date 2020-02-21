@@ -467,8 +467,8 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_async_pkt *apkt)
 {
 	struct netdev_queue *txq;
-	int tx_index = smp_processor_id();
-	unsigned long flags;
+    unsigned long flags;
+    int tx_index = smp_processor_id();
 
     if (unlikely(!netif_running(ndev) ||
                  !netif_carrier_ok(ndev))) {
@@ -476,21 +476,14 @@ void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_a
         return;
     }
 
-    if(!apkt->skb){
-        asguard_error("BUG! skb is not set!\n");
-        goto unlock;
-    }
-
-    local_irq_save(flags);
-    local_bh_disable();
-
-
     /* The queue mapping is the same for each target <i>
      * Since we pinned the pacemaker to a single cpu,
      * we can use the smp_processor_id() directly.
      */
-    txq = &ndev->_tx[tx_index];
+    txq = &(ndev->_tx[tx_index]);
 
+    local_irq_save(flags);
+    local_bh_disable();
 
     HARD_TX_LOCK(ndev, txq, smp_processor_id());
 
