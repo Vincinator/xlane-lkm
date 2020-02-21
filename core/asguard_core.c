@@ -391,10 +391,6 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	pm_state_transition_to(&score->sdevices[asguard_id]->pminfo,
 				   ASGUARD_PM_UNINIT);
 
-	/* Every asguard nodes initialize async queues */
-	init_asguard_async_list_of_queues(&(score->sdevices[asguard_id]->pminfo.async_priv));
-
-
 	return asguard_id;
 }
 EXPORT_SYMBOL(asguard_core_register_nic);
@@ -522,6 +518,8 @@ void clear_protocol_instances(struct asguard_device *sdev)
 		if(!sdev->protos[i])
 		    kfree(sdev->protos[i]); // is non-NULL, see continue condition above
 
+
+
 	}
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
@@ -537,7 +535,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct asguard_pm_target_info *pmtarget;
-	int ifindex, ret;
+	int ifindex;
 
 	if (!mac) {
 		asguard_error("input mac is NULL!\n");
@@ -590,9 +588,10 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 
 	sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 
-	ret = init_asguard_async_queue(sdev->pminfo.async_priv, &(pmtarget->aapriv));
+    pmtarget->aapriv = kmalloc(sizeof(struct asguard_async_queue_priv), GFP_KERNEL);
+    init_asguard_async_queue(pmtarget->aapriv);
 
-	return ret;
+	return 0;
 }
 EXPORT_SYMBOL(asguard_core_register_remote_host);
 
@@ -692,7 +691,7 @@ void asguard_stop(int asguard_id)
 
 static void __exit asguard_connection_core_exit(void)
 {
-	int i;
+	int i, j;
 
 	destroy_workqueue(asguard_wq);
 
@@ -712,7 +711,9 @@ static void __exit asguard_connection_core_exit(void)
 
 		asguard_stop(i);
 
-        //clean_asguard_async_list_of_queues(score->sdevices[i]->pminfo.async_priv);
+        // clear all async queues
+        for(j = 0; j <  score->sdevices[i]->pminfo.num_of_targets; j++)
+            async_clear_queue(score->sdevices[i]->pminfo.pm_targets[j].aapriv);
 
         destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
 

@@ -340,6 +340,7 @@ void print_leader_stats(struct consensus_priv *priv)
 int stop_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
+    int i;
 
 	priv->sdev->is_leader = 0;
 
@@ -349,7 +350,9 @@ int stop_leader(struct proto_instance *ins)
 
 	clean_request_transmission_lists(priv);
 
-    async_clear_queues(priv->sdev->pminfo.async_priv);
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i ++) {
+        async_clear_queue(priv->sdev->pminfo.pm_targets[i].aapriv);
+    }
 
 	return 0;
 }

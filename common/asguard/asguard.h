@@ -376,8 +376,6 @@ struct asguard_test_procfile_container {
 	int procid;
 };
 
-struct asguard_async_head_of_queues_priv;
-
 struct pminfo {
 	enum pmstate state;
 
@@ -398,8 +396,6 @@ struct pminfo {
 	struct asguard_pacemaker_test_data tdata;
 
 	struct hrtimer pm_timer;
-
-	struct asguard_async_head_of_queues_priv *async_priv;
 
 };
 

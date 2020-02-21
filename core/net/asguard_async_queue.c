@@ -44,102 +44,21 @@ unlock:
     write_unlock(&(queue->queue_rwlock));
 }
 
-void async_clear_queues(struct asguard_async_head_of_queues_priv *aapriv)
-{
-    struct asguard_async_queue_priv *entry, *tmp_entry;
 
-    if(!aapriv) {
-        asguard_error("BUG - tried to clear uninitialized aapriv\n");
-        return;
-    }
-
-    if(aapriv->num_of_queues <= 0){
-        asguard_dbg("No async pkts in queue\n");
-        return;
-    }
-
-    write_lock(&(aapriv->top_list_rwlock));
-
-    if(list_empty(&(aapriv->head_of_aa_queues))){
-        asguard_dbg("list empty but aapriv->num_of_queues = %d\n", aapriv->num_of_queues);
-        goto unlock;
-    }
-
-    list_for_each_entry_safe(entry, tmp_entry, &aapriv->head_of_aa_queues, aa_queues_head)
-    {
-        if(entry) {
-            asguard_dbg("cleaning queue ... \n");
-            async_clear_queue(entry);
-            list_del(&(entry->aa_queues_head));
-            kfree(entry);
-        }
-    }
-
-unlock:
-   write_unlock(&aapriv->top_list_rwlock);
-
-}
-
-int clean_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv *aapriv)
-{
-    if(!aapriv) {
-        asguard_error("BUG - tried to clean uninitialized aapriv\n");
-        return -ENODEV;
-    }
-    async_clear_queues(aapriv);
-
-    if(aapriv)
-        kfree(aapriv);
-
-    asguard_dbg("Async Queues List cleaned\n");
-
-    return 0;
-}
-
-int init_asguard_async_list_of_queues(struct asguard_async_head_of_queues_priv **aapriv)
-{
-    // freed by clean_asguard_async_list_of_queues
-    *aapriv = kmalloc(sizeof(struct asguard_async_head_of_queues_priv), GFP_KERNEL);
-
-    if(!*aapriv){
-        asguard_error("Could not allocate mem for async queue\n");
-        return -1;
-    }
-
-    rwlock_init(&(*aapriv)->top_list_rwlock);
-
-    INIT_LIST_HEAD(&((*aapriv)->head_of_aa_queues));
-
-    (*aapriv)->num_of_queues = 0;
-
-    asguard_dbg("Async Queues List initialized\n");
-
-    return 0;
-}
-
-int init_asguard_async_queue(struct asguard_async_head_of_queues_priv *aapriv, struct asguard_async_queue_priv **new_queue)
+int init_asguard_async_queue(struct asguard_async_queue_priv *new_queue)
 {
     // freed in async_clear_queues (via clean_asguard_async_list_of_queues)
-    *new_queue = kmalloc(sizeof(struct asguard_async_head_of_queues_priv), GFP_KERNEL);
 
-    if(!(*new_queue)) {
+    if(!new_queue) {
         asguard_error("Could not allocate mem for async queue\n");
         return -1;
     }
 
-    (*new_queue)->doorbell = 0;
+    new_queue->doorbell = 0;
 
-    rwlock_init(&((*new_queue)->queue_rwlock));
+    rwlock_init(&(new_queue->queue_rwlock));
 
-    INIT_LIST_HEAD(&((*new_queue)->head_of_async_pkt_queue));
-
-    write_lock(&aapriv->top_list_rwlock);
-
-    list_add_tail(&((*new_queue)->head_of_async_pkt_queue), &(aapriv->head_of_aa_queues));
-
-    write_unlock(&(aapriv->top_list_rwlock));
-
-    aapriv->num_of_queues++;
+    INIT_LIST_HEAD(&(new_queue->head_of_async_pkt_queue));
 
     asguard_dbg("Async Queue initialized\n");
     asguard_dbg("ASGUARD_PAYLOAD_BYTES=%d\n", ASGUARD_PAYLOAD_BYTES);
