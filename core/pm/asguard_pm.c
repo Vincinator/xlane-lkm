@@ -641,6 +641,7 @@ static int asguard_pm_loop(void *data)
 	prev_time = RDTSC_ASGUARD;
 
 	while (asguard_pacemaker_is_alive(spminfo)) {
+        asguard_dbg(" insane verbose print \n");
 
 		cur_time = RDTSC_ASGUARD;
 
@@ -666,10 +667,9 @@ static int asguard_pm_loop(void *data)
 		continue;
 
 emit:
-		prev_time = cur_time;
-
 		if(scheduled_hb) {
-			err = _emit_pkts_scheduled(sdev, spminfo);
+            prev_time = cur_time;
+            err = _emit_pkts_scheduled(sdev, spminfo);
 		} else if (out_of_sched_hb){
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
 		} else if (async_pkts) {
