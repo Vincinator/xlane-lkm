@@ -681,6 +681,7 @@ emit:
 		//	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, 42);
 
 	}
+    asguard_dbg(" exiting pacemaker \n");
 
 	__postwork_pm_loop(sdev);
 
