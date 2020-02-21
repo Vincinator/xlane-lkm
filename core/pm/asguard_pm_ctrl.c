@@ -36,6 +36,7 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 	}
 
 	err = copy_from_user(kernel_buffer, buffer, count);
+    asguard_error("copy_from_user!\n");
 
 	if (err) {
 		asguard_error("Copy from user failed%s\n", __func__);
@@ -45,6 +46,7 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 	kernel_buffer[count] = '\0';
 
 	err = kstrtol(kernel_buffer, 0, &new_hb_state);
+    asguard_error("kstrtol!\n");
 
 	if (err) {
 		asguard_error("Error converting input%s\n", __func__);
@@ -53,14 +55,18 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 
 	switch (new_hb_state) {
 	case 0:
-		asguard_pm_stop(spminfo);
+        asguard_error("0\n");
+
+        asguard_pm_stop(spminfo);
 		break;
 	case 1:
         asguard_error("pm loop start\n");
         asguard_pm_start_loop(spminfo);
 		break;
 	case 2:
-		asguard_pm_reset(spminfo);
+        asguard_error("2\n");
+
+        asguard_pm_reset(spminfo);
 		break;
 	default:
 		asguard_error("Unknown action!\n");
