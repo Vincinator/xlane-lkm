@@ -621,7 +621,7 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 #endif // ! CONFIG_KUNIT
 
 
-#ifndef CONFIG_KUNIT
+//#ifndef CONFIG_KUNIT
 static int asguard_pm_loop(void *data)
 {
 	uint64_t prev_time, cur_time;
@@ -633,7 +633,10 @@ static int asguard_pm_loop(void *data)
 	int out_of_sched_hb = 0;
 	int async_pkts = 0;
 
-	__prepare_pm_loop(sdev, spminfo);
+    asguard_dbg(" starting pacemaker \n");
+
+
+    __prepare_pm_loop(sdev, spminfo);
 
 	prev_time = RDTSC_ASGUARD;
 
@@ -687,12 +690,12 @@ emit:
 
 	return 0;
 }
-#else
+/*#else
 static int asguard_pm_loop(void *data)
 {
 	return 0;
 }
-#endif
+#endif*/
 
 #ifndef CONFIG_KUNIT
 static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)

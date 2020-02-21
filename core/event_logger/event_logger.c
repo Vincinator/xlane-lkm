@@ -211,7 +211,6 @@ int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char 
 	int err;
 
 	err = 0;
-    asguard_error("allocating logger %s\n", __func__);
 
 	if (!slog) {
 		err = -EINVAL;

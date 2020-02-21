@@ -136,6 +136,7 @@ static ssize_t asguard_cpumgmt_write(struct file *file,
 
 	spminfo->active_cpu = tocpu;
 	pm_state_transition_to(spminfo, ASGUARD_PM_READY);
+    asguard_error("Pacemaker CPU is set\n");
 
 	return count;
 error:
