@@ -774,7 +774,6 @@ int asguard_pm_start_loop(void *data)
 	struct cpumask mask;
 	int err;
 
-
     asguard_dbg("asguard_pm_start_loop\n");
 
 	err = _validate_pm(sdev, spminfo);

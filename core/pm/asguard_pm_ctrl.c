@@ -56,7 +56,8 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 		asguard_pm_stop(spminfo);
 		break;
 	case 1:
-		asguard_pm_start_loop(spminfo);
+        asguard_error("pm loop start\n");
+        asguard_pm_start_loop(spminfo);
 		break;
 	case 2:
 		asguard_pm_reset(spminfo);
