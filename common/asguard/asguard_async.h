@@ -13,7 +13,6 @@ struct asguard_async_head_of_queues_priv {
     int num_of_queues;
 
     rwlock_t top_list_rwlock;
-
 };
 
 struct asguard_async_queue_priv {
@@ -27,7 +26,6 @@ struct asguard_async_queue_priv {
     int doorbell;
 
     rwlock_t queue_rwlock;
-
 };
 
 struct asguard_async_pkt {

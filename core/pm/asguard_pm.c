@@ -509,7 +509,6 @@ unlock:
 	local_irq_restore(flags);
 }
 
-
 int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo) 
 {
 	int i;

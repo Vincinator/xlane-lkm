@@ -407,7 +407,6 @@ int asguard_core_remove_nic(int asguard_id)
 	if (asguard_validate_asguard_device(asguard_id))
 		return -1;
 
-    clean_asguard_async_list_of_queues(score->sdevices[asguard_id]->pminfo.async_priv);
 
     asguard_clean_timestamping(score->sdevices[asguard_id]);
 
@@ -713,7 +712,9 @@ static void __exit asguard_connection_core_exit(void)
 
 		asguard_stop(i);
 
-		destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
+        clean_asguard_async_list_of_queues(score->sdevices[i]->pminfo.async_priv);
+
+        destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
 
 		clear_protocol_instances(score->sdevices[i]);
 

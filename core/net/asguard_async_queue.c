@@ -19,7 +19,7 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
 
     if(!queue) {
         asguard_error("BUG - tried to clear uninitialized async queue\n");
-        return -ENODEV;
+        return;
     }
 
     if(queue->doorbell <= 0)
@@ -30,7 +30,7 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
     if(list_empty(&(queue->head_of_async_pkt_queue)))
         goto unlock;
 
-    list_for_each_entry_safe(entry, tmp_entry, &queue->head_of_async_pkt_queue, async_pkts_head)
+    list_for_each_entry_safe(entry, tmp_entry, &(queue->head_of_async_pkt_queue), async_pkts_head)
     {
         if(entry) {
             list_del(&(entry->async_pkts_head));
@@ -41,7 +41,7 @@ void async_clear_queue( struct asguard_async_queue_priv *queue)
 
 
 unlock:
-    write_unlock(&queue->queue_rwlock);
+    write_unlock(&(queue->queue_rwlock));
 }
 
 void async_clear_queues(struct asguard_async_head_of_queues_priv *aapriv)
@@ -68,6 +68,7 @@ void async_clear_queues(struct asguard_async_head_of_queues_priv *aapriv)
     list_for_each_entry_safe(entry, tmp_entry, &aapriv->head_of_aa_queues, aa_queues_head)
     {
         if(entry) {
+            asguard_dbg("cleaning queue ... \n");
             async_clear_queue(entry);
             list_del(&(entry->aa_queues_head));
             kfree(entry);
