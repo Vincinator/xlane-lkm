@@ -712,7 +712,7 @@ static void __exit asguard_connection_core_exit(void)
 
 		asguard_stop(i);
 
-        clean_asguard_async_list_of_queues(score->sdevices[i]->pminfo.async_priv);
+        //clean_asguard_async_list_of_queues(score->sdevices[i]->pminfo.async_priv);
 
         destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
 
