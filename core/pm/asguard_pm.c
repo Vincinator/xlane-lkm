@@ -579,7 +579,7 @@ static int _validate_pm(struct asguard_device *sdev,
 	return 0;
 }
 
-#ifndef  CONFIG_KUNIT
+//#ifndef  CONFIG_KUNIT
 static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminfo)
 {
 	asguard_setup_hb_skbs(sdev);
@@ -591,9 +591,9 @@ static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminf
 	get_cpu(); // disable preemption
 
 }
-#endif // ! CONFIG_KUNIT
+//#endif // ! CONFIG_KUNIT
 
-#ifndef  CONFIG_KUNIT
+//#ifndef  CONFIG_KUNIT
 static void __postwork_pm_loop(struct asguard_device *sdev)
 {
 	int i;
@@ -618,7 +618,7 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 	}
 
 }
-#endif // ! CONFIG_KUNIT
+//#endif // ! CONFIG_KUNIT
 
 
 //#ifndef CONFIG_KUNIT
@@ -634,7 +634,6 @@ static int asguard_pm_loop(void *data)
 	int async_pkts = 0;
 
     asguard_dbg(" starting pacemaker \n");
-
 
     __prepare_pm_loop(sdev, spminfo);
 
