@@ -242,7 +242,7 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 
 	ts2 = RDTSC_ASGUARD;
     print_hex_dump(KERN_DEBUG, "pkt: ", DUMP_PREFIX_NONE, 32, 2,
-                   payload, 1500 , 0);
+                   payload, 128 , 0);
 
     return;
 
