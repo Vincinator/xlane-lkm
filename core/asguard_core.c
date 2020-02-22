@@ -241,8 +241,12 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
     asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);*/
 
 	ts2 = RDTSC_ASGUARD;
-    print_hex_dump(KERN_DEBUG, "pkt: ", DUMP_PREFIX_NONE, 32, 2,
-                   payload, 128 , 0);
+
+    print_hex_dump(KERN_DEBUG, "pkt (no headroom): ", DUMP_PREFIX_NONE, 32, 1,
+                   payload + headroom, 64 , 0);
+
+    print_hex_dump(KERN_DEBUG, "user data: ", DUMP_PREFIX_NONE, 32, 1,
+                   user_data, 16 , 0);
 
     return;
 
