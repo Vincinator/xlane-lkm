@@ -135,8 +135,7 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
     //apkt->skb = asguard_reserve_skb(ndev, dst_ip, dst_mac, NULL);
 
     // freed by _emit_async_pkts
-    apkt->payload = kmalloc(sizeof(struct asguard_payload), GFP_KERNEL);
-
+    apkt->payload = kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
     if(!apkt->payload) {
         asguard_error("Could not allocate SKB!\n");
