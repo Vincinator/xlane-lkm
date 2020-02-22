@@ -241,7 +241,10 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
     asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);*/
 
 	ts2 = RDTSC_ASGUARD;
+    print_hex_dump(KERN_DEBUG, "pkt: ", DUMP_PREFIX_NONE, 32, 2,
+                   payload, 1500 , 0);
 
+    return;
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
