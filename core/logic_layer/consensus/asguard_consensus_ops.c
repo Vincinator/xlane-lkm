@@ -153,6 +153,7 @@ int consensus_clean(struct proto_instance *ins)
 		 priv->sdev->ifindex, ins->instance_id);
 
 	remove_proc_entry(name_buf, NULL);
+    asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
 	if (priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
 		for (i = 0; i < priv->sm_log.last_idx; i++){

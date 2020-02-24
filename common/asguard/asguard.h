@@ -322,11 +322,6 @@ struct asguard_pm_target_info {
 
 };
 
-struct asguard_test_procfile_container {
-	struct pminfo *spminfo;
-	int procid;
-};
-
 struct pminfo {
 	enum pmstate state;
 
@@ -358,13 +353,6 @@ struct asguard_device {
 	int hold_fire;
 	int cur_leader_lid;
 	struct consensus_priv *consensus_priv;
-
-	/* DEBUGING Processing Time */
-	uint64_t pkt_proc_ctr;
-	uint64_t pkt_proc_sts;
-	uint64_t pkt_proc_ets;
-	/* END */
-
 
 	int is_leader; /* Is this node a leader? */
 
