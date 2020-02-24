@@ -232,13 +232,6 @@ static inline void asguard_update_skb_payload(struct sk_buff *skb, void *payload
 	tail_ptr = skb_tail_pointer(skb);
 	data_ptr = (tail_ptr - ASGUARD_PAYLOAD_BYTES);
 
-/* TODO: directly write in skb, and use skb dual-buffer!?
- * Update: when we write directly to the skb, then we need to
- *			implement a locking mechanism for NIC/CPU accessing the
- *			skb's.. Which would introduce potential jitter sources..
- *			This memcpy makes sure, that we only access the next skb
- *			if the applications are done with the logic..
- */
 	memcpy(data_ptr, payload, ASGUARD_PAYLOAD_BYTES);
 }
 
@@ -417,6 +410,8 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		if(!target_fire[i])
 			continue;
 
+        asguard_dbg(" updating out of schedule pkt for target %d\n", i);
+
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.pkt_payload;
 
@@ -431,6 +426,8 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 
 		if(!target_fire[i])
 			continue;
+
+         asguard_dbg(" cleaning out of schedule pkt for target %d\n", i);
 
 		/* Protocols have been emitted, do not sent them again ..
 		 * .. and free the reservations for new protocols */
@@ -645,7 +642,8 @@ emit:
             err = _emit_pkts_scheduled(sdev, spminfo);
 		} else if (out_of_sched_hb){
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
-		} else if (async_pkts) {
+
+        } else if (async_pkts) {
 			err = _emit_async_pkts(sdev, spminfo);
 		}
 
