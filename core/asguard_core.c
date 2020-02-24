@@ -233,7 +233,7 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 	struct asguard_pkt_work_data *work;
 	uint64_t ts2, ts3;
 	char *remote_mac = ((char *) payload) + headroom + 6;
-	char *user_data = ((char *) payload) + headroom + 42;
+	char *user_data = ((char *) payload) + headroom + 43;
 
   /*
 
