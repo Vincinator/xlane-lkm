@@ -339,6 +339,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->asguard_id = asguard_id;
 	score->sdevices[asguard_id]->ndev = asguard_get_netdevice(ifindex);
 	score->sdevices[asguard_id]->pminfo.num_of_targets = 0;
+    score->sdevices[asguard_id]->pminfo.waiting_window = 100000;
 //	score->sdevices[asguard_id]->proto = NULL;
 	score->sdevices[asguard_id]->verbose = 0;
 	score->sdevices[asguard_id]->rx_state = ASGUARD_RX_DISABLED;
