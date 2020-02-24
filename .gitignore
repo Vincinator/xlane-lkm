@@ -15,4 +15,7 @@ CMakeCache.txt
 hello_world
 test_follower
 cmake-build-debug/
-.idea/
+.idea/*
+*.xml
+*.cbp
+cmake-build-debug-local-linux-container/*
