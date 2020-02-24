@@ -76,10 +76,10 @@
 #define GET_CON_PROTO_PARAM4_VAL(p) (*(s32 *)((char *) p + 2 + 2 + 2 + 4 + 4 + 4))
 #define GET_CON_PROTO_PARAM4_PTR(p) (s32 *)((char *) p + 2 + 2 + 2 + 4 + 4 + 4)
 
-#define GET_PROTO_AMOUNT_VAL(p) (*(u16 *)((char *) p))
-#define GET_PROTO_AMOUNT_PTR(p) (u16 *)((char *) p)
+#define GET_PROTO_AMOUNT_VAL(p) (*(u8 *)((char *) p))
+#define GET_PROTO_AMOUNT_PTR(p) (u8 *)((char *) p)
 
-#define GET_PROTO_START_SUBS_PTR(p) (char *)((char *)p + 2)
+#define GET_PROTO_START_SUBS_PTR(p) (char *)((char *)p + 1)
 
 
 #define GET_PROTO_TYPE_VAL(p) (*(u16 *)((char *)p))
