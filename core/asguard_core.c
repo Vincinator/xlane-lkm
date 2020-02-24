@@ -235,17 +235,18 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 	char *remote_mac = ((char *) payload) + headroom + 6;
 	char *user_data = ((char *) payload) + headroom + 43;
 
-  /*
-
-    asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);*/
+    /* */
+    asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);
 
 	ts2 = RDTSC_ASGUARD;
 
-/*    print_hex_dump(KERN_DEBUG, "pkt (no headroom): ", DUMP_PREFIX_NONE, 32, 1,
+   print_hex_dump(KERN_DEBUG, "pkt (no headroom): ", DUMP_PREFIX_NONE, 32, 1,
                    payload + headroom, 64 , 0);
 
     print_hex_dump(KERN_DEBUG, "user data: ", DUMP_PREFIX_NONE, 32, 1,
-                   user_data, 16 , 0);*/
+                   user_data, 16 , 0);
+
+
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
@@ -498,39 +499,39 @@ void clear_protocol_instances(struct asguard_device *sdev)
 	}
 
 	for (i = 0; i < sdev->num_of_proto_instances; i++) {
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
+        
 
 
 		if (!sdev->protos[i])
 			continue;
 
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
+        
 
 		if (sdev->protos[i]->ctrl_ops.clean != NULL) {
 			sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
 		}
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
+        
 
 		// timer are not finished yet!?
 		if(sdev->protos[i]->proto_data)
 		    kfree(sdev->protos[i]->proto_data);
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
+        
 
 		if(!sdev->protos[i])
 		    kfree(sdev->protos[i]); // is non-NULL, see continue condition above
 
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
+        
 
 
 	}
-    asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
+    
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		sdev->instance_id_mapping[i] = -1;
-    asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
+    
 
 	sdev->num_of_proto_instances = 0;
-    asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
+    
 
 }
 
@@ -685,7 +686,6 @@ void asguard_stop(int asguard_id)
 static void __exit asguard_connection_core_exit(void)
 {
 	int i, j;
-    asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
 	destroy_workqueue(asguard_wq);
 
@@ -698,47 +698,36 @@ static void __exit asguard_connection_core_exit(void)
 	}
 
 	for(i = 0; i < MAX_NIC_DEVICES; i++) {
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
 		if(!score->sdevices[i]) {
 			continue;
 		}
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
 		asguard_stop(i);
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
         // clear all async queues
         for(j = 0; j <  score->sdevices[i]->pminfo.num_of_targets; j++)
             async_clear_queue(score->sdevices[i]->pminfo.pm_targets[j].aapriv);
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
         destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
 		clear_protocol_instances(score->sdevices[i]);
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
 		asguard_core_remove_nic(i);
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
 		kfree(score->sdevices[i]);
-        asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
     }
-    asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
+    
 
 	if(score->sdevices)
         kfree(score->sdevices);
-    asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
 	if(score)
 	    kfree(score);
-    asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
 
 	remove_proc_entry("asguard", NULL);
-    asguard_error("%s - %s\n",__FUNCTION__,  __LINE__);
+    
 
 	// flush_workqueue(asguard_wq);
 

@@ -62,7 +62,10 @@ const char *opcode_string(enum le_opcode opcode)
 
 int consensus_is_alive(struct consensus_priv *priv)
 {
-	if (priv->state != LE_RUNNING)
+    if(!priv)
+        return 0;
+
+    if (priv->state != LE_RUNNING)
 		return 0;
 
 	return 1;
