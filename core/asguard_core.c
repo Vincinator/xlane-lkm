@@ -147,7 +147,7 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 	 * In the current state, more than 4 instances are not intentional.
 	 */
 	if (instances > 4) {
-	    asguard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
+	   // asguard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
 	    return;
 	}
 
@@ -235,18 +235,17 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 	char *remote_mac = ((char *) payload) + headroom + 6;
 	char *user_data = ((char *) payload) + headroom + 42;
 
-    /*
+
     asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);
- */
+
 	ts2 = RDTSC_ASGUARD;
 
-/*
-   print_hex_dump(KERN_DEBUG, "pkt (no headroom): ", DUMP_PREFIX_NONE, 32, 1,
+    print_hex_dump(KERN_DEBUG, "pkt (no headroom): ", DUMP_PREFIX_NONE, 32, 1,
                    payload + headroom, 64 , 0);
 
     print_hex_dump(KERN_DEBUG, "user data: ", DUMP_PREFIX_NONE, 32, 1,
                    user_data, 16 , 0);
-*/
+
 
 
 
