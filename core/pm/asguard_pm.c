@@ -113,14 +113,6 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 	// BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
-		// hb_active_ix =
-		//      spminfo->pm_targets[i].pkt_data.hb_active_ix;
-
-		// pkt_payload =
-		// 	spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
-
-		hb_pkt_payload =
-			spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
 
 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
 
@@ -413,7 +405,6 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 {
 	struct asguard_payload *pkt_payload = NULL;
 	int i;
-	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
 	int target_fire[MAX_NODE_ID];
 
@@ -447,7 +438,6 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		invalidate_proto_data(sdev, pkt_payload, i);
 
 		// after alive msg has been added, the current active buffer can be used again
-		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
 		spminfo->pm_targets[i].fire = 0;
 
 	}
@@ -601,13 +591,6 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
         if(sdev->pminfo.pm_targets[i].skb != NULL)
             dev_kfree_skb(sdev->pminfo.pm_targets[i].skb);
     }
-
-    // unlock active dirty locks
-	for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-		if(mutex_is_locked(&sdev->pminfo.pm_targets[i].pkt_data.active_dirty_lock))
-			mutex_unlock(&sdev->pminfo.pm_targets[i].pkt_data.active_dirty_lock);
-	}
-
 }
 //#endif // ! CONFIG_KUNIT
 
@@ -727,36 +710,6 @@ static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 	return 0;
 }
 #endif
-
-int asguard_pm_start_timer(void *data)
-{
-	struct pminfo *spminfo =
-		(struct pminfo *) data;
-	struct asguard_device *sdev =
-		container_of(spminfo, struct asguard_device, pminfo);
-	ktime_t interval;
-	int err;
-
-	err = _validate_pm(sdev, spminfo);
-
-	if (err)
-		return err;
-
-	pm_state_transition_to(spminfo, ASGUARD_PM_EMITTING);
-
-	interval = ktime_set(0, 100000000);
-
-	hrtimer_init(&spminfo->pm_timer, CLOCK_MONOTONIC,
-		HRTIMER_MODE_REL_PINNED);
-
-	spminfo->pm_timer.function = &asguard_pm_timer;
-
-	hrtimer_start(&spminfo->pm_timer, interval,
-		HRTIMER_MODE_REL_PINNED);
-
-	return 0;
-}
-
 
 int asguard_pm_start_loop(void *data)
 {

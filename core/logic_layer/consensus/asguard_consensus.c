@@ -261,7 +261,6 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 
     ins->proto_type = ASGUARD_PROTO_CONSENSUS;
     ins->ctrl_ops = consensus_ops;
-    ins->name = "consensus";
 
     ins->logger.name = "consensus_le";
     ins->logger.instance_id = ins->instance_id;

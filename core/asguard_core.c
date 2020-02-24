@@ -548,7 +548,6 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 		return -1;
 	}
 
-	ifindex = sdev->ifindex;
 	pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
 
 	if (!pmtarget) {
@@ -556,11 +555,8 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 		return -1;
 	}
 	pmtarget->alive = 0;
-	pmtarget->pkt_data.active_dirty = 0;
-	mutex_init(&pmtarget->pkt_data.active_dirty_lock);
 	pmtarget->pkt_data.naddr.dst_ip = ip;
 	pmtarget->pkt_data.naddr.cluster_id = cluster_id;
-	pmtarget->pkt_data.protocol_id = protocol_id;
 	pmtarget->lhb_ts = 0;
 	pmtarget->chb_ts = 0;
 	pmtarget->resp_factor = 4;
@@ -570,9 +566,6 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 
 	pmtarget->scheduled_log_replications = 0;
 	pmtarget->received_log_replications = 0;
-
-	pmtarget->pkt_data.contains_log_rep[0] = 0;
-	pmtarget->pkt_data.contains_log_rep[1] = 0;
 
 	pmtarget->pkt_data.pkt_payload =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);

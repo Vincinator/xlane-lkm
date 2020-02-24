@@ -339,13 +339,6 @@ static ssize_t asguard_payload_write(struct file *file,
 			break;
 		}
 
-		// TODO: Parse more input to pkt_payload struct.
-		// Since this is only a test tool, prio for this task is low.
-		// invert 0<->1 (and make sure {0,1} is the only possible input)
-		// hb_active_ix = !!!(spminfo->pm_targets[i].pkt_data.hb_active_ix);
-		// spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix].message = input_str[0] & 0xFF;
-		// spminfo->pm_targets[i].pkt_data.hb_active_ix = !!!(spminfo->pm_targets[i].pkt_data.hb_active_ix);
-
 		//asguard_dbg(" payload message: %02X\n", input_str[0] & 0xFF);
 		i++;
 	}

@@ -39,8 +39,6 @@ struct proto_instance *get_fd_proto_instance(struct asguard_device *sdev)
 
 	ins->proto_type = ASGUARD_PROTO_FD;
 	ins->ctrl_ops = fd_ops;
-	ins->name = "fd";
-	ins->logger.name = "fd";
 	ins->logger.ifindex = sdev->ifindex;
 
 	ins->proto_data = (void *)&fd_priv;

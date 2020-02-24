@@ -37,8 +37,6 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 
 	set_le_opcode((unsigned char *)pkt_payload_sub, opcode, param1, param2, param3, param4);
 
-	spminfo->pm_targets[target_id].pkt_data.hb_active_ix = hb_passive_ix;
-
 	return 0;
 }
 

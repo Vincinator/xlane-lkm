@@ -7,9 +7,6 @@
 
 struct asguard_async_queue_priv {
 
-    /* parent list head: asguard_async_head_of_queues_priv*/
-    struct list_head aa_queues_head;
-
     /* List head for asguard async pkt*/
     struct list_head head_of_async_pkt_queue;
 
@@ -26,8 +23,6 @@ struct asguard_async_pkt {
     struct sk_buff *skb;
 
     struct asguard_payload *payload;
-
-    int target_id;
 
 };
 

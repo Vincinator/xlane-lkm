@@ -49,7 +49,6 @@ int write_log(struct asguard_logger *slog,
 
 	slog->events[slog->current_entries].timestamp_tcs = tcs;
 	slog->events[slog->current_entries].type = type;
-	slog->events[slog->current_entries].accu_random_timeouts = 0;
 
 	slog->current_entries += 1;
 

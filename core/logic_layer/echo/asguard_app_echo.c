@@ -36,7 +36,6 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 
 	ins->proto_type = ASGUARD_PROTO_ECHO;
 	ins->ctrl_ops = echo_ops;
-	ins->name = "echo";
 	ins->logger.name = "echo";
 	ins->logger.ifindex = sdev->ifindex;
 

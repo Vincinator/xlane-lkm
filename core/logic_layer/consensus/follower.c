@@ -48,8 +48,6 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 
 	set_le_opcode((unsigned char *)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx, priv->sm_log.stable_idx);
 
-	spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix = hb_passive_ix;
-
 	if (append_success)
 		write_log(&ins->logger, REPLY_APPEND_SUCCESS, RDTSC_ASGUARD);
 	else

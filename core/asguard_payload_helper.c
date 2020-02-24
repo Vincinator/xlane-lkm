@@ -310,12 +310,6 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 	if(sdev->is_leader == 0)
 		return -1; // node lost leadership
 
-	if(spminfo->pm_targets[target_id].pkt_data.active_dirty){
-		return -1; // previous pkt has not been emitted yet, thus we can not switch buffer at the end of this function
-	}
-
-	spminfo->pm_targets[target_id].pkt_data.active_dirty = 1;
-
 	if(spminfo->pm_targets[target_id].alive == 0) {
 		return -1; // Current target is not alive!
 	}
