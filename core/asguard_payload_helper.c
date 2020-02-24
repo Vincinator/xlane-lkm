@@ -76,6 +76,8 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 	}
 	spay->protocols_included++;
 
+	asguard_dbg("included protocol. Now: %d", spay->protocols_included);
+
 	if (unlikely(proto_offset + proto_size > MAX_ASGUARD_PAYLOAD_BYTES)) {
 		asguard_error("Not enough space in asguard payload\n");
 		spay->protocols_included--;
@@ -87,6 +89,8 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 
 	*pid = instance_id;
 	*poff = proto_size;
+
+	asguard_dbg("instance_id=%d, proto_size=%d", instance_id, proto_size);
 
 	return cur_proto;
 }
