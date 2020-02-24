@@ -100,7 +100,6 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 {
 	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
-	struct asguard_payload *hb_pkt_payload;
 	struct node_addr *naddr;
 
     asguard_dbg("setup hb skbs. \n");
@@ -583,8 +582,10 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 
 	// Stopping all protocols
 	for (i = 0; i < sdev->num_of_proto_instances; i++)
-		if (sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL)
-			sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
+		if (sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL){
+            sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
+            sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
+        }
 
     // free fixed skbs again
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){

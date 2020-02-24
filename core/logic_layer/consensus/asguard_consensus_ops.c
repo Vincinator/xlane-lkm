@@ -132,6 +132,7 @@ int consensus_clean(struct proto_instance *ins)
 	u32 i;
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
+    le_state_transition_to(priv, LE_READY);
 
 	if (consensus_is_alive(priv)) {
 		asguard_dbg("Consensus is running, stop it first.\n");

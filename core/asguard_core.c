@@ -508,7 +508,6 @@ void clear_protocol_instances(struct asguard_device *sdev)
 
 		if (sdev->protos[i]->ctrl_ops.clean != NULL) {
 			sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
-
 		}
 
 		// timer are not finished yet!?
@@ -535,7 +534,6 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct asguard_pm_target_info *pmtarget;
-	int ifindex;
 
 	if (!mac) {
 		asguard_error("input mac is NULL!\n");
@@ -706,7 +704,7 @@ static void __exit asguard_connection_core_exit(void)
 
         destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
 
-		clear_protocol_instances(score->sdevices[i]);
+		// clear_protocol_instances(score->sdevices[i]);
 
 		asguard_core_remove_nic(i);
 
