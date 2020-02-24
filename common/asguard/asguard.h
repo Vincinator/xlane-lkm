@@ -311,6 +311,12 @@ struct asguard_pm_target_info {
 	/* Data for transmitting the packet  */
 	struct sk_buff *skb;
 
+    /* Data for transmitting the packet  */
+    struct sk_buff *skb_oos;
+
+    /* Data for transmitting the packet  */
+    struct sk_buff *skb_logrep;
+
 	/* async packet queue for pm target*/
 	struct asguard_async_queue_priv *aapriv;
 

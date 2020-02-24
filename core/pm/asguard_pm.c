@@ -118,6 +118,14 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
         /* Setup SKB */
 		spminfo->pm_targets[i].skb = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
 		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
+
+		/* Out of schedule SKB */
+        spminfo->pm_targets[i].skb_oos = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
+        skb_set_queue_mapping(spminfo->pm_targets[i].skb_oos, smp_processor_id()); // Queue mapping same for each target i
+
+        /* Log Replication SKB */
+        spminfo->pm_targets[i].skb_logrep = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
+        skb_set_queue_mapping(spminfo->pm_targets[i].skb_logrep, smp_processor_id()); // Queue mapping same for each target i
 	}
 }
 
@@ -163,9 +171,13 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 		if(fire && !target_fire[i])
 			continue;
 
-		skb = spminfo->pm_targets[i].skb;
+		if(fire)
+            skb = spminfo->pm_targets[i].skb_oos;
+        else
+            skb = spminfo->pm_targets[i].skb;
 
-		skb_get(skb);
+
+        skb_get(skb);
 
 		/* Utilise batch process mechanism for the heartbeats.
 		 * HB pkts will be transmitted to the NIC,
@@ -415,7 +427,7 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.pkt_payload;
 
-		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
+		asguard_update_skb_payload(spminfo->pm_targets[i].skb_oos,
 					 pkt_payload);
 	}
 
@@ -501,15 +513,15 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             // Pkt has been handled
             spminfo->pm_targets[i].aapriv->doorbell--;
 
-            if(!cur_apkt || !spminfo->pm_targets[i].skb) {
+            if(!cur_apkt || !spminfo->pm_targets[i].skb_logrep) {
                 asguard_error("pkt or skb is NULL! \n");
                 continue;
             }
 
             // update payload
-            asguard_update_skb_payload(spminfo->pm_targets[i].skb, cur_apkt->payload);
+            asguard_update_skb_payload(spminfo->pm_targets[i].skb_logrep, cur_apkt->payload);
 
-            cur_apkt->skb = spminfo->pm_targets[i].skb;
+            cur_apkt->skb = spminfo->pm_targets[i].skb_logrep;
 
             emit_apkt(sdev->ndev, spminfo, cur_apkt);
 
@@ -587,6 +599,12 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
         if(sdev->pminfo.pm_targets[i].skb != NULL)
             dev_kfree_skb(sdev->pminfo.pm_targets[i].skb);
+
+        if(sdev->pminfo.pm_targets[i].skb_oos != NULL)
+            dev_kfree_skb(sdev->pminfo.pm_targets[i].skb_oos);
+
+        if(sdev->pminfo.pm_targets[i].skb_logrep != NULL)
+            dev_kfree_skb(sdev->pminfo.pm_targets[i].skb_logrep);
     }
 }
 //#endif // ! CONFIG_KUNIT
