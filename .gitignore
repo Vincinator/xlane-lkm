@@ -1,4 +1,5 @@
 docs/_build/
+cmake-build-debug-local-linux-container/
 .tmp_versions/
 *.mod.c
 *.mod.o
@@ -18,4 +19,3 @@ cmake-build-debug/
 .idea/*
 *.xml
 *.cbp
-cmake-build-debug-local-linux-container/*
