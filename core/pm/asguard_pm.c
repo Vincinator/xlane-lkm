@@ -581,7 +581,6 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 	for (i = 0; i < sdev->num_of_proto_instances; i++)
 		if (sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL){
             sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
-            sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
         }
 
     // free fixed skbs again

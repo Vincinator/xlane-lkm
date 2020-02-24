@@ -704,7 +704,7 @@ static void __exit asguard_connection_core_exit(void)
 
         destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
 
-		// clear_protocol_instances(score->sdevices[i]);
+		clear_protocol_instances(score->sdevices[i]);
 
 		asguard_core_remove_nic(i);
 
