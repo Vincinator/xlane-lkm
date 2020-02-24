@@ -106,11 +106,8 @@ void clear_logger(struct asguard_logger *slog)
 
 	remove_proc_entry(name_buf, NULL);
 
-	for(i = 0; i < slog->current_entries; i++){
-	    if(slog->events)
-            kfree(slog->events);
-    }
-
+	if(slog->events)
+	    kfree(slog->events);
 }
 EXPORT_SYMBOL(clear_logger);
 
