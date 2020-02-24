@@ -439,6 +439,9 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		if(!target_fire[i])
 			continue;
 
+         pkt_payload =
+                 spminfo->pm_targets[i].pkt_data.pkt_payload;
+
          asguard_dbg(" cleaning out of schedule pkt for target %d\n", i);
 
 		/* Protocols have been emitted, do not sent them again ..
