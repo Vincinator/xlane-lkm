@@ -278,7 +278,7 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 
 
     print_hex_dump(KERN_DEBUG, "num of instances: ", DUMP_PREFIX_NONE, 32, 1,
-                   (char *) GET_PROTO_AMOUNT_VAL(user_data) - 2, 16 , 0);
+                   ((char *) GET_PROTO_AMOUNT_VAL(user_data)) - 2, 16 , 0);
 
 
     // freed by pkt_process_handler
