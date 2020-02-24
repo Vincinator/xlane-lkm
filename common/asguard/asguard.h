@@ -296,11 +296,9 @@ struct asguard_packet_data {
 	 *
 	 * The hb_active_ix member of this struct tells which index can be used by the pacemaker
 	 */
-	struct asguard_payload *pkt_payload[2];
+	struct asguard_payload *pkt_payload;
 
 	struct asguard_payload *hb_pkt_payload;
-
-	int hb_active_ix;
 
 	int contains_log_rep[2];
 

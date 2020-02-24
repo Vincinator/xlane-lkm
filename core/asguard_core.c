@@ -308,8 +308,7 @@ void asguard_reset_remote_host_counter(int asguard_id)
 	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
 		pmtarget = &sdev->pminfo.pm_targets[i];
 		kfree(pmtarget->pkt_data.hb_pkt_payload);
-		kfree(pmtarget->pkt_data.pkt_payload[0]);
-		kfree(pmtarget->pkt_data.pkt_payload[1]);
+		kfree(pmtarget->pkt_data.pkt_payload);
 	}
 
 	sdev->pminfo.num_of_targets = 0;
@@ -576,16 +575,11 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->pkt_data.contains_log_rep[0] = 0;
 	pmtarget->pkt_data.contains_log_rep[1] = 0;
 
-	pmtarget->pkt_data.pkt_payload[0] =
-		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
-
-	pmtarget->pkt_data.pkt_payload[1] =
+	pmtarget->pkt_data.pkt_payload =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
 	pmtarget->pkt_data.hb_pkt_payload =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
-
-	memset(pmtarget->pkt_data.hb_pkt_payload, 0xBB,sizeof(struct asguard_payload));
 
 	memcpy(&pmtarget->pkt_data.naddr.dst_mac, mac, sizeof(unsigned char) * 6);
 

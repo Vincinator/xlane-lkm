@@ -24,12 +24,8 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 	char *pkt_payload_sub;
 	int hb_passive_ix;
 
-
-	hb_passive_ix =
-	     !!!spminfo->pm_targets[target_id].pkt_data.hb_active_ix;
-
 	pkt_payload =
-		spminfo->pm_targets[target_id].pkt_data.pkt_payload[hb_passive_ix];
+		spminfo->pm_targets[target_id].pkt_data.pkt_payload;
 
 	pkt_payload_sub =
 		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);

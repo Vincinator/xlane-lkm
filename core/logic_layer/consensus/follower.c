@@ -34,11 +34,8 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 			priv->sm_log.stable_idx);
 #endif
 
-	hb_passive_ix =
-	     !!!spminfo->pm_targets[remote_lid].pkt_data.hb_active_ix;
-
 	pkt_payload =
-		spminfo->pm_targets[remote_lid].pkt_data.pkt_payload[hb_passive_ix];
+		spminfo->pm_targets[remote_lid].pkt_data.pkt_payload;
 
 	pkt_payload_sub =
 		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);

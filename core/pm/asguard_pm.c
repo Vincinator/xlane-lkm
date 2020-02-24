@@ -417,9 +417,6 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 	struct net_device *ndev = sdev->ndev;
 	int target_fire[MAX_NODE_ID];
 
-    asguard_dbg(" _emit_pkts_non_scheduled\n");
-
-
     for (i = 0; i < spminfo->num_of_targets; i++) {
 		target_fire[i] = spminfo->pm_targets[i].fire;
 	}
@@ -430,12 +427,8 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		if(!target_fire[i])
 			continue;
 
-		// Always update payload to avoid jitter!
-		hb_active_ix =
-		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
-
 		pkt_payload =
-		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
+		     spminfo->pm_targets[i].pkt_data.pkt_payload;
 
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
