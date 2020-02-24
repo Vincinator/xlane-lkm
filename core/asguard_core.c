@@ -276,7 +276,8 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
-    asguard_dbg("received %d protocols in payload", received_proto_instances);
+	if(received_proto_instances > 0)
+        asguard_dbg("received %d protocols in payload", received_proto_instances);
 
     // freed by pkt_process_handler
     work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
