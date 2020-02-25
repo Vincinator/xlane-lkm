@@ -130,7 +130,7 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
 {
     struct asguard_async_pkt *apkt = NULL;
     // freed by _emit_async_pkts
-    apkt = kmalloc(sizeof(struct asguard_async_pkt), GFP_KERNEL);
+    apkt = kzalloc(sizeof(struct asguard_async_pkt), GFP_KERNEL);
 
     //apkt->skb = asguard_reserve_skb(ndev, dst_ip, dst_mac, NULL);
 

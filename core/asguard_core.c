@@ -352,6 +352,8 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->cur_leader_lid = -1;
 	score->sdevices[asguard_id]->is_leader = 0;
 
+	mutex_init(&score->sdevices[asguard_id]->busylock);
+
 	score->sdevices[asguard_id]->asguard_leader_wq =
 		 alloc_workqueue("asguard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 0);
 
@@ -689,7 +691,8 @@ static void __exit asguard_connection_core_exit(void)
 {
 	int i, j;
 
-	destroy_workqueue(asguard_wq);
+
+    destroy_workqueue(asguard_wq);
 
 	// MUST unregister asguard for drivers first
 	unregister_asguard();
@@ -705,6 +708,8 @@ static void __exit asguard_connection_core_exit(void)
 			continue;
 		}
 
+        spin_lock_bh(&score->sdevices[i]->busylock);
+
 		asguard_stop(i);
 
         // clear all async queues
@@ -717,7 +722,10 @@ static void __exit asguard_connection_core_exit(void)
 
 		asguard_core_remove_nic(i);
 
-		kfree(score->sdevices[i]);
+        spin_unlock_bh(&score->sdevices[i]->busylock);
+
+
+        kfree(score->sdevices[i]);
 
     }
     

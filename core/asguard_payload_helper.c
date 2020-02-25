@@ -75,7 +75,7 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 
 	}
 	spay->protocols_included++;
-	
+
 	if (unlikely(proto_offset + proto_size > MAX_ASGUARD_PAYLOAD_BYTES)) {
 		asguard_error("Not enough space in asguard payload\n");
 		spay->protocols_included--;
@@ -246,6 +246,11 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 			more = 0;
 		}
 
+		if(num_entries <= 0) {
+		    asguard_dbg("No entries to replicate\n");
+		    return -1;
+		}
+
 		// update next_index without receiving the response from the target
 		// .. If the receiver rejects this append command, this node will set the
 		// .. the next_index to the last known safe index of the receivers log.
@@ -339,8 +344,6 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
                 continue;
             }
 
-            asguard_dbg("Writing to skb now! \n");
-
             ret = setup_append_msg(cur_priv,
                             apkt->payload,
                             sdev->protos[j]->instance_id,
@@ -348,14 +351,10 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
                             next_index,
                             retrans);
 
-            asguard_dbg("Written to skb data!\n");
-
             if(ret < 0) {
                 asguard_error("setup append msg failed\n");
                 return ret;
             }
-
-            asguard_dbg("Written Log Reps to Pkt: %d \n", ret);
 
             more += ret;
 
