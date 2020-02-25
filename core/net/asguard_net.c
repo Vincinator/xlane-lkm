@@ -115,7 +115,7 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     udp_len = asguard_len + sizeof(struct udphdr);
     ip_len = udp_len + sizeof(struct iphdr);
 
-    total_len = ip_len;
+    total_len = ip_len + ETH_HLEN;
 
     asguard_dbg("Allocating %d Bytes for SKB\n", total_len);
     asguard_dbg("asguard_len = %d Bytes\n", asguard_len);
