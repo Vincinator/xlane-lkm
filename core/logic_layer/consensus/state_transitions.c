@@ -22,9 +22,7 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 {
 	struct asguard_payload *pkt_payload;
 	char *pkt_payload_sub;
-    asguard_dbg("%s, %d", __FUNCTION__, __LINE__);
     mutex_lock(&spminfo->pm_targets[target_id].pkt_data.pkt_lock);
-    asguard_dbg("%s, %d", __FUNCTION__, __LINE__);
     pkt_payload =
 		spminfo->pm_targets[target_id].pkt_data.pkt_payload;
 
@@ -33,12 +31,13 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 
 	if (!pkt_payload_sub) {
 		asguard_error("Sassy packet full!\n");
-		return -1;
+		goto unlock;
 	}
 
 	set_le_opcode((unsigned char *)pkt_payload_sub, opcode, param1, param2, param3, param4);
+
+unlock:
     mutex_unlock(&spminfo->pm_targets[target_id].pkt_data.pkt_lock);
-    asguard_dbg("%s, %d", __FUNCTION__, __LINE__);
 	return 0;
 }
 
