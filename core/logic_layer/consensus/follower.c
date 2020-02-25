@@ -274,12 +274,12 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	 * A stable index points to the last entry in the the log, where
 	 * all previous entries exist (stable is not necessarily commited!).
 	 */
-    asguard_dbg("%s, %s", __FUNCTION__, __LINE__);
+    asguard_dbg("%s, %d", __FUNCTION__, __LINE__);
 	mutex_lock(&priv->sm_log.mlock);
-    asguard_dbg("%s, %s", __FUNCTION__, __LINE__);
+    asguard_dbg("%s, %d", __FUNCTION__, __LINE__);
 	if(*prev_log_idx < priv->sm_log.stable_idx){
 		mutex_unlock(&priv->sm_log.mlock);
-        asguard_dbg("%s, %s", __FUNCTION__, __LINE__);
+        asguard_dbg("%s, %d", __FUNCTION__, __LINE__);
 		return;
 	}
 
@@ -330,19 +330,19 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 // default: reply success
 	mutex_unlock(&priv->sm_log.mlock);
-    asguard_dbg("%s, %s", __FUNCTION__, __LINE__);
+    asguard_dbg("%s, %d", __FUNCTION__, __LINE__);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 	return;
 reply_retransmission:
 	mutex_unlock(&priv->sm_log.mlock);
-    asguard_dbg("%s, %s", __FUNCTION__, __LINE__);
+    asguard_dbg("%s, %d", __FUNCTION__, __LINE__);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 	return;
 reply_false_unlock:
 	mutex_unlock(&priv->sm_log.mlock);
-    asguard_dbg("%s, %s", __FUNCTION__, __LINE__);
+    asguard_dbg("%s, %d", __FUNCTION__, __LINE__);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 
