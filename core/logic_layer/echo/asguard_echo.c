@@ -28,12 +28,14 @@ void set_echo_tx_ts(unsigned char *pkt, uint64_t ts)
 int setup_echo_msg(struct pminfo *spminfo, u32 target_id, uint64_t ts, enum echo_opcode opcode)
 {
 	struct asguard_payload *pkt_payload;
+    mutex_lock(&spminfo->pm_targets[target_id].pkt_data.pkt_lock);
 
 	pkt_payload =
 		spminfo->pm_targets[target_id].pkt_data.pkt_payload;
 
 	set_echo_opcode((unsigned char *)pkt_payload, opcode);
 	set_echo_tx_ts((unsigned char *)pkt_payload, ts);
+    mutex_unlock(&spminfo->pm_targets[target_id].pkt_data.pkt_lock);
 
 	return 0;
 }

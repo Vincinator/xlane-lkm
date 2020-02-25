@@ -258,6 +258,8 @@ struct asguard_packet_data {
 
 	struct asguard_payload *pkt_payload;
 
+	struct mutex pkt_lock;
+
 	struct asguard_payload *hb_pkt_payload;
 
 };

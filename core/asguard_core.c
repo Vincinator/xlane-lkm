@@ -582,7 +582,9 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->pkt_data.pkt_payload =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
-	pmtarget->pkt_data.hb_pkt_payload =
+    mutex_init(&pmtarget->pkt_data.pkt_lock);
+
+    pmtarget->pkt_data.hb_pkt_payload =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
 	memcpy(&pmtarget->pkt_data.naddr.dst_mac, mac, sizeof(unsigned char) * 6);

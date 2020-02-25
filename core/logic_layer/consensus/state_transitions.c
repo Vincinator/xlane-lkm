@@ -22,9 +22,10 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 {
 	struct asguard_payload *pkt_payload;
 	char *pkt_payload_sub;
-	int hb_passive_ix;
 
-	pkt_payload =
+    mutex_lock(&spminfo->pm_targets[target_id].pkt_data.pkt_lock);
+
+    pkt_payload =
 		spminfo->pm_targets[target_id].pkt_data.pkt_payload;
 
 	pkt_payload_sub =
@@ -36,6 +37,7 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 	}
 
 	set_le_opcode((unsigned char *)pkt_payload_sub, opcode, param1, param2, param3, param4);
+    mutex_unlock(&spminfo->pm_targets[target_id].pkt_data.pkt_lock);
 
 	return 0;
 }
