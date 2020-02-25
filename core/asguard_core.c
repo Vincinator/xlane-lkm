@@ -36,6 +36,7 @@ module_param(ifindex, int, 0660);
 
 static struct workqueue_struct *asguard_wq;
 
+static int asguard_wq_lock = 0;
 
 //  sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset
 
@@ -284,6 +285,12 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 	work->remote_lid = remote_lid;
 	work->received_proto_instances = received_proto_instances;
 	work->sdev = sdev;
+
+	if(asguard_wq_lock){
+	    asguard_dbg("Asguard is shutting down, ignoring packet\n");
+        return;
+
+    }
 
 	INIT_WORK(&work->work, pkt_process_handler);
 	if(!queue_work(asguard_wq, &work->work)) {
@@ -689,7 +696,9 @@ static void __exit asguard_connection_core_exit(void)
 {
 	int i, j;
 
+    asguard_wq_lock = 1;
 
+    flush_workqueue(asguard_wq);
     destroy_workqueue(asguard_wq);
 
 	// MUST unregister asguard for drivers first
