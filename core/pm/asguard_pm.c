@@ -644,8 +644,6 @@ static int asguard_pm_loop(void *data)
 		if(scheduled_hb)
 			goto emit;
 
-		continue;
-
 		/* If in Sync Window, do not send anything until the Heartbeat has been sent */
 		if (!check_async_window(prev_time, cur_time, interval, spminfo->waiting_window))
 			continue;
