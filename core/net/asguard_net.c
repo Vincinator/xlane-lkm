@@ -145,7 +145,7 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     skb_put(skb, sizeof(struct asguard_payload));
 
     // init skb user payload with 0
-	memset(skb_tail_pointer(skb) - sizeof(struct asguard_payload), 0xBB, sizeof(struct asguard_payload));
+	memset(skb_tail_pointer(skb) - sizeof(struct asguard_payload), 0, sizeof(struct asguard_payload));
 
     // data = data - sizeof(struct udphdr)
     skb_push(skb, sizeof(struct udphdr));
@@ -200,10 +200,6 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     ether_addr_copy(eth->h_dest, dst_mac);
 
     skb->dev = dev;
-
-
-    print_hex_dump(KERN_DEBUG, "SKB MEM: ", DUMP_PREFIX_NONE, 32, 1,
-                   skb->head, total_len , 0);
 
 	return skb;
 }
