@@ -701,7 +701,10 @@ static void __exit asguard_connection_core_exit(void)
 
     asguard_wq_lock = 1;
 
+    mb();
+
     flush_workqueue(asguard_wq);
+
     destroy_workqueue(asguard_wq);
 
 	// MUST unregister asguard for drivers first
