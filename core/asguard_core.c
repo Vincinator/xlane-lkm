@@ -645,6 +645,7 @@ static int __init asguard_connection_core_init(void)
 
 	/* Allocate Workqueues */
 	asguard_wq = alloc_workqueue("asguard",  WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 0);
+    asguard_wq_lock = 0;
 
 
 	return 0;
