@@ -201,6 +201,10 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
 
     skb->dev = dev;
 
+
+    print_hex_dump(KERN_DEBUG, "SKB MEM: ", DUMP_PREFIX_NONE, 32, 1,
+                   skb->head, total_len , 0);
+
 	return skb;
 }
 EXPORT_SYMBOL(asguard_reserve_skb);
