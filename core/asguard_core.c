@@ -136,7 +136,6 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 	u16 cur_proto_id;
 	u16 cur_offset;
 	struct proto_instance *cur_ins;
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 	/* bcnt <= 0:
 	 *		no payload left to handle
@@ -174,16 +173,12 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 	if (!cur_ins) {
 		if (sdev->verbose >= 3)
 			asguard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
-        asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
     } else {
 		cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
 	}
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
-
 	// handle next payload
 	_handle_sub_payloads(sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset);
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 }
 
@@ -221,18 +216,14 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw = NULL;
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 	aw = container_of(w, struct asguard_pkt_work_data, work);
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
 		aw->received_proto_instances, aw->cqe_bcnt);
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 	if(aw)
 		kfree(aw);
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 }
 

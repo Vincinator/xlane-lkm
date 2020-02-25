@@ -347,14 +347,11 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 	struct asguard_device *sdev = priv->sdev;
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
 
 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 #if VERBOSE_DEBUG
 	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
@@ -366,13 +363,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		// param3 interpreted as lastLogIndex of Candidate
 		// param4 interpreted as lastLogTerm of Candidate
 	case VOTE:
-        asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
-
 		break;
 	case NOMI:
-        asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
-            param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
+	    param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 		if (check_handle_nomination(priv, param1, param2, param3, param4, rcluster_id, remote_lid)) {
@@ -380,18 +374,15 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		}
 		break;
 	case NOOP:
-        asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
         break;
 	case ALIVE:
-        asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
         param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 
 		/* Received an ALIVE operation from a node that claims to be the new leader
 		 */
 		if (param1 > priv->term) {
-            asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
             accept_leader(ins, remote_lid, rcluster_id, param1);
 			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
@@ -401,7 +392,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				asguard_dbg("Received ALIVE op from new leader with higher term=%d local term=%d\n", param1, priv->term);
 #endif
 		}
-        asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 		// Current Leader is commiting
 		if(param1 == priv->term && param2 != -1){
@@ -413,7 +403,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 				} else {
 					priv->sm_log.commit_idx = param2;
 					commit_log(priv);
-                    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
                 }
 			}
@@ -423,10 +412,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 		break;
 	case APPEND:
-        asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 		if(priv->leader_id != rcluster_id) {
-            asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
             // asguard_error("received APPEND from a node that is not accepted as leader \n");
 			break;
@@ -437,13 +424,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		if (param1 > priv->term) {
 			// accept_leader(ins, remote_lid, rcluster_id, param1);
 			// write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
-            asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
-            asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
             commit_log(priv);
-            asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received APPEND op from leader with higher term=%d local term=%d\n", param1, priv->term);
@@ -457,17 +441,13 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 * the timeout continue to go down).
 		 */
 		else if (param1 == priv->term) {
-            asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 			if (priv->leader_id == rcluster_id) {
-                asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
                 _handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
-                asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 				// Commit log!
 				commit_log(priv);
-                asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 
 // #if VERBOSE_DEBUG
@@ -477,7 +457,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			} else {
 #if VERBOSE_DEBUG
-                asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
                 if (sdev->verbose >= 1)
 					asguard_dbg("Received message from new leader (%d)! Leader changed but term did not update! term=%u\n",
@@ -490,7 +469,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 * Ignoring this LEAD operation and let the countdown continue to go down.
 		 */
 		else {
-            asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 5)

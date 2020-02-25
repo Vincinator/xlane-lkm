@@ -194,30 +194,25 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid, int rclus
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 	if (unlikely(!consensus_is_alive(priv)))
 		return 0;
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 	// safety check during debugging and development
 	if (unlikely(!ins)) {
 		asguard_dbg("proto instance is null!\n");
 		return 0;
 	}
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 	// safety check during debugging and development
 	if (unlikely(!priv)) {
 		asguard_dbg("private consensus data is null!\n");
 		return 0;
 	}
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
 	switch (priv->nstate) {
 	case FOLLOWER:
 	    follower_process_pkt(ins, remote_lid, rcluster_id, payload);
-        asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
         break;
 	case CANDIDATE:
@@ -230,7 +225,6 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid, int rclus
 		asguard_error("Unknown state - BUG\n");
 		break;
 	}
-    asguard_dbg("%s - %d", __FUNCTION__, __LINE__);
 
     return 0;
 }
