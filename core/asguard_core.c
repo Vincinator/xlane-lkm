@@ -703,7 +703,7 @@ static void __exit asguard_connection_core_exit(void)
 
     mb();
 
-    flush_workqueue(asguard_wq);
+    // flush_workqueue(asguard_wq);
 
     destroy_workqueue(asguard_wq);
 
