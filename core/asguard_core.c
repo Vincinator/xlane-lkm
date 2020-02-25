@@ -708,8 +708,6 @@ static void __exit asguard_connection_core_exit(void)
 			continue;
 		}
 
-        spin_lock_bh(&score->sdevices[i]->busylock);
-
 		asguard_stop(i);
 
         // clear all async queues
@@ -722,7 +720,6 @@ static void __exit asguard_connection_core_exit(void)
 
 		asguard_core_remove_nic(i);
 
-        spin_unlock_bh(&score->sdevices[i]->busylock);
 
 
         kfree(score->sdevices[i]);
