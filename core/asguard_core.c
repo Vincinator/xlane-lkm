@@ -5,6 +5,8 @@
 #include <linux/spinlock.h>
 #include <linux/kthread.h>
 #include <linux/mutex.h>
+#include <linux/ip.h>
+#include <linux/udp.h>
 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -233,10 +235,10 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 	struct asguard_pkt_work_data *work;
 	uint64_t ts2, ts3;
 	char *remote_mac = ((char *) payload) + headroom + 6;
-	char *user_data = ((char *) payload) + headroom + 42;
+	char *user_data = ((char *) payload) + headroom + ETH_HLEN + sizeof(struct iphdr) + sizeof(struct udphdr);
 
 
-   // asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);
+    asguard_dbg("cqe_bcnt=%u, SRC MAC=%pM", cqe_bcnt, remote_mac);
 
 	ts2 = RDTSC_ASGUARD;
 /*

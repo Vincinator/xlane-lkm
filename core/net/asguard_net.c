@@ -115,12 +115,12 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
     udp_len = asguard_len + sizeof(struct udphdr);
     ip_len = udp_len + sizeof(struct iphdr);
 
-    total_len = ip_len + LL_RESERVED_SPACE_EXTRA(dev,0);
+    total_len = ip_len;
 
     asguard_dbg("Allocating %d Bytes for SKB\n", total_len);
     asguard_dbg("asguard_len = %d Bytes\n", asguard_len);
 
-    asguard_dbg("LL_RESERVED_SPACE_EXTRA(dev,0) = %d Bytes\n", LL_RESERVED_SPACE_EXTRA(dev,0));
+  //  asguard_dbg("LL_RESERVED_SPACE_EXTRA(dev,0) = %d Bytes\n", LL_RESERVED_SPACE_EXTRA(dev,0));
 
     // head == data == tail
     // end = head + allocated skb size
@@ -133,10 +133,10 @@ struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned
 
     refcount_set(&skb->users, 1);
 
-    // data == tail == head + LL_RESERVED_SPACE_EXTRA(dev, 0) + ETH_HLEN + sizeof(struct iphdr)+ sizeof(struct udphdr)
+    // data == tail == head + ETH_HLEN + sizeof(struct iphdr)+ sizeof(struct udphdr)
     // end = head + allocated skb size
     // reserving headroom for header to expand
-    skb_reserve(skb,   LL_RESERVED_SPACE_EXTRA(dev, 0) + ETH_HLEN + sizeof(struct iphdr)+ sizeof(struct udphdr));
+    skb_reserve(skb,   ETH_HLEN + sizeof(struct iphdr)+ sizeof(struct udphdr));
 
     skb->dev = dev;
 
