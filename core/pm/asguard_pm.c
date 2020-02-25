@@ -260,8 +260,7 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 
 	if(spminfo->pm_targets[i].lhb_ts == spminfo->pm_targets[i].chb_ts) {
 		if (sdev->verbose && sdev->warmup_state == WARMED_UP){
-			asguard_dbg("Node %d is considered dead. \n lhb_ts = %llu \n chb_ts = %llu \n, cluster_id=%d",
-					i, spminfo->pm_targets[i].lhb_ts, spminfo->pm_targets[i].chb_ts, spminfo->pm_targets[i].pkt_data.naddr.cluster_id );
+			asguard_dbg("Node %d is considered dead - cluster_id=%d\n", i, spminfo->pm_targets[i].pkt_data.naddr.cluster_id);
 		}
 		spminfo->pm_targets[i].alive = 0;
 		spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
@@ -354,7 +353,7 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 	struct net_device *ndev = sdev->ndev;
 	enum tsstate ts_state = sdev->ts_state;
 
-    asguard_error("Emit HBs!\n");
+    asguard_error("Emit HBs! CPU=%d\n", smp_processor_id());
 
 	/* Prepare heartbeat packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
@@ -637,6 +636,8 @@ static int asguard_pm_loop(void *data)
 
 		cur_time = RDTSC_ASGUARD;
 
+        out_of_sched_hb = 0;
+        async_pkts = 0;
 		scheduled_hb = scheduled_tx(prev_time, cur_time, interval);
 
 		if(scheduled_hb)
@@ -664,7 +665,6 @@ emit:
             err = _emit_pkts_scheduled(sdev, spminfo);
 		} else if (out_of_sched_hb){
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
-
         } else if (async_pkts) {
 			err = _emit_async_pkts(sdev, spminfo);
 		}

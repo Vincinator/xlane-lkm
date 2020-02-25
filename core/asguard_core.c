@@ -705,9 +705,7 @@ static void __exit asguard_connection_core_exit(void)
 
     // flush_workqueue(asguard_wq);
 
-    destroy_workqueue(asguard_wq);
-
-	// MUST unregister asguard for drivers first
+    // MUST unregister asguard for drivers first
 	unregister_asguard();
 
 	if(!score){
@@ -720,7 +718,6 @@ static void __exit asguard_connection_core_exit(void)
 		if(!score->sdevices[i]) {
 			continue;
 		}
-
 		asguard_stop(i);
 
         // clear all async queues
@@ -733,14 +730,13 @@ static void __exit asguard_connection_core_exit(void)
 
 		asguard_core_remove_nic(i);
 
-
-
         kfree(score->sdevices[i]);
 
     }
-    
 
-	if(score->sdevices)
+    destroy_workqueue(asguard_wq);
+
+    if(score->sdevices)
         kfree(score->sdevices);
 
 	if(score)

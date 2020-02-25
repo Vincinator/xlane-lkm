@@ -24,14 +24,15 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 
 #if 1
 	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
+		asguard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n, CPU=%d",
 			nstate_string(priv->nstate),
 			RDTSC_ASGUARD,
 			priv->term,
 			append_success,
 			param1,
 			logged_idx,
-			priv->sm_log.stable_idx);
+			priv->sm_log.stable_idx,
+			smp_processor_id());
 #endif
     mutex_lock(&spminfo->pm_targets[remote_lid].pkt_data.pkt_lock);
 
