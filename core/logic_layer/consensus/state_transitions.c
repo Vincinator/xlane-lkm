@@ -22,7 +22,9 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 {
 	struct asguard_payload *pkt_payload;
 	char *pkt_payload_sub;
+
     mutex_lock(&spminfo->pm_targets[target_id].pkt_data.pkt_lock);
+
     pkt_payload =
 		spminfo->pm_targets[target_id].pkt_data.pkt_payload;
 
