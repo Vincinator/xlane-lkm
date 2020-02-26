@@ -224,7 +224,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	prev_log_term = _get_prev_log_term(cur_priv, next_index - 1);
 
 	if (prev_log_term < 0) {
-		asguard_error("BUG! - prev_log_term is invalid\n");
+		asguard_error("BUG! - prev_log_term is invalid. next_index=%d, retrans=%d, target_id=%d\n", next_index, retrans, target_id );
 		return -1;
 	}
 
@@ -342,6 +342,8 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
                 continue;
             }
 
+            asguard_dbg("Calling setup_append_msg with next_index=%d, retrans=%d, target_id=%d", next_index, retrans, target_id);
+
             ret = setup_append_msg(cur_priv,
                             apkt->payload,
                             sdev->protos[j]->instance_id,
@@ -443,6 +445,7 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 	s32 next_index = -1;
 	struct retrans_request *cur_rereq = NULL;
 
+    rmb();
 
 	write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
@@ -461,11 +464,13 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 		cur_priv->sm_log.retrans_entries[target_id]--;
 
 		next_index = cur_rereq->request_idx;
-		list_del(&cur_rereq->retrans_req_head);
+        asguard_dbg("Retransmitting planned for next_index=%d", next_index);
+        list_del(&cur_rereq->retrans_req_head);
 		kfree(cur_rereq);
 		*retrans = 1;
 	} else {
 		next_index = _get_next_idx(cur_priv, target_id);
+        asguard_dbg("Normal transmit planned for next_index=%d", next_index);
 
 		*retrans = 0;
 	}
