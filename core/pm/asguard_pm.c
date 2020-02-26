@@ -509,8 +509,6 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
 	int i;
  	struct asguard_async_pkt *cur_apkt;
 
-    asguard_dbg(" _emit_async_pkts\n");
-
     for (i = 0; i < spminfo->num_of_targets; i++) {
 		if(spminfo->pm_targets[i].aapriv->doorbell > 0) {
 

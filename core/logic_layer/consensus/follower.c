@@ -35,8 +35,6 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 			smp_processor_id());
 #endif
 
-    asguard_dbg("Lager - start creation of reply append!\n");
-
     spin_lock(&spminfo->pm_targets[remote_lid].pkt_data.pkt_lock);
 
 	pkt_payload =
@@ -49,7 +47,6 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	if (!pkt_payload_sub) {
 		asguard_error("Sassy packet full!\n");
         spin_unlock(&spminfo->pm_targets[remote_lid].pkt_data.pkt_lock);
-        asguard_dbg("Regal - end creation of reply append!\n");
         return;
     }
 
@@ -61,9 +58,6 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 		write_log(&ins->logger, REPLY_APPEND_SUCCESS, RDTSC_ASGUARD);
 	else
 		write_log(&ins->logger, REPLY_APPEND_FAIL, RDTSC_ASGUARD);
-
-    asguard_dbg("Regal - end creation of reply append!\n");
-
 
 }
 void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32 param1, s32 param2)

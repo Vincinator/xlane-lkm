@@ -81,9 +81,6 @@ int enqueue_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard_as
 
     write_unlock(&aqueue->queue_rwlock);
 
-
-    asguard_dbg("Packet enqueued\n");
-
     return 0;
 }
 EXPORT_SYMBOL(enqueue_async_pkt);
@@ -114,7 +111,6 @@ EXPORT_SYMBOL(push_front_async_pkt);
 
     if(queued_apkt != NULL) {
         list_del(&queued_apkt->async_pkts_head);
-        asguard_dbg("Packet dequeued\n");
     }else {
         asguard_dbg("apkt is NULL. \n");
     }
@@ -139,8 +135,7 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
 
     if(!apkt->payload) {
         asguard_error("Could not allocate SKB!\n");
-    } else {
-        asguard_dbg("Packet reserved\n");
+        return NULL;
     }
 
     memset(apkt->payload, 0, sizeof(struct asguard_payload));
@@ -154,8 +149,6 @@ EXPORT_SYMBOL(create_async_pkt);
 void ring_aa_doorbell(struct asguard_async_queue_priv *aqueue) 
 {
     aqueue->doorbell++;
-    asguard_dbg("Doorbell rung\n");
-
 }
 EXPORT_SYMBOL(ring_aa_doorbell);
 
