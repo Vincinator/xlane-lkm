@@ -179,7 +179,7 @@ struct consensus_priv {
 
 
 	struct state_machine_cmd_log sm_log;
-	//struct asguard_logger throughput_logger;
+	struct asguard_logger throughput_logger;
 
 };
 

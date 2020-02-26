@@ -56,7 +56,7 @@ int consensus_init(struct proto_instance *ins)
 	// requires "proto_instances/%d"
     init_logger(&ins->logger, ins->instance_id, priv->sdev->ifindex, "consensus_le");
 
-   // init_logger(&priv->throughput_logger, ins->instance_id, priv->sdev->ifindex, "consensus_throughput");
+    init_logger(&priv->throughput_logger, ins->instance_id, priv->sdev->ifindex, "consensus_throughput");
 
 
 	return 0;
@@ -147,7 +147,7 @@ int consensus_clean(struct proto_instance *ins)
 
 	clear_logger(&ins->logger);
 
-	//clear_logger(&priv->throughput_logger);
+	clear_logger(&priv->throughput_logger);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
 		 priv->sdev->ifindex, ins->instance_id);

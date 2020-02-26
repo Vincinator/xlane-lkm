@@ -113,6 +113,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 
 	struct retrans_request *new_req, *entry, *tmp_entry;
 
+	rmb();
 	write_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
 	list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
@@ -123,7 +124,6 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 		}
     }
 
-	asguard_dbg ("\t new request idx = %d\n" , retrans_idx);
     // freed by clean_request_transmission_lists
 	new_req = (struct retrans_request *)
 		kmalloc(sizeof(struct retrans_request), GFP_KERNEL);
@@ -135,7 +135,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 
 	new_req->request_idx = retrans_idx;
 
-	// asguard_dbg(" Added request idx %d to list %d \n",retrans_idx, remote_lid);
+	asguard_dbg(" Added request idx %d to list for target=%d \n", retrans_idx, remote_lid);
 
 	list_add_tail(&(new_req->retrans_req_head), &priv->sm_log.retrans_head[remote_lid]);
 	priv->sm_log.num_retransmissions[remote_lid]++;
