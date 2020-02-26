@@ -413,7 +413,7 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
 		target_fire[i] = spminfo->pm_targets[i].fire;
-        mutex_lock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
+        spin_lock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
     }
 
 	/* Prepare heartbeat packets */
@@ -448,7 +448,7 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 
 		// after alive msg has been added, the current active buffer can be used again
 		spminfo->pm_targets[i].fire = 0;
-        mutex_unlock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
+        spin_unlock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
 
 	}
 

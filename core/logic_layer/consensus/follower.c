@@ -37,7 +37,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 
     asguard_dbg("Lager - start creation of reply append!\n");
 
-    mutex_lock(&spminfo->pm_targets[remote_lid].pkt_data.pkt_lock);
+    spin_lock(&spminfo->pm_targets[remote_lid].pkt_data.pkt_lock);
 
 	pkt_payload =
 		spminfo->pm_targets[remote_lid].pkt_data.pkt_payload;
@@ -48,14 +48,14 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 
 	if (!pkt_payload_sub) {
 		asguard_error("Sassy packet full!\n");
-        mutex_unlock(&spminfo->pm_targets[remote_lid].pkt_data.pkt_lock);
+        spin_unlock(&spminfo->pm_targets[remote_lid].pkt_data.pkt_lock);
         asguard_dbg("Regal - end creation of reply append!\n");
         return;
     }
 
 	set_le_opcode((unsigned char *)pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx, priv->sm_log.stable_idx);
 
-	mutex_unlock(&spminfo->pm_targets[remote_lid].pkt_data.pkt_lock);
+    spin_unlock(&spminfo->pm_targets[remote_lid].pkt_data.pkt_lock);
 
 	if (append_success)
 		write_log(&ins->logger, REPLY_APPEND_SUCCESS, RDTSC_ASGUARD);
