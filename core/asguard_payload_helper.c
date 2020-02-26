@@ -172,13 +172,13 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 	}
 
 	if (idx > cur_priv->sm_log.last_idx) {
-		asguard_dbg("idx > cur_priv->sm_log.last_id %d\n", idx);
+		asguard_dbg("idx %d > cur_priv->sm_log.last_id (%d) \n", idx, cur_priv->sm_log.last_idx);
 
 		return -1;
 	}
 
 	if (idx > MAX_CONSENSUS_LOG) {
-		asguard_dbg("BUG! idx > MAX_CONSENSUS_LOG. %d\n", idx);
+		asguard_dbg("BUG! idx (%d) > MAX_CONSENSUS_LOG (%d) \n", idx, MAX_CONSENSUS_LOG);
 		return -1;
 	}
 
