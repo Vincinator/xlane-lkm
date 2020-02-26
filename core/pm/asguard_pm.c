@@ -448,9 +448,12 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 
 		// after alive msg has been added, the current active buffer can be used again
 		spminfo->pm_targets[i].fire = 0;
-        spin_unlock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
 
 	}
+
+    for (i = 0; i < spminfo->num_of_targets; i++) {
+        spin_unlock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
+    }
 
 	return 0;
 }
