@@ -411,6 +411,7 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 	struct net_device *ndev = sdev->ndev;
 	int target_fire[MAX_NODE_ID];
 
+	/* Storing fire and locking ALL pkt locks */
     for (i = 0; i < spminfo->num_of_targets; i++) {
 		target_fire[i] = spminfo->pm_targets[i].fire;
         spin_lock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
@@ -450,7 +451,7 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		spminfo->pm_targets[i].fire = 0;
 
 	}
-
+    /* Unlocking ALL pkt locks */
     for (i = 0; i < spminfo->num_of_targets; i++) {
         spin_unlock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
     }
