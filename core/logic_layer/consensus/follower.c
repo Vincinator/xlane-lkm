@@ -245,6 +245,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	u16 pkt_size;
 	int unstable = 0;
 	int start_idx;
+    asguard_dbg("Ketchup - start _handle_append_rpc\n");
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
@@ -277,7 +278,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	mutex_lock(&priv->sm_log.mlock);
 	if(*prev_log_idx < priv->sm_log.stable_idx){
 		mutex_unlock(&priv->sm_log.mlock);
-		return;
+        asguard_dbg("Mayo - end _handle_append_rpc\n");
+
+        return;
 	}
 
 	if(*prev_log_idx > priv->sm_log.stable_idx) {
@@ -329,16 +332,21 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
-	return;
+    asguard_dbg("Mayo - end _handle_append_rpc\n");
+
+    return;
 reply_retransmission:
 	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
+    asguard_dbg("Mayo - end _handle_append_rpc\n");
 	return;
 reply_false_unlock:
 	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
+    asguard_dbg("Mayo - end _handle_append_rpc\n");
+
 }
 EXPORT_SYMBOL(_handle_append_rpc);
 
@@ -349,7 +357,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		(struct consensus_priv *)ins->proto_data;
 	struct asguard_device *sdev = priv->sdev;
 
-	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
+    asguard_dbg("Free - started follower process pkt\n");
+
+
+    u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
 
 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
@@ -486,6 +497,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", rcluster_id, opcode);
 
 	}
+
+    asguard_dbg("Beer - ended follower process pkt\n");
 
 	return 0;
 }
