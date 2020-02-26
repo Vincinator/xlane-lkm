@@ -259,7 +259,9 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		if(!retrans)
 			cur_priv->sm_log.next_index[target_id] += num_entries;
 
-
+	} else {
+	    asguard_dbg(" Nothing to replicate in regular mode\n");
+	    return 0;
 	}
 
     asguard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
