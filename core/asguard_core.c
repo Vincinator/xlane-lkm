@@ -175,16 +175,12 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 			asguard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
 
     } else {
-        asguard_dbg("Haju about to post payload\n");
         cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
-        asguard_dbg("Heju posted payload");
-
     }
 	// handle next payload
 	_handle_sub_payloads(sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset);
 
 }
-
 
 int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 {
@@ -220,7 +216,6 @@ void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw = NULL;
 
-	asguard_dbg("Bibup Enter pkt Process handler\n");
 	aw = container_of(w, struct asguard_pkt_work_data, work);
 
     if(asguard_wq_lock) {
@@ -234,8 +229,6 @@ void pkt_process_handler(struct work_struct *w) {
 exit:
 	if(aw)
 		kfree(aw);
-    asguard_dbg("Babup Leave pkt Process handler\n");
-
 }
 
 #define ASG_ETH_HEADER_SIZE 14

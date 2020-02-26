@@ -252,14 +252,12 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	u16 pkt_size;
 	int unstable = 0;
 	int start_idx;
-    asguard_dbg("Ketchup - start _handle_append_rpc\n");
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
 	priv->sdev->pminfo.pm_targets[remote_lid].received_log_replications++;
 
 	if (num_entries == 0) {
-        asguard_dbg("Mayo - end _handle_append_rpc\n");
         return;    // no reply if nothing to append!
     }
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
@@ -286,8 +284,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	mutex_lock(&priv->sm_log.mlock);
 	if(*prev_log_idx < priv->sm_log.stable_idx){
 		mutex_unlock(&priv->sm_log.mlock);
-        asguard_dbg("Mayo - end _handle_append_rpc\n");
-
         return;
 	}
 
@@ -340,21 +336,16 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
-    asguard_dbg("Mayo - end _handle_append_rpc\n");
-
     return;
 reply_retransmission:
 	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
-    asguard_dbg("Mayo - end _handle_append_rpc\n");
 	return;
 reply_false_unlock:
 	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
-    asguard_dbg("Mayo - end _handle_append_rpc\n");
-
 }
 EXPORT_SYMBOL(_handle_append_rpc);
 
@@ -364,9 +355,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 	struct asguard_device *sdev = priv->sdev;
-
-    asguard_dbg("Free - started follower process pkt\n");
-
 
     u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
@@ -393,13 +381,11 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		if (check_handle_nomination(priv, param1, param2, param3, param4, rcluster_id, remote_lid)) {
 			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}
-        asguard_dbg("Walldorf - received ALIVE\n");
         break;
 	case NOOP:
 
         break;
 	case ALIVE:
-        asguard_dbg("Moskau - received ALIVE\n");
 
         param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 
@@ -432,14 +418,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		}
 
 		/* Ignore other cases for ALIVE operation*/
-        asguard_dbg("Petersburg - received ALIVE\n");
-
 		break;
 	case APPEND:
-        asguard_dbg("Mailand - received APPEND\n");
 
 		if(priv->leader_id != rcluster_id) {
-            asguard_dbg("Madrid - received APPEND\n");
 
             // asguard_error("received APPEND from a node that is not accepted as leader \n");
 			break;
@@ -506,15 +488,12 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			// Ignore this LEAD message, let the ftimer continue.
 		}
-        asguard_dbg("Madrid - received APPEND\n");
 
         break;
 	default:
 		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", rcluster_id, opcode);
 
 	}
-
-    asguard_dbg("Beer - ended follower process pkt\n");
 
 	return 0;
 }
