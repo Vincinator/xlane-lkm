@@ -105,12 +105,9 @@ void clear_logger(struct asguard_logger *slog)
 			slog->ifindex, slog->instance_id, slog->name);
 
 	remove_proc_entry(name_buf, NULL);
-    asguard_error("%s - %d\n",__FUNCTION__,  __LINE__);
 
 	if(slog->events)
 	    kfree(slog->events);
-
-    asguard_error("%s - %d\n",__FUNCTION__,  __LINE__);
 
 }
 EXPORT_SYMBOL(clear_logger);
