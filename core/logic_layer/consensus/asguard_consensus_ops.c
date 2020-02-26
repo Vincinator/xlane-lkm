@@ -213,7 +213,6 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid, int rclus
 	switch (priv->nstate) {
 	case FOLLOWER:
 	    follower_process_pkt(ins, remote_lid, rcluster_id, payload);
-
         break;
 	case CANDIDATE:
 		candidate_process_pkt(ins, remote_lid, rcluster_id,  payload);

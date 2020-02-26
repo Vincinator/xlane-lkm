@@ -251,9 +251,10 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	priv->sdev->pminfo.pm_targets[remote_lid].received_log_replications++;
 
-	if (num_entries == 0)
-		return;	// no reply if nothing to append!
-
+	if (num_entries == 0) {
+        asguard_dbg("Mayo - end _handle_append_rpc\n");
+        return;    // no reply if nothing to append!
+    }
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
@@ -377,6 +378,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case VOTE:
 		break;
 	case NOMI:
+        asguard_dbg("Berlin - received ALIVE\n");
 
 	    param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
@@ -384,11 +386,13 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		if (check_handle_nomination(priv, param1, param2, param3, param4, rcluster_id, remote_lid)) {
 			reply_vote(ins, remote_lid, rcluster_id, param1, param2);
 		}
-		break;
+        asguard_dbg("Walldorf - received ALIVE\n");
+        break;
 	case NOOP:
 
         break;
 	case ALIVE:
+        asguard_dbg("Moskau - received ALIVE\n");
 
         param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 
@@ -421,11 +425,14 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		}
 
 		/* Ignore other cases for ALIVE operation*/
+        asguard_dbg("Petersburg - received ALIVE\n");
 
 		break;
 	case APPEND:
+        asguard_dbg("Mailand - received APPEND\n");
 
 		if(priv->leader_id != rcluster_id) {
+            asguard_dbg("Madrid - received APPEND\n");
 
             // asguard_error("received APPEND from a node that is not accepted as leader \n");
 			break;
@@ -492,7 +499,9 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			// Ignore this LEAD message, let the ftimer continue.
 		}
-		break;
+        asguard_dbg("Madrid - received APPEND\n");
+
+        break;
 	default:
 		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", rcluster_id, opcode);
 
