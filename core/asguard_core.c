@@ -175,8 +175,11 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 			asguard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
 
     } else {
-		cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
-	}
+        asguard_dbg("Haju about to post payload\n");
+        cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
+        asguard_dbg("Heju posted payload");
+
+    }
 	// handle next payload
 	_handle_sub_payloads(sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset);
 
@@ -217,8 +220,7 @@ void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw = NULL;
 
-
-
+	asguard_dbg("Bibup Enter pkt Process handler\n");
 	aw = container_of(w, struct asguard_pkt_work_data, work);
 
     if(asguard_wq_lock) {
@@ -232,6 +234,7 @@ void pkt_process_handler(struct work_struct *w) {
 exit:
 	if(aw)
 		kfree(aw);
+    asguard_dbg("Babup Leave pkt Process handler\n");
 
 }
 
@@ -516,28 +519,20 @@ void clear_protocol_instances(struct asguard_device *sdev)
 	}
 
 	for (i = 0; i < sdev->num_of_proto_instances; i++) {
-        
-
 
 		if (!sdev->protos[i])
 			continue;
 
-        
-
 		if (sdev->protos[i]->ctrl_ops.clean != NULL) {
 			sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
 		}
-        
 
 		// timer are not finished yet!?
 		if(sdev->protos[i]->proto_data)
 		    kfree(sdev->protos[i]->proto_data);
-        
 
 		if(!sdev->protos[i])
 		    kfree(sdev->protos[i]); // is non-NULL, see continue condition above
-
-        
 
 
 	}
@@ -710,8 +705,9 @@ static void __exit asguard_connection_core_exit(void)
     asguard_wq_lock = 1;
 
     mb();
+    flush_workqueue(asguard_wq);
 
-    // flush_workqueue(asguard_wq);
+    asguard_dbg("flushed wq\n");
 
     // MUST unregister asguard for drivers first
 	unregister_asguard();
@@ -743,6 +739,7 @@ static void __exit asguard_connection_core_exit(void)
     }
 
     destroy_workqueue(asguard_wq);
+    asguard_dbg("destroyed wq\n");
 
     if(score->sdevices)
         kfree(score->sdevices);
