@@ -320,9 +320,6 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 		return -1; // Current target is not alive!
 	}
 
-    asguard_dbg("do log rep setup and write to skb in this function. \n");
-
-
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
 
@@ -420,15 +417,12 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	/* not ready to prepare log replication */
 	if(more < 0){
-		asguard_dbg("skipping reschedule - more=%d\n", more);
 		goto cleanup;
 	}
 
 	if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
 		check_pending_log_rep_for_target(aw->sdev, aw->target_id);
-	} else
-		asguard_dbg("nothing to schedule\n");
-
+	}
 
 cleanup:
     if(aw)

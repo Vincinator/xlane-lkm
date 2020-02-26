@@ -93,8 +93,6 @@ int push_front_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard
     list_add(&apkt->async_pkts_head, &aqueue->head_of_async_pkt_queue);
     write_unlock(&aqueue->queue_rwlock);
 
-    asguard_dbg("Packet pushed to front of queue\n");
-
     return 0;
 
 }
@@ -139,8 +137,6 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
     }
 
     memset(apkt->payload, 0, sizeof(struct asguard_payload));
-
-    asguard_dbg("Created async packet! \n");
 
     return apkt;
 }
