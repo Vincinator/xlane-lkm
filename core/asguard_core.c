@@ -217,11 +217,19 @@ void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw = NULL;
 
+
+
 	aw = container_of(w, struct asguard_pkt_work_data, work);
+
+    if(asguard_wq_lock) {
+        asguard_dbg("drop handling of received packet - asguard shut down \n");
+        goto exit;
+    }
 
 	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
 		aw->received_proto_instances, aw->cqe_bcnt);
 
+exit:
 	if(aw)
 		kfree(aw);
 
@@ -290,8 +298,8 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 
 	if(asguard_wq_lock){
 	    asguard_dbg("Asguard is shutting down, ignoring packet\n");
+	    kfree(work);
         return;
-
     }
 
 	INIT_WORK(&work->work, pkt_process_handler);

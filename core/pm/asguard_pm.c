@@ -353,8 +353,6 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 	struct net_device *ndev = sdev->ndev;
 	enum tsstate ts_state = sdev->ts_state;
 
-    asguard_error("Emit HBs! CPU=%d\n", smp_processor_id());
-
 	/* Prepare heartbeat packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
