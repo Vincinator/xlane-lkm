@@ -260,8 +260,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 			cur_priv->sm_log.next_index[target_id] += num_entries;
 
 	} else {
-	    asguard_dbg(" Nothing to replicate in regular mode\n");
-	    return 0;
+	    return -2;
 	}
 
     asguard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
@@ -350,6 +349,14 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
                             next_index,
                             retrans);
 
+            // setup_append_msg stopped due to nothing was to replicate in normal mode
+            if(ret == -2){
+                kfree(apkt->payload);
+                kfree(apkt);
+                continue;
+            }
+
+            // handle other errors
             if(ret < 0) {
                 asguard_error("setup append msg failed\n");
                 return ret;
