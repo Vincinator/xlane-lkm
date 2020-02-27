@@ -112,7 +112,11 @@ struct state_machine_cmd_log {
 
 	struct mutex mlock;
 
-	struct sm_log_entry **entries;
+	/* Lock to prevent creation of multiple append entries for the same next_index */
+    struct mutex next_lock;
+
+
+    struct sm_log_entry **entries;
 
 };
 

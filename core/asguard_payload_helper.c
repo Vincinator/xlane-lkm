@@ -215,9 +215,19 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	// Check if entries must be appended
 	local_last_idx = _get_last_idx_safe(cur_priv);
 
-	if (next_index == -1) {
+
+	/* Update next_index inside next_lock critical section */
+    if(!retrans){
+        mutex_lock(&cur_priv->sm_log.next_lock);
+        next_index = _get_next_idx(cur_priv, target_id);
+    }
+
+
+    if (next_index == -1) {
 		asguard_dbg("Invalid target id resulted in invalid next_index!\n");
-		return -1;
+        if(!retrans)
+            mutex_unlock(&cur_priv->sm_log.next_lock);
+        return -1;
 	}
 
 	// asguard_dbg("PREP AE: local_last_idx=%d, next_index=%d\n", local_last_idx, next_index);
@@ -225,7 +235,9 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 	if (prev_log_term < 0) {
 		asguard_error("BUG! - prev_log_term is invalid. next_index=%d, retrans=%d, target_id=%d\n", next_index, retrans, target_id );
-		return -1;
+        if(!retrans)
+            mutex_unlock(&cur_priv->sm_log.next_lock);
+        return -1;
 	}
 
 	leader_commit_idx = cur_priv->sm_log.commit_idx;
@@ -248,20 +260,33 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
 		if(num_entries <= 0) {
 		    asguard_dbg("No entries to replicate\n");
-		    return -1;
+            if(!retrans)
+                mutex_unlock(&cur_priv->sm_log.next_lock);
+            return -1;
 		}
 
-		// update next_index without receiving the response from the target
-		// .. If the receiver rejects this append command, this node will set the
-		// .. the next_index to the last known safe index of the receivers log.
-		// .. In this implementation the receiver sends the last known safe index
-		// .. with the append reply.
+
+		/* Update next_index without receiving the response from the target.
+		 *
+		 * If the receiver rejects this append command, this node will set
+		 * the next_index to the last known safe index of the receivers log.
+		 *
+		 * The receiver sends the last known safe index with the append reply.
+		 *
+		 * next_index must be read and increased in within critical section of next_lock!
+		 * next_index is only updated if this is not a retransmission!
+		 */
 		if(!retrans)
 			cur_priv->sm_log.next_index[target_id] += num_entries;
 
 	} else {
-	    return -2;
+        if(!retrans)
+            mutex_unlock(&cur_priv->sm_log.next_lock);
+        return -2;
 	}
+
+    if(!retrans)
+        mutex_unlock(&cur_priv->sm_log.next_lock);
 
     asguard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
                 retrans,
@@ -276,8 +301,9 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		asguard_reserve_proto(instance_id, spay,
 						ASGUARD_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
-	if (!pkt_payload_sub)
-		return -1;
+	if (!pkt_payload_sub) {
+        return -1;
+    }
 
 	set_ae_data(pkt_payload_sub,
 		cur_priv->term,
@@ -412,10 +438,7 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 		return;
 	}
 
-
-
 }
-
 
 void prepare_log_replication_handler(struct work_struct *w)
 {
@@ -488,8 +511,6 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 	struct consensus_priv *cur_priv = NULL;
 	int j;
 
-
-
 	// TODO: utilise all protocol instances, currently only support for one consensus proto instance - the first
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
 		if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
@@ -524,6 +545,7 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 		asguard_dbg("nothing to send for target %d\n", target_id);
 		return;
 	}
+	// if not retransmission, increase next index!
 
 	// asguard_dbg("scheduling stuff... \n");
 
@@ -547,7 +569,3 @@ void check_pending_log_rep(struct asguard_device *sdev)
 
 }
 EXPORT_SYMBOL(check_pending_log_rep);
-
-
-
-
