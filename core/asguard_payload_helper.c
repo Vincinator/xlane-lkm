@@ -126,10 +126,12 @@ s32 _get_next_idx(struct consensus_priv *priv, int target_id)
 {
 	s32 next_index;
 
-	if (_check_target_id(priv, target_id))
-		next_index = priv->sm_log.next_index[target_id];
-	else
-		next_index = 0;
+	if (_check_target_id(priv, target_id)){
+        next_index = priv->sm_log.next_index[target_id];
+        if(next_index > priv->sm_log.last_idx)
+            next_index = -2;
+	} else
+		next_index = -2;
 
 	return next_index;
 }
@@ -220,7 +222,15 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
     if(!retrans){
         mutex_lock(&cur_priv->sm_log.next_lock);
         next_index = _get_next_idx(cur_priv, target_id);
+
+        if(next_index == -2) {
+            mutex_unlock(&cur_priv->sm_log.next_lock);
+            return -1;
+        }
+
     }
+
+
 
 
     if (next_index == -1) {
