@@ -225,7 +225,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 
         if(next_index == -2) {
             mutex_unlock(&cur_priv->sm_log.next_lock);
-            return -1;
+            return -2;
         }
 
     }
@@ -387,17 +387,11 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
                             next_index,
                             retrans);
 
-            // setup_append_msg stopped due to nothing was to replicate in normal mode
-            if(ret == -2){
+            // handle errors
+            if(ret < 0) {
                 kfree(apkt->payload);
                 kfree(apkt);
                 continue;
-            }
-
-            // handle other errors
-            if(ret < 0) {
-                asguard_error("setup append msg failed\n");
-                return ret;
             }
 
             more += ret;
@@ -544,10 +538,8 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 
 	next_index = get_next_idx_for_target(cur_priv, target_id, &retrans);
 
-	if(next_index < 0){
-	    asguard_dbg("next index is %d - Abort\n", next_index);
+	if(next_index < 0)
 	    return;
-	}
 
 	match_index = _get_match_idx(cur_priv, target_id);
 
@@ -555,9 +547,6 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 		asguard_dbg("nothing to send for target %d\n", target_id);
 		return;
 	}
-	// if not retransmission, increase next index!
-
-	// asguard_dbg("scheduling stuff... \n");
 
 	_schedule_log_rep(sdev, target_id, next_index, retrans);
 }
