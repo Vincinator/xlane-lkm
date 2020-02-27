@@ -491,14 +491,11 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 		cur_priv->sm_log.retrans_entries[target_id]--;
 
 		next_index = cur_rereq->request_idx;
-        asguard_dbg("Retransmitting planned for next_index=%d", next_index);
         list_del(&cur_rereq->retrans_req_head);
 		kfree(cur_rereq);
 		*retrans = 1;
 	} else {
 		next_index = _get_next_idx(cur_priv, target_id);
-        asguard_dbg("Normal transmit planned for next_index=%d", next_index);
-
 		*retrans = 0;
 	}
 
