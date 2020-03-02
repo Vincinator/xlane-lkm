@@ -355,7 +355,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
-	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
+	//log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
 
 	switch (opcode) {
 		// param1 interpreted as term
