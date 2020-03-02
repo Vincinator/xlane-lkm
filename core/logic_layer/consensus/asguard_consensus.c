@@ -277,7 +277,6 @@ struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
     cpriv->throughput_logger.instance_id = ins->instance_id;
     cpriv->throughput_logger.ifindex = sdev->ifindex;
     cpriv->throughput_logger.name = "consensus_throughput";
-    cpriv->throughput_logger.state = LOGGER_RUNNING; /* always runs */
 
     cpriv->state = LE_UNINIT;
     cpriv->ft_min = MIN_FTIMEOUT_NS;
