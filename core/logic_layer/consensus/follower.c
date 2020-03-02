@@ -262,9 +262,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	// TODO: check!
 	if(priv->sm_log.commit_idx > *prev_log_commit_idx)
-		asguard_dbg("Recevied commit index (%d) is lower than local commit idx (%d)\n ", *prev_log_commit_idx, priv->sm_log.commit_idx);
+		asguard_dbg("Received commit index (%d) is lower than local commit idx (%d)\n ", *prev_log_commit_idx, priv->sm_log.commit_idx);
 	else if(priv->sm_log.stable_idx < *prev_log_commit_idx)
-		asguard_dbg("Recevied commit index (%d) is higher than local stable idx (%d)\n ", *prev_log_commit_idx,priv->sm_log.stable_idx );
+		asguard_dbg("Received commit index (%d) is higher than local stable idx (%d)\n ", *prev_log_commit_idx,priv->sm_log.stable_idx );
 	else
 		priv->sm_log.commit_idx = *prev_log_commit_idx;
 
@@ -355,9 +355,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
-#if VERBOSE_DEBUG
 	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
-#endif
 
 	switch (opcode) {
 		// param1 interpreted as term
