@@ -22,7 +22,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 	char *pkt_payload_sub;
 	int hb_passive_ix;
 
-#if 1
+#if 0
 	if(priv->sdev->verbose)
 		asguard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n, CPU=%d",
 			nstate_string(priv->nstate),
@@ -413,10 +413,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		break;
 	case APPEND:
 
-        asguard_dbg("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
+/*        asguard_dbg("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
                    rcluster_id,
                    *GET_CON_AE_PREV_LOG_IDX_PTR(pkt),
-                   *GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt));
+                   *GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt));*/
 
         if(priv->leader_id != rcluster_id) {
 
