@@ -411,7 +411,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		break;
 	case APPEND:
 
-        asguard_log_le("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
+        asguard_dbg("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
                    rcluster_id,
                    *GET_CON_AE_PREV_LOG_IDX_PTR(pkt),
                    *GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt));
