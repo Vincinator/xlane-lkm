@@ -264,9 +264,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	// TODO: check!
 	if(priv->sm_log.commit_idx > *prev_log_commit_idx)
-		asguard_dbg("Received commit index (%d) is lower than local commit idx (%d)\n ", *prev_log_commit_idx, priv->sm_log.commit_idx);
+		asguard_dbg("Received commit index (%d) is lower than local commit idx (%d) - prev_log_idx=%d\n ", *prev_log_commit_idx, priv->sm_log.commit_idx, *prev_log_idx );
 	else if(priv->sm_log.stable_idx < *prev_log_commit_idx)
-		asguard_dbg("Received commit index (%d) is higher than local stable idx (%d)\n ", *prev_log_commit_idx,priv->sm_log.stable_idx );
+		asguard_dbg("Received commit index (%d) is higher than local stable idx (%d) - prev_log_idx=%d\n ", *prev_log_commit_idx,priv->sm_log.stable_idx, *prev_log_idx );
 	else
 		priv->sm_log.commit_idx = *prev_log_commit_idx;
 
