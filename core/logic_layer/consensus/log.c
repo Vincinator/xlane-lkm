@@ -22,7 +22,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
 	write_log(&priv->throughput_logger, applying, RDTSC_ASGUARD);
 
-//	asguard_dbg("Added %d commands to State Machine.\n", applying);
+	//asguard_dbg("Added %d commands to State Machine.\n", applying);
 
 	return 0;
 }
