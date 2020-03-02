@@ -365,8 +365,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	case VOTE:
 		break;
 	case NOMI:
-        asguard_dbg("Berlin - received ALIVE\n");
-
 	    param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
 		param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
 		param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
@@ -413,7 +411,12 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		break;
 	case APPEND:
 
-		if(priv->leader_id != rcluster_id) {
+        asguard_log_le("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
+                   rcluster_id,
+                   *GET_CON_AE_PREV_LOG_IDX_PTR(pkt),
+                   *GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt));
+
+        if(priv->leader_id != rcluster_id) {
 
             // asguard_error("received APPEND from a node that is not accepted as leader \n");
 			break;
