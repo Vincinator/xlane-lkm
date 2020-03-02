@@ -247,6 +247,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	int unstable = 0;
 	int start_idx;
 
+	mb();
+
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
 	priv->sdev->pminfo.pm_targets[remote_lid].received_log_replications++;

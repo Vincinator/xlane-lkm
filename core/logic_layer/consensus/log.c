@@ -32,6 +32,8 @@ int commit_log(struct consensus_priv *priv)
 	int err;
 	struct state_machine_cmd_log *log = &priv->sm_log;
 
+	mb();
+
 	write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, RDTSC_ASGUARD);
 
 	err = apply_log_to_sm(priv);
