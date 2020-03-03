@@ -338,6 +338,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
     return;
 reply_retransmission:
 	mutex_unlock(&priv->sm_log.mlock);
+
+	// TODO: wait until other pending workers are done, and check again if we need a retransmission!
+
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 	return;

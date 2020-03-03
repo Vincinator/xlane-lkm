@@ -115,7 +115,7 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 		if(!priv->sm_log.entries[i]){
 			cur_idx = i;
 
-			if (first_re_idx != -2)
+			if (first_re_idx == -2)
 				first_re_idx = i;
 
 			// we can use first found idx
