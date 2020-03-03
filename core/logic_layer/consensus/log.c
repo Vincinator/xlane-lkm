@@ -78,8 +78,8 @@ void update_stable_idx(struct consensus_priv *priv)
 			break;
 
 		priv->sm_log.stable_idx = i;
-		asguard_dbg("stable index is now: %d", priv->sm_log.stable_idx);
 	}
+
 }
 EXPORT_SYMBOL(update_stable_idx);
 
