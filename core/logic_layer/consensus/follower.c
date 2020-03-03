@@ -251,6 +251,18 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
+    asguard_dbg("APPEND from target %d\n "
+                "\t stable_idx = %d"
+                "\t commit_idx = %d"
+                "\t received entries [ %d - %d ]"
+                "\t CPU = %d",
+                rcluster_id,
+                priv->sm_log.stable_idx,
+                priv->sm_log.commit_idx,
+                prev_log_idx + 1,
+                prev_log_idx + 1 + num_entries,
+                smp_processor_id());
+
 	priv->sdev->pminfo.pm_targets[remote_lid].received_log_replications++;
 
 	if (num_entries == 0) {
