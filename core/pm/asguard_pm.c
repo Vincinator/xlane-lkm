@@ -528,7 +528,7 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             num_entries = GET_CON_AE_NUM_ENTRIES_VAL(cur_apkt->payload->proto_data);
             prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(cur_apkt->payload->proto_data);
 
-            asguard_dbg("Emitting %d entries, start_idx=%d", num_entries, *prev_log_idx);
+            asguard_dbg("Node: %d - Emitting %d entries, start_idx=%d", i, num_entries, *prev_log_idx);
 
             // update payload
             asguard_update_skb_payload(spminfo->pm_targets[i].skb_logrep, cur_apkt->payload);
