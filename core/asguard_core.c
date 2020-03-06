@@ -244,7 +244,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
 	// DEBUG
 	char payload= kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
-    payload = memcpy(payload, payload_in, sizeof(struct asguard_payload));
+    payload = memcpy(payload, payload_in, cqe_bcnt);
 
 
 	char *remote_mac = ((char *) payload) + headroom + 6;
@@ -253,12 +253,8 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
 	ts2 = RDTSC_ASGUARD;
 /*
-
-
-
     print_hex_dump(KERN_DEBUG, "user data: ", DUMP_PREFIX_NONE, 32, 1,
                    user_data, 16 , 0);
-
 */
 
 	if (unlikely(!sdev)) {
