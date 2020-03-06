@@ -244,7 +244,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
 	// DEBUG
 	char payload= kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
-    payload = memcpy(payload, payload_in, cqe_bcnt);
+    payload = memcpy(payload, (char *) payload_in, cqe_bcnt);
 
 
 	char *remote_mac = ((char *) payload) + headroom + 6;
