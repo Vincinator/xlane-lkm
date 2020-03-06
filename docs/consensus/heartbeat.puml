@@ -1,0 +1,34 @@
+@startuml
+participant leader
+collections follower
+
+
+
+leader->follower: ALIVE(leader_term, commit_idx)
+
+follower->follower: check term
+
+alt leader >= local_term
+
+    opt leader_term > local_term
+        follower->follower: set: local_term = leader_term
+    end
+
+    follower->follower: check commit_idx
+
+    alt commit_idx <= stable_commit_idx
+        follower->follower: set: local_commit_idx = commit_idx
+
+    else commit_idx > stable_commit_idx
+        follower->follower: Log Error 2.1.2
+    end
+else leader_term < local_term
+    follower->follower: Log Error 2.1.1
+
+end
+
+
+
+deactivate follower
+
+@enduml

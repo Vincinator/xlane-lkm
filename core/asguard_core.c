@@ -349,8 +349,10 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 		kmalloc(sizeof(struct asguard_device), GFP_KERNEL);
 
 	score->num_devices++;
-	score->sdevices[asguard_id]->ifindex = ifindex;
-	score->sdevices[asguard_id]->asguard_id = asguard_id;
+    score->sdevices[asguard_id]->ifindex = ifindex;
+    score->sdevices[asguard_id]->hb_interval = 0;
+
+    score->sdevices[asguard_id]->asguard_id = asguard_id;
 	score->sdevices[asguard_id]->ndev = asguard_get_netdevice(ifindex);
 	score->sdevices[asguard_id]->pminfo.num_of_targets = 0;
     score->sdevices[asguard_id]->pminfo.waiting_window = 100000;

@@ -663,6 +663,7 @@ emit:
 		if(scheduled_hb) {
             prev_time = cur_time;
             err = _emit_pkts_scheduled(sdev, spminfo);
+            sdev->hb_interval++; // todo: how to handle overflow?
 		} else if (out_of_sched_hb){
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
         } else if (async_pkts) {

@@ -351,6 +351,9 @@ struct proto_instance;
 
 struct asguard_device {
 	int ifindex; /* corresponds to ifindex of net_device */
+
+    u32 hb_interval;
+
 	int asguard_id;
 	int hold_fire;
 	int cur_leader_lid;

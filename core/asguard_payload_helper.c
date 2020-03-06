@@ -200,7 +200,7 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spa
 	if(!pkt_payload_sub)
 	    return -1;
 
-	set_le_opcode((unsigned char *)pkt_payload_sub, ALIVE, cur_priv->term, cur_priv->sm_log.commit_idx, 0, 0);
+	set_le_opcode((unsigned char *)pkt_payload_sub, ALIVE, cur_priv->term, cur_priv->sm_log.commit_idx, cur_priv->sm_log.stable_idx, cur_priv->sdev->hb_interval);
 
 	return 0;
 }
