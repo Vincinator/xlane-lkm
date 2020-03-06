@@ -378,7 +378,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
                 continue;
             }
 
-            asguard_dbg("Calling setup_append_msg with next_index=%d, retrans=%d, target_id=%d", next_index, retrans, target_id);
+           // asguard_dbg("Calling setup_append_msg with next_index=%d, retrans=%d, target_id=%d", next_index, retrans, target_id);
 
             ret = setup_append_msg(cur_priv,
                             apkt->payload,
