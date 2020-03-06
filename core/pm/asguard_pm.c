@@ -508,6 +508,8 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
 {
 	int i;
  	struct asguard_async_pkt *cur_apkt;
+ 	u32 num_entries;
+    s32 *prev_log_idx;
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
 		if(spminfo->pm_targets[i].aapriv->doorbell > 0) {
@@ -521,6 +523,12 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
                 asguard_error("pkt or skb is NULL! \n");
                 continue;
             }
+
+            // DEBUG: print emitted pkts
+            num_entries = GET_CON_AE_NUM_ENTRIES_VAL(cur_apkt->payload->proto_data);
+            prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(cur_apkt->payload->proto_data);
+
+            asguard_dbg("Emitting %d entries, start_idx=%d", num_entries, *prev_log_idx);
 
             // update payload
             asguard_update_skb_payload(spminfo->pm_targets[i].skb_logrep, cur_apkt->payload);
@@ -613,7 +621,6 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 }
 //#endif // ! CONFIG_KUNIT
 
-
 //#ifndef CONFIG_KUNIT
 static int asguard_pm_loop(void *data)
 {
@@ -625,7 +632,6 @@ static int asguard_pm_loop(void *data)
 	int scheduled_hb = 0;
 	int out_of_sched_hb = 0;
 	int async_pkts = 0;
-	int once = 0;
 
     asguard_dbg(" starting pacemaker \n");
 
@@ -646,17 +652,8 @@ static int asguard_pm_loop(void *data)
 
 		/* If in Sync Window, do not send anything until the Heartbeat has been sent */
 		if (!check_async_window(prev_time, cur_time, interval, spminfo->waiting_window)) {
-		    if(!once){
-		        asguard_dbg("waiting window start \n");
-		        once = 1;
-		    }
             continue;
         }
-
-		if(once) {
-		    asguard_dbg("waiting window end \n");
-		    once = 0;
-		}
 
 		out_of_sched_hb = out_of_schedule_tx(sdev);
 
