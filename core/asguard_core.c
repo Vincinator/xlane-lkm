@@ -233,7 +233,7 @@ exit:
 
 #define ASG_ETH_HEADER_SIZE 14
 
-void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_bcnt)
+void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct pminfo *spminfo = &sdev->pminfo;
@@ -241,6 +241,12 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 	u16 received_proto_instances;
 	struct asguard_pkt_work_data *work;
 	uint64_t ts2, ts3;
+
+	// DEBUG
+	char payload= kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
+    payload = memcpy(payload, payload_in, sizeof(struct asguard_payload));
+
+
 	char *remote_mac = ((char *) payload) + headroom + 6;
 	char *user_data = ((char *) payload) + headroom + ETH_HLEN + sizeof(struct iphdr) + sizeof(struct udphdr);
 
