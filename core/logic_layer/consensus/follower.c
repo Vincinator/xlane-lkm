@@ -278,9 +278,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	 * A stable index points to the last entry in the the log, where
 	 * all previous entries exist (stable is not necessarily commited!).
 	 */
-	//mutex_lock(&priv->sm_log.mlock);
+	mutex_lock(&priv->sm_log.mlock);
 	if(*prev_log_idx < priv->sm_log.stable_idx){
-		//mutex_unlock(&priv->sm_log.mlock);
+		mutex_unlock(&priv->sm_log.mlock);
         return;
 	}
 
@@ -330,12 +330,12 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_retransmission;
 
 // default: reply success
-	//mutex_unlock(&priv->sm_log.mlock);
+	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
     return;
 reply_retransmission:
-	//mutex_unlock(&priv->sm_log.mlock);
+	mutex_unlock(&priv->sm_log.mlock);
 
 	// TODO: wait until other pending workers are done, and check again if we need a retransmission!
     asguard_dbg("suppressed retransmission\n");
@@ -343,7 +343,7 @@ reply_retransmission:
 	//priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 	return;
 reply_false_unlock:
-	//mutex_unlock(&priv->sm_log.mlock);
+	mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 }

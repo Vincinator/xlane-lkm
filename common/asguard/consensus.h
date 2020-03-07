@@ -110,7 +110,7 @@ struct state_machine_cmd_log {
 
 	//spinlock_t slock;
 
-	//struct mutex mlock;
+	struct mutex mlock;
 
 	/* Lock to prevent creation of multiple append entries for the same next_index */
     struct mutex next_lock;
