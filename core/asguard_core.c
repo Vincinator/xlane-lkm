@@ -233,23 +233,17 @@ exit:
 
 #define ASG_ETH_HEADER_SIZE 14
 
-void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cqe_bcnt)
+void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct pminfo *spminfo = &sdev->pminfo;
 	int remote_lid, rcluster_id;
 	u16 received_proto_instances;
-	struct asguard_pkt_work_data *work;
+	// struct asguard_pkt_work_data *work;
 	uint64_t ts2, ts3;
-
-	// DEBUG
-	char payload= kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
-    payload = memcpy(payload, (char *) payload_in, cqe_bcnt);
-
 
 	char *remote_mac = ((char *) payload) + headroom + 6;
 	char *user_data = ((char *) payload) + headroom + ETH_HLEN + sizeof(struct iphdr) + sizeof(struct udphdr);
-
 
 	ts2 = RDTSC_ASGUARD;
 /*
@@ -284,6 +278,10 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(user_data);
 
+    _handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(payload),
+                         received_proto_instances, cqe_bcnt);
+
+/*
     // freed by pkt_process_handler
     work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
 
@@ -303,7 +301,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	INIT_WORK(&work->work, pkt_process_handler);
 	if(!queue_work(asguard_wq, &work->work)) {
 		asguard_dbg("Work item not put in query..");
-	}
+	}*/
 
 	ts3 = RDTSC_ASGUARD;
 

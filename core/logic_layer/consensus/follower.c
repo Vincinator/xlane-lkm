@@ -247,15 +247,13 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	int unstable = 0;
 	int start_idx;
 
-	mb();
-
 	num_entries = GET_CON_AE_NUM_ENTRIES_VAL(pkt);
 
 	priv->sdev->pminfo.pm_targets[remote_lid].received_log_replications++;
 
-	if (num_entries == 0) {
+	if (num_entries == 0)
         return;    // no reply if nothing to append!
-    }
+
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
@@ -280,9 +278,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	 * A stable index points to the last entry in the the log, where
 	 * all previous entries exist (stable is not necessarily commited!).
 	 */
-	mutex_lock(&priv->sm_log.mlock);
+	//mutex_lock(&priv->sm_log.mlock);
 	if(*prev_log_idx < priv->sm_log.stable_idx){
-		mutex_unlock(&priv->sm_log.mlock);
+		//mutex_unlock(&priv->sm_log.mlock);
         return;
 	}
 
@@ -332,20 +330,20 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_retransmission;
 
 // default: reply success
-	mutex_unlock(&priv->sm_log.mlock);
+	//mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
     return;
 reply_retransmission:
-	mutex_unlock(&priv->sm_log.mlock);
+	//mutex_unlock(&priv->sm_log.mlock);
 
 	// TODO: wait until other pending workers are done, and check again if we need a retransmission!
-
+    asguard_dbg("suppressed retransmission\n");
 	//reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
 	//priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 	return;
 reply_false_unlock:
-	mutex_unlock(&priv->sm_log.mlock);
+	//mutex_unlock(&priv->sm_log.mlock);
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 }
@@ -544,7 +542,7 @@ int start_follower(struct proto_instance *ins)
 	priv->sdev->tx_port = 3319;
 	priv->sdev->is_leader = 0;
 	priv->sm_log.unstable_commits = 0;
-	mutex_init(&priv->sm_log.mlock);
+	//mutex_init(&priv->sm_log.mlock);
     mutex_init(&priv->sm_log.next_lock);
 
     mutex_init(&priv->accept_vote_lock);

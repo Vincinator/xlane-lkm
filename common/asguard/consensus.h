@@ -108,13 +108,12 @@ struct state_machine_cmd_log {
 	 */
 	int lock;
 
-	spinlock_t slock;
+	//spinlock_t slock;
 
-	struct mutex mlock;
+	//struct mutex mlock;
 
 	/* Lock to prevent creation of multiple append entries for the same next_index */
     struct mutex next_lock;
-
 
     struct sm_log_entry **entries;
 
@@ -179,8 +178,6 @@ struct consensus_priv {
 	/* number of followers voted for this node */
 	int votes;
 	struct mutex accept_vote_lock;
-
-
 
 	struct state_machine_cmd_log sm_log;
 	struct asguard_logger throughput_logger;
