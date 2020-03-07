@@ -278,7 +278,7 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(user_data);
 
-    _handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(payload),
+    _handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(user_data),
                          received_proto_instances, cqe_bcnt);
 
 /*
