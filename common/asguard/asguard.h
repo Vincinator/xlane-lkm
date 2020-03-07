@@ -443,6 +443,7 @@ struct asguard_pkt_work_data {
 	char *payload;
 	int received_proto_instances;
 	u32 cqe_bcnt;
+    u16 headroom;
 
 };
 struct asguard_leader_pkt_work_data {

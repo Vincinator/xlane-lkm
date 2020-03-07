@@ -215,6 +215,8 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw = NULL;
+	char * user_data;
+
 
 	aw = container_of(w, struct asguard_pkt_work_data, work);
 
@@ -223,29 +225,42 @@ void pkt_process_handler(struct work_struct *w) {
         goto exit;
     }
 
-	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
+    user_data = ((char *) aw->payload) + aw->headroom + ETH_HLEN + sizeof(struct iphdr) + sizeof(struct udphdr);
+
+	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(user_data),
 		aw->received_proto_instances, aw->cqe_bcnt);
 
 exit:
+
+    kfree(aw->payload);
+
 	if(aw)
 		kfree(aw);
 }
 
 #define ASG_ETH_HEADER_SIZE 14
 
-void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_bcnt)
+void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct pminfo *spminfo = &sdev->pminfo;
 	int remote_lid, rcluster_id;
 	u16 received_proto_instances;
-	// struct asguard_pkt_work_data *work;
+	struct asguard_pkt_work_data *work;
 	uint64_t ts2, ts3;
+	char *payload;
+    char *remote_mac;
+    char *user_data;
 
-	char *remote_mac = ((char *) payload) + headroom + 6;
-	char *user_data = ((char *) payload) + headroom + ETH_HLEN + sizeof(struct iphdr) + sizeof(struct udphdr);
+    // freed by pkt_process_handler
+    payload = kzalloc(cqe_bcnt, GFP_KERNEL);
+	memcpy(payload, payload_in, cqe_bcnt);
+
+	remote_mac = ((char *) payload) + headroom + 6;
+	user_data = ((char *) payload) + headroom + ETH_HLEN + sizeof(struct iphdr) + sizeof(struct udphdr);
 
 	ts2 = RDTSC_ASGUARD;
+
 /*
     print_hex_dump(KERN_DEBUG, "user data: ", DUMP_PREFIX_NONE, 32, 1,
                    user_data, 16 , 0);
@@ -278,19 +293,19 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
 
 	received_proto_instances = GET_PROTO_AMOUNT_VAL(user_data);
 
-    _handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(user_data),
-                         received_proto_instances, cqe_bcnt);
+/*    _handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(user_data),
+                         received_proto_instances, cqe_bcnt);*/
 
-/*
     // freed by pkt_process_handler
     work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
 
 	work->cqe_bcnt = cqe_bcnt;
-	work->payload = user_data;
+	work->payload = payload;
 	work->rcluster_id = rcluster_id;
 	work->remote_lid = remote_lid;
 	work->received_proto_instances = received_proto_instances;
 	work->sdev = sdev;
+	work->headroom = headroom;
 
 	if(asguard_wq_lock){
 	    asguard_dbg("Asguard is shutting down, ignoring packet\n");
@@ -299,9 +314,16 @@ void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_b
     }
 
 	INIT_WORK(&work->work, pkt_process_handler);
+
 	if(!queue_work(asguard_wq, &work->work)) {
-		asguard_dbg("Work item not put in query..");
-	}*/
+
+	    asguard_dbg("Work item not put in query..");
+
+		if(payload)
+		    kfree(payload);
+		if(work)
+		    kfree(work);
+	}
 
 	ts3 = RDTSC_ASGUARD;
 
