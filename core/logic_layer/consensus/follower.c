@@ -315,7 +315,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		goto reply_false_unlock;
 	}
 
-	update_next_retransmission_request_idx(priv);
+	// update_next_retransmission_request_idx(priv);
 
 	if (unstable){
 		// printk(KERN_INFO "[Unstable] appending entries %d - %d | re_idx=%d | stable_idx=%d\n",
