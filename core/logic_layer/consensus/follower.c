@@ -542,7 +542,7 @@ int start_follower(struct proto_instance *ins)
 	priv->sdev->tx_port = 3319;
 	priv->sdev->is_leader = 0;
 	priv->sm_log.unstable_commits = 0;
-	//mutex_init(&priv->sm_log.mlock);
+	mutex_init(&priv->sm_log.mlock);
     mutex_init(&priv->sm_log.next_lock);
 
     mutex_init(&priv->accept_vote_lock);
