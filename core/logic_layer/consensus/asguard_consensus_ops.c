@@ -97,7 +97,7 @@ int consensus_start(struct proto_instance *ins)
 	if (err)
 		goto error;
 
-    asguard_dbg("===================== Start of Run: %pUB ====================\n", uuid);
+    asguard_dbg("===================== Start of Run: %pUB ====================\n", priv->uuid);
 
 	return 0;
 
