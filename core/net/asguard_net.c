@@ -17,6 +17,18 @@
 #include <asguard/asguard.h>
 #include <asguard/logger.h>
 
+struct asguard_payload *get_payload_ptr(struct asguard_async_pkt *pkt)
+{
+    unsigned char *tail_ptr;
+    unsigned char *data_ptr;
+
+    tail_ptr = skb_tail_pointer(pkt->skb);
+    data_ptr = (tail_ptr - ASGUARD_PAYLOAD_BYTES);
+
+    return (struct asguard_payload *) data_ptr;
+
+}
+EXPORT_SYMBOL(get_payload_ptr);
 
 void asguard_hex_to_ip(char *retval, u32 dst_ip)
 {

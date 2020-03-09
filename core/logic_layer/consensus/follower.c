@@ -112,9 +112,10 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 
 	for (i = start_log_idx; i <= new_last; i++) {
 
-		if(priv->sm_log.entries[i] != NULL) // do not (re-)apply redundant retransmissions
-			continue; // TODO: can we return?
-
+		if(priv->sm_log.entries[i] != NULL) { // do not (re-)apply redundant retransmissions
+            asguard_dbg("prevented re-apply of entry %d", i);
+            continue;
+        }
         // freed by consensus_clean
 		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
 
@@ -140,6 +141,17 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 	if(!unstable) {
 		update_stable_idx(priv);
 	}
+
+    asguard_dbg("Handled APPEND RPC\n"
+                "\t stable_idx = %d\n"
+                "\t commit_idx = %d\n"
+                "\t received entries [ %d - %d ]\n"
+                "\t CPU = %d\n",
+                priv->sm_log.stable_idx,
+                priv->sm_log.commit_idx,
+                start_log_idx,
+                new_last,
+                smp_processor_id());
 
 	return 0;
 
@@ -257,18 +269,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
-
-    asguard_dbg("APPEND from target %d\n "
-                "\t stable_idx = %d\n"
-                "\t commit_idx = %d\n"
-                "\t received entries [ %d - %d ]\n"
-                "\t CPU = %d\n",
-                rcluster_id,
-                priv->sm_log.stable_idx,
-                priv->sm_log.commit_idx,
-                *prev_log_idx + 1,
-                *prev_log_idx + 1 + num_entries,
-                smp_processor_id());
 
 
 	/*   If we receive a log replication from the current leader,

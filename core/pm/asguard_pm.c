@@ -124,8 +124,8 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
         skb_set_queue_mapping(spminfo->pm_targets[i].skb_oos, smp_processor_id()); // Queue mapping same for each target i
 
         /* Log Replication SKB */
-        spminfo->pm_targets[i].skb_logrep = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
-        skb_set_queue_mapping(spminfo->pm_targets[i].skb_logrep, smp_processor_id()); // Queue mapping same for each target i
+        // spminfo->pm_targets[i].skb_logrep = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
+        // skb_set_queue_mapping(spminfo->pm_targets[i].skb_logrep, smp_processor_id()); // Queue mapping same for each target i
 	}
 }
 
@@ -519,29 +519,34 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             // Pkt has been handled
             spminfo->pm_targets[i].aapriv->doorbell--;
 
-            if(!cur_apkt || !spminfo->pm_targets[i].skb_logrep) {
+            if(!cur_apkt || !cur_apkt->skb) {
                 asguard_error("pkt or skb is NULL! \n");
                 continue;
             }
 
+            skb_set_queue_mapping(cur_apkt->skb, smp_processor_id());
+
             // DEBUG: print emitted pkts
-            num_entries = GET_CON_AE_NUM_ENTRIES_VAL(cur_apkt->payload->proto_data);
-            prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(cur_apkt->payload->proto_data);
+            num_entries = GET_CON_AE_NUM_ENTRIES_VAL( get_payload_ptr(cur_apkt->skb)->proto_data);
+            prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(get_payload_ptr(cur_apkt->skb)->proto_data);
 
             asguard_dbg("Node: %d - Emitting %d entries, start_idx=%d", i, num_entries, *prev_log_idx);
 
             // update payload
-            asguard_update_skb_payload(spminfo->pm_targets[i].skb_logrep, cur_apkt->payload);
+            //asguard_update_skb_payload(spminfo->pm_targets[i].skb_logrep, cur_apkt->payload);
 
-            cur_apkt->skb = spminfo->pm_targets[i].skb_logrep;
 
             emit_apkt(sdev->ndev, spminfo, cur_apkt);
 
+            spminfo->pm_targets[i].pkt_tx_counter++;
+
+
             if(cur_apkt) {
-                if(cur_apkt->payload)
-                    kfree(cur_apkt->payload);
+                if(cur_apkt->skb)
+                    kfree_skb(cur_apkt->skb); // drop reference, and free skb if reference count hits 0
                 kfree(cur_apkt);
             }
+
             // do not free skb!
 
         }

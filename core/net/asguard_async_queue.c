@@ -13,6 +13,9 @@
     ((unsigned char *)&addr)[3]
 
 
+
+
+
 void async_clear_queue( struct asguard_async_queue_priv *queue)
 {
     struct asguard_async_pkt *entry, *tmp_entry;
@@ -126,18 +129,18 @@ struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, 
     // freed by _emit_async_pkts
     apkt = kzalloc(sizeof(struct asguard_async_pkt), GFP_KERNEL);
 
-    //apkt->skb = asguard_reserve_skb(ndev, dst_ip, dst_mac, NULL);
-
+    apkt->skb = asguard_reserve_skb(ndev, dst_ip, dst_mac, NULL);
+/*
     // freed by _emit_async_pkts
     apkt->payload = kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
-    if(!apkt->payload) {
+  if(!apkt->payload) {
         asguard_error("Could not allocate SKB!\n");
         return NULL;
     }
 
     memset(apkt->payload, 0, sizeof(struct asguard_payload));
-
+*/
     return apkt;
 }
 EXPORT_SYMBOL(create_async_pkt);

@@ -472,6 +472,7 @@ void init_asguard_pm_ctrl_interfaces(struct asguard_device *sdev);
 void clean_asguard_pm_ctrl_interfaces(struct asguard_device *sdev);
 
 void asguard_hex_to_ip(char *retval, u32 dst_ip);
+struct asguard_payload *get_payload_ptr(struct asguard_async_pkt *pkt);
 
 /*
  * Converts an IP address from dotted numbers string to hex.

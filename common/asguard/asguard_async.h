@@ -21,9 +21,6 @@ struct asguard_async_pkt {
     struct list_head async_pkts_head;
 
     struct sk_buff *skb;
-
-    struct asguard_payload *payload;
-
 };
 
 
