@@ -73,7 +73,7 @@ static int asguard_eval_ctrl_show(struct seq_file *m, void *v)
 		return -ENODEV;
 
 	// todo output uuid of consensus eval
-    seq_printf(m, "%%pUB\n", priv->uuid);
+    seq_printf(m, "%pUB\n", priv->uuid);
 
 	return 0;
 }

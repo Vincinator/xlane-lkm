@@ -17,7 +17,7 @@
 void generate_asguard_eval_uuid(unsigned char uuid[16])
 {
     generate_random_uuid(uuid);
-    asguard_dbg("===================== Start of Run: %%pUB ====================\n", uuid);
+    asguard_dbg("===================== Start of Run: %pUB ====================\n", uuid);
 }
 
 int consensus_init(struct proto_instance *ins)
@@ -112,7 +112,7 @@ int consensus_stop(struct proto_instance *ins)
 	if (!consensus_is_alive(priv))
 		return 0;
 
-    asguard_dbg("===================== End of Run: %%pUB ====================\n", priv->uuid.b);
+    asguard_dbg("===================== End of Run: %pUB ====================\n", priv->uuid.b);
 
     switch (priv->nstate) {
 	case FOLLOWER:

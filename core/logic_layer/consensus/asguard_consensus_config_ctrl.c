@@ -163,7 +163,7 @@ static ssize_t asguard_eval_uuid_write(struct file *file,
 
     kernel_buffer[size] = '\0';
 
-    uuid_parse(kernel_buffer, priv->uuid.b);
+    uuid_parse(kernel_buffer, &priv->uuid);
 
     return count;
     error:
@@ -180,7 +180,7 @@ static int asguard_eval_uuid_show(struct seq_file *m, void *v)
     if (!priv)
         return -ENODEV;
 
-    seq_printf(m, "%%pUB\n", priv->uuid.b);
+    seq_printf(m, "%pUB\n", priv->uuid);
 
     return 0;
 }
