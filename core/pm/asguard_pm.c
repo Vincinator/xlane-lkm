@@ -527,8 +527,8 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             skb_set_queue_mapping(cur_apkt->skb, smp_processor_id());
 
             // DEBUG: print emitted pkts
-            num_entries = GET_CON_AE_NUM_ENTRIES_VAL( get_payload_ptr(cur_apkt->skb)->proto_data);
-            prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(get_payload_ptr(cur_apkt->skb)->proto_data);
+            num_entries = GET_CON_AE_NUM_ENTRIES_VAL( get_payload_ptr(cur_apkt)->proto_data);
+            prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(get_payload_ptr(cur_apkt)->proto_data);
 
             asguard_dbg("Node: %d - Emitting %d entries, start_idx=%d", i, num_entries, *prev_log_idx);
 
