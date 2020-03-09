@@ -13,6 +13,13 @@
 
 
 
+
+void generate_asguard_eval_uuid(unsigned char uuid[16])
+{
+    generate_random_uuid(uuid);
+    asguard_dbg("===================== Start of Run: %%pUB ====================\n", uuid);
+}
+
 int consensus_init(struct proto_instance *ins)
 {
 	struct consensus_priv *priv =
@@ -31,6 +38,8 @@ int consensus_init(struct proto_instance *ins)
 	priv->sm_log.last_applied = -1;
 	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
 	priv->sm_log.lock = 0;
+    generate_asguard_eval_uuid(priv->uuid);
+
     priv->sdev->consensus_priv = priv; /* reference for pacemaker */
 
 
@@ -104,7 +113,9 @@ int consensus_stop(struct proto_instance *ins)
 	if (!consensus_is_alive(priv))
 		return 0;
 
-	switch (priv->nstate) {
+    asguard_dbg("===================== End of Run: %%pUB ====================\n", priv->uuid.b);
+
+    switch (priv->nstate) {
 	case FOLLOWER:
 		stop_follower(ins);
 		break;

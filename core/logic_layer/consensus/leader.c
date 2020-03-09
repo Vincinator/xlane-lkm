@@ -303,6 +303,7 @@ void print_leader_stats(struct consensus_priv *priv)
 	int i;
 	struct retrans_request *entry, *tmp_entry;
 
+    asguard_dbg("Bug Counter: %d", priv->sdev->bug_counter);
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
 		asguard_dbg("Stats for target %d \n", i);

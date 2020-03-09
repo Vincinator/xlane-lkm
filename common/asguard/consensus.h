@@ -182,6 +182,9 @@ struct consensus_priv {
 	struct state_machine_cmd_log sm_log;
 	struct asguard_logger throughput_logger;
 
+	/* Used to correlate dmesg log output with evaluation results*/
+    uuid_t uuid;
+
 };
 
 

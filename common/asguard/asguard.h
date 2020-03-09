@@ -29,6 +29,7 @@
 #define MAX_PROCFS_BUF 512
 
 
+#define ASGUARD_UUID_BUF 42
 
 #define ASGUARD_TARGETS_BUF 512
 #define ASGUARD_NUMBUF 13
@@ -357,6 +358,8 @@ struct asguard_device {
 	int asguard_id;
 	int hold_fire;
 	int cur_leader_lid;
+	int bug_counter;
+
 	struct consensus_priv *consensus_priv;
 
 	int is_leader; /* Is this node a leader? */

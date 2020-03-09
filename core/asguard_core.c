@@ -374,6 +374,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
     score->sdevices[asguard_id]->ifindex = ifindex;
     score->sdevices[asguard_id]->hb_interval = 0;
 
+    score->sdevices[asguard_id]->bug_counter = 0;
     score->sdevices[asguard_id]->asguard_id = asguard_id;
 	score->sdevices[asguard_id]->ndev = asguard_get_netdevice(ifindex);
 	score->sdevices[asguard_id]->pminfo.num_of_targets = 0;
@@ -724,7 +725,6 @@ static void __exit asguard_connection_core_exit(void)
     mb();
     flush_workqueue(asguard_wq);
 
-    asguard_dbg("flushed wq\n");
 
     // MUST unregister asguard for drivers first
 	unregister_asguard();
@@ -756,7 +756,7 @@ static void __exit asguard_connection_core_exit(void)
     }
 
     destroy_workqueue(asguard_wq);
-    asguard_dbg("destroyed wq\n");
+
 
     if(score->sdevices)
         kfree(score->sdevices);
