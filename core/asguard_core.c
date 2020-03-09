@@ -391,7 +391,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->is_leader = 0;
 
 	score->sdevices[asguard_id]->asguard_leader_wq =
-		 alloc_workqueue("asguard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
+		 alloc_workqueue("asguard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 0);
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		score->sdevices[asguard_id]->instance_id_mapping[i] = -1;
