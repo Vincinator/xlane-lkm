@@ -38,7 +38,6 @@ int consensus_init(struct proto_instance *ins)
 	priv->sm_log.last_applied = -1;
 	priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
 	priv->sm_log.lock = 0;
-    generate_asguard_eval_uuid(priv->uuid);
 
     priv->sdev->consensus_priv = priv; /* reference for pacemaker */
 
