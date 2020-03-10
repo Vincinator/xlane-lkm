@@ -254,7 +254,9 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 {
 	u32 *prev_log_term, num_entries;
 	s32 *prev_log_idx;
-	s32 *prev_log_commit_idx;
+    s32 *leader_commit_idx;
+
+    s32 *prev_log_commit_idx;
 	u16 pkt_size;
 	int unstable = 0;
 	int start_idx;
@@ -269,7 +271,6 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	pkt_size = GET_PROTO_OFFSET_VAL(pkt);
 	prev_log_term = GET_CON_AE_PREV_LOG_TERM_PTR(pkt);
 	prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(pkt);
-
 
 	/*   If we receive a log replication from the current leader,
 	 * 	 we can continue to store it even if a previous part is missing.
@@ -357,7 +358,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	struct asguard_device *sdev = priv->sdev;
 
     u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
-	s32 param1, param2, param3, param4;
+	s32 param1, param2, param3, param4, *commit_idx;
 
 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
@@ -453,10 +454,22 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			if (priv->leader_id == rcluster_id) {
 
+
                 _handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
-				// Commit log!
-				commit_log(priv);
+
+                commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
+
+                if(*commit_idx > priv->sm_log.commit_idx) {
+                    if(*commit_idx <= priv->sm_log.stable_idx){
+                        priv->sm_log.commit_idx = *commit_idx;
+                        commit_log(priv);
+                    } else {
+                        asguard_dbg("BUG: Commit IDX is greater than local stable idx.. \n");
+                    }
+                } else if(*commit_idx < priv->sm_log.commit_idx){
+                    asguard_dbg("BUG: Commit IDX is lower than local commit idx.. \n");
+                }
 
 
 // #if VERBOSE_DEBUG

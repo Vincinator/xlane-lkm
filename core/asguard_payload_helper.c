@@ -231,8 +231,6 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
     }
 
 
-
-
     if (next_index == -1) {
 		asguard_dbg("Invalid target id resulted in invalid next_index!\n");
         if(!retrans)
