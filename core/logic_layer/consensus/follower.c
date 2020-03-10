@@ -465,10 +465,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
                         priv->sm_log.commit_idx = *commit_idx;
                         commit_log(priv);
                     } else {
-                        asguard_dbg("BUG: Commit IDX is greater than local stable idx.. \n");
+                        asguard_dbg("BUG: Commit IDX (%d) is greater than local stable idx (%d) .. \n", *commit_idx,priv->sm_log.commit_idx );
                     }
-                } else if(*commit_idx < priv->sm_log.commit_idx){
-                    asguard_dbg("BUG: Commit IDX is lower than local commit idx.. \n");
                 }
 
 
