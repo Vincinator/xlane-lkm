@@ -391,7 +391,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->is_leader = 0;
 
 	score->sdevices[asguard_id]->asguard_leader_wq =
-		 alloc_workqueue("asguard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 2);
+		 alloc_workqueue("asguard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		score->sdevices[asguard_id]->instance_id_mapping[i] = -1;
@@ -667,7 +667,7 @@ static int __init asguard_connection_core_init(void)
 	//init_asguard_proto_info_interfaces();
 
 	/* Allocate Workqueues */
-	asguard_wq = alloc_workqueue("asguard",  WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_FREEZABLE, 1);
+	asguard_wq = alloc_workqueue("asguard",  WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_FREEZABLE, 2);
     asguard_wq_lock = 0;
 
 
