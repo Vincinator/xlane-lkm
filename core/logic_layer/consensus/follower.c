@@ -510,6 +510,51 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 	return 0;
 }
 
+void validate_log(struct state_machine_cmd_log *log)
+{
+    int i, err = 0;
+
+    asguard_dbg("Log Validation Results: \n", err);
+
+    for(i = 0; i < log->max_entries; i++) {
+
+        if(log->entries[i] == NULL) {
+
+            if(log->stable_idx > i) {
+                asguard_error("\t Stable Index is incorrect.\n");
+                asguard_error("\t\t stable_idx=%d, but log entry %d is NULL\n", log->stable_idx, i);
+                err++;
+            }
+
+            if(log->commit_idx > i) {
+                asguard_error("\t Commit Index is incorrect. \n");
+                asguard_error("\t\t commit_idx=%d, but log entry %d is NULL\n", log->commit_idx, i);
+                err++;
+            }
+
+        } else {
+            if(log->last_idx < i) {
+                asguard_error("\t No entries allowed after last index\n");
+                asguard_error("\t\t last index =%d, but log entry %d exists\n", log->last_idx, i);
+                err++;
+            }
+        }
+    }
+
+    if(log->stable_idx > log->commit_idx) {
+        asguard_error("\t Commit index did not keep up with Stable Index \n");
+        asguard_error("\t\t commit_idx=%d, stable_idx=%d\n", log->commit_idx, log->stable_idx);
+    }
+
+    if(log->stable_idx < log->commit_idx) {
+        asguard_error("\t Commit index points to an unstable log entry \n");
+        asguard_error("\t\t commit_idx=%d, stable_idx=%d\n", log->commit_idx, log->stable_idx);
+    }
+
+    asguard_dbg("\t Detected %d Errors in Log \n", err);
+
+}
+
 void print_follower_stats(struct consensus_priv *priv)
 {
 	int i;
@@ -526,6 +571,9 @@ void print_follower_stats(struct consensus_priv *priv)
 	asguard_dbg("stable_idx %d\n", priv->sm_log.stable_idx );
 	asguard_dbg("next_retrans_req_idx %d\n", priv->sm_log.next_retrans_req_idx );
 	asguard_dbg("max_entries %d\n", priv->sm_log.max_entries );
+
+	validate_log(&priv->sm_log);
+
 }
 
 
