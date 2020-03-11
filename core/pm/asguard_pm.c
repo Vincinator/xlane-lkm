@@ -364,7 +364,7 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 		    return -1;
 		}
 
-		//asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
+		asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
 	}

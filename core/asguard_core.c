@@ -93,7 +93,6 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 			sdev->pminfo.pm_targets[sdev->cur_leader_lid].chb_ts = cycles;
 			sdev->pminfo.pm_targets[sdev->cur_leader_lid].alive = 1;
 		}
-
 	}
 }
 EXPORT_SYMBOL(asguard_post_ts);
