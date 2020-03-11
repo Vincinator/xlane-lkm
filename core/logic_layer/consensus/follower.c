@@ -400,24 +400,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		}
 
 		// Current Leader is commiting
-		if(param1 == priv->term && param2 != -1){
-
-            mutex_lock(&priv->sm_log.mlock);
-            // Check if commit index must be updated
-
-            if (param2 > priv->sm_log.commit_idx) {
-				if(param2 > priv->sm_log.stable_idx){
-					asguard_dbg("detected consensus BUG. commit idx is greater than local stable idx\n");
-					asguard_dbg("\t leader commit idx: %d, local stable idx: %d\n", param2, priv->sm_log.stable_idx);
-				} else {
-					priv->sm_log.commit_idx = param2;
-					commit_log(priv);
-
-                }
-			}
-            mutex_unlock(&priv->sm_log.mlock);
-
-        }
+		if(param1 == priv->term && param2 != -1)
+            commit_log(priv, param2);
 
 		/* Ignore other cases for ALIVE operation*/
 		break;
@@ -442,7 +426,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
-            commit_log(priv);
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
 				asguard_dbg("Received APPEND op from leader with higher term=%d local term=%d\n", param1, priv->term);
@@ -459,26 +442,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 			if (priv->leader_id == rcluster_id) {
 
-
                 _handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
-
                 commit_idx = GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt);
-
-                if(*commit_idx > priv->sm_log.commit_idx) {
-                    if(*commit_idx <= priv->sm_log.stable_idx){
-                        priv->sm_log.commit_idx = *commit_idx;
-                        commit_log(priv);
-                    } else {
-                        asguard_dbg("BUG: Commit IDX (%d) is greater than local stable idx (%d) .. \n", *commit_idx,priv->sm_log.commit_idx );
-                    }
-                }
-
-
-// #if VERBOSE_DEBUG
-// 				if (sdev->verbose >= 5)
-// 					asguard_dbg("Received message from known leader (%d) term=%u\n", rcluster_id, param1);
-// #endif
+                commit_log(priv, *commit_idx);
 
 			} else {
 #if VERBOSE_DEBUG

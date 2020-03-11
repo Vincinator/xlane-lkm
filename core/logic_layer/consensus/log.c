@@ -27,26 +27,36 @@ int apply_log_to_sm(struct consensus_priv *priv)
 	return 0;
 }
 
-int commit_log(struct consensus_priv *priv)
+int commit_log(struct consensus_priv *priv, s32 commit_idx)
 {
-	int err;
+	int err = 0;
 	struct state_machine_cmd_log *log = &priv->sm_log;
 
-	mb();
+    mutex_lock(&priv->sm_log.mlock);
 
-	write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, RDTSC_ASGUARD);
+    // Check if commit index must be updated
+    if (commit_idx > priv->sm_log.commit_idx) {
+        if(commit_idx > priv->sm_log.stable_idx){
+            asguard_error("Commit idx is greater than local stable idx\n");
+            asguard_dbg("\t leader commit idx: %d, local stable idx: %d\n", commit_idx, priv->sm_log.stable_idx);
+        } else {
+            priv->sm_log.commit_idx = commit_idx;
+            err = apply_log_to_sm(priv);
 
-	err = apply_log_to_sm(priv);
+            if (!err) {
+                log->last_applied = log->commit_idx;
+                write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, RDTSC_ASGUARD);
+            }
+        }
+    }
 
-	if (err)
-		goto error;
+    mutex_unlock(&priv->sm_log.mlock);
 
-	log->last_applied = log->commit_idx;
+    if(err)
+        asguard_dbg("Could not apply logs. Commit Index %d\n", log->commit_idx);
 
-	return 0;
-error:
-	asguard_dbg("Could not commit to Logs. Commit Index %d\n", log->commit_idx);
-	return err;
+    return 0;
+
 }
 EXPORT_SYMBOL(commit_log);
 

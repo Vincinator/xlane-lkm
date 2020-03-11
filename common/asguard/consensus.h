@@ -188,7 +188,7 @@ struct consensus_priv {
 };
 
 
-int commit_log(struct consensus_priv *priv);
+int commit_log(struct consensus_priv *priv, s32 commit_idx);
 int append_command(struct consensus_priv *priv, struct sm_command *cmd, int term, int log_idx, int unstable);
 
 
