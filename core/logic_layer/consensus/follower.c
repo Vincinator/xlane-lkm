@@ -401,8 +401,11 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 		// Current Leader is commiting
 		if(param1 == priv->term && param2 != -1){
-			// Check if commit index must be updated
-			if (param2 > priv->sm_log.commit_idx) {
+
+            mutex_lock(&priv->sm_log.mlock);
+            // Check if commit index must be updated
+
+            if (param2 > priv->sm_log.commit_idx) {
 				if(param2 > priv->sm_log.stable_idx){
 					asguard_dbg("detected consensus BUG. commit idx is greater than local stable idx\n");
 					asguard_dbg("\t leader commit idx: %d, local stable idx: %d\n", param2, priv->sm_log.stable_idx);
@@ -412,7 +415,9 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
                 }
 			}
-		}
+            mutex_unlock(&priv->sm_log.mlock);
+
+        }
 
 		/* Ignore other cases for ALIVE operation*/
 		break;
