@@ -6,7 +6,7 @@
 
 #define ASGUARD_DEBUG 1
 
-#define MAX_LOGGER_NAME 16
+#define MAX_LOGGER_NAME 32
 #define LOGGER_EVENT_LIMIT 10000
 
 

@@ -1,3 +1,4 @@
+$(info =================== ASGuard TS Make ===================)
 
 EXTRA_CFLAGS += -I$(src)/../../common/
 

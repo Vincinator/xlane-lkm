@@ -5,6 +5,8 @@
 #include <linux/spinlock.h>
 #include <linux/kthread.h>
 #include <linux/mutex.h>
+#include <linux/ip.h>
+#include <linux/udp.h>
 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -34,6 +36,7 @@ module_param(ifindex, int, 0660);
 
 static struct workqueue_struct *asguard_wq;
 
+static int asguard_wq_lock = 0;
 
 //  sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset
 
@@ -90,7 +93,6 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 			sdev->pminfo.pm_targets[sdev->cur_leader_lid].chb_ts = cycles;
 			sdev->pminfo.pm_targets[sdev->cur_leader_lid].alive = 1;
 		}
-
 	}
 }
 EXPORT_SYMBOL(asguard_post_ts);
@@ -134,7 +136,6 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 	u16 cur_offset;
 	struct proto_instance *cur_ins;
 
-
 	/* bcnt <= 0:
 	 *		no payload left to handle
 	 *
@@ -143,6 +144,14 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 	 */
 	if (instances <= 0 || bcnt <= 0)
 		return;
+
+	/* Protect this kernel from buggy packets.
+	 * In the current state, more than 4 instances are not intentional.
+	 */
+	if (instances > 4) {
+	    asguard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
+	    return;
+	}
 
 	// if (sdev->verbose >= 3)
 	//	asguard_dbg("recursion. instances %d bcnt %d", instances, bcnt);
@@ -163,14 +172,14 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 	if (!cur_ins) {
 		if (sdev->verbose >= 3)
 			asguard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
-	} else {
-		cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
-	}
 
+    } else {
+        cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
+    }
 	// handle next payload
 	_handle_sub_payloads(sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset);
-}
 
+}
 
 int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 {
@@ -205,20 +214,32 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 void pkt_process_handler(struct work_struct *w) {
 
 	struct asguard_pkt_work_data *aw = NULL;
+	char * user_data;
 
 
 	aw = container_of(w, struct asguard_pkt_work_data, work);
 
+    if(asguard_wq_lock) {
+        asguard_dbg("drop handling of received packet - asguard shut down \n");
+        goto exit;
+    }
 
-	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(aw->payload),
+    user_data = ((char *) aw->payload) + aw->headroom + ETH_HLEN + sizeof(struct iphdr) + sizeof(struct udphdr);
+
+	_handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id, GET_PROTO_START_SUBS_PTR(user_data),
 		aw->received_proto_instances, aw->cqe_bcnt);
+
+exit:
+
+    kfree(aw->payload);
 
 	if(aw)
 		kfree(aw);
-
 }
 
-void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt)
+#define ASG_ETH_HEADER_SIZE 14
+
+void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct pminfo *spminfo = &sdev->pminfo;
@@ -226,9 +247,23 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	u16 received_proto_instances;
 	struct asguard_pkt_work_data *work;
 	uint64_t ts2, ts3;
+	char *payload;
+    char *remote_mac;
+    char *user_data;
+
+    // freed by pkt_process_handler
+    payload = kzalloc(cqe_bcnt, GFP_KERNEL);
+	memcpy(payload, payload_in, cqe_bcnt);
+
+	remote_mac = ((char *) payload) + headroom + 6;
+	user_data = ((char *) payload) + headroom + ETH_HLEN + sizeof(struct iphdr) + sizeof(struct udphdr);
 
 	ts2 = RDTSC_ASGUARD;
 
+/*
+    print_hex_dump(KERN_DEBUG, "user data: ", DUMP_PREFIX_NONE, 32, 1,
+                   user_data, 16 , 0);
+*/
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
@@ -255,9 +290,13 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 
 	spminfo->pm_targets[remote_lid].pkt_rx_counter++;
 
-	received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
+	received_proto_instances = GET_PROTO_AMOUNT_VAL(user_data);
 
-	work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
+/*    _handle_sub_payloads(sdev, remote_lid, rcluster_id, GET_PROTO_START_SUBS_PTR(user_data),
+                         received_proto_instances, cqe_bcnt);*/
+
+    // freed by pkt_process_handler
+    work = kmalloc(sizeof(struct asguard_pkt_work_data), GFP_ATOMIC);
 
 	work->cqe_bcnt = cqe_bcnt;
 	work->payload = payload;
@@ -265,10 +304,24 @@ void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *paylo
 	work->remote_lid = remote_lid;
 	work->received_proto_instances = received_proto_instances;
 	work->sdev = sdev;
+	work->headroom = headroom;
+
+	if(asguard_wq_lock){
+	    asguard_dbg("Asguard is shutting down, ignoring packet\n");
+	    kfree(work);
+        return;
+    }
 
 	INIT_WORK(&work->work, pkt_process_handler);
+
 	if(!queue_work(asguard_wq, &work->work)) {
-		asguard_dbg("Work item not put in query..");
+
+	    asguard_dbg("Work item not put in query..");
+
+		if(payload)
+		    kfree(payload);
+		if(work)
+		    kfree(work);
 	}
 
 	ts3 = RDTSC_ASGUARD;
@@ -290,8 +343,7 @@ void asguard_reset_remote_host_counter(int asguard_id)
 	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
 		pmtarget = &sdev->pminfo.pm_targets[i];
 		kfree(pmtarget->pkt_data.hb_pkt_payload);
-		kfree(pmtarget->pkt_data.pkt_payload[0]);
-		kfree(pmtarget->pkt_data.pkt_payload[1]);
+		kfree(pmtarget->pkt_data.pkt_payload);
 	}
 
 	sdev->pminfo.num_of_targets = 0;
@@ -313,15 +365,19 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	}
 
 	asguard_dbg("register nic at asguard core. ifindex=%d, asguard_id=%d\n", ifindex, asguard_id);
-
+    // freed by asguard_connection_core_exit
 	score->sdevices[asguard_id] =
 		kmalloc(sizeof(struct asguard_device), GFP_KERNEL);
 
 	score->num_devices++;
-	score->sdevices[asguard_id]->ifindex = ifindex;
-	score->sdevices[asguard_id]->asguard_id = asguard_id;
+    score->sdevices[asguard_id]->ifindex = ifindex;
+    score->sdevices[asguard_id]->hb_interval = 0;
+
+    score->sdevices[asguard_id]->bug_counter = 0;
+    score->sdevices[asguard_id]->asguard_id = asguard_id;
 	score->sdevices[asguard_id]->ndev = asguard_get_netdevice(ifindex);
 	score->sdevices[asguard_id]->pminfo.num_of_targets = 0;
+    score->sdevices[asguard_id]->pminfo.waiting_window = 100000;
 //	score->sdevices[asguard_id]->proto = NULL;
 	score->sdevices[asguard_id]->verbose = 0;
 	score->sdevices[asguard_id]->rx_state = ASGUARD_RX_DISABLED;
@@ -331,18 +387,16 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->hold_fire = 0;
 	score->sdevices[asguard_id]->tx_port = 3319;
 	score->sdevices[asguard_id]->cur_leader_lid = -1;
-	score->sdevices[asguard_id]->pkt_proc_sts = 0;
-	score->sdevices[asguard_id]->pkt_proc_ets = 0;
-	score->sdevices[asguard_id]->pkt_proc_ctr = 0;
 	score->sdevices[asguard_id]->is_leader = 0;
 
 	score->sdevices[asguard_id]->asguard_leader_wq =
-		 alloc_workqueue("asguard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 0);
+		 alloc_workqueue("asguard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		score->sdevices[asguard_id]->instance_id_mapping[i] = -1;
 
-	score->sdevices[asguard_id]->protos =
+    // freed by clear_protocol_instances
+    score->sdevices[asguard_id]->protos =
 				kmalloc_array(MAX_PROTO_INSTANCES, sizeof(struct proto_instance *), GFP_KERNEL);
 
 	if (!score->sdevices[asguard_id]->protos)
@@ -373,9 +427,6 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	pm_state_transition_to(&score->sdevices[asguard_id]->pminfo,
 				   ASGUARD_PM_UNINIT);
 
-	init_asguard_async_list_of_queues(&(score->sdevices[asguard_id]->pminfo.async_priv));
-
-
 	return asguard_id;
 }
 EXPORT_SYMBOL(asguard_core_register_nic);
@@ -388,7 +439,8 @@ int asguard_core_remove_nic(int asguard_id)
 	if (asguard_validate_asguard_device(asguard_id))
 		return -1;
 
-	asguard_clean_timestamping(score->sdevices[asguard_id]);
+
+    asguard_clean_timestamping(score->sdevices[asguard_id]);
 
 	/* Remove Ctrl Interfaces for NIC */
 	clean_asguard_pm_ctrl_interfaces(score->sdevices[asguard_id]);
@@ -485,28 +537,30 @@ void clear_protocol_instances(struct asguard_device *sdev)
 
 	for (i = 0; i < sdev->num_of_proto_instances; i++) {
 
-
 		if (!sdev->protos[i])
 			continue;
 
-
 		if (sdev->protos[i]->ctrl_ops.clean != NULL) {
 			sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
-
 		}
 
 		// timer are not finished yet!?
-		kfree(sdev->protos[i]->proto_data);
+		if(sdev->protos[i]->proto_data)
+		    kfree(sdev->protos[i]->proto_data);
 
+		if(!sdev->protos[i])
+		    kfree(sdev->protos[i]); // is non-NULL, see continue condition above
 
-		kfree(sdev->protos[i]);
 
 	}
+    
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		sdev->instance_id_mapping[i] = -1;
+    
 
 	sdev->num_of_proto_instances = 0;
+    
 
 }
 
@@ -516,7 +570,6 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct asguard_pm_target_info *pmtarget;
-	int ifindex, ret;
 
 	if (!mac) {
 		asguard_error("input mac is NULL!\n");
@@ -529,7 +582,6 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 		return -1;
 	}
 
-	ifindex = sdev->ifindex;
 	pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
 
 	if (!pmtarget) {
@@ -537,12 +589,8 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 		return -1;
 	}
 	pmtarget->alive = 0;
-	pmtarget->pkt_data.hb_active_ix = 0;
-	pmtarget->pkt_data.active_dirty = 0;
-	mutex_init(&pmtarget->pkt_data.active_dirty_lock);
 	pmtarget->pkt_data.naddr.dst_ip = ip;
 	pmtarget->pkt_data.naddr.cluster_id = cluster_id;
-	pmtarget->pkt_data.protocol_id = protocol_id;
 	pmtarget->lhb_ts = 0;
 	pmtarget->chb_ts = 0;
 	pmtarget->resp_factor = 4;
@@ -553,25 +601,22 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->scheduled_log_replications = 0;
 	pmtarget->received_log_replications = 0;
 
-	pmtarget->pkt_data.contains_log_rep[0] = 0;
-	pmtarget->pkt_data.contains_log_rep[1] = 0;
-
-	pmtarget->pkt_data.pkt_payload[0] =
+	pmtarget->pkt_data.pkt_payload =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
-	pmtarget->pkt_data.pkt_payload[1] =
-		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
+    spin_lock_init(&pmtarget->pkt_data.pkt_lock);
 
-	pmtarget->pkt_data.hb_pkt_payload =
+    pmtarget->pkt_data.hb_pkt_payload =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
 	memcpy(&pmtarget->pkt_data.naddr.dst_mac, mac, sizeof(unsigned char) * 6);
 
 	sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 
-	ret = init_asguard_async_queue(sdev->pminfo.async_priv, &(pmtarget->aapriv));
+    pmtarget->aapriv = kmalloc(sizeof(struct asguard_async_queue_priv), GFP_KERNEL);
+    init_asguard_async_queue(pmtarget->aapriv);
 
-	return ret;
+	return 0;
 }
 EXPORT_SYMBOL(asguard_core_register_remote_host);
 
@@ -592,7 +637,8 @@ static int __init asguard_connection_core_init(void)
 	if (err)
 		goto error;
 
-	score = kmalloc(sizeof(struct asguard_core), GFP_KERNEL);
+    // freed by asguard_connection_core_exit
+    score = kmalloc(sizeof(struct asguard_core), GFP_KERNEL);
 
 	if (!score) {
 		asguard_error("allocation of asguard core failed\n");
@@ -601,6 +647,7 @@ static int __init asguard_connection_core_init(void)
 
 	score->num_devices = 0;
 
+    // freed by asguard_connection_core_exit
 	score->sdevices = kmalloc_array(
 		MAX_NIC_DEVICES, sizeof(struct asguard_device *), GFP_KERNEL);
 
@@ -619,8 +666,8 @@ static int __init asguard_connection_core_init(void)
 	//init_asguard_proto_info_interfaces();
 
 	/* Allocate Workqueues */
-	asguard_wq = alloc_workqueue("asguard",  WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 0);
-
+	asguard_wq = alloc_workqueue("asguard",  WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_FREEZABLE, 1);
+    asguard_wq_lock = 0;
 
 	return 0;
 error:
@@ -669,11 +716,15 @@ void asguard_stop(int asguard_id)
 
 static void __exit asguard_connection_core_exit(void)
 {
-	int i;
+	int i, j;
 
-	destroy_workqueue(asguard_wq);
+    asguard_wq_lock = 1;
 
-	// MUST unregister asguard for drivers first
+    mb();
+    flush_workqueue(asguard_wq);
+
+
+    // MUST unregister asguard for drivers first
 	unregister_asguard();
 
 	if(!score){
@@ -686,21 +737,33 @@ static void __exit asguard_connection_core_exit(void)
 		if(!score->sdevices[i]) {
 			continue;
 		}
-
 		asguard_stop(i);
 
-		destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
+        // clear all async queues
+        for(j = 0; j <  score->sdevices[i]->pminfo.num_of_targets; j++)
+            async_clear_queue(score->sdevices[i]->pminfo.pm_targets[j].aapriv);
+
+        destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
 
 		clear_protocol_instances(score->sdevices[i]);
 
 		asguard_core_remove_nic(i);
 
-		kfree(score->sdevices[i]);
-	}
+        kfree(score->sdevices[i]);
 
-	kfree(score);
+    }
+
+    destroy_workqueue(asguard_wq);
+
+
+    if(score->sdevices)
+        kfree(score->sdevices);
+
+	if(score)
+	    kfree(score);
 
 	remove_proc_entry("asguard", NULL);
+    
 
 	// flush_workqueue(asguard_wq);
 

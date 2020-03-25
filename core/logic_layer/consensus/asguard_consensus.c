@@ -62,7 +62,10 @@ const char *opcode_string(enum le_opcode opcode)
 
 int consensus_is_alive(struct consensus_priv *priv)
 {
-	if (priv->state != LE_RUNNING)
+    if(!priv)
+        return 0;
+
+    if (priv->state != LE_RUNNING)
 		return 0;
 
 	return 1;
@@ -73,9 +76,6 @@ void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum 
 {
 
 	if (opcode == NOOP)
-		return;
-
-	if (opcode == APPEND)
 		return;
 
 	if (opcode == ALIVE)
@@ -250,45 +250,48 @@ static const struct asguard_protocol_ctrl_ops consensus_ops = {
 
 struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 {
-	struct consensus_priv *cpriv;
-	struct proto_instance *ins;
+    struct consensus_priv *cpriv;
+    struct proto_instance *ins;
 
-	ins = kmalloc (sizeof(struct proto_instance), GFP_KERNEL);
+    // freed by get_echo_proto_instance
+    ins = kmalloc (sizeof(struct proto_instance), GFP_KERNEL);
 
-	if (!ins)
-		goto error;
+    if (!ins)
+        goto error;
 
-	ins->proto_type = ASGUARD_PROTO_CONSENSUS;
-	ins->ctrl_ops = consensus_ops;
-	ins->name = "consensus";
+    ins->proto_type = ASGUARD_PROTO_CONSENSUS;
+    ins->ctrl_ops = consensus_ops;
 
+    ins->logger.name = "consensus_le";
+    ins->logger.instance_id = ins->instance_id;
+    ins->logger.ifindex = sdev->ifindex;
 
-	ins->logger.name = "consensus_le";
-	ins->logger.instance_id = ins->instance_id;
-	ins->logger.ifindex = sdev->ifindex;
+    // freed by clear_protocol_instances
+    ins->proto_data = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
 
-	cpriv->throughput_logger.instance_id = ins->instance_id;
-	cpriv->throughput_logger.ifindex = cpriv->sdev->ifindex;
-	cpriv->throughput_logger.name = "consensus_throughput";
+    cpriv = (struct consensus_priv *)ins->proto_data;
 
+    if (!cpriv)
+        goto error;
 
-	ins->proto_data = kmalloc(sizeof(struct consensus_priv), GFP_KERNEL);
+    cpriv->throughput_logger.instance_id = ins->instance_id;
+    cpriv->throughput_logger.ifindex = sdev->ifindex;
+    cpriv->throughput_logger.name = "consensus_throughput";
 
-	cpriv = (struct consensus_priv *)ins->proto_data;
-	cpriv->state = LE_UNINIT;
-	cpriv->ft_min = MIN_FTIMEOUT_NS;
-	cpriv->ft_max = MAX_FTIMEOUT_NS;
-	cpriv->ct_min = MIN_CTIMEOUT_NS;
-	cpriv->ct_max = MAX_CTIMEOUT_NS;
-	cpriv->max_entries_per_pkt = MAX_AE_ENTRIES_PER_PKT;
-	cpriv->sdev = sdev;
-	cpriv->ins = ins;
-	cpriv->llts_before_ftime = 0;
+    cpriv->state = LE_UNINIT;
+    cpriv->ft_min = MIN_FTIMEOUT_NS;
+    cpriv->ft_max = MAX_FTIMEOUT_NS;
+    cpriv->ct_min = MIN_CTIMEOUT_NS;
+    cpriv->ct_max = MAX_CTIMEOUT_NS;
+    cpriv->max_entries_per_pkt = MAX_AE_ENTRIES_PER_PKT;
+    cpriv->sdev = sdev;
+    cpriv->ins = ins;
+    cpriv->llts_before_ftime = 0;
 
-	return ins;
+    return ins;
+
 error:
-	asguard_dbg("Error in %s", __func__);
-	return NULL;
+    asguard_dbg("Error in %s", __func__);
+    return NULL;
 }
 EXPORT_SYMBOL(get_consensus_proto_instance);
-

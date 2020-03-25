@@ -10,6 +10,8 @@
 #include <asguard/asguard.h>
 #include <asguard/logger.h>
 
+
+
 const char *ts_state_string(enum tsstate state)
 {
 	switch (state) {
@@ -209,7 +211,7 @@ int asguard_clean_timestamping(struct asguard_device *sdev)
 	for (i = 0; i < log_types; i++) {
 		if(!sdev->stats->timestamp_logs[i])
 			continue;
-		kfree(sdev->stats->timestamp_logs[i]->timestamp_items);
+		//kfree(sdev->stats->timestamp_logs[i]->timestamp_items);
 		kfree(sdev->stats->timestamp_logs[i]);
 	}
 
@@ -278,7 +280,8 @@ int init_timestamping(struct asguard_device *sdev)
 		goto error;
 	}
 
-	sdev->stats = kmalloc(sizeof(const struct asguard_stats), GFP_ATOMIC);
+	// freed by asguard_clean_timestamping
+	sdev->stats = kmalloc(sizeof(const struct asguard_stats), GFP_KERNEL);
 	if (!sdev->stats) {
 		err = -ENOMEM;
 		asguard_error(" Could not allocate memory for stats.%s\n",
@@ -286,10 +289,12 @@ int init_timestamping(struct asguard_device *sdev)
 		goto error;
 	}
 
+
+    // freed by asguard_clean_timestamping
 	sdev->stats->timestamp_logs =
 		kmalloc_array(log_types,
 			      sizeof(struct asguard_timestamp_logs *),
-			      GFP_ATOMIC);
+                      GFP_KERNEL);
 	if (!sdev->stats->timestamp_logs) {
 		err = -ENOMEM;
 		asguard_error(
@@ -302,8 +307,9 @@ int init_timestamping(struct asguard_device *sdev)
 	sdev->stats->timestamp_amount = 0;
 
 	for (i = 0; i < log_types; i++) {
-		sdev->stats->timestamp_logs[i] = kmalloc(
-			sizeof(struct asguard_timestamp_logs), GFP_ATOMIC);
+        // freed by asguard_clean_timestamping
+        sdev->stats->timestamp_logs[i] = kmalloc(
+			sizeof(struct asguard_timestamp_logs), GFP_KERNEL);
 
 		if (!sdev->stats->timestamp_logs[i]) {
 			err = -ENOMEM;
@@ -315,10 +321,12 @@ int init_timestamping(struct asguard_device *sdev)
 
 		sdev->stats->timestamp_amount++;
 
-		sdev->stats->timestamp_logs[i]->timestamp_items =
+
+        // freed by asguard_clean_timestamping
+        sdev->stats->timestamp_logs[i]->timestamp_items =
 			kmalloc_array(TIMESTAMP_ARRAY_LIMIT,
 				      sizeof(const struct asguard_timestamp_item),
-				      GFP_ATOMIC);
+                          GFP_KERNEL);
 
 		if (!sdev->stats->timestamp_logs[i]->timestamp_items) {
 			err = -ENOMEM;

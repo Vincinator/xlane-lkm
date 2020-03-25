@@ -11,12 +11,12 @@
 #define TOLERANCE_FTIMEOUT_NS 0
 #define TOLERANCE_CTIMEOUT_NS 500000
 
-#define MAX_CONSENSUS_LOG 200000
+#define MAX_CONSENSUS_LOG 100000
 
 #define AE_ENTRY_SIZE 8
 #define MAX_AE_ENTRIES_PER_PKT 170
 
-#define MAX_THROUGPUT_LOGGER_EVENTS 200000
+#define MAX_THROUGPUT_LOGGER_EVENTS 100000
 
 
 enum le_state {
@@ -108,11 +108,14 @@ struct state_machine_cmd_log {
 	 */
 	int lock;
 
-	spinlock_t slock;
+	//spinlock_t slock;
 
 	struct mutex mlock;
 
-	struct sm_log_entry **entries;
+	/* Lock to prevent creation of multiple append entries for the same next_index */
+    struct mutex next_lock;
+
+    struct sm_log_entry **entries;
 
 };
 
@@ -176,15 +179,16 @@ struct consensus_priv {
 	int votes;
 	struct mutex accept_vote_lock;
 
-
-
 	struct state_machine_cmd_log sm_log;
 	struct asguard_logger throughput_logger;
+
+	/* Used to correlate dmesg log output with evaluation results*/
+    uuid_t uuid;
 
 };
 
 
-int commit_log(struct consensus_priv *priv);
+int commit_log(struct consensus_priv *priv, s32 commit_idx);
 int append_command(struct consensus_priv *priv, struct sm_command *cmd, int term, int log_idx, int unstable);
 
 

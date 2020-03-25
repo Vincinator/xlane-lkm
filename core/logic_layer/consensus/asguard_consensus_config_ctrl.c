@@ -23,7 +23,6 @@ static ssize_t asguard_le_config_write(struct file *file,
 	static const char delimiters[] = " ,;()";
 	int state = 0;
 	int fmin_tmp, fmax_tmp, cmin_tmp, cmax_tmp, max_entries_per_pkt_tmp;
-	int waiting_window;
 	int tmp;
 
 	max_entries_per_pkt_tmp = -1;
@@ -133,6 +132,73 @@ static const struct file_operations asguard_le_config_ops = {
 	.llseek = seq_lseek,
 	.release = single_release,
 };
+static ssize_t asguard_eval_uuid_write(struct file *file,
+                                       const char __user *user_buffer, size_t count,
+                                       loff_t *data)
+{
+    struct consensus_priv *priv =
+            (struct consensus_priv *)PDE_DATA(file_inode(file));
+
+    char kernel_buffer[ASGUARD_UUID_BUF];
+    size_t size = min(sizeof(kernel_buffer) - 1, count);
+    int err;
+
+    if (!priv)
+        return -ENODEV;
+
+    if(size < count) {
+        asguard_error("Invalid input! Too many characters.\n");
+        err = -EINVAL;
+        goto error;
+    }
+    memset(kernel_buffer, 0, sizeof(kernel_buffer));
+
+    // requires previous check - it must be: kernel buffer size > count!
+    err = copy_from_user(kernel_buffer, user_buffer, count);
+
+    if (err) {
+        asguard_error("Copy from user failed%s\n", __func__);
+        goto error;
+    }
+
+    kernel_buffer[size] = '\0';
+
+    uuid_parse(kernel_buffer, &priv->uuid);
+
+    return count;
+    error:
+    asguard_error("Error during parsing of input.%s\n", __func__);
+    return err;
+
+}
+
+static int asguard_eval_uuid_show(struct seq_file *m, void *v)
+{
+    struct consensus_priv *priv =
+            (struct consensus_priv *)m->private;
+
+    if (!priv)
+        return -ENODEV;
+
+    seq_printf(m, "%pUB\n", priv->uuid.b);
+
+    return 0;
+}
+
+static int asguard_eval_uuid_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, asguard_eval_uuid_show,
+                       PDE_DATA(file_inode(file)));
+}
+
+static const struct file_operations asguard_eval_uuid_ops = {
+        .owner = THIS_MODULE,
+        .open = asguard_eval_uuid_open,
+        .write = asguard_eval_uuid_write,
+        .read = seq_read,
+        .llseek = seq_lseek,
+        .release = single_release,
+};
 
 void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
@@ -144,6 +210,11 @@ void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 
 	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_le_config_ops, priv);
 
+    snprintf(name_buf, sizeof(name_buf),
+             "asguard/%d/proto_instances/%d/uuid",
+             priv->sdev->ifindex, priv->ins->instance_id);
+
+    proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_eval_uuid_ops, priv);
 
 }
 EXPORT_SYMBOL(init_le_config_ctrl_interfaces);
@@ -157,6 +228,12 @@ void remove_le_config_ctrl_interfaces(struct consensus_priv *priv)
 			priv->sdev->ifindex, priv->ins->instance_id);
 
 	remove_proc_entry(name_buf, NULL);
+
+    snprintf(name_buf, sizeof(name_buf),
+             "asguard/%d/proto_instances/%d/uuid",
+             priv->sdev->ifindex, priv->ins->instance_id);
+
+    remove_proc_entry(name_buf, NULL);
 
 }
 EXPORT_SYMBOL(remove_le_config_ctrl_interfaces);

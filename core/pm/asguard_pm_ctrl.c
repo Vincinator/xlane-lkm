@@ -23,15 +23,20 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 		(struct pminfo *)PDE_DATA(file_inode(file));
 	long new_hb_state = -1;
 
-	if (!spminfo)
-		return -ENODEV;
+    asguard_error("hb ctrl interface accessed!\n");
 
+    if (!spminfo) {
+        asguard_error("pacemaker info is not initialized!\n");
+        return -ENODEV;
+    }
 	if (count == 0) {
 		err = -EINVAL;
-		goto error;
+        asguard_error("invalid interface access\n");
+        goto error;
 	}
 
 	err = copy_from_user(kernel_buffer, buffer, count);
+    asguard_error("copy_from_user!\n");
 
 	if (err) {
 		asguard_error("Copy from user failed%s\n", __func__);
@@ -41,6 +46,7 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 	kernel_buffer[count] = '\0';
 
 	err = kstrtol(kernel_buffer, 0, &new_hb_state);
+    asguard_error("kstrtol!\n");
 
 	if (err) {
 		asguard_error("Error converting input%s\n", __func__);
@@ -49,13 +55,18 @@ static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 
 	switch (new_hb_state) {
 	case 0:
-		asguard_pm_stop(spminfo);
+        asguard_error("0\n");
+
+        asguard_pm_stop(spminfo);
 		break;
 	case 1:
-		asguard_pm_start_loop(spminfo);
+        asguard_error("pm loop start\n");
+        asguard_pm_start_loop(spminfo);
 		break;
 	case 2:
-		asguard_pm_reset(spminfo);
+        asguard_error("2\n");
+
+        asguard_pm_reset(spminfo);
 		break;
 	default:
 		asguard_error("Unknown action!\n");
@@ -131,6 +142,7 @@ static ssize_t asguard_cpumgmt_write(struct file *file,
 
 	spminfo->active_cpu = tocpu;
 	pm_state_transition_to(spminfo, ASGUARD_PM_READY);
+    asguard_error("Pacemaker CPU is set\n");
 
 	return count;
 error:
@@ -254,7 +266,7 @@ static ssize_t asguard_ww_write(struct file *file,
 	err = kstrtol(kernel_buffer, 0, &new_ww);
 
 	if (err) {
-		asguard_error("Error converting input%s\n", __func__);
+		asguard_error("Error converting input %s\n", __func__);
 		goto error;
 	}
 
@@ -262,7 +274,7 @@ static ssize_t asguard_ww_write(struct file *file,
 
 	return count;
 error:
-	asguard_error("Setting of waiting Window failed\n", __func__);
+	asguard_error("Setting of waiting Window failed\n");
 	return err;
 }
 
@@ -327,13 +339,6 @@ static ssize_t asguard_payload_write(struct file *file,
 			break;
 		}
 
-		// TODO: Parse more input to pkt_payload struct.
-		// Since this is only a test tool, prio for this task is low.
-		// invert 0<->1 (and make sure {0,1} is the only possible input)
-		// hb_active_ix = !!!(spminfo->pm_targets[i].pkt_data.hb_active_ix);
-		// spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix].message = input_str[0] & 0xFF;
-		// spminfo->pm_targets[i].pkt_data.hb_active_ix = !!!(spminfo->pm_targets[i].pkt_data.hb_active_ix);
-
 		//asguard_dbg(" payload message: %02X\n", input_str[0] & 0xFF);
 		i++;
 	}
@@ -347,7 +352,9 @@ static int asguard_payload_show(struct seq_file *m, void *v)
 	struct pminfo *spminfo =
 		(struct pminfo *)m->private;
 	int i;
+    // freed in this function
 	char *current_payload = kmalloc(16, GFP_KERNEL);
+    // freed in this function
 	char *current_ip =
 		kmalloc(16, GFP_KERNEL); /* strlen of 255.255.255.255 is 15*/
 	int ret = 0;
@@ -487,6 +494,8 @@ static ssize_t asguard_target_write(struct file *file,
 
 	return count;
 error:
+    if (current_mac)
+        kfree(current_mac);
 	asguard_error("Error during parsing of input.%s\n", __func__);
 	return err;
 }
@@ -496,6 +505,7 @@ static int asguard_target_show(struct seq_file *m, void *v)
 	struct pminfo *spminfo =
 		(struct pminfo *)m->private;
 	int i;
+    // freed in this function
 	char *current_ip =
 		kmalloc(16, GFP_KERNEL); /* strlen of 255.255.255.255 is 15*/
 

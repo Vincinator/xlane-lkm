@@ -31,15 +31,14 @@ struct proto_instance *get_fd_proto_instance(struct asguard_device *sdev)
 	struct proto_instance *ins;
 	struct asguard_fd_priv *fpriv;
 
-	ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
+    // freed by clear_protocol_instances
+    ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
 
 	if (!ins)
 		goto error;
 
 	ins->proto_type = ASGUARD_PROTO_FD;
 	ins->ctrl_ops = fd_ops;
-	ins->name = "fd";
-	ins->logger.name = "fd";
 	ins->logger.ifindex = sdev->ifindex;
 
 	ins->proto_data = (void *)&fd_priv;

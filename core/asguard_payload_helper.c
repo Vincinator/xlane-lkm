@@ -56,6 +56,11 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 
 	u16 *pid, *poff;
 
+	if(!spay){
+	    asguard_error("payload is NULL\N");
+	    return NULL;
+	}
+
 	cur_proto = spay->proto_data;
 
 	// Check if protocol instance already exists in payload
@@ -71,8 +76,6 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 	}
 	spay->protocols_included++;
 
-reuse:
-
 	if (unlikely(proto_offset + proto_size > MAX_ASGUARD_PAYLOAD_BYTES)) {
 		asguard_error("Not enough space in asguard payload\n");
 		spay->protocols_included--;
@@ -84,6 +87,7 @@ reuse:
 
 	*pid = instance_id;
 	*poff = proto_size;
+
 
 	return cur_proto;
 }
@@ -122,10 +126,12 @@ s32 _get_next_idx(struct consensus_priv *priv, int target_id)
 {
 	s32 next_index;
 
-	if (_check_target_id(priv, target_id))
-		next_index = priv->sm_log.next_index[target_id];
-	else
-		next_index = 0;
+	if (_check_target_id(priv, target_id)){
+        next_index = priv->sm_log.next_index[target_id];
+        if(next_index > priv->sm_log.last_idx)
+            next_index = -2;
+	} else
+		next_index = -2;
 
 	return next_index;
 }
@@ -168,13 +174,13 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
 	}
 
 	if (idx > cur_priv->sm_log.last_idx) {
-		asguard_dbg("idx > cur_priv->sm_log.last_id %d\n", idx);
+		asguard_dbg("idx %d > cur_priv->sm_log.last_id (%d) \n", idx, cur_priv->sm_log.last_idx);
 
 		return -1;
 	}
 
 	if (idx > MAX_CONSENSUS_LOG) {
-		asguard_dbg("BUG! idx > MAX_CONSENSUS_LOG. %d\n", idx);
+		asguard_dbg("BUG! idx (%d) > MAX_CONSENSUS_LOG (%d) \n", idx, MAX_CONSENSUS_LOG);
 		return -1;
 	}
 
@@ -191,7 +197,10 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spa
 
 	pkt_payload_sub = asguard_reserve_proto(instance_id, spay, ASGUARD_PROTO_CON_PAYLOAD_SZ);
 
-	set_le_opcode((unsigned char *)pkt_payload_sub, ALIVE, cur_priv->term, cur_priv->sm_log.commit_idx, 0, 0);
+	if(!pkt_payload_sub)
+	    return -1;
+
+	set_le_opcode((unsigned char *)pkt_payload_sub, ALIVE, cur_priv->term, cur_priv->sm_log.commit_idx, cur_priv->sm_log.stable_idx, cur_priv->sdev->hb_interval);
 
 	return 0;
 }
@@ -208,17 +217,35 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 	// Check if entries must be appended
 	local_last_idx = _get_last_idx_safe(cur_priv);
 
-	if (next_index == -1) {
+
+	/* Update next_index inside next_lock critical section */
+    if(!retrans){
+        mutex_lock(&cur_priv->sm_log.next_lock);
+        next_index = _get_next_idx(cur_priv, target_id);
+
+        if(next_index == -2) {
+            mutex_unlock(&cur_priv->sm_log.next_lock);
+            return -2;
+        }
+
+    }
+
+
+    if (next_index == -1) {
 		asguard_dbg("Invalid target id resulted in invalid next_index!\n");
-		return -1;
+        if(!retrans)
+            mutex_unlock(&cur_priv->sm_log.next_lock);
+        return -1;
 	}
 
 	// asguard_dbg("PREP AE: local_last_idx=%d, next_index=%d\n", local_last_idx, next_index);
 	prev_log_term = _get_prev_log_term(cur_priv, next_index - 1);
 
 	if (prev_log_term < 0) {
-		asguard_error("BUG! - prev_log_term is invalid\n");
-		return -1;
+		asguard_error("BUG! - prev_log_term is invalid. next_index=%d, retrans=%d, target_id=%d\n", next_index, retrans, target_id );
+        if(!retrans)
+            mutex_unlock(&cur_priv->sm_log.next_lock);
+        return -1;
 	}
 
 	leader_commit_idx = cur_priv->sm_log.commit_idx;
@@ -239,16 +266,35 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 			more = 0;
 		}
 
-		// update next_index without receiving the response from the target
-		// .. If the receiver rejects this append command, this node will set the
-		// .. the next_index to the last known safe index of the receivers log.
-		// .. In this implementation the receiver sends the last known safe index
-		// .. with the append reply.
+		if(num_entries <= 0) {
+		    asguard_dbg("No entries to replicate\n");
+            if(!retrans)
+                mutex_unlock(&cur_priv->sm_log.next_lock);
+            return -1;
+		}
+
+
+		/* Update next_index without receiving the response from the target.
+		 *
+		 * If the receiver rejects this append command, this node will set
+		 * the next_index to the last known safe index of the receivers log.
+		 *
+		 * The receiver sends the last known safe index with the append reply.
+		 *
+		 * next_index must be read and increased in within critical section of next_lock!
+		 * next_index is only updated if this is not a retransmission!
+		 */
 		if(!retrans)
 			cur_priv->sm_log.next_index[target_id] += num_entries;
 
-
+	} else {
+        if(!retrans)
+            mutex_unlock(&cur_priv->sm_log.next_lock);
+        return -2;
 	}
+
+    if(!retrans)
+        mutex_unlock(&cur_priv->sm_log.next_lock);
 
     asguard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
                 retrans,
@@ -263,8 +309,9 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 		asguard_reserve_proto(instance_id, spay,
 						ASGUARD_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
-	if (!pkt_payload_sub)
-		return -1;
+	if (!pkt_payload_sub) {
+        return -1;
+    }
 
 	set_ae_data(pkt_payload_sub,
 		cur_priv->term,
@@ -298,24 +345,15 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 	struct consensus_priv *cur_priv = NULL;
 	int j, ret;
 	struct pminfo *spminfo = &sdev->pminfo;
-	struct asguard_payload *pkt_payload;
 	int more = 0;
 	struct asguard_async_pkt *apkt = NULL;
 
 	if(sdev->is_leader == 0)
 		return -1; // node lost leadership
 
-	if(spminfo->pm_targets[target_id].pkt_data.active_dirty){
-		return -1; // previous pkt has not been emitted yet, thus we can not switch buffer at the end of this function
-	}
-
-	spminfo->pm_targets[target_id].pkt_data.active_dirty = 1;
-
 	if(spminfo->pm_targets[target_id].alive == 0) {
 		return -1; // Current target is not alive!
 	}
-
-
 
 	// iterate through consensus protocols and include LEAD messages if node is leader
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
@@ -333,19 +371,26 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
                                     spminfo->pm_targets[target_id].pkt_data.naddr.dst_ip,
                                     spminfo->pm_targets[target_id].pkt_data.naddr.dst_mac);
 
+            if(!apkt) {
+                asguard_error("Could not allocate async pkt!\n");
+                continue;
+            }
+
+           // asguard_dbg("Calling setup_append_msg with next_index=%d, retrans=%d, target_id=%d", next_index, retrans, target_id);
+
             ret = setup_append_msg(cur_priv,
-                    (struct asguard_payload *) apkt->payload_ptr,
+                            get_payload_ptr(apkt),
                             sdev->protos[j]->instance_id,
                             target_id,
                             next_index,
                             retrans);
 
+            // handle errors
             if(ret < 0) {
-                asguard_error("setup append msg failed\n");
-                return ret;
+                //kfree(apkt->payload);
+                kfree(apkt);
+                continue;
             }
-
-            asguard_dbg("Written Log Reps to Pkt: %d \n", ret);
 
             more += ret;
 
@@ -382,7 +427,8 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 		return;
 	}
 
-	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_ATOMIC);
+    // freed by prepare_log_replication_handler
+	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_KERNEL);
 	work->sdev = sdev;
 	work->target_id = target_id;
 	work->next_index = next_index;
@@ -391,13 +437,11 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 	INIT_WORK(&work->work, prepare_log_replication_handler);
 	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
 		asguard_dbg("Work item not put in queue ..");
+		sdev->bug_counter++;
 		return;
 	}
 
-
-
 }
-
 
 void prepare_log_replication_handler(struct work_struct *w)
 {
@@ -410,26 +454,24 @@ void prepare_log_replication_handler(struct work_struct *w)
 
 	/* not ready to prepare log replication */
 	if(more < 0){
-		asguard_dbg("skipping reschedule - more=%d\n", more);
 		goto cleanup;
 	}
 
 	if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
 		check_pending_log_rep_for_target(aw->sdev, aw->target_id);
-	} else
-		asguard_dbg("nothing to schedule\n");
-
+	}
 
 cleanup:
-	kfree(aw);
+    if(aw)
+	    kfree(aw);
 }
 
 s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int *retrans)
 {
 	s32 next_index = -1;
-	int match_index;
 	struct retrans_request *cur_rereq = NULL;
 
+    rmb();
 
 	write_lock(&cur_priv->sm_log.retrans_list_lock[target_id]);
 
@@ -448,12 +490,11 @@ s32 get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, int 
 		cur_priv->sm_log.retrans_entries[target_id]--;
 
 		next_index = cur_rereq->request_idx;
-		list_del(&cur_rereq->retrans_req_head);
+        list_del(&cur_rereq->retrans_req_head);
 		kfree(cur_rereq);
 		*retrans = 1;
 	} else {
 		next_index = _get_next_idx(cur_priv, target_id);
-
 		*retrans = 0;
 	}
 
@@ -469,8 +510,6 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 	int retrans;
 	struct consensus_priv *cur_priv = NULL;
 	int j;
-
-
 
 	// TODO: utilise all protocol instances, currently only support for one consensus proto instance - the first
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
@@ -495,10 +534,8 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 
 	next_index = get_next_idx_for_target(cur_priv, target_id, &retrans);
 
-	if(next_index < 0){
-	    asguard_dbg("next index is %d - Abort\n", next_index);
+	if(next_index < 0)
 	    return;
-	}
 
 	match_index = _get_match_idx(cur_priv, target_id);
 
@@ -506,8 +543,6 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 		asguard_dbg("nothing to send for target %d\n", target_id);
 		return;
 	}
-
-	// asguard_dbg("scheduling stuff... \n");
 
 	_schedule_log_rep(sdev, target_id, next_index, retrans);
 }
@@ -529,7 +564,3 @@ void check_pending_log_rep(struct asguard_device *sdev)
 
 }
 EXPORT_SYMBOL(check_pending_log_rep);
-
-
-
-

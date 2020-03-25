@@ -22,29 +22,41 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
 	write_log(&priv->throughput_logger, applying, RDTSC_ASGUARD);
 
-//	asguard_dbg("Added %d commands to State Machine.\n", applying);
+	//asguard_dbg("Added %d commands to State Machine.\n", applying);
 
 	return 0;
 }
 
-int commit_log(struct consensus_priv *priv)
+int commit_log(struct consensus_priv *priv, s32 commit_idx)
 {
-	int err;
+	int err = 0;
 	struct state_machine_cmd_log *log = &priv->sm_log;
 
-	write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, RDTSC_ASGUARD);
+    mutex_lock(&priv->sm_log.mlock);
 
-	err = apply_log_to_sm(priv);
+    // Check if commit index must be updated
+    if (commit_idx > priv->sm_log.commit_idx) {
+        if(commit_idx > priv->sm_log.stable_idx){
+            asguard_error("Commit idx is greater than local stable idx\n");
+            asguard_dbg("\t leader commit idx: %d, local stable idx: %d\n", commit_idx, priv->sm_log.stable_idx);
+        } else {
+            priv->sm_log.commit_idx = commit_idx;
+            err = apply_log_to_sm(priv);
 
-	if (err)
-		goto error;
+            if (!err) {
+                log->last_applied = log->commit_idx;
+                write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, RDTSC_ASGUARD);
+            }
+        }
+    }
 
-	log->last_applied = log->commit_idx;
+    mutex_unlock(&priv->sm_log.mlock);
 
-	return 0;
-error:
-	asguard_dbg("Could not commit to Logs. Commit Index %d\n", log->commit_idx);
-	return err;
+    if(err)
+        asguard_dbg("Could not apply logs. Commit Index %d\n", log->commit_idx);
+
+    return 0;
+
 }
 EXPORT_SYMBOL(commit_log);
 
@@ -77,6 +89,7 @@ void update_stable_idx(struct consensus_priv *priv)
 
 		priv->sm_log.stable_idx = i;
 	}
+
 }
 EXPORT_SYMBOL(update_stable_idx);
 
@@ -112,7 +125,7 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 		if(!priv->sm_log.entries[i]){
 			cur_idx = i;
 
-			if (first_re_idx != -2)
+			if (first_re_idx == -2)
 				first_re_idx = i;
 
 			// we can use first found idx
@@ -156,8 +169,8 @@ int append_command(struct consensus_priv *priv, struct sm_command *cmd, s32 term
 		asguard_error("BUG - commit_idx=%d is greater than idx(%d) of entry to commit!\n", priv->sm_log.commit_idx, log_idx);
 		goto error;
 	}
-
-	entry = kmalloc(sizeof(struct sm_log_entry), GFP_KERNEL);
+    // freed by consensus_clean
+    entry = kmalloc(sizeof(struct sm_log_entry), GFP_KERNEL);
 
 	if (!entry) {
 		err = -ENOMEM;

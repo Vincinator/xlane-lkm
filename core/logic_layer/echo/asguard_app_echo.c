@@ -28,17 +28,19 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 	struct proto_instance *ins;
 	struct asguard_echo_priv *epriv;
 
-	ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
+    // freed by clear_protocol_instances
+    ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
 
 	if (!ins)
 		goto error;
 
 	ins->proto_type = ASGUARD_PROTO_ECHO;
 	ins->ctrl_ops = echo_ops;
-	ins->name = "echo";
 	ins->logger.name = "echo";
 	ins->logger.ifindex = sdev->ifindex;
-	ins->proto_data = kmalloc(sizeof(struct asguard_echo_priv), GFP_KERNEL);
+
+    // freed by clear_protocol_instances
+    ins->proto_data = kmalloc(sizeof(struct asguard_echo_priv), GFP_KERNEL);
 
 	if (!ins->proto_data)
 		goto error;

@@ -1,0 +1,44 @@
+@startuml
+participant leader
+collections follower
+
+leader -> follower: append_entries(term, prev_index, entries[start_idx, end_idx])
+follower->follower: Check if prev_index\nalready exists in local log
+alt prev_index exits in local log
+    follower->follower: Check if term matches
+    alt prev_index(term) == received term == local term
+        follower->follower: accept new entries in stable mode
+        follower->leader: reply_append(state=success)
+
+    else term does not match
+        follower->follower: do not accept new entries
+        note left
+            Open Discussion Point:
+            should the follower really reply?
+            Maybe trigger recovery protocols?
+        end note
+        follower->follower: Log Error 2.2.1
+
+        follower->leader: reply_append(state=failure)
+    end
+else prev_index does not exist in local log
+
+    follower->follower: Check if term(stable_idx) matches\nreceived and local term
+    alt term(stable_idx) == local term == received term
+        follower->follower: accept new entries in unstable mode
+        follower->leader: reply_append(state=retransmission, retrans_idx=first missing idx)
+    else
+        follower->follower: do not accept new entries
+        note left
+            Open Discussion Point:
+            should the follower really reply?
+            Maybe trigger recovery protocols?
+        end note
+        follower->follower: Log Error 2.2.2
+        follower->leader: reply_append(state=failure)
+
+    end
+end
+
+
+@enduml

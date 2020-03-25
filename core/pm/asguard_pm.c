@@ -100,26 +100,32 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
 {
 	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
-	struct asguard_payload *hb_pkt_payload;
 	struct node_addr *naddr;
+
+    asguard_dbg("setup hb skbs. \n");
+
+    if(!spminfo){
+        asguard_error("spminfo is NULL \n");
+        BUG();
+    }
 
 	// BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
 	for (i = 0; i < spminfo->num_of_targets; i++) {
-		// hb_active_ix =
-		//      spminfo->pm_targets[i].pkt_data.hb_active_ix;
-
-		// pkt_payload =
-		// 	spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
-
-		hb_pkt_payload =
-			spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
 
 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
 
-		/* Setup SKB */
-		spminfo->pm_targets[i].skb = compose_skb(sdev->ndev, naddr, hb_pkt_payload);
+        /* Setup SKB */
+		spminfo->pm_targets[i].skb = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
 		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
+
+		/* Out of schedule SKB */
+        spminfo->pm_targets[i].skb_oos = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
+        skb_set_queue_mapping(spminfo->pm_targets[i].skb_oos, smp_processor_id()); // Queue mapping same for each target i
+
+        /* Log Replication SKB */
+        // spminfo->pm_targets[i].skb_logrep = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
+        // skb_set_queue_mapping(spminfo->pm_targets[i].skb_logrep, smp_processor_id()); // Queue mapping same for each target i
 	}
 }
 
@@ -165,9 +171,13 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 		if(fire && !target_fire[i])
 			continue;
 
-		skb = spminfo->pm_targets[i].skb;
+		if(fire)
+            skb = spminfo->pm_targets[i].skb_oos;
+        else
+            skb = spminfo->pm_targets[i].skb;
 
-		skb_get(skb);
+
+        skb_get(skb);
 
 		/* Utilise batch process mechanism for the heartbeats.
 		 * HB pkts will be transmitted to the NIC,
@@ -234,13 +244,6 @@ static inline void asguard_update_skb_payload(struct sk_buff *skb, void *payload
 	tail_ptr = skb_tail_pointer(skb);
 	data_ptr = (tail_ptr - ASGUARD_PAYLOAD_BYTES);
 
-/* TODO: directly write in skb, and use skb dual-buffer!?
- * Update: when we write directly to the skb, then we need to
- *			implement a locking mechanism for NIC/CPU accessing the
- *			skb's.. Which would introduce potential jitter sources..
- *			This memcpy makes sure, that we only access the next skb
- *			if the applications are done with the logic..
- */
 	memcpy(data_ptr, payload, ASGUARD_PAYLOAD_BYTES);
 }
 
@@ -257,8 +260,7 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 
 	if(spminfo->pm_targets[i].lhb_ts == spminfo->pm_targets[i].chb_ts) {
 		if (sdev->verbose && sdev->warmup_state == WARMED_UP){
-			asguard_dbg("Node %d is considered dead. \n lhb_ts = %llu \n chb_ts = %llu \n, cluster_id=%d",
-					i, spminfo->pm_targets[i].lhb_ts, spminfo->pm_targets[i].chb_ts, spminfo->pm_targets[i].pkt_data.naddr.cluster_id );
+			asguard_dbg("Node %d is considered dead - cluster_id=%d\n", i, spminfo->pm_targets[i].pkt_data.naddr.cluster_id);
 		}
 		spminfo->pm_targets[i].alive = 0;
 		spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
@@ -356,7 +358,13 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
-		//asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
+
+		if(!pkt_payload) {
+		    asguard_error("packet payload is NULL! \n");
+		    return -1;
+		}
+
+		asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
 					 pkt_payload);
 	}
@@ -373,6 +381,11 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
+
+		if(!pkt_payload){
+		    asguard_error("pkt payload become NULL! \n");
+		    continue;
+		}
 
 		/* Protocols have been emitted, do not send them again ..
 		 * .. and free the reservations for new protocols */
@@ -393,16 +406,16 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		struct pminfo *spminfo)
 {
-	struct asguard_payload *pkt_payload;
+	struct asguard_payload *pkt_payload = NULL;
 	int i;
-	int hb_active_ix;
 	struct net_device *ndev = sdev->ndev;
-	enum tsstate ts_state = sdev->ts_state;
 	int target_fire[MAX_NODE_ID];
 
-	for (i = 0; i < spminfo->num_of_targets; i++) {
+	/* Storing fire and locking ALL pkt locks */
+    for (i = 0; i < spminfo->num_of_targets; i++) {
 		target_fire[i] = spminfo->pm_targets[i].fire;
-	}
+        spin_lock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
+    }
 
 	/* Prepare heartbeat packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
@@ -410,14 +423,10 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		if(!target_fire[i])
 			continue;
 
-		// Always update payload to avoid jitter!
-		hb_active_ix =
-		     spminfo->pm_targets[i].pkt_data.hb_active_ix;
-
 		pkt_payload =
-		     spminfo->pm_targets[i].pkt_data.pkt_payload[hb_active_ix];
+		     spminfo->pm_targets[i].pkt_data.pkt_payload;
 
-		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
+		asguard_update_skb_payload(spminfo->pm_targets[i].skb_oos,
 					 pkt_payload);
 	}
 
@@ -429,15 +438,23 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		if(!target_fire[i])
 			continue;
 
+         pkt_payload =
+                 spminfo->pm_targets[i].pkt_data.pkt_payload;
+
 		/* Protocols have been emitted, do not sent them again ..
 		 * .. and free the reservations for new protocols */
 		invalidate_proto_data(sdev, pkt_payload, i);
 
+		memset(pkt_payload, 0, sizeof(struct asguard_payload ));
+
 		// after alive msg has been added, the current active buffer can be used again
-		spminfo->pm_targets[i].pkt_data.active_dirty = 0;
 		spminfo->pm_targets[i].fire = 0;
 
 	}
+    /* Unlocking ALL pkt locks */
+    for (i = 0; i < spminfo->num_of_targets; i++) {
+        spin_unlock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
+    }
 
 	return 0;
 }
@@ -445,40 +462,40 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_async_pkt *apkt)
 {
 	struct netdev_queue *txq;
-	int tx_index = smp_processor_id();
-	unsigned long flags;
+    unsigned long flags;
+    int tx_index = smp_processor_id();
 
-	if (unlikely(!netif_running(ndev) ||
-			!netif_carrier_ok(ndev))) {
-		asguard_error("Network device offline!\n exiting pacemaker\n");
-		return;
-	}
+    if (unlikely(!netif_running(ndev) ||
+                 !netif_carrier_ok(ndev))) {
+        asguard_error("Network device offline!\n exiting pacemaker\n");
+        return;
+    }
 
-	local_irq_save(flags);
-	local_bh_disable();
+    /* The queue mapping is the same for each target <i>
+     * Since we pinned the pacemaker to a single cpu,
+     * we can use the smp_processor_id() directly.
+     */
+    txq = &(ndev->_tx[tx_index]);
 
-	/* The queue mapping is the same for each target <i>
-	 * Since we pinned the pacemaker to a single cpu,
-	 * we can use the smp_processor_id() directly.
-	 */
-	txq = &ndev->_tx[tx_index];
+    local_irq_save(flags);
+    local_bh_disable();
 
-	if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
+    HARD_TX_LOCK(ndev, txq, smp_processor_id());
+
+    if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
 		asguard_error("Device Busy unlocking in async window.\n");
 		goto unlock;
 	}
 
     if(!apkt->skb){
-        asguard_error("BUG! skb is NULL!\n");
+        asguard_error("BUG! skb is not set (second check)\n");
         goto unlock;
     }
 
-    // if we do not want the skb to be freed, we have to call skb_get to inc the ref count
-	//skb_get(apkt->skb);
+    skb_get(apkt->skb);
+
 
 	netdev_start_xmit(apkt->skb, ndev, txq, 0);
-
-    kfree(apkt); // apkt has already been dequeued from the list, skb should have been freed now.
 
 unlock:
 	HARD_TX_UNLOCK(ndev, txq);
@@ -487,29 +504,54 @@ unlock:
 	local_irq_restore(flags);
 }
 
-
 int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo) 
 {
 	int i;
  	struct asguard_async_pkt *cur_apkt;
-	
-	for (i = 0; i < spminfo->num_of_targets; i++) {
+ 	u32 num_entries;
+    s32 *prev_log_idx;
+
+    for (i = 0; i < spminfo->num_of_targets; i++) {
 		if(spminfo->pm_targets[i].aapriv->doorbell > 0) {
 
 			cur_apkt = dequeue_async_pkt(spminfo->pm_targets[i].aapriv);
 
-			if(cur_apkt)
-			    async_pkt_dump(cur_apkt);
-            else
-                asguard_dbg("cur apkt is NULL!\n");
-
-            // Pkt has been handled. So we can
+            // Pkt has been handled
             spminfo->pm_targets[i].aapriv->doorbell--;
 
-            if(cur_apkt)
-				emit_apkt(sdev->ndev, spminfo, cur_apkt);
-		}
+            if(!cur_apkt || !cur_apkt->skb) {
+                asguard_error("pkt or skb is NULL! \n");
+                continue;
+            }
+
+            skb_set_queue_mapping(cur_apkt->skb, smp_processor_id());
+
+#if 0
+            // DEBUG: print emitted pkts
+            num_entries = GET_CON_AE_NUM_ENTRIES_VAL( get_payload_ptr(cur_apkt)->proto_data);
+            prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(get_payload_ptr(cur_apkt)->proto_data);
+            asguard_dbg("Node: %d - Emitting %d entries, start_idx=%d", i, num_entries, *prev_log_idx);
+#endif
+            // update payload
+            //asguard_update_skb_payload(spminfo->pm_targets[i].skb_logrep, cur_apkt->payload);
+
+
+            emit_apkt(sdev->ndev, spminfo, cur_apkt);
+
+            spminfo->pm_targets[i].pkt_tx_counter++;
+
+
+            if(cur_apkt) {
+                if(cur_apkt->skb)
+                    kfree_skb(cur_apkt->skb); // drop reference, and free skb if reference count hits 0
+                kfree(cur_apkt);
+            }
+
+            // do not free skb!
+
+        }
 	}
+	return 0;
 }
 
 static int _validate_pm(struct asguard_device *sdev,
@@ -543,7 +585,7 @@ static int _validate_pm(struct asguard_device *sdev,
 	return 0;
 }
 
-#ifndef  CONFIG_KUNIT
+//#ifndef  CONFIG_KUNIT
 static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminfo)
 {
 	asguard_setup_hb_skbs(sdev);
@@ -555,9 +597,9 @@ static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminf
 	get_cpu(); // disable preemption
 
 }
-#endif // ! CONFIG_KUNIT
+//#endif // ! CONFIG_KUNIT
 
-#ifndef  CONFIG_KUNIT
+//#ifndef  CONFIG_KUNIT
 static void __postwork_pm_loop(struct asguard_device *sdev)
 {
 	int i;
@@ -566,20 +608,25 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 
 	// Stopping all protocols
 	for (i = 0; i < sdev->num_of_proto_instances; i++)
-		if (sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL)
-			sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
+		if (sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL){
+            sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
+        }
 
-	for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-		if(mutex_is_locked(&sdev->pminfo.pm_targets[i].pkt_data.active_dirty_lock))
-			mutex_unlock(&sdev->pminfo.pm_targets[i].pkt_data.active_dirty_lock);
-	}
+    // free fixed skbs again
+    for(i = 0; i < sdev->pminfo.num_of_targets; i++){
+        if(sdev->pminfo.pm_targets[i].skb != NULL)
+            dev_kfree_skb(sdev->pminfo.pm_targets[i].skb);
 
+        if(sdev->pminfo.pm_targets[i].skb_oos != NULL)
+            dev_kfree_skb(sdev->pminfo.pm_targets[i].skb_oos);
 
+        if(sdev->pminfo.pm_targets[i].skb_logrep != NULL)
+            dev_kfree_skb(sdev->pminfo.pm_targets[i].skb_logrep);
+    }
 }
-#endif // ! CONFIG_KUNIT
+//#endif // ! CONFIG_KUNIT
 
-
-#ifndef CONFIG_KUNIT
+//#ifndef CONFIG_KUNIT
 static int asguard_pm_loop(void *data)
 {
 	uint64_t prev_time, cur_time;
@@ -591,7 +638,9 @@ static int asguard_pm_loop(void *data)
 	int out_of_sched_hb = 0;
 	int async_pkts = 0;
 
-	__prepare_pm_loop(sdev, spminfo);
+    asguard_dbg(" starting pacemaker \n");
+
+    __prepare_pm_loop(sdev, spminfo);
 
 	prev_time = RDTSC_ASGUARD;
 
@@ -599,14 +648,17 @@ static int asguard_pm_loop(void *data)
 
 		cur_time = RDTSC_ASGUARD;
 
+        out_of_sched_hb = 0;
+        async_pkts = 0;
 		scheduled_hb = scheduled_tx(prev_time, cur_time, interval);
 
 		if(scheduled_hb)
 			goto emit;
 
 		/* If in Sync Window, do not send anything until the Heartbeat has been sent */
-		if (!check_async_window(prev_time, cur_time, interval, spminfo->waiting_window))
-			continue;
+		if (!check_async_window(prev_time, cur_time, interval, spminfo->waiting_window)) {
+            continue;
+        }
 
 		out_of_sched_hb = out_of_schedule_tx(sdev);
 
@@ -621,13 +673,13 @@ static int asguard_pm_loop(void *data)
 		continue;
 
 emit:
-		prev_time = cur_time;
-
 		if(scheduled_hb) {
-			err = _emit_pkts_scheduled(sdev, spminfo);
+            prev_time = cur_time;
+            err = _emit_pkts_scheduled(sdev, spminfo);
+            sdev->hb_interval++; // todo: how to handle overflow?
 		} else if (out_of_sched_hb){
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
-		} else if (async_pkts) {
+        } else if (async_pkts) {
 			err = _emit_async_pkts(sdev, spminfo);
 		}
 
@@ -640,17 +692,18 @@ emit:
 		//	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, 42);
 
 	}
+    asguard_dbg(" exiting pacemaker \n");
 
 	__postwork_pm_loop(sdev);
 
 	return 0;
 }
-#else
+/*#else
 static int asguard_pm_loop(void *data)
 {
 	return 0;
 }
-#endif
+#endif*/
 
 #ifndef CONFIG_KUNIT
 static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
@@ -693,36 +746,6 @@ static enum hrtimer_restart asguard_pm_timer(struct hrtimer *timer)
 }
 #endif
 
-int asguard_pm_start_timer(void *data)
-{
-	struct pminfo *spminfo =
-		(struct pminfo *) data;
-	struct asguard_device *sdev =
-		container_of(spminfo, struct asguard_device, pminfo);
-	ktime_t interval;
-	int err;
-
-	err = _validate_pm(sdev, spminfo);
-
-	if (err)
-		return err;
-
-	pm_state_transition_to(spminfo, ASGUARD_PM_EMITTING);
-
-	interval = ktime_set(0, 100000000);
-
-	hrtimer_init(&spminfo->pm_timer, CLOCK_MONOTONIC,
-		HRTIMER_MODE_REL_PINNED);
-
-	spminfo->pm_timer.function = &asguard_pm_timer;
-
-	hrtimer_start(&spminfo->pm_timer, interval,
-		HRTIMER_MODE_REL_PINNED);
-
-	return 0;
-}
-
-
 int asguard_pm_start_loop(void *data)
 {
 	struct pminfo *spminfo =
@@ -731,6 +754,8 @@ int asguard_pm_start_loop(void *data)
 		container_of(spminfo, struct asguard_device, pminfo);
 	struct cpumask mask;
 	int err;
+
+    asguard_dbg("asguard_pm_start_loop\n");
 
 	err = _validate_pm(sdev, spminfo);
 

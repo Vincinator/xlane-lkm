@@ -165,7 +165,6 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 
 		if (param1 >= priv->term) {
 			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
-			commit_log(priv);
 		} else {
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)

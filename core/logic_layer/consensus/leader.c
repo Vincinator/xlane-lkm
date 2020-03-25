@@ -66,7 +66,6 @@ void update_commit_idx(struct consensus_priv *priv)
 {
 	s32 N, current_N, i;
 
-	asguard_dbg(" \n");
 	if (!priv) {
 		asguard_error("priv is NULL!\n");
 		return;
@@ -113,8 +112,8 @@ void update_commit_idx(struct consensus_priv *priv)
 void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retrans_idx){
 
 	struct retrans_request *new_req, *entry, *tmp_entry;
-	int cancel = 0;
 
+	rmb();
 	write_lock(&priv->sm_log.retrans_list_lock[remote_lid]);
 
 	list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
@@ -125,10 +124,9 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 		}
     }
 
-	asguard_dbg ("\t new request idx = %d\n" , retrans_idx);
-
+    // freed by clean_request_transmission_lists
 	new_req = (struct retrans_request *)
-		kmalloc(sizeof(struct retrans_request), GFP_ATOMIC);
+		kmalloc(sizeof(struct retrans_request), GFP_KERNEL);
 
 	if(!new_req) {
 		asguard_error("Could not allocate mem for new retransmission request list item\n");
@@ -137,7 +135,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 
 	new_req->request_idx = retrans_idx;
 
-	// asguard_dbg(" Added request idx %d to list %d \n",retrans_idx, remote_lid);
+	asguard_dbg(" Added request idx %d to list for target=%d \n", retrans_idx, remote_lid);
 
 	list_add_tail(&(new_req->retrans_req_head), &priv->sm_log.retrans_head[remote_lid]);
 	priv->sm_log.num_retransmissions[remote_lid]++;
@@ -272,7 +270,6 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 void clean_request_transmission_lists(struct consensus_priv *priv)
 {
 	struct retrans_request *entry, *tmp_entry;
-	struct retrans_request *tmp;
 	int i;
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
@@ -306,6 +303,7 @@ void print_leader_stats(struct consensus_priv *priv)
 	int i;
 	struct retrans_request *entry, *tmp_entry;
 
+    asguard_dbg("Bug Counter: %d", priv->sdev->bug_counter);
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
 		asguard_dbg("Stats for target %d \n", i);
@@ -342,6 +340,7 @@ void print_leader_stats(struct consensus_priv *priv)
 int stop_leader(struct proto_instance *ins)
 {
 	struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
+    int i;
 
 	priv->sdev->is_leader = 0;
 
@@ -351,7 +350,9 @@ int stop_leader(struct proto_instance *ins)
 
 	clean_request_transmission_lists(priv);
 
-    async_clear_queues(priv->sdev->pminfo.async_priv);
+	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i ++) {
+        async_clear_queue(priv->sdev->pminfo.pm_targets[i].aapriv);
+    }
 
 	return 0;
 }

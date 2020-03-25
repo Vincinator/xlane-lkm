@@ -72,6 +72,8 @@ static int asguard_eval_ctrl_show(struct seq_file *m, void *v)
 	if (!priv)
 		return -ENODEV;
 
+    //seq_printf(m, "%pUB\n", priv->uuid.b);
+
 	return 0;
 }
 

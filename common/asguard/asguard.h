@@ -29,6 +29,7 @@
 #define MAX_PROCFS_BUF 512
 
 
+#define ASGUARD_UUID_BUF 42
 
 #define ASGUARD_TARGETS_BUF 512
 #define ASGUARD_NUMBUF 13
@@ -49,7 +50,7 @@
 	5 /* Number of allowed mlx5 devices that can connect to ASGUARD */
 #define MAX_CPU_NUMBER 55
 
-#define ASGUARD_HEADER_BYTES 64 // TODO: this should be more than enough for UDP/ipv4
+#define ASGUARD_HEADER_BYTES 128
 
 #define MAX_ASGUARD_PAYLOAD_BYTES (1500 - ASGUARD_HEADER_BYTES) // asuming an ethernet mtu of ~1500 bytes
 
@@ -161,25 +162,6 @@ enum le_event_type {
 	START_LOG_REP = 14,
 };
 
-struct le_event {
-	uint64_t timestamp_tcs;
-	enum le_event_type type;
-};
-
-
-struct le_event_logs {
-
-	/* Size is defined by LE_EVENT_LOG_LIMIT */
-	struct le_event *events;
-
-	/* Last valid log entry in the le_event array */
-	int current_entries;
-
-	struct proc_dir_entry	*proc_dir;
-	char *name;
-
-};
-
 enum logger_state {
 	LOGGER_RUNNING,
 	LOGGER_READY,		/* Initialized but not active*/
@@ -190,9 +172,7 @@ enum logger_state {
 struct logger_event {
 	uint64_t timestamp_tcs;
 	int type;
-	uint64_t accu_random_timeouts;
 };
-
 
 
 struct asguard_logger {
@@ -252,17 +232,6 @@ struct node_addr {
 };
 
 
-struct log_entry {
-	u32 var_id;
-	u32 value;
-};
-
-struct protocol_payload {
-	u8 protocol_id;
-	char data[]; // implicitly specified via protocol_id
-};
-
-
 struct asguard_payload {
 
 	/* The number of protocols that are included in this payload.
@@ -281,36 +250,19 @@ struct asguard_payload {
 	 * If protocol payload does not fit in the asguard payload,
 	 * then the protocol payload is queued to be stored in the next asguard payload.
 	 */
-	char proto_data[MAX_ASGUARD_PAYLOAD_BYTES - 1];
+	char proto_data[MAX_ASGUARD_PAYLOAD_BYTES - 2];
 };
 
 
 struct asguard_packet_data {
 	struct node_addr naddr;
 
-	u8 protocol_id;
+	struct asguard_payload *pkt_payload;
 
-	/* pacemaker MUST copy in every loop.
-	 * Thus, we need a copy of pkt_payload to continue the copy in the pacemaker
-	 * even when a new version is currently written.
-	 *
-	 * The hb_active_ix member of this struct tells which index can be used by the pacemaker
-	 */
-	struct asguard_payload *pkt_payload[2];
+	spinlock_t pkt_lock;
 
 	struct asguard_payload *hb_pkt_payload;
 
-	int hb_active_ix;
-
-	int contains_log_rep[2];
-
-	/* Do not reupdate until the active has been emitted (only for leader logic) */
-	int active_dirty;
-
-	struct mutex active_dirty_lock;
-
-	/* pacemaker locks payload if it is using it */
-	spinlock_t lock;
 };
 
 struct asguard_pacemaker_test_data {
@@ -320,8 +272,6 @@ struct asguard_pacemaker_test_data {
 };
 
 struct asguard_pm_target_info {
-	int target_id;
-
 	int fire;
 
 	int pkt_tx_counter;
@@ -338,7 +288,6 @@ struct asguard_pm_target_info {
 	 * If chb_ts != lhb_ts: remote node is considered alive
 	 */
 	uint64_t chb_ts;
-
 
 	/* 1 if node is considered alive
 	 * 0 if node is considered dead
@@ -364,19 +313,17 @@ struct asguard_pm_target_info {
 
 	/* Data for transmitting the packet  */
 	struct sk_buff *skb;
-	struct netdev_queue *txq;
+
+    /* Data for transmitting the packet  */
+    struct sk_buff *skb_oos;
+
+    /* Data for transmitting the packet  */
+    struct sk_buff *skb_logrep;
 
 	/* async packet queue for pm target*/
 	struct asguard_async_queue_priv *aapriv;
 
 };
-
-struct asguard_test_procfile_container {
-	struct pminfo *spminfo;
-	int procid;
-};
-
-struct asguard_async_head_of_queues_priv;
 
 struct pminfo {
 	enum pmstate state;
@@ -399,25 +346,21 @@ struct pminfo {
 
 	struct hrtimer pm_timer;
 
-	struct asguard_async_head_of_queues_priv *async_priv;
-
 };
 
 struct proto_instance;
 
 struct asguard_device {
 	int ifindex; /* corresponds to ifindex of net_device */
+
+    u32 hb_interval;
+
 	int asguard_id;
 	int hold_fire;
 	int cur_leader_lid;
+	int bug_counter;
+
 	struct consensus_priv *consensus_priv;
-
-	/* DEBUGING Processing Time */
-	uint64_t pkt_proc_ctr;
-	uint64_t pkt_proc_sts;
-	uint64_t pkt_proc_ets;
-	/* END */
-
 
 	int is_leader; /* Is this node a leader? */
 
@@ -484,23 +427,10 @@ struct proto_instance {
 
 	struct asguard_logger logger;
 
-	char *name;
-
 	struct asguard_protocol_ctrl_ops ctrl_ops;
 
 	void *proto_data;
 };
-
-struct process_pkt_in {
-
-	struct asguard_device *sdev;
-	unsigned char *remote_mac;
-	int remote_lid;
-	void *payload;
-	u32 cqe_bcnt;
-	spinlock_t *target_lock;
-};
-
 
 struct retrans_request {
 	s32 request_idx;
@@ -516,6 +446,7 @@ struct asguard_pkt_work_data {
 	char *payload;
 	int received_proto_instances;
 	u32 cqe_bcnt;
+    u16 headroom;
 
 };
 struct asguard_leader_pkt_work_data {
@@ -528,9 +459,6 @@ struct asguard_leader_pkt_work_data {
 
 };
 
-
-struct sk_buff *asguard_setup_hb_packet(struct pminfo *spminfo,
-				      int host_number);
 //void asguard_setup_skbs(struct pminfo *spminfo);
 void pm_state_transition_to(struct pminfo *spminfo,
 			    enum pmstate state);
@@ -539,12 +467,12 @@ const char *pm_state_string(enum pmstate state);
 int asguard_pm_reset(struct pminfo *spminfo);
 int asguard_pm_stop(struct pminfo *spminfo);
 int asguard_pm_start_loop(void *data);
-int asguard_pm_start_timer(void *data);
 
 void init_asguard_pm_ctrl_interfaces(struct asguard_device *sdev);
 void clean_asguard_pm_ctrl_interfaces(struct asguard_device *sdev);
 
 void asguard_hex_to_ip(char *retval, u32 dst_ip);
+struct asguard_payload *get_payload_ptr(struct asguard_async_pkt *pkt);
 
 /*
  * Converts an IP address from dotted numbers string to hex.
@@ -556,18 +484,15 @@ u32 asguard_ip_convert(const char *str);
  */
 unsigned char *asguard_convert_mac(const char *str);
 
-struct sk_buff *compose_skb(struct net_device *dev, struct node_addr *naddr,
-									struct asguard_payload *payload);
 
-struct sk_buff *reserve_skb(struct net_device *dev, u32 dst_ip, unsigned char dst_mac[6],
-									char **data_ptr);
+struct sk_buff *asguard_reserve_skb(struct net_device *dev, u32 dst_ip, unsigned char *dst_mac, struct asguard_payload *payload);
 
 struct net_device *asguard_get_netdevice(int ifindex);
 
 int asguard_validate_asguard_device(int asguard_id);
 void asguard_reset_remote_host_counter(int asguard_id);
 
-void asguard_post_payload(int asguard_id, unsigned char *remote_mac, void *payload, u32 cqe_bcnt);
+void asguard_post_payload(int asguard_id, void *payload, u16 headroom, u32 cqe_bcnt);
 
 const char *asguard_get_protocol_name(enum asguard_protocol_type protocol_type);
 
@@ -585,18 +510,12 @@ int asguard_ts_stop(struct asguard_device *sdev);
 int asguard_ts_start(struct asguard_device *sdev);
 int asguard_reset_stats(struct asguard_device *sdev);
 
-int asguard_le_log_stop(struct asguard_device *sdev);
-int asguard_le_log_start(struct asguard_device *sdev);
-int asguard_le_log_reset(struct asguard_device *sdev);
-
 int asguard_write_timestamp(struct asguard_device *sdev,
 				int logid, uint64_t cycles, int target_id);
 
 const char *ts_state_string(enum tsstate state);
 int init_timestamping(struct asguard_device *sdev);
-int init_le_logging(struct asguard_device *sdev);
 void init_asguard_ts_ctrl_interfaces(struct asguard_device *sdev);
-void init_log_ctrl_interfaces(struct asguard_device *sdev);
 int asguard_clean_timestamping(struct asguard_device *sdev);
 
 int write_log(struct asguard_logger *slog, int type, uint64_t tcs);
@@ -613,14 +532,12 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev);
 
 void get_cluster_ids(struct asguard_device *sdev, unsigned char *remote_mac, int *lid, int *cid);
 //void set_le_noop(struct asguard_device *sdev, unsigned char *pkt);
-void set_le_term(unsigned char *pkt, u32 term);
 int compare_mac(unsigned char *m1, unsigned char *m2);
 
-void init_log_ctrl_base(struct asguard_device *sdev);
 void init_logger_ctrl(struct asguard_logger *slog);
 
 
-int init_logger(struct asguard_logger *slog);
+int init_logger(struct asguard_logger *slog, u16 i, int i1, char string[MAX_LOGGER_NAME]);
 void clear_logger(struct asguard_logger *slog);
 
 int asguard_log_stop(struct asguard_logger *slog);
@@ -628,7 +545,6 @@ int asguard_log_start(struct asguard_logger *slog);
 int asguard_log_reset(struct asguard_logger *slog);
 
 const char *logger_state_string(enum logger_state state);
-char *le_state_name(struct asguard_device *sdev);
 void set_all_targets_dead(struct asguard_device *sdev);
 void remove_logger_ifaces(struct asguard_logger *slog);
 

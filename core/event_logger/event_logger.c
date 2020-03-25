@@ -49,7 +49,6 @@ int write_log(struct asguard_logger *slog,
 
 	slog->events[slog->current_entries].timestamp_tcs = tcs;
 	slog->events[slog->current_entries].type = type;
-	slog->events[slog->current_entries].accu_random_timeouts = 0;
 
 	slog->current_entries += 1;
 
@@ -206,7 +205,7 @@ error:
 }
 
 
-int init_logger(struct asguard_logger *slog)
+int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char name[MAX_LOGGER_NAME])
 {
 	int err;
 
@@ -218,6 +217,12 @@ int init_logger(struct asguard_logger *slog)
 		goto error;
 	}
 
+    slog->instance_id = instance_id;
+    slog->ifindex = ifindex;
+    slog->name = kmalloc(MAX_LOGGER_NAME, GFP_KERNEL);
+    strncpy(slog->name, name, MAX_LOGGER_NAME);
+
+    // freed by clear_logger
 	slog->events = kmalloc_array(LOGGER_EVENT_LIMIT, sizeof(struct logger_event), GFP_KERNEL);
 
 	if (!slog->events) {
