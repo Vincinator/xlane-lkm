@@ -11,12 +11,9 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 # KBuild does a lot of work for us. We can call KBuild from CMake via ADD_CUSTOM_TARGET
 # Using a CMake "native" method would require a reimplementation of the KBuild functionality with CMake logic.
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Darwin")
-    MESSAGE(${CMAKE_HOST_SYSTEM_NAME})
     set(TARGET_ENV 0)
 else()
-    MESSAGE(${CMAKE_HOST_SYSTEM_NAME})
     set(TARGET_ENV 1)
-
 endif()
 
 
@@ -72,20 +69,17 @@ SET( MODULE_SOURCE_FILES
 
 # Use KBuild System in Container to compile
 if (TARGET_ENV EQUAL 1)
-    MESSAGE("Using Container")
+
+    MESSAGE("Using a ${CMAKE_HOST_SYSTEM_NAME} Container to Build!!!")
+
     SET(CMAKE_USE_RELATIVE_PATHS On)
 
     SET( ASGUARD_LKM_BIN    /home/cerebro/asguard-kernel/net/asguard/asguard.ko )
     SET( MODULE_SOURCE_DIR  /home/cerebro/asguard-kernel/net/asguard)
 
-    MESSAGE("y")
-    MESSAGE(${MODULE_SOURCE_DIR})
-
     Set( KERNEL_DIR "/home/cerebro/asguard-kernel")
 
     Set( KBUILD_CMD ${CMAKE_MAKE_PROGRAM} -C ${KERNEL_DIR} M=${MODULE_SOURCE_DIR} modules -j8)
-    MESSAGE(${KBUILD_CMD})
-    MESSAGE(${KBUILD_CMD})
 
     ADD_CUSTOM_COMMAND(OUTPUT ASGUARD_LKM_BIN
             COMMAND ${KBUILD_CMD}
@@ -98,7 +92,9 @@ if (TARGET_ENV EQUAL 1)
 
 elseif(TARGET_ENV EQUAL 0)
 
-    set(ASGUARD_KERNEL_ROOT ${CMAKE_SOURCE_DIR}/../asguard-kernel)
+    MESSAGE("Using Local Environment (No Container)")
+    MESSAGE(${CMAKE_SOURCE_DIR})
+    set(ASGUARD_KERNEL_ROOT /Volumes/Workspace/asguard/asguard-kernel/)
 
     execute_process(
             COMMAND git rev-parse --short HEAD
