@@ -18,8 +18,8 @@ endif()
 
 
 SET( MODULE_SOURCE_FILES
-        deps/MoSeS-Syncbeat/kernel-space/syncbeat-chardev.c
-        deps/MoSeS-Syncbeat/kernel-space/include/syncbeat-chardev.h
+        deps/Synbuf/kernel-space/synbuf-chardev.c
+        deps/Synbuf/kernel-space/include/synbuf-chardev.h
         common/asguard/asguard.h
         common/asguard/consensus.h
         common/asguard/logger.h
@@ -67,7 +67,7 @@ SET( MODULE_SOURCE_FILES
         core/asguard_core.c
         core/asguard_core.h
         core/asguard_core_ctrl.c
-        core/asguard_payload_helper.c)
+        core/asguard_payload_helper.c core/uface/cluster_membership.c core/uface/apply_data.c core/uface/consensus_request.c common/asguard/asgard_uface.h)
 
 # Use KBuild System in Container to compile
 if (TARGET_ENV EQUAL 1)
@@ -129,7 +129,7 @@ elseif(TARGET_ENV EQUAL 0)
 
     include_directories(${KERNEL_HEADERS})
 
-    include_directories(deps/MoSeS-Syncbeat/kernel-space/include)
+    include_directories(deps/Synbuf/kernel-space/include)
     include_directories(common)
     include_directories(common/asguard)
     include_directories(core)

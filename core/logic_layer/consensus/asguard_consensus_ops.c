@@ -6,7 +6,7 @@
 #include <linux/proc_fs.h>
 
 #include <asguard/consensus.h>
-#include <syncbeat-chardev.h>
+#include <synbuf-chardev.h>
 
 #include "include/asguard_consensus_ops.h"
 #include "include/candidate.h"
@@ -22,21 +22,22 @@ void generate_asguard_eval_uuid(unsigned char uuid[16])
     asguard_dbg("===================== Start of Run: %pUB ====================\n", uuid);
 }
 
-struct syncbeat_devic* create_synbuf(const char *name)
+struct synbuf_device* create_synbuf(const char *name)
 {
     int err = 0;
-    struct syncbeat_device *device
-            = kmalloc(sizeof(struct syncbeat_device), GFP_KERNEL);
+    struct synbuf_device *device
+            = kmalloc(sizeof(struct synbuf_device), GFP_KERNEL);
 
     if(!device) {
-        asguard_error("could not allocate memory for syncbeat device\n");
+        asguard_error("could not allocate memory for synbuf device\n");
         goto error;
     }
 
-    err = syncbeat_chardev_init(device, name);
+    // allocate 1MB Buffer
+    err = synbuf_chardev_init(device, name, 1000000);
 
     if(err != 0) {
-        asguard_error("Failed initializing syncbeat device\n");
+        asguard_error("Failed initializing synbuf device\n");
         goto error;
     }
 
@@ -97,13 +98,13 @@ int consensus_init(struct proto_instance *ins)
     init_logger(&priv->throughput_logger, ins->instance_id, priv->sdev->ifindex, "consensus_throughput");
     priv->throughput_logger.state = LOGGER_RUNNING;
 
-    /* Initialize Syncbeat for Cluster Membership */
+    /* Initialize synbuf for Cluster Membership */
     priv->synbuf_clustermem = create_synbuf("clustermem");
 
-    /* Initialize Syncbeat for Follower (RX) Buffer */
+    /* Initialize synbuf for Follower (RX) Buffer */
     priv->synbuf_rx = create_synbuf("rx");
 
-    /* Initialize Syncbeat for Leader (TX) Buffer */
+    /* Initialize synbuf for Leader (TX) Buffer */
     priv->synbuf_tx = create_synbuf("tx");
 
 
@@ -203,13 +204,13 @@ int consensus_clean(struct proto_instance *ins)
 	clear_logger(&priv->throughput_logger);
 
     /* Clean Cluster Membership Synbuf*/
-    syncbeat_chardev_exit(priv->synbuf_clustermem);
+    synbuf_chardev_exit(priv->synbuf_clustermem);
 
     /* Clean Follower (RX) Synbuf */
-    syncbeat_chardev_exit(priv->synbuf_rx);
+    synbuf_chardev_exit(priv->synbuf_rx);
 
     /* Clean Leader (TX) Synbuf  */
-    syncbeat_chardev_exit(priv->synbuf_tx);
+    synbuf_chardev_exit(priv->synbuf_tx);
 
 
     snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",

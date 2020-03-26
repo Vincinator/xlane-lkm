@@ -5,6 +5,7 @@
 #include <asguard/logger.h>
 #include <linux/spinlock.h>
 #include <linux/list.h>
+#include <synbuf-chardev.h>
 
 #define MAX_NODE_ID 10
 
@@ -185,9 +186,9 @@ struct consensus_priv {
 	/* Used to correlate dmesg log output with evaluation results*/
     uuid_t uuid;
 
-    struct syncbeat_devic *synbuf_clustermem;
-    struct syncbeat_devic *synbuf_tx;
-    struct syncbeat_devic *synbuf_rx;
+    struct synbuf_devic *synbuf_clustermem;
+    struct synbuf_devic *synbuf_tx;
+    struct synbuf_devic *synbuf_rx;
 
 };
 

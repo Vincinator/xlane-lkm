@@ -22,7 +22,7 @@
 
 #include <asguard/logger.h>
 #include <asguard/payload_helper.h>
-#include <syncbeat-chardev.h>
+#include <synbuf-chardev.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Distributed Systems Group");
@@ -673,7 +673,7 @@ static int __init asguard_connection_core_init(void)
 
 
     /* Initialize User Space interfaces */
-    syncbeat_bypass_init_class();
+    synbuf_bypass_init_class();
 
     return 0;
 error:
@@ -732,7 +732,7 @@ static void __exit asguard_connection_core_exit(void)
     /* MUST unregister asguard for drivers first */
 	unregister_asguard();
 
-	syncbeat_clean_class();
+	synbuf_clean_class();
 
     if(!score){
 		asguard_error("score is NULL \n");
