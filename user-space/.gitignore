@@ -1,0 +1,10 @@
+*.cmd
+*.ko
+*.mod*
+*.o
+*.d
+Module.symvers
+*.order
+/cmake-build-debug
+.idea
+/fd_app
