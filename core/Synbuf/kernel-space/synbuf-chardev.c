@@ -255,6 +255,8 @@ void synbuf_chardev_exit(struct synbuf_device *sdev)
     // In this case all pointers etc. already were cleared
     return;
   }
+  if(!sdev || sdev->ubuf)
+      return;
 
   kfree(sdev->ubuf);
   mutex_destroy(&sdev->ubuf_mutex);
