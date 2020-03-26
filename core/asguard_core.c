@@ -22,6 +22,7 @@
 
 #include <asguard/logger.h>
 #include <asguard/payload_helper.h>
+#include <syncbeat-chardev.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Distributed Systems Group");
@@ -669,7 +670,12 @@ static int __init asguard_connection_core_init(void)
 	asguard_wq = alloc_workqueue("asguard",  WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_FREEZABLE, 1);
     asguard_wq_lock = 0;
 
-	return 0;
+
+
+    /* Initialize User Space interfaces */
+    syncbeat_bypass_init_class();
+
+    return 0;
 error:
 	asguard_error("Could not initialize asguard - aborting init.\n");
 	return err;
@@ -723,11 +729,12 @@ static void __exit asguard_connection_core_exit(void)
     mb();
     flush_workqueue(asguard_wq);
 
-
-    // MUST unregister asguard for drivers first
+    /* MUST unregister asguard for drivers first */
 	unregister_asguard();
 
-	if(!score){
+	syncbeat_clean_class();
+
+    if(!score){
 		asguard_error("score is NULL \n");
 		return;
 	}

@@ -6,6 +6,8 @@
 #include <linux/proc_fs.h>
 
 #include <asguard/consensus.h>
+#include <syncbeat-chardev.h>
+
 #include "include/asguard_consensus_ops.h"
 #include "include/candidate.h"
 #include "include/follower.h"
@@ -18,6 +20,34 @@ void generate_asguard_eval_uuid(unsigned char uuid[16])
 {
     generate_random_uuid(uuid);
     asguard_dbg("===================== Start of Run: %pUB ====================\n", uuid);
+}
+
+struct syncbeat_devic* create_synbuf(const char *name)
+{
+    int err = 0;
+    struct syncbeat_device *device
+            = kmalloc(sizeof(struct syncbeat_device), GFP_KERNEL);
+
+    if(!device) {
+        asguard_error("could not allocate memory for syncbeat device\n");
+        goto error;
+    }
+
+    err = syncbeat_chardev_init(device, name);
+
+    if(err != 0) {
+        asguard_error("Failed initializing syncbeat device\n");
+        goto error;
+    }
+
+    asguard_dbg("Initilized synbuf for cluster membership \n");
+
+    return device;
+
+error:
+
+    return NULL;
+
 }
 
 int consensus_init(struct proto_instance *ins)
@@ -66,6 +96,17 @@ int consensus_init(struct proto_instance *ins)
 
     init_logger(&priv->throughput_logger, ins->instance_id, priv->sdev->ifindex, "consensus_throughput");
     priv->throughput_logger.state = LOGGER_RUNNING;
+
+    /* Initialize Syncbeat for Cluster Membership */
+    priv->synbuf_clustermem = create_synbuf("clustermem");
+
+    /* Initialize Syncbeat for Follower (RX) Buffer */
+    priv->synbuf_rx = create_synbuf("rx");
+
+    /* Initialize Syncbeat for Leader (TX) Buffer */
+    priv->synbuf_tx = create_synbuf("tx");
+
+
 
 	return 0;
 }
@@ -161,7 +202,17 @@ int consensus_clean(struct proto_instance *ins)
 
 	clear_logger(&priv->throughput_logger);
 
-	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
+    /* Clean Cluster Membership Synbuf*/
+    syncbeat_chardev_exit(priv->synbuf_clustermem);
+
+    /* Clean Follower (RX) Synbuf */
+    syncbeat_chardev_exit(priv->synbuf_rx);
+
+    /* Clean Leader (TX) Synbuf  */
+    syncbeat_chardev_exit(priv->synbuf_tx);
+
+
+    snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
 		 priv->sdev->ifindex, ins->instance_id);
 
 	remove_proc_entry(name_buf, NULL);

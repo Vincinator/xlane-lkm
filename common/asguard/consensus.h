@@ -185,6 +185,10 @@ struct consensus_priv {
 	/* Used to correlate dmesg log output with evaluation results*/
     uuid_t uuid;
 
+    struct syncbeat_devic *synbuf_clustermem;
+    struct syncbeat_devic *synbuf_tx;
+    struct syncbeat_devic *synbuf_rx;
+
 };
 
 

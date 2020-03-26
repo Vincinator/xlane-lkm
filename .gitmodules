@@ -1,0 +1,3 @@
+[submodule "deps/MoSeS-Syncbeat"]
+	path = deps/MoSeS-Syncbeat
+	url = git@github.com:Distributed-Systems-Programming-Group/MoSeS-Syncbeat.git

@@ -25,6 +25,8 @@ endif()
 
 
 SET( MODULE_SOURCE_FILES
+        deps/MoSeS-Syncbeat/kernel-space/syncbeat-chardev.c
+        deps/MoSeS-Syncbeat/kernel-space/include/syncbeat-chardev.h
         common/asguard/asguard.h
         common/asguard/consensus.h
         common/asguard/logger.h
@@ -136,6 +138,7 @@ elseif(TARGET_ENV EQUAL 0)
 
     include_directories(${KERNEL_HEADERS})
 
+    include_directories(deps/MoSeS-Syncbeat/kernel-space/include)
     include_directories(common)
     include_directories(common/asguard)
     include_directories(core)

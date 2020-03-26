@@ -7,12 +7,17 @@ endif
 
 
 EXTRA_CFLAGS += -I$(src)/common/
+EXTRA_CFLAGS += -I$(src)/deps/MoSeS-Syncbeat/kernel-space/include
+
 EXTRA_CFLAGS += -g -DDEBUG
 
 # Core ASGUARD Components
 obj-m := core/
 obj-m += tests/core/kunit_basic_test.o
 obj-m += tests/raft/kunit_follower.o
+
+# Syncbeat
+obj-m += deps/MoSeS-Syncbeat/kernel-space/syncbeat-chardev.o
 
 # NIC Integration
 #obj-m += connection_layer/mlx5/
@@ -39,9 +44,12 @@ $(info =================== ASGuard Top Level Make ===================)
 
 #GIT_VERSION := "$(shell git describe --abbrev=4 --dirty --always --tags)"
 EXTRA_CFLAGS += -I$(src)/common/
+EXTRA_CFLAGS += -I$(src)/deps/MoSeS-Syncbeat/kernel-space/include
+
 #EXTRA_CFLAGS += -DASGUARD_MODULE_VERSION=\"$(GIT_VERSION)\"
 
 # Core ASGUARD Components
 obj-m := core/
+obj-m += deps/MoSeS-Syncbeat/kernel-space/syncbeat-chardev.o
 
 endif
