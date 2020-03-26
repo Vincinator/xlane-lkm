@@ -11,6 +11,9 @@
 #define vm_fault_t int
 #endif
 
+#ifndef DEVNAME
+#define DEVNAME "synbuf"
+#endif
 
 #include "include/synbuf-chardev.h"
 

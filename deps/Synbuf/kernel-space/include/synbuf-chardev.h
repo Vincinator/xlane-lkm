@@ -2,9 +2,7 @@
 
 #include <linux/cdev.h>
 
-#ifndef DEVNAME
-#define DEVNAME synbuf
-#endif
+
 
 struct synbuf_device {
 	int unsigned minorIndex; /* will be set by synbuf */
