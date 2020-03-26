@@ -1,5 +1,5 @@
 EXTRA_CFLAGS+=-I$(src)/../../common/
-EXTRA_CFLAGS+=-I$(src)/../../deps/Synbuf/kernel-space/include
+EXTRA_CFLAGS+=-I$(src)/../Synbuf/kernel-space/include
 
 obj-m := asguard_consensus.o
 
