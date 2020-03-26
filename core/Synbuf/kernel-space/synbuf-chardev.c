@@ -153,6 +153,7 @@ struct page *get_synbuf_buf_page(struct synbuf_device * sdev, unsigned long pgof
 
 vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 {
+	struct page *page;
 	struct synbuf_device *sdev;
 
 	printk(KERN_INFO"[SYNBUF] Enter: %s \n", __FUNCTION__);
@@ -160,8 +161,9 @@ vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 	sdev = (struct synbuf_device *)vmf->vma->vm_private_data;
 
 	if (sdev->ubuf) {
-        vmf->page = get_synbuf_buf_page(sdev, vmf->pgoff);
-		get_page(vmf->page);
+        page = get_synbuf_buf_page(sdev, vmf->pgoff);
+		get_page(page);
+        vmf->page = page;
 	}
 
 	return 0;
