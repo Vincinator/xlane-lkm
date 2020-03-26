@@ -1,5 +1,11 @@
 docs/_build/
 cmake-build-debug-local-linux-container/
+cmake-build-debug-local-system/
+cmake-build-default/
+cmake-build-local/
+cmake-build-local-container/
+cmake-build-debug-local-linux-container/
+.idea/
 .tmp_versions/
 *.mod.c
 *.mod.o
