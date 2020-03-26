@@ -46,6 +46,8 @@ $(info =================== ASGuard Top Level Make ===================)
 EXTRA_CFLAGS += -I$(src)/common/
 EXTRA_CFLAGS += -I$(src)/deps/Synbuf/kernel-space/include
 
+#define DEVNAME asgard
+
 #EXTRA_CFLAGS += -DASGUARD_MODULE_VERSION=\"$(GIT_VERSION)\"
 
 # Core ASGUARD Components

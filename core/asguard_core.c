@@ -19,7 +19,6 @@
 #include <asguard_con/asguard_con.h>
 
 
-#define DEVNAME asgard
 #include <asguard/logger.h>
 #include <asguard/payload_helper.h>
 #include <synbuf-chardev.h>
