@@ -1,5 +1,0 @@
-[submodule "core/Synbuf"]
-	path = core/Synbuf
-#	url = git@github.com:Distributed-Systems-Programming-Group/MoSeS-Syncbeat.git
-	url = git@github.com:Vincinator/synbuf.git
-	branch = synbuf
