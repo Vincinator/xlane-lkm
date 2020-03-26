@@ -255,8 +255,6 @@ void synbuf_chardev_exit(struct synbuf_device *sdev)
     // In this case all pointers etc. already were cleared
     return;
   }
-  if(!sdev || sdev->ubuf)
-      return;
 
   if(!sdev || !sdev->ubuf)
       return;
