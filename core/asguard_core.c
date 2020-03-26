@@ -19,7 +19,7 @@
 #include <asguard_con/asguard_con.h>
 
 
-
+#define DEVNAME asgard
 #include <asguard/logger.h>
 #include <asguard/payload_helper.h>
 #include <synbuf-chardev.h>
@@ -762,12 +762,11 @@ static void __exit asguard_connection_core_exit(void)
 
     destroy_workqueue(asguard_wq);
 
+    if(score)
+        kfree(score);
 
     if(score->sdevices)
         kfree(score->sdevices);
-
-	if(score)
-	    kfree(score);
 
 	remove_proc_entry("asguard", NULL);
     
