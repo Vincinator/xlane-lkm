@@ -256,6 +256,9 @@ void synbuf_chardev_exit(struct synbuf_device *sdev)
     return;
   }
 
+  if(!sdev || !sdev->ubuf)
+      return;
+
   kfree(sdev->ubuf);
   mutex_destroy(&sdev->ubuf_mutex);
   device_del (sdev->device);
