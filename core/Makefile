@@ -16,6 +16,7 @@ else
 
 $(info =================== ASGuard Core Make ===================)
 EXTRA_CFLAGS += -I$(src)/../common/
+EXTRA_CFLAGS += -I$(src)/../deps/Synbuf/kernel-space/include
 
 obj-m := asguard.o
 
