@@ -1,4 +1,3 @@
-core/Synbuf
 docs/_build/
 cmake-build-debug-local-linux-container/
 cmake-build-debug-local-system/
