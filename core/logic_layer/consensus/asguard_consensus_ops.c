@@ -41,7 +41,7 @@ struct synbuf_device* create_synbuf(const char *name)
         goto error;
     }
 
-    asguard_dbg("Initilized synbuf for cluster membership \n");
+    asguard_dbg("Initilized synbuf for %s\n", name);
 
     return device;
 

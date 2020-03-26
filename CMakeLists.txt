@@ -18,8 +18,8 @@ endif()
 
 
 SET( MODULE_SOURCE_FILES
-        deps/Synbuf/kernel-space/synbuf-chardev.c
-        deps/Synbuf/kernel-space/include/synbuf-chardev.h
+        core/Synbuf/kernel-space/synbuf-chardev.c
+        core/Synbuf/kernel-space/include/synbuf-chardev.h
         common/asguard/asguard.h
         common/asguard/consensus.h
         common/asguard/logger.h
@@ -129,7 +129,7 @@ elseif(TARGET_ENV EQUAL 0)
 
     include_directories(${KERNEL_HEADERS})
 
-    include_directories(deps/Synbuf/kernel-space/include)
+    include_directories(core/Synbuf/kernel-space/include)
     include_directories(common)
     include_directories(common/asguard)
     include_directories(core)
