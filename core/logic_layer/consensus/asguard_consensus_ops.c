@@ -46,6 +46,9 @@ struct synbuf_device* create_synbuf(const char *name, int num_pages)
     return device;
 
 error:
+    // if a device was allocated, but an error occurred ...
+    if(device)
+        kfree(device); // ... clean it up directly!
 
     return NULL;
 
