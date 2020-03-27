@@ -22,7 +22,7 @@ void generate_asguard_eval_uuid(unsigned char uuid[16])
     asguard_dbg("===================== Start of Run: %pUB ====================\n", uuid);
 }
 
-struct synbuf_device* create_synbuf(const char *name)
+struct synbuf_device* create_synbuf(const char *name, int num_pages)
 {
     int err = 0;
     struct synbuf_device *device
@@ -33,8 +33,8 @@ struct synbuf_device* create_synbuf(const char *name)
         goto error;
     }
 
-    // allocate 1MB Buffer
-    err = synbuf_chardev_init(device, name, 1000000);
+    // allocate num_pages Page Buffer
+    err = synbuf_chardev_init(device, name, num_pages * PAGE_SIZE);
 
     if(err != 0) {
         asguard_error("Failed initializing synbuf device\n");
@@ -99,13 +99,13 @@ int consensus_init(struct proto_instance *ins)
     priv->throughput_logger.state = LOGGER_RUNNING;
 
     /* Initialize synbuf for Cluster Membership */
-    priv->synbuf_clustermem = create_synbuf("clustermem");
+    priv->synbuf_clustermem = create_synbuf("clustermem", 1);
 
     /* Initialize synbuf for Follower (RX) Buffer */
-    priv->synbuf_rx = create_synbuf("rx");
+    priv->synbuf_rx = create_synbuf("rx", 1);
 
     /* Initialize synbuf for Leader (TX) Buffer */
-    priv->synbuf_tx = create_synbuf("tx");
+    priv->synbuf_tx = create_synbuf("tx", 1);
 
 
 
