@@ -158,7 +158,8 @@ vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 
 	printk(KERN_INFO"[SYNBUF] %s  \n", __FUNCTION__);
 
-	sdev = (struct synbuf_device *)vmf->vma->vm_private_data;
+	sdev = (struct synbuf_device *)
+	        vmf->vma->vm_private_data;
 
 	if(!sdev) {
         printk(KERN_ERR"[SYNBUF] synbuf device is null in function %s  \n", __FUNCTION__);
@@ -300,12 +301,19 @@ void synbuf_chardev_exit(struct synbuf_device *sdev)
 
 void synbuf_clean_class(void)
 {
-  printk(KERN_INFO"[SYNBUF] Enter: %s \n", __FUNCTION__);
+    printk(KERN_INFO"[SYNBUF] Enter: %s \n", __FUNCTION__);
 
-  if (synbuf_bypass_class)
+    if (!synbuf_bypass_class) {
+        printk(KERN_INFO"[SYNBUF] Synbuf was not properly initialized! %s \n", __FUNCTION__);
+        return;
+    }
+
     class_destroy(synbuf_bypass_class);
 
-  unregister_chrdev_region(MKDEV(synbuf_bypass_major, 0), SYNBUF_MAX_DEVICES);
+    if(synbuf_bypass_major == 0)
+        return; // DEBUG..
+
+    unregister_chrdev_region(MKDEV(synbuf_bypass_major, 0), SYNBUF_MAX_DEVICES);
 }
 
 long synbuf_bypass_init_class(void) {
@@ -323,7 +331,10 @@ long synbuf_bypass_init_class(void) {
 
 	synbuf_bypass_major = MAJOR(dev);
 
-	synbuf_bypass_class = class_create(THIS_MODULE, DEVNAME);
+    printk(KERN_INFO "[SYNBUF]synbuf_bypass_major %d\n", synbuf_bypass_major);
+
+
+    synbuf_bypass_class = class_create(THIS_MODULE, DEVNAME);
 
 	if (!synbuf_bypass_class) {
 		err = PTR_ERR(synbuf_bypass_class);
