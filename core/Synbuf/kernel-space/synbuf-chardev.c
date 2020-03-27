@@ -29,7 +29,6 @@
 #define SYNBUF_MAX_DEVICES 16 
 static unsigned int synbuf_bypass_major = 0;
 static struct class *synbuf_bypass_class = NULL;
-static int init_exit_failure[SYNBUF_MAX_DEVICES];
 
 struct synbuf_device *inode_synbuf(struct inode *inode)
 {
@@ -247,7 +246,7 @@ long synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 
 	if (!sdev->device) {
 		printk(KERN_ERR "[SYNBUF] Failed to create device %d\n", sdev->minorIndex);
-		ret = PTR_ERR(sdev->device);
+		ret = -ENODEV;
 		goto device_create_error;
 	}
 
@@ -257,11 +256,9 @@ long synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 
 	if (!sdev->ubuf) {
 		printk(KERN_ERR "[SYNBUF] Failed to allocate ubuf memory\n");
-		ret = PTR_ERR(sdev->ubuf);
+		ret = -ENOMEM;
 		goto ubuf_error;
 	}
-
-    init_exit_failure[sdev->minorIndex] = 0;
 
 	return 0;
 
@@ -270,33 +267,25 @@ device_create_error:
 	cdev_del(&sdev->cdev);
 cdev_error:
 	mutex_destroy(&sdev->ubuf_mutex);
-
-  init_exit_failure[sdev->minorIndex] = 1;
 	return ret;
 }
 
 
 void synbuf_chardev_exit(struct synbuf_device *sdev)
 {
-  printk(KERN_INFO"[SYNBUF] -: %s \n", __FUNCTION__);
+    printk(KERN_INFO"[SYNBUF] -: %s \n", __FUNCTION__);
 
-  if (init_exit_failure[sdev->minorIndex]) {
-    // In this case all pointers etc. already were cleared
-    return;
-  }
+    if(!sdev)
+        return;
 
-  if(!sdev)
-      return;
+    mutex_destroy(&sdev->ubuf_mutex);
 
-  if(sdev->ubuf)
-    kfree(sdev->ubuf);
+    device_del (sdev->device);
 
+    cdev_del(&sdev->cdev);
 
-  mutex_destroy(&sdev->ubuf_mutex);
-
-  device_del (sdev->device);
-
-  cdev_del(&sdev->cdev);
+    if(sdev->ubuf)
+        kfree(sdev->ubuf);
 }
 
 void synbuf_clean_class(void)
@@ -332,7 +321,6 @@ long synbuf_bypass_init_class(void) {
 	synbuf_bypass_major = MAJOR(dev);
 
     printk(KERN_INFO "[SYNBUF]synbuf_bypass_major %d\n", synbuf_bypass_major);
-
 
     synbuf_bypass_class = class_create(THIS_MODULE, DEVNAME);
 
