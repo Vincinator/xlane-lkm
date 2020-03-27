@@ -27,6 +27,9 @@ asguard-objs += proto/proto_mgmt.o proto/proto_instance_ctrl.o
 asguard-objs += ts/asguard_ts.o ts/asguard_ts_ctrl.o asguard_payload_helper.o
 asguard-objs += pm/asguard_pm.o pm/asguard_pm_ctrl.o
 
+# uFace (abstraction on top of synbuf)
+asguard-objs += uface/cluster_membership.o
+
 # Synbuf
 asguard-objs += Synbuf/kernel-space/synbuf-chardev.o
 
