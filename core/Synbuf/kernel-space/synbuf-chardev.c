@@ -252,6 +252,7 @@ long synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 
     page_aligned_size = PAGE_ALIGN(size);
 
+	// TODO: maybe add a C preprocessor ifdef to switch between allocation modes? (DONT FORGET TO ADJUST FREE methods)
     sdev->ubuf = vmalloc_user(page_aligned_size);
 
 	if (!sdev->ubuf) {
