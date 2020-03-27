@@ -806,6 +806,7 @@ static void __exit asguard_connection_core_exit(void)
 	remove_proc_entry("asguard", NULL);
 
     synbuf_clean_class();
+    asguard_dbg("ASGARD CORE CLEANED \n\n\n\n");
 	// flush_workqueue(asguard_wq);
 
 }
