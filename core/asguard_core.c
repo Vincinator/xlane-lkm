@@ -22,6 +22,9 @@
 #include <asguard/logger.h>
 #include <asguard/payload_helper.h>
 #include <synbuf-chardev.h>
+#include <asguard/asgard_uface.h>
+#include <synbuf-chardev.h>
+
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Distributed Systems Group");
@@ -427,7 +430,12 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	pm_state_transition_to(&score->sdevices[asguard_id]->pminfo,
 				   ASGUARD_PM_UNINIT);
 
-	return asguard_id;
+    /* Initialize synbuf for Cluster Membership */
+    score->sdevices[asguard_id]->synbuf_clustermem = create_synbuf("clustermem", 250);
+
+
+
+    return asguard_id;
 }
 EXPORT_SYMBOL(asguard_core_register_nic);
 
@@ -615,6 +623,8 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 
     pmtarget->aapriv = kmalloc(sizeof(struct asguard_async_queue_priv), GFP_KERNEL);
     init_asguard_async_queue(pmtarget->aapriv);
+
+    add_cluster_member(sdev->ci, cluster_id, 0);
 
 	return 0;
 }

@@ -389,6 +389,8 @@ struct asguard_device {
 	struct proto_instance **protos; // array of ptrs to protocol instances
 
 	struct workqueue_struct *asguard_leader_wq;
+    struct cluster_info *ci;
+    char *synbuf_clustermem;
 };
 
 struct asguard_protocol_ctrl_ops {

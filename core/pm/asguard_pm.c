@@ -23,6 +23,7 @@
 #include <asguard/payload_helper.h>
 #include <asguard/consensus.h>
 #include <asguard/asguard_async.h>
+#include <asguard/asgard_uface.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][PACEMAKER]"
@@ -262,13 +263,16 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 		if (sdev->verbose && sdev->warmup_state == WARMED_UP){
 			asguard_dbg("Node %d is considered dead - cluster_id=%d\n", i, spminfo->pm_targets[i].pkt_data.naddr.cluster_id);
 		}
-		spminfo->pm_targets[i].alive = 0;
+		spminfo->pm_targets[i].alive = 0; // Todo: remove this?
+        update_cluster_member(sdev->ci, spminfo->pm_targets[i].pkt_data.naddr.cluster_id, 0);
 		spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
 		return;
 	}
 
  	// may be redundant - since we already update aliveness on reception of pkt
-	spminfo->pm_targets[i].alive = 1;
+	spminfo->pm_targets[i].alive = 1; // Todo: remove this?
+
+    update_cluster_member(sdev->ci, spminfo->pm_targets[i].pkt_data.naddr.cluster_id, 1);
 
 	spminfo->pm_targets[i].lhb_ts =  spminfo->pm_targets[i].chb_ts;
 	spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
