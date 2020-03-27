@@ -259,6 +259,7 @@ long synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 		ret = -ENOMEM;
 		goto ubuf_error;
 	}
+    printk(KERN_INFO"[SYNBUF] Success: %s \n", __FUNCTION__);
 
 	return 0;
 
@@ -286,6 +287,8 @@ void synbuf_chardev_exit(struct synbuf_device *sdev)
 
     if(sdev->ubuf)
         kfree(sdev->ubuf);
+    printk(KERN_INFO"[SYNBUF] Success: %s \n", __FUNCTION__);
+
 }
 
 void synbuf_clean_class(void)
@@ -303,6 +306,7 @@ void synbuf_clean_class(void)
         return; // DEBUG..
 
     unregister_chrdev_region(MKDEV(synbuf_bypass_major, 0), SYNBUF_MAX_DEVICES);
+    printk(KERN_INFO"[SYNBUF] Success: %s \n", __FUNCTION__);
 }
 
 long synbuf_bypass_init_class(void) {
@@ -325,10 +329,11 @@ long synbuf_bypass_init_class(void) {
     synbuf_bypass_class = class_create(THIS_MODULE, DEVNAME);
 
 	if (!synbuf_bypass_class) {
-		err = PTR_ERR(synbuf_bypass_class);
+		err = -ENODEV;
 		goto error;
 	}
 
+    printk(KERN_INFO"[SYNBUF] Success: %s \n", __FUNCTION__);
 	return 0;
 error:
 	printk(KERN_ERR"[SYNBUF] Error in %s, cleaning up now \n", __FUNCTION__);
