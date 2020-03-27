@@ -390,7 +390,7 @@ struct asguard_device {
 
 	struct workqueue_struct *asguard_leader_wq;
     struct cluster_info *ci;
-    char *synbuf_clustermem;
+    struct synbuf_device* synbuf_clustermem;
 };
 
 struct asguard_protocol_ctrl_ops {

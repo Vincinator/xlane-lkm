@@ -433,7 +433,13 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
     /* Initialize synbuf for Cluster Membership */
     score->sdevices[asguard_id]->synbuf_clustermem = create_synbuf("clustermem", 250);
 
+    if(!score->sdevices[asguard_id]->synbuf_clustermem){
+        asguard_error("Could not create synbuf for clustermem");
+        return -1;
+    }
 
+    /* Write ci changes directly to the synbuf*/
+    score->sdevices[asguard_id]->ci = score->sdevices[asguard_id]->synbuf_clustermem->ubuf;
 
     return asguard_id;
 }
@@ -635,6 +641,7 @@ static int __init asguard_connection_core_init(void)
 {
 	int i;
 	int err = -EINVAL;
+    int ret = 0;
 
 	if (ifindex < 0) {
 
@@ -671,7 +678,12 @@ static int __init asguard_connection_core_init(void)
 
 	proc_mkdir("asguard", NULL);
 
-	asguard_core_register_nic(ifindex, get_asguard_id_by_ifindex(ifindex));
+	ret = asguard_core_register_nic(ifindex, get_asguard_id_by_ifindex(ifindex));
+
+	if(ret < 0) {
+	    asguard_error("Could not register NIC at asguard\n");
+	    goto reg_failed;
+	}
 
 	//init_asguard_proto_info_interfaces();
 
@@ -689,6 +701,14 @@ static int __init asguard_connection_core_init(void)
 
     asguard_dbg("asgard core initialized.\n");
     return 0;
+
+reg_failed:
+    unregister_asguard();
+
+    kfree(score->sdevices);
+    kfree(score);
+    remove_proc_entry("asguard", NULL);
+
 error:
 	asguard_error("Could not initialize asguard - aborting init.\n");
 	return err;
