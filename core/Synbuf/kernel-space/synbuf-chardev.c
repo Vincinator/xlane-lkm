@@ -37,6 +37,39 @@ struct synbuf_device *inode_synbuf(struct inode *inode)
 	return container_of(cdev, struct synbuf_device, cdev);
 }
 
+struct synbuf_device* create_synbuf(const char *name, int num_pages)
+{
+    int err = 0;
+    struct synbuf_device *device
+            = kmalloc(sizeof(struct synbuf_device), GFP_KERNEL);
+
+    if(!device) {
+        printk(KERN_ERR"could not allocate memory for synbuf device\n");
+        goto error;
+    }
+
+    // allocate num_pages Page Buffer
+    err = synbuf_chardev_init(device, name, num_pages * PAGE_SIZE);
+
+    if(err != 0) {
+        printk(KERN_ERR"Failed initializing synbuf device\n");
+        goto error;
+    }
+
+    printk(KERN_ERR"Initilized synbuf for %s\n", name);
+
+    return device;
+
+    error:
+    // if a device was allocated, but an error occurred ...
+    if(device)
+        kfree(device); // ... clean it up directly!
+
+    return NULL;
+
+}
+
+
 int synbuf_bypass_open(struct inode *inode, struct file *filp)
 {
 	struct synbuf_device *sdev;

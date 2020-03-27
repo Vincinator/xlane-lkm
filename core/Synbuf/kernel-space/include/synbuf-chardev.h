@@ -15,6 +15,11 @@ struct synbuf_device {
     size_t bufsize;
 };
 
+/*
+ * Allocates a page alligned buffer with <num_pages> pages and initializes it
+ */
+struct synbuf_device* create_synbuf(const char *name, int num_pages);
+
 long synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size);
 void synbuf_chardev_exit(struct synbuf_device *sdev);
 
