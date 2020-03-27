@@ -430,16 +430,19 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	pm_state_transition_to(&score->sdevices[asguard_id]->pminfo,
 				   ASGUARD_PM_UNINIT);
 
-    /* Initialize synbuf for Cluster Membership */
-    score->sdevices[asguard_id]->synbuf_clustermem = create_synbuf("clustermem", 250);
+    /* Initialize synbuf for Cluster Membership - one page is enough */
+    score->sdevices[asguard_id]->synbuf_clustermem = create_synbuf("clustermem", 1);
 
     if(!score->sdevices[asguard_id]->synbuf_clustermem){
         asguard_error("Could not create synbuf for clustermem");
         return -1;
     }
 
-    /* Write ci changes directly to the synbuf*/
-    score->sdevices[asguard_id]->ci = score->sdevices[asguard_id]->synbuf_clustermem->ubuf;
+    /* Write ci changes directly to the synbuf
+     * ubuf is at least one page which should be enough
+     */
+    score->sdevices[asguard_id]->ci = (struct cluster_info *)
+            score->sdevices[asguard_id]->synbuf_clustermem->ubuf;
 
     return asguard_id;
 }
