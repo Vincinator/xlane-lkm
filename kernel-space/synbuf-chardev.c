@@ -147,7 +147,7 @@ void bypass_vma_close(struct vm_area_struct *vma)
 	printk(KERN_INFO "[SYNBUF] Simple VMA close.\n");
 }
 
-struct page *get_synbuf_buf_page(struct synbuf_device * sdev, unsigned long pgoff) {
+struct page *get_synbuf_buf_page(struct synbuf_device * sdev, pgoff_t pgoff) {
     return vmalloc_to_page(sdev->ubuf + (pgoff << PAGE_SHIFT));
 }
 
@@ -156,11 +156,23 @@ vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 	struct page *page;
 	struct synbuf_device *sdev;
 
-	printk(KERN_INFO"[SYNBUF] %s \n", __FUNCTION__);
+	printk(KERN_INFO"[SYNBUF] %s  \n", __FUNCTION__);
 
 	sdev = (struct synbuf_device *)vmf->vma->vm_private_data;
 
+	if(!sdev) {
+        printk(KERN_ERR"[SYNBUF] synbuf device is null in function %s  \n", __FUNCTION__);
+        return 0;
+    }
+
+    if(!vmf) {
+        printk(KERN_ERR"[SYNBUF] vmf is null in function %s  \n", __FUNCTION__);
+        return 0;
+    }
+
 	if (sdev->ubuf) {
+        printk(KERN_INFO"[SYNBUF] vmf->pgoff: %d  \n", vmf->pgoff);
+
         page = get_synbuf_buf_page(sdev, vmf->pgoff);
         get_page(page);
         vmf->page = page;
@@ -199,42 +211,57 @@ long synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 {
 	static unsigned int counter = 0;
 	long ret = 0;
+	int page_aligned_size;
 	dev_t devno;
 
-	BUG_ON(sdev == NULL || synbuf_bypass_class == NULL);
-	printk(KERN_INFO"[SYNBUF] Enter: %s \n", __FUNCTION__);
+    printk(KERN_INFO"[SYNBUF] Enter: %s \n", __FUNCTION__);
+
+	if(!synbuf_bypass_class) {
+	    printk(KERN_ERR"[SYNBUF] Synbuf Class is NULL\n Did you initialize synbuf class in your module?\n");
+	    return -ENODEV;
+	}
+	if(!sdev) {
+        printk(KERN_ERR"[SYNBUF] Synbuf Device is NULL\n Did you initialize synbuf class in your module?\n");
+	    return -ENODEV;
+	}
 
 	devno = MKDEV(synbuf_bypass_major, sdev->minorIndex);
 
 	mutex_init(&sdev->ubuf_mutex);
 
 	cdev_init(&sdev->cdev, &bypass_fileops);
+
 	sdev->cdev.owner = THIS_MODULE;
 
 	ret = cdev_add(&sdev->cdev, devno, 1);
+
 	if (ret) {
 		printk(KERN_ERR"[SYNBUF] Failed to to add %s%d (error %ld)\n", DEVNAME, sdev->minorIndex, ret);
 		goto cdev_error;
 	}
 
 	sdev->minorIndex = counter++;
+
 	sdev->device = device_create(synbuf_bypass_class, NULL, devno, NULL, DEVNAME "/%s", name);
-	if (IS_ERR(sdev->device)) {
+
+	if (!sdev->device) {
 		printk(KERN_ERR "[SYNBUF] Failed to create device %d\n", sdev->minorIndex);
 		ret = PTR_ERR(sdev->device);
 		goto device_create_error;
 	}
 
-	 // sdev->ubuf = synbuf_alloc_mmap_buffer();
-    sdev->ubuf = vmalloc_user(size);
+    page_aligned_size = PAGE_ALIGN(size);
 
-	if (IS_ERR(sdev->ubuf)) {
+    sdev->ubuf = vmalloc_user(page_aligned_size);
+
+	if (!sdev->ubuf) {
 		printk(KERN_ERR "[SYNBUF] Failed to allocate ubuf memory\n");
 		ret = PTR_ERR(sdev->ubuf);
 		goto ubuf_error;
 	}
 
-  init_exit_failure[sdev->minorIndex] = 0;
+    init_exit_failure[sdev->minorIndex] = 0;
+
 	return 0;
 
 ubuf_error:
@@ -257,12 +284,17 @@ void synbuf_chardev_exit(struct synbuf_device *sdev)
     return;
   }
 
-  if(!sdev || !sdev->ubuf)
-        return;
+  if(!sdev)
+      return;
 
-  kfree(sdev->ubuf);
+  if(sdev->ubuf)
+    kfree(sdev->ubuf);
+
+
   mutex_destroy(&sdev->ubuf_mutex);
+
   device_del (sdev->device);
+
   cdev_del(&sdev->cdev);
 }
 
@@ -275,7 +307,6 @@ void synbuf_clean_class(void)
 
   unregister_chrdev_region(MKDEV(synbuf_bypass_major, 0), SYNBUF_MAX_DEVICES);
 }
-
 
 long synbuf_bypass_init_class(void) {
 
@@ -291,8 +322,10 @@ long synbuf_bypass_init_class(void) {
 	}
 
 	synbuf_bypass_major = MAJOR(dev);
+
 	synbuf_bypass_class = class_create(THIS_MODULE, DEVNAME);
-	if (IS_ERR(synbuf_bypass_class)) {
+
+	if (!synbuf_bypass_class) {
 		err = PTR_ERR(synbuf_bypass_class);
 		goto error;
 	}
