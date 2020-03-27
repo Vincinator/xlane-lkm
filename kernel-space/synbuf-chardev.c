@@ -194,7 +194,7 @@ static int synbuf_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 
 	vma->vm_ops = &bypass_vm_ops;
 	vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP;
-
+    vma->vm_private_data = filp->private_data;
 	return 0;
 }
 
@@ -285,8 +285,10 @@ void synbuf_chardev_exit(struct synbuf_device *sdev)
 
     cdev_del(&sdev->cdev);
 
-    if(sdev->ubuf)
-        kfree(sdev->ubuf);
+    if(sdev->ubuf){
+        printk(KERN_INFO"[SYNBUF] cleaning ubuf now..\n", __FUNCTION__);
+        vfree(sdev->ubuf); // Make sure to match allocation method - and use the right friend!
+    }
     printk(KERN_INFO"[SYNBUF] Success: %s \n", __FUNCTION__);
 
 }
