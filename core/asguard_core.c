@@ -731,8 +731,6 @@ static void __exit asguard_connection_core_exit(void)
     /* MUST unregister asguard for drivers first */
 	unregister_asguard();
 
-	synbuf_clean_class();
-
     if(!score){
 		asguard_error("score is NULL \n");
 		return;
@@ -768,8 +766,8 @@ static void __exit asguard_connection_core_exit(void)
         kfree(score->sdevices);
 
 	remove_proc_entry("asguard", NULL);
-    
 
+    synbuf_clean_class();
 	// flush_workqueue(asguard_wq);
 
 }
