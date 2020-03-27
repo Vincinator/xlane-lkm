@@ -669,11 +669,15 @@ static int __init asguard_connection_core_init(void)
 	asguard_wq = alloc_workqueue("asguard",  WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_FREEZABLE, 1);
     asguard_wq_lock = 0;
 
-
-
     /* Initialize User Space interfaces */
-    synbuf_bypass_init_class();
+    err = synbuf_bypass_init_class();
 
+    if(err) {
+        asguard_error("synbuf_bypass_init_class failed\n");
+        goto error;
+    }
+
+    asguard_dbg("asgard core initialized.\n");
     return 0;
 error:
 	asguard_error("Could not initialize asguard - aborting init.\n");
