@@ -633,7 +633,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
     pmtarget->aapriv = kmalloc(sizeof(struct asguard_async_queue_priv), GFP_KERNEL);
     init_asguard_async_queue(pmtarget->aapriv);
 
-    add_cluster_member(sdev->ci, cluster_id, 0);
+    add_cluster_member(sdev->ci, cluster_id, 2);
 
 	return 0;
 }

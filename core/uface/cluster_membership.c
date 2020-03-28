@@ -56,6 +56,11 @@ void update_cluster_member(struct cluster_info* ci, int cluster_id, u8 state)
             ci->cluster_joins++;
         }
 
+        if(state == 2) {
+            ci->active_cluster_member++;
+            ci->cluster_joins++;
+        }
+
         /* Update the state now */
         ci->member_info[cluster_id].state = state;
     }

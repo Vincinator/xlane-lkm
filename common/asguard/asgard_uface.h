@@ -13,7 +13,8 @@ struct cluster_member_info {
     /*
      * 0 = dead
      * 1 = alive
-     * 254 other states are currently free ;)
+     * 2 = never seen before
+     * 253 other states are currently free ;)
      */
     u8 state;
 
