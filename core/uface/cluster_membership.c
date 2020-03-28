@@ -44,19 +44,14 @@ void update_cluster_member(struct cluster_info* ci, int cluster_id, u8 state)
 
         /* Cluster Member became marked as dead */
         if(state == 0) {
+            if(prev_state != 2) ci->active_cluster_member--; // was never alive
             ci->dead_cluster_member++;
-            ci->active_cluster_member--;
             ci->cluster_dropouts++;
         }
 
         /* Cluster Member became alive */
         if(state == 1) {
-            ci->dead_cluster_member--;
-            ci->active_cluster_member++;
-            ci->cluster_joins++;
-        }
-
-        if(state == 2) {
+            if(prev_state != 2) ci->dead_cluster_member--; // was never dead
             ci->active_cluster_member++;
             ci->cluster_joins++;
         }
