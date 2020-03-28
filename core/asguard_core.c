@@ -87,8 +87,8 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 
-	if (sdev->ts_state == ASGUARD_TS_RUNNING)
-		asguard_write_timestamp(sdev, 1, cycles, asguard_id);
+	//if (sdev->ts_state == ASGUARD_TS_RUNNING)
+	//	asguard_write_timestamp(sdev, 1, cycles, asguard_id);
 
 	if(ctype == 2) { // channel type 2 is leader channel
 		sdev->last_leader_ts = cycles;
@@ -249,7 +249,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	int remote_lid, rcluster_id;
 	u16 received_proto_instances;
 	struct asguard_pkt_work_data *work;
-	uint64_t ts2, ts3;
+	//uint64_t ts2, ts3;
 	char *payload;
     char *remote_mac;
     char *user_data;
@@ -261,7 +261,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	remote_mac = ((char *) payload) + headroom + 6;
 	user_data = ((char *) payload) + headroom + ETH_HLEN + sizeof(struct iphdr) + sizeof(struct udphdr);
 
-	ts2 = RDTSC_ASGUARD;
+	//ts2 = RDTSC_ASGUARD;
 
 /*
     print_hex_dump(KERN_DEBUG, "user data: ", DUMP_PREFIX_NONE, 32, 1,
@@ -327,12 +327,12 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 		    kfree(work);
 	}
 
-	ts3 = RDTSC_ASGUARD;
+	//ts3 = RDTSC_ASGUARD;
 
-	if (sdev->ts_state == ASGUARD_TS_RUNNING){
-		asguard_write_timestamp(sdev, 2, ts2, rcluster_id);
-		asguard_write_timestamp(sdev, 3, ts3, rcluster_id);
-	}
+	//if (sdev->ts_state == ASGUARD_TS_RUNNING){
+    //    asguard_write_timestamp(sdev, 2, ts2, rcluster_id);
+    //    asguard_write_timestamp(sdev, 3, ts3, rcluster_id);
+    //}
 
 }
 EXPORT_SYMBOL(asguard_post_payload);

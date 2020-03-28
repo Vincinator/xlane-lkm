@@ -355,7 +355,7 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 	struct asguard_payload *pkt_payload;
 	int i;
 	struct net_device *ndev = sdev->ndev;
-	enum tsstate ts_state = sdev->ts_state;
+	// enum tsstate ts_state = sdev->ts_state;
 
 	/* Prepare heartbeat packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
@@ -377,8 +377,8 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 	asguard_send_hbs(ndev, spminfo, 0, NULL);
 
 	// TODO: timestamp for scheduled
-	if(ts_state == ASGUARD_TS_RUNNING)
-		asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
+	//if(ts_state == ASGUARD_TS_RUNNING)
+	//	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
 
 	/* Leave Heartbeat pkts in clean state */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
