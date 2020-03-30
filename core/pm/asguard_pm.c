@@ -260,9 +260,6 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 	}
 
 	if(spminfo->pm_targets[i].lhb_ts == spminfo->pm_targets[i].chb_ts) {
-		if (sdev->verbose && sdev->warmup_state == WARMED_UP){
-			asguard_dbg("Node %d is considered dead - cluster_id=%d\n", i, spminfo->pm_targets[i].pkt_data.naddr.cluster_id);
-		}
 		spminfo->pm_targets[i].alive = 0; // Todo: remove this?
         update_cluster_member(sdev->ci, i, 0);
 		spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;
@@ -270,9 +267,9 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 	}
 
  	// may be redundant - since we already update aliveness on reception of pkt
-	spminfo->pm_targets[i].alive = 1; // Todo: remove this?
+	//spminfo->pm_targets[i].alive = 1; // Todo: remove this?
 
-    update_cluster_member(sdev->ci, i, 1);
+    //update_cluster_member(sdev->ci, i, 1);
 
 	spminfo->pm_targets[i].lhb_ts =  spminfo->pm_targets[i].chb_ts;
 	spminfo->pm_targets[i].cur_waiting_interval = spminfo->pm_targets[i].resp_factor;

@@ -286,6 +286,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	// Update aliveness state and timestamps
 	spminfo->pm_targets[remote_lid].chb_ts = RDTSC_ASGUARD;
 	spminfo->pm_targets[remote_lid].alive = 1;
+    update_cluster_member(sdev->ci, remote_lid, 1);
 
 	if(check_warmup_state(sdev, spminfo)){
 		return;
