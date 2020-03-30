@@ -19,8 +19,10 @@ struct cluster_member_info {
      */
     u8 state;
 
-    /* ... may contain additional fields in the future ... */
     int global_cluster_id;
+
+    /* ... may contain additional fields in the future ... */
+
 };
 
 /*
