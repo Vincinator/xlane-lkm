@@ -173,9 +173,6 @@ int consensus_clean(struct proto_instance *ins)
 
 	clear_logger(&priv->throughput_logger);
 
-    /* Clean Cluster Membership Synbuf*/
-    synbuf_chardev_exit(priv->synbuf_clustermem);
-
     /* Clean Follower (RX) Synbuf */
     synbuf_chardev_exit(priv->synbuf_rx);
 
