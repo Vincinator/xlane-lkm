@@ -16,6 +16,9 @@ obj-m := core/
 obj-m += tests/core/kunit_basic_test.o
 obj-m += tests/raft/kunit_follower.o
 
+
+
+
 # Synbuf
 # obj-m += deps/Synbuf/kernel-space/synbuf-chardev.o
 # NIC Integration
@@ -37,6 +40,10 @@ all:
 clean:
 	rm -Rf build
 	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) clean
+
+pull:
+    git subtree pull --prefix=core/Synbuf --squash git@github.com:Distributed-Systems-Programming-Group/Synbuf.git synbuf
+
 
 else
 $(info =================== ASGuard Top Level Make ===================)
