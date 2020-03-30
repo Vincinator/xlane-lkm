@@ -30,7 +30,6 @@ install:
 	cp core/asguard.ko build/
 
 pull:
-	ls
     git subtree pull --prefix=core/Synbuf --squash git@github.com:Distributed-Systems-Programming-Group/Synbuf.git synbuf
 
 clean:
