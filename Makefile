@@ -1,11 +1,5 @@
 ifeq ($(KERNELRELEASE),)
 
-
-ifndef ASGUARD_KERNEL_SRC
-$(error ASGUARD_KERNEL_SRC is not set)
-endif
-
-
 EXTRA_CFLAGS += -I$(src)/common/
 EXTRA_CFLAGS += -I$(src)/deps/Synbuf/kernel-space/include
 
@@ -15,8 +9,6 @@ EXTRA_CFLAGS += -g -DDEBUG
 obj-m := core/
 obj-m += tests/core/kunit_basic_test.o
 obj-m += tests/raft/kunit_follower.o
-
-
 
 
 # Synbuf
@@ -31,19 +23,20 @@ obj-m += tests/raft/kunit_follower.o
 
 ASGUARD_MODULES_WORKING_DIR = $(shell pwd)
 
-all:
+install:
 	rm -Rf build
 	mkdir build
 	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) modules
 	cp core/asguard.ko build/
 
-clean:
-	rm -Rf build
-	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) clean
-
 pull:
+	ls
     git subtree pull --prefix=core/Synbuf --squash git@github.com:Distributed-Systems-Programming-Group/Synbuf.git synbuf
 
+clean:
+	test $(ASGUARD_KERNEL_SRC)
+	rm -Rf build
+	make -C $(ASGUARD_KERNEL_SRC) M=$(ASGUARD_MODULES_WORKING_DIR) clean
 
 else
 $(info =================== ASGuard Top Level Make ===================)
