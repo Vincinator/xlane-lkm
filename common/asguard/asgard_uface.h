@@ -2,6 +2,7 @@
 #define ASGUARD_ASGARD_UFACE_H
 
 #include <linux/types.h>
+#include <asguard/consensus.h>
 
 
 // arbitrary limit
@@ -29,6 +30,15 @@ struct cluster_info {
 
     /* Unique cluster id of node that captures this info */
     int cluster_self_id;
+
+    /*
+     * 0 = not initialized
+     * 1 = FOLLOWER
+     * 2 = CANDIDATE
+     * 3 = LEADER
+     * 4 = FAILURE
+     */
+    int node_state;
 
     /* Gets updated every time cluster_info is updated */
     uint64_t last_update_timestamp;
@@ -59,6 +69,8 @@ struct cluster_info {
 };
 void add_cluster_member(struct cluster_info* ci, int cluster_id, u8 init_state);
 void update_cluster_member(struct cluster_info* ci, int cluster_id, u8 state);
+void update_self_state(struct cluster_info *ci, enum node_state state);
+
 
 
 #endif //ASGUARD_ASGARD_UFACE_H

@@ -3,6 +3,7 @@
 #include <asguard/payload_helper.h>
 
 #include <asguard/consensus.h>
+#include <asguard/asgard_uface.h>
 #include "include/leader.h"
 #include "include/follower.h"
 #include "include/candidate.h"
@@ -146,9 +147,14 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 				priv->term,
 				nstate_string(state));
 #endif
+
+	/* Persist node state in kernel space */
 	priv->nstate = state;
 
-	return 0;
+	/* Update Node State for User Space */
+    update_self_state(priv->sdev->ci, state);
+
+    return 0;
 
 error:
 	asguard_error(" node transition failed\n");

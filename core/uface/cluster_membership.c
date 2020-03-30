@@ -4,6 +4,26 @@
 #include <asguard/asguard.h>
 
 
+void update_self_state(struct cluster_info *ci, enum node_state state) {
+
+    asguard_dbg("Update cluster member info node state\n");
+
+    switch(state) {
+        case FOLLOWER:
+            ci->node_state = 1;
+            break;
+        case CANDIDATE:
+            ci->node_state = 2;
+            break;
+        case LEADER:
+            ci->node_state = 3;
+            break;
+        default:
+            ci->node_state = 0; /* Memory is zero initialized, so this matches the uninit state */
+    }
+}
+
+
 void add_cluster_member(struct cluster_info* ci, int cluster_id, u8 init_state)
 {
     if(!ci) {
