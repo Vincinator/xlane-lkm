@@ -20,7 +20,7 @@ struct cluster_member_info {
     u8 state;
 
     /* ... may contain additional fields in the future ... */
-
+    int global_cluster_id;
 };
 
 /*
@@ -67,8 +67,8 @@ struct cluster_info {
 
 
 };
-void add_cluster_member(struct cluster_info* ci, int cluster_id, u8 init_state);
-void update_cluster_member(struct cluster_info* ci, int cluster_id, u8 state);
+void add_cluster_member(struct cluster_info* ci, int cluster_id, int local_id, u8 init_state);
+void update_cluster_member(struct cluster_info* ci, int local_id, u8 state);
 void update_self_state(struct cluster_info *ci, enum node_state state);
 
 

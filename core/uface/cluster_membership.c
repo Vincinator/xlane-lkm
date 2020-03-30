@@ -24,24 +24,25 @@ void update_self_state(struct cluster_info *ci, enum node_state state) {
 }
 
 
-void add_cluster_member(struct cluster_info* ci, int cluster_id, u8 init_state)
+void add_cluster_member(struct cluster_info* ci, int cluster_id, int local_id, u8 init_state)
 {
     if(!ci) {
         asguard_error("BUG detected. cluster info is NULL\n");
         return;
     }
 
-    if(cluster_id > MAX_CLUSTER_MEMBER){
-        asguard_error("Cluster ID (%d) is higher than hardcoded current cluster limit (%d)\n", cluster_id, MAX_CLUSTER_MEMBER);
+    if(local_id > MAX_CLUSTER_MEMBER){
+        asguard_error("Local cluster ID (%d) is higher than hardcoded current cluster limit (%d)\n", local_id, MAX_CLUSTER_MEMBER);
         return;
     }
 
-    ci->member_info[cluster_id].state = init_state;
+    ci->member_info[local_id].state = init_state;
+    ci->member_info[local_id].global_cluster_id = cluster_id;
     ci->overall_cluster_member++;
 
 }
 
-void update_cluster_member(struct cluster_info* ci, int cluster_id, u8 state)
+void update_cluster_member(struct cluster_info* ci, int local_id, u8 state)
 {
     u8 prev_state;
 
@@ -50,12 +51,12 @@ void update_cluster_member(struct cluster_info* ci, int cluster_id, u8 state)
         return;
     }
 
-    if(cluster_id > MAX_CLUSTER_MEMBER){
-        asguard_error("Cluster ID (%d) is higher than hardcoded current cluster limit (%d)\n", cluster_id, MAX_CLUSTER_MEMBER);
+    if(local_id > MAX_CLUSTER_MEMBER){
+        asguard_error("Local Cluster ID (%d) is higher than hardcoded current cluster limit (%d)\n", local_id, MAX_CLUSTER_MEMBER);
         return;
     }
 
-    prev_state = ci->member_info[cluster_id].state;
+    prev_state = ci->member_info[local_id].state;
 
     /* TODO: Locking of cluster info data (ci)? */
 

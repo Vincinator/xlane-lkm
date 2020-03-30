@@ -444,6 +444,8 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
     score->sdevices[asguard_id]->ci = (struct cluster_info *)
             score->sdevices[asguard_id]->synbuf_clustermem->ubuf;
 
+    score->sdevices[asguard_id]->ci->overall_cluster_member = 1; /* Node itself is a member */
+
     return asguard_id;
 }
 EXPORT_SYMBOL(asguard_core_register_nic);
@@ -630,12 +632,14 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 
 	memcpy(&pmtarget->pkt_data.naddr.dst_mac, mac, sizeof(unsigned char) * 6);
 
+	/* Local ID is increasing with the number of targets */
+    add_cluster_member(sdev->ci, cluster_id, sdev->pminfo.num_of_targets, 2);
 	sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 
     pmtarget->aapriv = kmalloc(sizeof(struct asguard_async_queue_priv), GFP_KERNEL);
     init_asguard_async_queue(pmtarget->aapriv);
 
-    add_cluster_member(sdev->ci, cluster_id, 2);
+
 
 	return 0;
 }

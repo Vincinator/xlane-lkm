@@ -258,7 +258,7 @@ void send_pkt(struct net_device *ndev, struct sk_buff *skb)
 	HARD_TX_LOCK(ndev, txq, smp_processor_id());
 
 	if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
-		asguard_error("Device Busy unlocking.\n");
+		asguard_error("Device Busy unlocking (send_pkt).\n");
 		goto unlock;
 	}
 
