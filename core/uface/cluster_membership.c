@@ -78,7 +78,7 @@ void update_cluster_member(struct cluster_info* ci, int local_id, u8 state)
         }
 
         /* Update the state now */
-        ci->member_info[cluster_id].state = state;
+        ci->member_info[local_id].state = state;
     }
 
     ci->last_update_timestamp = RDTSC_ASGUARD;
