@@ -28,6 +28,8 @@
  */
 #define SYNBUF_MAX_DEVICES 16 
 static unsigned int synbuf_bypass_major = 0;
+static unsigned int synbuf_bypass_minor = 0;
+
 static struct class *synbuf_bypass_class = NULL;
 
 struct synbuf_device *inode_synbuf(struct inode *inode)
@@ -240,10 +242,9 @@ static const struct file_operations bypass_fileops = {
 	.mmap    = synbuf_bypass_mmap
 };
 
-long synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
+int synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 {
-	static unsigned int counter = 0;
-	long ret = 0;
+	int ret = 0;
 	int page_aligned_size;
 	dev_t devno;
 
@@ -258,7 +259,7 @@ long synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 	    return -ENODEV;
 	}
 
-	devno = MKDEV(synbuf_bypass_major, sdev->minorIndex);
+	devno = MKDEV(synbuf_bypass_major, synbuf_bypass_minor++);
 
 	mutex_init(&sdev->ubuf_mutex);
 
@@ -269,16 +270,14 @@ long synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 	ret = cdev_add(&sdev->cdev, devno, 1);
 
 	if (ret) {
-		printk(KERN_ERR"[SYNBUF] Failed to to add %s%d (error %ld)\n", DEVNAME, sdev->minorIndex, ret);
+		printk(KERN_ERR"[SYNBUF] Failed to to add %s%d (error %ld)\n", DEVNAME, synbuf_bypass_minor, ret);
 		goto cdev_error;
 	}
-
-	sdev->minorIndex = counter++;
 
 	sdev->device = device_create(synbuf_bypass_class, NULL, devno, NULL, DEVNAME "/%s", name);
 
 	if (!sdev->device) {
-		printk(KERN_ERR "[SYNBUF] Failed to create device %d\n", sdev->minorIndex);
+		printk(KERN_ERR "[SYNBUF] Failed to create device %d\n", synbuf_bypass_minor);
 		ret = -ENODEV;
 		goto device_create_error;
 	}
@@ -345,7 +344,7 @@ void synbuf_clean_class(void)
     printk(KERN_INFO"[SYNBUF] Success: %s \n", __FUNCTION__);
 }
 
-long synbuf_bypass_init_class(void) {
+int synbuf_bypass_init_class(void) {
 
 	long err = 0;
 	dev_t dev = 0;
