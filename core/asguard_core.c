@@ -446,6 +446,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
             score->sdevices[asguard_id]->synbuf_clustermem->ubuf;
 
     score->sdevices[asguard_id]->ci->overall_cluster_member = 1; /* Node itself is a member */
+    score->sdevices[asguard_id]->ci->cluster_self_id = score->sdevices[asguard_id]->cluster_id;
 
     return asguard_id;
 }
