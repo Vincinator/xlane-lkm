@@ -74,10 +74,18 @@ int consensus_init(struct proto_instance *ins)
     /* Initialize synbuf for Follower (RX) Buffer */
     priv->synbuf_rx = create_synbuf("rx", 250 * 4);
 
+    if(!priv->synbuf_rx) {
+        asguard_error("could not initialize synbuf for rx buffer\n");
+        return -1;
+    }
+
     /* Initialize synbuf for Leader (TX) Buffer */
     priv->synbuf_tx = create_synbuf("tx", 250 * 20);
 
-
+    if(!priv->synbuf_tx) {
+        asguard_error("could not initialize synbuf for tx buffer\n");
+        return -1;
+    }
 
 	return 0;
 }
