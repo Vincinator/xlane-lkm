@@ -12,6 +12,8 @@
 
 #include <asguard/asguard.h>
 #include <asguard/logger.h>
+#include <asguard/asgard_uface.h>
+
 
 static ssize_t asguard_hb_ctrl_proc_write(struct file *file,
 					const char __user *buffer, size_t count,
@@ -479,7 +481,11 @@ static ssize_t asguard_target_write(struct file *file,
 
 			if (is_ip_local(sdev->ndev, current_ip)) {
 				sdev->cluster_id = cluster_id;
-			} else {
+
+				if(sdev->ci)
+                    sdev->ci->cluster_self_id = cluster_id;
+
+            } else {
 				asguard_core_register_remote_host(sdev->asguard_id,
 						current_ip, current_mac,
 						current_protocol, cluster_id);
