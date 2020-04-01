@@ -16,12 +16,19 @@ int apply_log_to_sm(struct consensus_priv *priv)
 {
 	struct state_machine_cmd_log *log;
 	int applying;
+    int i;
 
 	log = &priv->sm_log;
 	applying = log->commit_idx - log->last_applied;
 
 	write_log(&priv->throughput_logger, applying, RDTSC_ASGUARD);
 
+    for(i = log->last_applied; i <= log->commit_idx; i++) {
+        if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[i]->cmd)) {
+            asguard_error("Could not append to ring buffer tried to append index %d!\n", i);
+            return -1;
+        }
+    }
 	//asguard_dbg("Added %d commands to State Machine.\n", applying);
 
 	return 0;
