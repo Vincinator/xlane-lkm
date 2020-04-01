@@ -7,6 +7,7 @@
 
 #include <asguard/consensus.h>
 #include <synbuf-chardev.h>
+#include <asguard/ringbuffer.h>
 
 #include "include/asguard_consensus_ops.h"
 #include "include/candidate.h"
@@ -72,12 +73,15 @@ int consensus_init(struct proto_instance *ins)
 
 
     /* Initialize synbuf for Follower (RX) Buffer */
-    priv->synbuf_rx = create_synbuf("rx", 250 * 4);
+    priv->synbuf_rx = create_synbuf("rx", 250 * 20);
 
     if(!priv->synbuf_rx) {
         asguard_error("could not initialize synbuf for rx buffer\n");
         return -1;
     }
+
+    /* Initialize RingBuffer in sybuf */
+    setup_asg_ring_buf((struct asg_ring_buf*) priv->synbuf_rx->ubuf, 300000 );
 
     /* Initialize synbuf for Leader (TX) Buffer */
     priv->synbuf_tx = create_synbuf("tx", 250 * 20);
@@ -86,6 +90,9 @@ int consensus_init(struct proto_instance *ins)
         asguard_error("could not initialize synbuf for tx buffer\n");
         return -1;
     }
+
+    /* Initialize RingBuffer in sybuf */
+    setup_asg_ring_buf((struct asg_ring_buf*) priv->synbuf_tx->ubuf, 300000 );
 
 	return 0;
 }

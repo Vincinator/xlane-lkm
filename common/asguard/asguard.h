@@ -2,6 +2,7 @@
 #define _ASGUARD_H_
 
 #include <linux/workqueue.h>
+#include <asguard/ringbuffer.h>
 
 
 #define VERBOSE_DEBUG 1
@@ -391,6 +392,7 @@ struct asguard_device {
 	struct workqueue_struct *asguard_leader_wq;
     struct cluster_info *ci;
     struct synbuf_device* synbuf_clustermem;
+    struct workqueue_struct *asguard_ringbuf_reader_wq;
 };
 
 struct asguard_protocol_ctrl_ops {
@@ -460,6 +462,13 @@ struct asguard_leader_pkt_work_data {
 	int retrans;
 
 };
+
+struct asguard_ringbuf_read_work_data {
+    struct work_struct work;
+    struct asg_ring_buf *rb;
+    struct consensus_priv *priv;
+};
+
 
 //void asguard_setup_skbs(struct pminfo *spminfo);
 void pm_state_transition_to(struct pminfo *spminfo,

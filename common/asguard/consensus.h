@@ -14,6 +14,8 @@
 
 #define MAX_CONSENSUS_LOG 100000
 
+#define ASGARD_CONSENSUS_SLOT_SIZE 64
+
 #define AE_ENTRY_SIZE 8
 #define MAX_AE_ENTRIES_PER_PKT 170
 
@@ -46,10 +48,6 @@ enum node_state {
 	LEADER = 2,
 };
 
-struct sm_command {
-	u32 sm_logvar_id;
-	u32 sm_logvar_value;
-};
 
 struct sm_log_entry {
 
@@ -63,7 +61,7 @@ struct sm_log_entry {
 	 * A ordered set of commands applied to the state machine will
 	 * transition the state machine to a common state (shared across the cluster).
 	 */
-	struct sm_command *cmd;
+	struct data_chunk *cmd;
 };
 
 
@@ -193,7 +191,7 @@ struct consensus_priv {
 
 
 int commit_log(struct consensus_priv *priv, s32 commit_idx);
-int append_command(struct consensus_priv *priv, struct sm_command *cmd, int term, int log_idx, int unstable);
+int append_command(struct consensus_priv *priv, struct data_chunk *cmd, int term, int log_idx, int unstable);
 
 
 
@@ -222,7 +220,7 @@ void set_ae_data(unsigned char *pkt,
 void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u32 term);
 int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode);
 int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, s32 param1, s32 param2, s32 param3, s32 param4);
-int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_id, struct sm_command *cmd_array, int num_of_entries);
+int setup_ae_msg(struct proto_instance *ins, struct pminfo *spminfo, u32 target_id, struct data_chunk *cmd_array, int num_of_entries);
 
 
 void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm);

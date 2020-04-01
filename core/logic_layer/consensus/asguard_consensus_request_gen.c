@@ -30,9 +30,9 @@ void testcase_stop_timer(struct consensus_priv *priv)
 void testcase_one_shot_big_log(struct consensus_priv *priv)
 {
 	int i, err;
-	struct sm_command *cur_cmd;
+	struct data_chunk *cur_cmd;
 	u32 rand_value, rand_id;
-
+    u32 *dptr;
 	err = 0;
 
 	for (i = 0; i < MAX_CONSENSUS_LOG; i++) {
@@ -41,14 +41,17 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
 
         // freed by consensus_clean
-        cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
+        cur_cmd = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
 
 		if (!cur_cmd) {
 			err = -ENOMEM;
 			goto error;
 		}
-		cur_cmd->sm_logvar_id = rand_id;
-		cur_cmd->sm_logvar_value = rand_value;
+        dptr = (u32*) cur_cmd->data;
+		(*dptr) = rand_id;
+		dptr += 1;
+        (*dptr) = rand_value;
+
 		err = append_command(priv, cur_cmd, priv->term, i, 0);
 
 		if (err)
@@ -71,10 +74,12 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 	struct consensus_priv *priv = test_data->priv;
 	u32 rand_value, rand_id;
 	ktime_t currtime, interval;
-	struct sm_command *cur_cmd;
+	struct data_chunk *cur_cmd;
 	int err = 0;
 	int i;
-	int start_idx = priv->sm_log.last_idx + 1;
+    u32 *dptr;
+
+    int start_idx = priv->sm_log.last_idx + 1;
 
 	if (test_data->running == 0)
 		return HRTIMER_NORESTART;
@@ -101,14 +106,16 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 		rand_id = prandom_u32_max(MAX_VALUE_SM_ID_SPACE);
 
         // freed by consensus_clean
-        cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
+        cur_cmd = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
 
 		if (!cur_cmd) {
 			err = -ENOMEM;
 			goto error;
 		}
-		cur_cmd->sm_logvar_id = rand_id;
-		cur_cmd->sm_logvar_value = rand_value;
+        dptr = (u32*) cur_cmd->data;
+        (*dptr) = rand_id;
+        dptr += 1;
+        (*dptr) = rand_value;
 		err = append_command(priv, cur_cmd, priv->term, i, 0);
 		// write_log(&priv->ins->logger, CONSENSUS_REQUEST, RDTSC_ASGUARD);
 
