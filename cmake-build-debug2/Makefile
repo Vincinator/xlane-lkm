@@ -1068,6 +1068,33 @@ core/uface/consensus_request.c.s:
 	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/consensus_request.c.s
 .PHONY : core/uface/consensus_request.c.s
 
+core/uface/ringbuffer.o: core/uface/ringbuffer.c.o
+
+.PHONY : core/uface/ringbuffer.o
+
+# target to build an object file
+core/uface/ringbuffer.c.o:
+	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/ringbuffer.c.o
+.PHONY : core/uface/ringbuffer.c.o
+
+core/uface/ringbuffer.i: core/uface/ringbuffer.c.i
+
+.PHONY : core/uface/ringbuffer.i
+
+# target to preprocess a source file
+core/uface/ringbuffer.c.i:
+	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/ringbuffer.c.i
+.PHONY : core/uface/ringbuffer.c.i
+
+core/uface/ringbuffer.s: core/uface/ringbuffer.c.s
+
+.PHONY : core/uface/ringbuffer.s
+
+# target to generate assembly for a file
+core/uface/ringbuffer.c.s:
+	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/ringbuffer.c.s
+.PHONY : core/uface/ringbuffer.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1182,6 +1209,9 @@ help:
 	@echo "... core/uface/consensus_request.o"
 	@echo "... core/uface/consensus_request.i"
 	@echo "... core/uface/consensus_request.s"
+	@echo "... core/uface/ringbuffer.o"
+	@echo "... core/uface/ringbuffer.i"
+	@echo "... core/uface/ringbuffer.s"
 .PHONY : help
 
 

@@ -473,8 +473,6 @@ static ssize_t asguard_target_write(struct file *file,
 				goto error;
 			}
 
-
-
 			state = 3;
 		} else if (state == 3) {
 			err = kstrtoint(input_str, 10, &cluster_id);
