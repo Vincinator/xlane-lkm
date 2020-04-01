@@ -453,7 +453,7 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
     int err = 0;
     struct asguard_ringbuf_read_work_data *next_work = NULL;
 
-    aw = container_of(w, struct asguard_ringbuf_read_work_data, work);
+    aw = container_of(w, struct asguard_ringbuf_read_work_data, dwork);
 
     priv = aw->sdev->consensus_priv;
 
@@ -507,6 +507,8 @@ cleanup:
         }
         next_work->rb = (struct asg_ring_buf *) aw->rb;
         next_work->sdev = aw->sdev;
+        INIT_DELAYED_WORK(&next_work->dwork, pull_consensus_requests_from_rb);
+
         /* Delay is in jiffies and depends on the configured HZ for the Linux Kernel.
          */
         queue_delayed_work(aw->sdev->asguard_ringbuf_reader_wq, next_work, 5);

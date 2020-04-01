@@ -464,7 +464,7 @@ struct asguard_leader_pkt_work_data {
 };
 
 struct asguard_ringbuf_read_work_data {
-    struct work_struct work;
+    struct delayed_work dwork;
     struct asg_ring_buf *rb;
     struct asguard_device *sdev;
 };
