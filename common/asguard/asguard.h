@@ -466,7 +466,7 @@ struct asguard_leader_pkt_work_data {
 struct asguard_ringbuf_read_work_data {
     struct work_struct work;
     struct asg_ring_buf *rb;
-    struct consensus_priv *priv;
+    struct asguard_device *sdev;
 };
 
 
@@ -567,5 +567,6 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 void update_leader(struct asguard_device *sdev, struct pminfo *spminfo);
 void update_alive_msg(struct asguard_device *sdev, struct asguard_payload *pkt_payload, int target_id);
 
+void _schedule_update_from_userspace(struct asguard_device *sdev, struct synbuf_device *syndev);
 
 #endif /* _ASGUARD_H_ */

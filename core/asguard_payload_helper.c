@@ -412,9 +412,12 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 void pull_consensus_requests_from_rb( struct work_struct *w);
 
 
-void _schedule_update_from_userspace(struct asguard_device *sdev, struct synbuf_device *syndev, struct consensus_priv *priv) {
+void _schedule_update_from_userspace(struct asguard_device *sdev, struct synbuf_device *syndev) {
 
     struct asguard_ringbuf_read_work_data *work = NULL;
+
+    if(!sdev->is_leader || sdev->pminfo.state != ASGUARD_PM_EMITTING)
+        return;
 
     // freed by pull_consensus_requests_from_rb
     work = kmalloc(sizeof(struct asguard_ringbuf_read_work_data), GFP_KERNEL);
@@ -425,7 +428,7 @@ void _schedule_update_from_userspace(struct asguard_device *sdev, struct synbuf_
     }
 
     work->rb = (struct asg_ring_buf *) syndev->ubuf;
-    work->priv = priv;
+    work->sdev = sdev;
 
     INIT_WORK(&work->work, pull_consensus_requests_from_rb);
     if(!queue_work(sdev->asguard_ringbuf_reader_wq, &work->work)) {
@@ -437,7 +440,7 @@ void _schedule_update_from_userspace(struct asguard_device *sdev, struct synbuf_
     }
 
 }
-
+EXPORT_SYMBOL(_schedule_update_from_userspace);
 
 /*
  * Copies ringbuffer data from user space to asgard logs for consensus
@@ -448,8 +451,16 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
     int cur_nxt_idx;
     struct data_chunk *new_chunk;
     int err = 0;
+    struct asguard_ringbuf_read_work_data *next_work = NULL;
+
     aw = container_of(w, struct asguard_ringbuf_read_work_data, work);
-    priv = aw->priv;
+
+    priv = aw->sdev->consensus_priv;
+
+    if(!priv) {
+        asguard_dbg("consensus priv is NULL \n");
+        goto cleanup;
+    }
 
     /* Get next free slot in ASGARD log */
     cur_nxt_idx = priv->sm_log.last_idx + 1;
@@ -484,8 +495,24 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
     }
 
 cleanup:
-    kfree(aw);
 
+    /* Schedule next Worker Item, but with a delay and only if the system is still running */
+    if(aw->sdev->is_leader && aw->sdev->pminfo.state == ASGUARD_PM_EMITTING) {
+        // freed by pull_consensus_requests_from_rb
+        next_work = kmalloc(sizeof(struct asguard_ringbuf_read_work_data), GFP_KERNEL);
+
+        if(!next_work) {
+            asguard_error("Could not allocate memory for work item in %s\n", __FUNCTION__);
+            return;
+        }
+        next_work->rb = (struct asg_ring_buf *) aw->rb;
+        next_work->sdev = aw->sdev;
+        /* Delay is in jiffies and depends on the configured HZ for the Linux Kernel.
+         */
+        queue_delayed_work(aw->sdev->asguard_ringbuf_reader_wq, next_work, 5);
+    }
+
+    kfree(aw);
 
 }
 

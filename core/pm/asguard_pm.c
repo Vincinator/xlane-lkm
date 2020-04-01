@@ -689,6 +689,7 @@ emit:
 			return err;
 		}
 
+
 		// if (sdev->ts_state == ASGUARD_TS_RUNNING)
 		//	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, 42);
 

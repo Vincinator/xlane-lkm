@@ -368,6 +368,10 @@ int start_leader(struct proto_instance *ins)
 	priv->candidate_counter = 0;
 
 	check_pending_log_rep(priv->sdev);
-	return 0;
+
+    /* Trigger poll from user space */
+    _schedule_update_from_userspace(priv->sdev, priv->synbuf_tx);
+
+    return 0;
 }
 EXPORT_SYMBOL(start_leader);
