@@ -396,7 +396,12 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->asguard_leader_wq =
 		 alloc_workqueue("asguard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
 
-	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
+    /* Only one active Worker! Due to reading of the ringbuffer ..*/
+    score->sdevices[asguard_id]->asguard_ringbuf_reader_wq =
+            alloc_workqueue("asguard_ringbuf_reader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
+
+
+    for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		score->sdevices[asguard_id]->instance_id_mapping[i] = -1;
 
     // freed by clear_protocol_instances
@@ -792,6 +797,7 @@ static void __exit asguard_connection_core_exit(void)
             async_clear_queue(score->sdevices[i]->pminfo.pm_targets[j].aapriv);
 
         destroy_workqueue(score->sdevices[i]->asguard_leader_wq);
+        destroy_workqueue(score->sdevices[i]->asguard_ringbuf_reader_wq);
 
 		clear_protocol_instances(score->sdevices[i]);
 

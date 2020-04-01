@@ -146,7 +146,7 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 EXPORT_SYMBOL(update_next_retransmission_request_idx);
 
 
-int append_command(struct consensus_priv *priv, struct sm_command *cmd, s32 term, int log_idx, int unstable)
+int append_command(struct consensus_priv *priv, struct data_chunk *cmd, s32 term, int log_idx, int unstable)
 {
 	int err;
 	struct sm_log_entry *entry;

@@ -91,7 +91,8 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 {
 	int i, err, new_last;
 	u32 *cur_ptr;
-	struct sm_command *cur_cmd;
+	struct data_chunk *cur_cmd;
+    u32 *dptr;
 
 	new_last = start_log_idx + num_entries - 1;
 
@@ -117,7 +118,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
             continue;
         }
         // freed by consensus_clean
-		cur_cmd = kmalloc(sizeof(struct sm_command), GFP_KERNEL);
+		cur_cmd = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
 
 		if (!cur_cmd) {
 			err = -ENOMEM;
@@ -125,10 +126,12 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 			goto error;
 		}
 
-		cur_cmd->sm_logvar_id = *cur_ptr;
-		cur_ptr++;
-		cur_cmd->sm_logvar_value = *cur_ptr;
-		cur_ptr++;
+        dptr = (u32*) cur_cmd->data;
+        (*dptr) = *cur_ptr;
+        dptr += 1;
+        cur_ptr++;
+        (*dptr) = *cur_ptr;
+        cur_ptr++;
 
 		err = append_command(priv, cur_cmd, priv->term, i, unstable);
 

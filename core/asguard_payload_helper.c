@@ -409,7 +409,89 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 
 }
 
-void prepare_log_replication_handler(struct work_struct *w);
+void pull_consensus_requests_from_rb( struct work_struct *w);
+
+
+void _schedule_update_from_userspace(struct asguard_device *sdev, struct synbuf_device *syndev, struct consensus_priv *priv) {
+
+    struct asguard_ringbuf_read_work_data *work = NULL;
+
+    // freed by pull_consensus_requests_from_rb
+    work = kmalloc(sizeof(struct asguard_ringbuf_read_work_data), GFP_KERNEL);
+
+    if(!work) {
+        asguard_error("Could not allocate memory for work item in %s\n", __FUNCTION__);
+        return;
+    }
+
+    work->rb = (struct asg_ring_buf *) syndev->ubuf;
+    work->priv = priv;
+
+    INIT_WORK(&work->work, pull_consensus_requests_from_rb);
+    if(!queue_work(sdev->asguard_ringbuf_reader_wq, &work->work)) {
+        asguard_dbg("Work item not put in queue ..");
+        sdev->bug_counter++;
+        if(work)
+            kfree(work); //right?
+        return;
+    }
+
+}
+
+
+/*
+ * Copies ringbuffer data from user space to asgard logs for consensus
+ */
+void pull_consensus_requests_from_rb(struct work_struct *w) {
+    struct asguard_ringbuf_read_work_data *aw = NULL;
+    struct consensus_priv *priv;
+    int cur_nxt_idx;
+    struct data_chunk *new_chunk;
+    int err = 0;
+    aw = container_of(w, struct asguard_ringbuf_read_work_data, work);
+    priv = aw->priv;
+
+    /* Get next free slot in ASGARD log */
+    cur_nxt_idx = priv->sm_log.last_idx + 1;
+
+    /* Make sure that this node is still the leader! */
+    if(priv->nstate != LEADER) {
+        goto cleanup;
+    }
+
+    /* Read until the buffer is empty
+     * Exit on Error
+     */
+    while(1) {
+        new_chunk = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
+
+        /* Write from ringbuffer to ASGARD log slot */
+        err = read_rb(aw->rb, new_chunk);
+
+        if(err) {
+            kfree(new_chunk);
+            break;
+        }
+
+        err = append_command(priv, new_chunk, priv->term, cur_nxt_idx, 0);
+
+        if(err) {
+            asguard_error("Failed to append new chunk to ASGARD log\n");
+            break;
+        }
+
+        cur_nxt_idx++;
+    }
+
+cleanup:
+    kfree(aw);
+
+
+}
+
+
+void prepare_log_replication_handler( struct work_struct *w);
+
 
 void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_index, s32 retrans)
 {
@@ -438,6 +520,8 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
 		asguard_dbg("Work item not put in queue ..");
 		sdev->bug_counter++;
+        if(work)
+            kfree(work); //right?
 		return;
 	}
 
@@ -503,7 +587,9 @@ unlock:
 
 	return next_index;
 }
-
+/*
+ *
+ */
 void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id)
 {
 	s32 next_index, match_index;

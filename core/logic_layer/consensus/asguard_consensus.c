@@ -167,12 +167,15 @@ void set_ae_data(unsigned char *pkt,
 			asguard_dbg("BUG! - entries cmd at %d is null", i);
 			return;
 		}
+        // write entry data to payload
 
-		// write entry data to payload
-		*cur_ptr = entries[i]->cmd->sm_logvar_id;
+        memcpy(cur_ptr,entries[i]->cmd->data, sizeof(struct data_chunk));
+		// TODO: u32bit ptr increased twice to land at next data_chunk..
+		//         ... however, we need a stable method if we change the data_chunk size!!
 		cur_ptr++;
-		*cur_ptr = entries[i]->cmd->sm_logvar_value;
 		cur_ptr++;
+
+
 	}
 
 }
