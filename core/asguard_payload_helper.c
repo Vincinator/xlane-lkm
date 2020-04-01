@@ -430,8 +430,8 @@ void _schedule_update_from_userspace(struct asguard_device *sdev, struct synbuf_
     work->rb = (struct asg_ring_buf *) syndev->ubuf;
     work->sdev = sdev;
 
-    INIT_WORK(&work->work, pull_consensus_requests_from_rb);
-    if(!queue_work(sdev->asguard_ringbuf_reader_wq, &work->work)) {
+    INIT_DELAYED_WORK(&work->dwork, pull_consensus_requests_from_rb);
+    if(!queue_work(sdev->asguard_ringbuf_reader_wq, &work->dwork)) {
         asguard_dbg("Work item not put in queue ..");
         sdev->bug_counter++;
         if(work)
