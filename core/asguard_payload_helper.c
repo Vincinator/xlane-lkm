@@ -452,8 +452,10 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
     struct data_chunk *new_chunk;
     int err = 0;
     struct asguard_ringbuf_read_work_data *next_work = NULL;
+    struct delayed_work *dw;
 
-    aw = container_of(w, struct asguard_ringbuf_read_work_data, dwork);
+    dw = container_of(w, struct delayed_work, work);
+    aw = container_of(dw, struct asguard_ringbuf_read_work_data, dwork);
 
     priv = aw->sdev->consensus_priv;
 
