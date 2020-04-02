@@ -35,6 +35,9 @@ int apply_log_to_sm(struct consensus_priv *priv)
             return -1;
         }
 
+        print_hex_dump(KERN_DEBUG, "in log: ", DUMP_PREFIX_OFFSET, 64, 1,
+                       log->entries[i], sizeof(struct data_chunk), 0);
+
         if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[i]->cmd)) {
             asguard_error("Could not append to ring buffer tried to append index %d!\n", i);
             return -1;
