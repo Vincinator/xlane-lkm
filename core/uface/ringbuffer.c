@@ -75,8 +75,6 @@ int is_rb_empty(struct asg_ring_buf *buf) {
 
 int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
 
-    int read_idx, size, turn;
-
     if(is_rb_empty(buf)) {
         return -1;
     }
@@ -86,10 +84,7 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
         return -1;
     }
 
-    /* Read Buffer Idx from user */
-    get_user(read_idx, &buf->read_idx);
-
-    if(!&buf->ring[read_idx]) {
+    if(!&buf->ring[buf->read_idx]) {
         asguard_error("Memory invalid at advertised ring buffer slot!\n");
         return -1;
     }
@@ -97,25 +92,24 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
     asguard_dbg("read_idx:");
     // copy_to_user idx!
 
-    copy_from_user(chunk_destination, &buf->ring[read_idx], sizeof(struct data_chunk));
+
+    print_hex_dump(KERN_DEBUG, "first element in ring: ", DUMP_PREFIX_NONE, 16,1,
+                   buf->ring, sizeof(struct data_chunk), 0);
+
+    memcpy(chunk_destination, &buf->ring[buf->read_idx++], sizeof(struct data_chunk));
 
     print_hex_dump(KERN_DEBUG, "read consensus request: ", DUMP_PREFIX_NONE, 16,1,
                    chunk_destination, sizeof(struct data_chunk), 0);
     print_hex_dump(KERN_DEBUG, "read consensus request: ", DUMP_PREFIX_NONE, 16,1,
-                   &buf->ring[read_idx], sizeof(struct data_chunk), 0);
-    read_idx++;
+                   &buf->ring[buf->read_idx-1], sizeof(struct data_chunk), 0);
 
-    get_user(size, &buf->size);
 
     /* index starts at 0! */
-    if(read_idx == size) {
+    if(buf->read_idx == buf->size) {
         asguard_error("ring read turn");
-        read_idx = 0;
-        turn = 0;
-        put_user(turn, &buf->turn);
+        buf->read_idx = 0;
+        buf->turn = 0;
     }
-
-    put_user(read_idx, &buf->read_idx);
 
     return 0;
 }
