@@ -480,8 +480,8 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
         /* Write from ringbuffer to ASGARD log slot */
         err = read_rb(aw->rb, new_chunk);
 
-        print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
-                       new_chunk, sizeof(struct data_chunk), 0);
+       // print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
+       //                 new_chunk, sizeof(struct data_chunk), 0);
 
         if(err) {
             kfree(new_chunk);
