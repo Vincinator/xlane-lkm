@@ -71,8 +71,12 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
         asguard_dbg("Chunk destination is NULL! Can not copy from rb to NULL.\n");
         return -1;
     }
+    if(!&buf->ring[buf->read_idx++]) {
+        asguard_error("Memory invalid at advertised ring buffer slot!\n");
+        return -1;
+    }
 
-    memcpy(chunk_destination, &buf->ring[buf->read_idx++], sizeof(struct data_chunk));
+    copy_from_user(chunk_destination, &buf->ring[buf->read_idx++], sizeof(struct data_chunk));
     // (*retval) = buf->ring[buf->read_idx++];
 
     /* index starts at 0! */
