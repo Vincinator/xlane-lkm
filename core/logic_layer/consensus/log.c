@@ -23,7 +23,17 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
 	write_log(&priv->throughput_logger, applying, RDTSC_ASGUARD);
 
+	if(!priv->synbuf_rx || !priv->synbuf_rx->ubuf) {
+	    asguard_error("synbuf is not initialized!\n");
+	    return -1;
+	}
+
     for(i = log->last_applied; i <= log->commit_idx; i++) {
+        if(!log->entries[i]) {
+            asguard_error("Entry at index %d is invalid!\n", i);
+            return -1;
+        }
+
         if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[i]->cmd)) {
             asguard_error("Could not append to ring buffer tried to append index %d!\n", i);
             return -1;
