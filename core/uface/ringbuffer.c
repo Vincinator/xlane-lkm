@@ -97,12 +97,12 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
     asguard_dbg("read_idx:");
     // copy_to_user idx!
 
-    copy_from_user(chunk_destination, &buf->ring[read_idx].data, sizeof(struct data_chunk));
+    copy_from_user(chunk_destination, &buf->ring[read_idx], sizeof(struct data_chunk));
 
     print_hex_dump(KERN_DEBUG, "read consensus request: ", DUMP_PREFIX_NONE, 16,1,
                    chunk_destination, sizeof(struct data_chunk), 0);
     print_hex_dump(KERN_DEBUG, "read consensus request: ", DUMP_PREFIX_NONE, 16,1,
-                   &buf->ring[read_idx].data, sizeof(struct data_chunk), 0);
+                   &buf->ring[read_idx], sizeof(struct data_chunk), 0);
     read_idx++;
 
     get_user(size, &buf->size);
