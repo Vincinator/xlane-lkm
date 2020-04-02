@@ -231,8 +231,10 @@ static int synbuf_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 
     ret = remap_vmalloc_range(vma, sdev->ubuf, 0);
 
-    if (ret)
+    if (ret){
+        printk(KERN_ERR"remap_vmalloc_range error: %d\n", ret);
         return ret;
+    }
 
     vma->vm_ops = &bypass_vm_ops;
 	vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP;
