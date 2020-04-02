@@ -168,9 +168,6 @@ void set_ae_data(unsigned char *pkt,
 			return;
 		}
 
-        print_hex_dump(KERN_DEBUG, "in log: ", DUMP_PREFIX_OFFSET, 64, 1,
-                       entries[i]->cmd->data, sizeof(struct data_chunk), 0);
-
         memcpy(cur_ptr, entries[i]->cmd->data, sizeof(struct data_chunk));
 
 		// TODO: u32bit ptr increased twice to land at next data_chunk..
