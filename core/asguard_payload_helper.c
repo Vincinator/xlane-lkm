@@ -517,7 +517,6 @@ cleanup:
         /* Delay is in jiffies and depends on the configured HZ for the Linux Kernel.
          */
         queue_delayed_work(aw->sdev->asguard_ringbuf_reader_wq, &next_work->dwork, 5);
-        asguard_dbg("Scheduled next RingBuffer poll\n");
     }
 
     kfree(aw);
