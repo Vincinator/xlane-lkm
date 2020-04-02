@@ -294,7 +294,8 @@ int synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
     page_aligned_size = PAGE_ALIGN(size);
 
 	// TODO: maybe add a C preprocessor ifdef to switch between allocation modes? (DONT FORGET TO ADJUST FREE methods)
-    sdev->ubuf = vmalloc_user(page_aligned_size);
+    sdev->ubuf = vmalloc(page_aligned_size);
+    memset(sdev->ubuf,0,  page_aligned_size);
 
 	if (!sdev->ubuf) {
 		printk(KERN_ERR "[SYNBUF] Failed to allocate ubuf memory\n");
