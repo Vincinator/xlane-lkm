@@ -68,6 +68,8 @@ int is_rb_empty(struct asg_ring_buf *buf) {
 
 int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
 
+    int read_idx;
+
     if(is_rb_empty(buf)) {
         return -1;
     }
@@ -76,13 +78,25 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
         asguard_dbg("Chunk destination is NULL! Can not copy from rb to NULL.\n");
         return -1;
     }
-    if(!&buf->ring[buf->read_idx]) {
+
+    /* Read Buffer Idx from user */
+    copy_from_user(&read_idx, &buf->read_idx, sizeof(int));
+
+
+    if(!&buf->ring[read_idx]) {
         asguard_error("Memory invalid at advertised ring buffer slot!\n");
         return -1;
     }
 
+    asguard_dbg("read_idx: %d  direct read_idx: %d\n", read_idx, buf->read_idx);
+
+    // copy_to_user idx!
+
     copy_from_user(chunk_destination, &buf->ring[buf->read_idx++], sizeof(struct data_chunk));
     // (*retval) = buf->ring[buf->read_idx++];
+    read_idx++;
+
+    copy_to_user(&buf->read_idx, &read_idx, sizeof(int));
 
     /* index starts at 0! */
     if(buf->read_idx == buf->size) {
