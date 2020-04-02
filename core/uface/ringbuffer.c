@@ -40,8 +40,12 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
         asguard_error("Stopping! Reader can't keep up with Writer");
         return -1;
     }
+    if(!&buf->ring[buf->write_idx++]) {
+        asguard_error("Memory at advertised ringbuffer slot is invalid\n");
+        return -1;
+    }
 
-    buf->ring[buf->write_idx++] = (*data);
+    copy_to_user(&buf->ring[buf->write_idx++], data, sizeof(struct data_chunk));
 
     /* index starts at 0! */
     if(buf->write_idx == buf->size) {
