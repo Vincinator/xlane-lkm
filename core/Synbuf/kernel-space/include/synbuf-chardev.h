@@ -11,6 +11,7 @@ struct synbuf_device {
 	struct mutex ubuf_mutex;/* Mutex for accessing ubuf memory */
 	struct device* device;
     size_t bufsize;
+    int mapcount;
 };
 
 /*

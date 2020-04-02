@@ -172,13 +172,14 @@ out:
 
 void bypass_vma_open(struct vm_area_struct *vma)
 {
-	printk(KERN_INFO "[SYNBUF] Bypass VMA open, virt %lx, phys %lx\n",
-		vma->vm_start, vma->vm_pgoff << PAGE_SHIFT);
+    struct synbuf_device *sdev = vma->vm_private_data;
+    sdev->mapcount++;
 }
 
 void bypass_vma_close(struct vm_area_struct *vma)
 {
-	printk(KERN_INFO "[SYNBUF] Simple VMA close.\n");
+    struct synbuf_device *sdev = vma->vm_private_data;
+    sdev->mapcount--;
 }
 
 struct page *get_synbuf_buf_page(struct synbuf_device * sdev, pgoff_t pgoff) {
@@ -219,7 +220,7 @@ vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 
 static struct vm_operations_struct bypass_vm_ops = {
 	.open  = bypass_vma_open,
-	//.fault = bypass_vm_fault,
+	.fault = bypass_vm_fault,
 	.close = bypass_vma_close,
 };
 
@@ -229,10 +230,13 @@ static int synbuf_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
     struct synbuf_device *sdev = filp->private_data;
     int ret;
 
-    //ret = remap_vmalloc_range(vma, sdev->ubuf, vma->vm_pgoff);
 
-    ret = remap_pfn_range(vma, vma->vm_start, page_to_pfn(virt_to_page(sdev->ubuf)),
-                         vma->vm_end - vma->vm_start, vma->vm_page_prot);
+    if(!sdev) {
+        printk(KERN_ERR"synbuf device is NULL\n");
+        return -ENODEV;
+    }
+
+    ret = remap_vmalloc_range(vma, sdev->ubuf, 0);
 
     if (ret){
         printk(KERN_ERR"remap_vmalloc_range error: %d\n", ret);
@@ -242,6 +246,9 @@ static int synbuf_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
     vma->vm_ops = &bypass_vm_ops;
 	vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP;
     vma->vm_private_data = filp->private_data;
+
+    vma->vm_ops->open(vma);
+
 	return 0;
 }
 
@@ -275,6 +282,8 @@ int synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 
 	mutex_init(&sdev->ubuf_mutex);
 
+	sdev->mapcount = 0;
+
 	cdev_init(&sdev->cdev, &bypass_fileops);
 
 	sdev->cdev.owner = THIS_MODULE;
@@ -296,15 +305,13 @@ int synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 
     page_aligned_size = PAGE_ALIGN(size);
 
-	// TODO: maybe add a C preprocessor ifdef to switch between allocation modes? (DONT FORGET TO ADJUST FREE methods)
-    sdev->ubuf = vmalloc(page_aligned_size);
+    sdev->ubuf = vmalloc_user(page_aligned_size);
 
 	if (!sdev->ubuf) {
 		printk(KERN_ERR "[SYNBUF] Failed to allocate ubuf memory\n");
 		ret = -ENOMEM;
 		goto ubuf_error;
 	}
-    memset(sdev->ubuf,0,  page_aligned_size);
 
     printk(KERN_INFO"[SYNBUF] Success: %s \n", __FUNCTION__);
 
