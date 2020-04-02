@@ -24,7 +24,6 @@ void setup_asg_ring_buf(struct asg_ring_buf *buf, int max_elements){
 }
 
 
-
 /*
  * Appends a data chunk to the ring buffer
  */
@@ -66,7 +65,6 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
 
     put_user(write_idx, &buf->write_idx);
 
-
     return 0;
 }
 
@@ -96,10 +94,15 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
         return -1;
     }
 
-
+    asguard_dbg("read_idx:");
     // copy_to_user idx!
 
-    copy_from_user(chunk_destination, &buf->ring[read_idx], sizeof(struct data_chunk));
+    copy_from_user(chunk_destination, &buf->ring[read_idx].data, sizeof(struct data_chunk));
+
+    print_hex_dump(KERN_DEBUG, "read consensus request: ", DUMP_PREFIX_NONE, 16,1,
+                   chunk_destination, sizeof(struct data_chunk), 0);
+    print_hex_dump(KERN_DEBUG, "read consensus request: ", DUMP_PREFIX_NONE, 16,1,
+                   &buf->ring[read_idx].data, sizeof(struct data_chunk), 0);
     read_idx++;
 
     get_user(size, &buf->size);

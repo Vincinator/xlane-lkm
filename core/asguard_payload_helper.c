@@ -488,8 +488,7 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
             //asguard_dbg("Failed to read from ring buffer\n");
             break;
         }
-        print_hex_dump(KERN_DEBUG, "read consensus request: ", DUMP_PREFIX_NONE, 16,1,
-                new_chunk, sizeof(struct data_chunk), 0);
+
 
         err = append_command(priv, new_chunk, priv->term, cur_nxt_idx, 0);
 
