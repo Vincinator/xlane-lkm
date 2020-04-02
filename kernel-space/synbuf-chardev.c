@@ -229,7 +229,7 @@ static int synbuf_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
     struct synbuf_device *sdev = filp->private_data;
     int ret;
 
-    ret = remap_vmalloc_range(vma, sdev->ubuf, 0);
+    ret = remap_vmalloc_range(vma, sdev->ubuf, vma->vm_pgoff);
 
     if (ret){
         printk(KERN_ERR"remap_vmalloc_range error: %d\n", ret);
