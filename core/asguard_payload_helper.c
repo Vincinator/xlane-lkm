@@ -483,8 +483,11 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
 
         if(err) {
             kfree(new_chunk);
+            asguard_dbg("Failed to read from ring buffer\n");
             break;
         }
+
+        asguard_dbg("Got Consensus Request from RingBuffer\n");
 
         err = append_command(priv, new_chunk, priv->term, cur_nxt_idx, 0);
 
@@ -492,7 +495,7 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
             asguard_error("Failed to append new chunk to ASGARD log\n");
             break;
         }
-
+        asguard_dbg("Appended Consensus request to leader log\n");
         cur_nxt_idx++;
     }
 
@@ -514,6 +517,7 @@ cleanup:
         /* Delay is in jiffies and depends on the configured HZ for the Linux Kernel.
          */
         queue_delayed_work(aw->sdev->asguard_ringbuf_reader_wq, &next_work->dwork, 5);
+        asguard_dbg("Scheduled next RingBuffer poll\n");
     }
 
     kfree(aw);

@@ -62,6 +62,7 @@ int is_rb_empty(struct asg_ring_buf *buf) {
 
 
 int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
+
     if(is_rb_empty(buf)) {
         return -1;
     }
