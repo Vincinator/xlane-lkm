@@ -19,7 +19,8 @@ int apply_log_to_sm(struct consensus_priv *priv)
     int i;
 
 	log = &priv->sm_log;
-	applying = log->commit_idx - log->last_applied;
+
+	applying = log->commit_idx - (log->last_applied == -1 ? 0 : log->last_applied);
 
 	write_log(&priv->throughput_logger, applying, RDTSC_ASGUARD);
 
@@ -28,7 +29,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
 	    return -1;
 	}
 
-    for(i = log->last_applied; i <= log->commit_idx; i++) {
+    for(i = log->last_applied + 1; i <= log->commit_idx; i++) {
         if(!log->entries[i]) {
             asguard_error("Entry at index %d is invalid!\n", i);
             return -1;
