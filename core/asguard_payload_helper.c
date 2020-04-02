@@ -483,7 +483,7 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
 
         if(err) {
             kfree(new_chunk);
-            asguard_dbg("Failed to read from ring buffer\n");
+            //asguard_dbg("Failed to read from ring buffer\n");
             break;
         }
 
