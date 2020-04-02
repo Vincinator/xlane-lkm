@@ -488,8 +488,8 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
             //asguard_dbg("Failed to read from ring buffer\n");
             break;
         }
-
-        asguard_dbg("Got Consensus Request from RingBuffer\n");
+        print_hex_dump(KERN_DEBUG, "read consensus request: ", DUMP_PREFIX_NONE, 16,1,
+                new_chunk, sizeof(struct data_chunk), 0);
 
         err = append_command(priv, new_chunk, priv->term, cur_nxt_idx, 0);
 
@@ -497,7 +497,6 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
             asguard_error("Failed to append new chunk to ASGARD log\n");
             break;
         }
-        asguard_dbg("Appended Consensus request to leader log\n");
         cur_nxt_idx++;
     }
 

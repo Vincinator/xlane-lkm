@@ -96,7 +96,6 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
         return -1;
     }
 
-    asguard_dbg("read_idx: %d  direct read_idx: %d\n", read_idx, buf->read_idx);
 
     // copy_to_user idx!
 
