@@ -499,6 +499,15 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
         cur_nxt_idx++;
     }
 
+    /* ASGARD can now start transmitting ..
+     * TODO: we already know that there are pending log replications!
+     *         .. are all the check ups triggered by check_pending_log_rep
+     *         .. really necessary?
+     *
+     *
+     * */
+    check_pending_log_rep(priv->sdev);
+
 cleanup:
 
     /* Schedule next Worker Item, but with a delay and only if the system is still running */
