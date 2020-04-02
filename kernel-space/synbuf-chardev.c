@@ -219,15 +219,22 @@ vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
 
 static struct vm_operations_struct bypass_vm_ops = {
 	.open  = bypass_vma_open,
-	.fault = bypass_vm_fault,
+	//.fault = bypass_vm_fault,
 	.close = bypass_vma_close,
 };
 
 
 static int synbuf_bypass_mmap(struct file *filp, struct vm_area_struct *vma)
 {
+    struct synbuf_device *sdev = filp->private_data;
+    int ret;
 
-	vma->vm_ops = &bypass_vm_ops;
+    ret = remap_vmalloc_range(vma, sdev->ubuf, 0);
+
+    if (ret)
+        return ret;
+
+    vma->vm_ops = &bypass_vm_ops;
 	vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP;
     vma->vm_private_data = filp->private_data;
 	return 0;
