@@ -80,18 +80,10 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
     asguard_dbg("read_idx: %d", buf->read_idx);
 
     memcpy(chunk_destination, &buf->ring[buf->read_idx], sizeof(struct data_chunk));
-    print_hex_dump(KERN_DEBUG, "first element in ring: ", DUMP_PREFIX_NONE, 16,1,
+    print_hex_dump(KERN_DEBUG, "consensus request hexdump: ", DUMP_PREFIX_NONE, 16,1,
                    &buf->ring[buf->read_idx], sizeof(struct data_chunk), 0);
 
-
-    /*
-    memcpy(chunk_destination, &buf->ring[buf->read_idx++], sizeof(struct data_chunk));
-
-    print_hex_dump(KERN_DEBUG, "read consensus request: ", DUMP_PREFIX_NONE, 16,1,
-                   chunk_destination, sizeof(struct data_chunk), 0);
-    print_hex_dump(KERN_DEBUG, "read consensus request: ", DUMP_PREFIX_NONE, 16,1,
-                   &buf->ring[buf->read_idx-1], sizeof(struct data_chunk), 0);
-    */
+    buf->read_idx++;
 
     /* index starts at 0! */
     if(buf->read_idx == buf->size) {
