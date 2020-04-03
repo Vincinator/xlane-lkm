@@ -17,10 +17,14 @@ void setup_asg_ring_buf(struct asg_ring_buf *buf, int max_elements){
 
     buf->write_idx = 0;
     buf->turn = 0;
+}
 
-    /* Pointer stores address to memory placed directly after the asg_ring_buf */
-    buf->ring = (struct data_chunk*)  (buf + 1);
 
+struct data_chunk *get_entry_chunk_ptr(struct asg_ring_buf *buf, int offset) {
+
+    char *chkptr = buf+1;
+
+    return start + offset;
 }
 
 
@@ -28,9 +32,6 @@ void setup_asg_ring_buf(struct asg_ring_buf *buf, int max_elements){
  * Appends a data chunk to the ring buffer
  */
 int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
-
-    int write_idx, size, turn;
-
 
     if(!buf){
         asguard_error("asg ring buffer is NULL");
@@ -43,27 +44,22 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
         return -1;
     }
 
-    get_user(write_idx, &buf->write_idx);
 
-
-    if(!&buf->ring[write_idx]) {
+    if(!&buf->ring[buf->write_idx]) {
         asguard_error("Memory at advertised ringbuffer slot is invalid\n");
         return -1;
     }
 
-    copy_to_user(&buf->ring[write_idx], data, sizeof(struct data_chunk));
+    memcpy(&buf->ring[buf->write_idx++], data, sizeof(struct data_chunk));
 
-    write_idx++;
 
     /* index starts at 0! */
-    if(write_idx == size) {
+    if(buf->write_idx == buf->size) {
         asguard_error("ring write turn");
-        write_idx = 0;
-        turn = 1;
-        put_user(turn, &buf->turn);
+        buf->write_idx = 0;
+        buf->turn = 1;
     }
 
-    put_user(write_idx, &buf->write_idx);
 
     return 0;
 }
@@ -72,10 +68,6 @@ int is_rb_empty(struct asg_ring_buf *buf) {
     return (buf->read_idx == buf->write_idx && !buf->turn);
 }
 
-
-struct data_chunk *get_entry_chunk_ptr(struct data_chunk *start, int offset) {
-    return start + offset;
-}
 
 int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
 
@@ -88,16 +80,16 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
         return -1;
     }
 
-    if(!get_entry_chunk_ptr(buf->ring, buf->read_idx)) {
+    if(!&buf->ring[buf->read_idx]) {
         asguard_error("Memory invalid at advertised ring buffer slot!\n");
         return -1;
     }
 
     asguard_dbg("read_idx: %d", buf->read_idx);
 
-    memcpy(chunk_destination, get_entry_chunk_ptr(buf->ring, buf->read_idx), sizeof(struct data_chunk));
+    memcpy(chunk_destination, &buf->ring[buf->read_idx], sizeof(struct data_chunk));
     print_hex_dump(KERN_DEBUG, "first element in ring: ", DUMP_PREFIX_NONE, 16,1,
-                   get_entry_chunk_ptr(buf->ring, buf->read_idx), sizeof(struct data_chunk), 0);
+                   &buf->ring[buf->read_idx], sizeof(struct data_chunk), 0);
 
 
     /*
