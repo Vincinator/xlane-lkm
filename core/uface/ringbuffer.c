@@ -20,14 +20,6 @@ void setup_asg_ring_buf(struct asg_ring_buf *buf, int max_elements){
 }
 
 
-struct data_chunk *get_entry_chunk_ptr(struct asg_ring_buf *buf, int offset) {
-
-    char *chkptr = buf+1;
-
-    return start + offset;
-}
-
-
 /*
  * Appends a data chunk to the ring buffer
  */
