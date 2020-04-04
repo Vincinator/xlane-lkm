@@ -46,7 +46,7 @@ unlock:
 
 int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 {
-	int i;
+	int i, buf_stable_idx;
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
@@ -60,7 +60,13 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 		last_log_term = priv->term;
 	else{
 		asguard_dbg("priv->sm_log.stable_idx=%d\n", priv->sm_log.stable_idx);
-		last_log_term = priv->sm_log.entries[priv->sm_log.stable_idx]->term;
+        buf_stable_idx = consensus_idx_to_buffer_idx(&priv->sm_log, priv->sm_log.last_applied);
+
+        if(buf_stable_idx == -1) {
+            asguard_error("Invalid idx. could not convert to buffer idx in %s",__FUNCTION__);
+            return -1;
+        }
+		last_log_term = priv->sm_log.entries[buf_stable_idx]->term;
 	}
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++)

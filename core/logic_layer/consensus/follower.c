@@ -161,7 +161,7 @@ u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 pr
 		return 1;
 	}
 
-    buf_prevlogidx = consensus_idx_to_buffer_idx(&cur_priv->sm_log, con_idx);
+    buf_prevlogidx = consensus_idx_to_buffer_idx(&priv->sm_log, prev_log_idx);
 
 	if(buf_prevlogidx < 0 ) {
         asguard_dbg("Error converting consensus idx to buffer in %s", __FUNCTION__);

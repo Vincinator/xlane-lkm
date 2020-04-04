@@ -95,6 +95,11 @@ void update_commit_idx(struct consensus_priv *priv)
 
         buf_idx_current_N = consensus_idx_to_buffer_idx(&priv->sm_log, current_N);
 
+        if(buf_idx_current_N < 0) {
+            asguard_dbg("Error converting consensus idx to buffer in %s", __FUNCTION__);
+            return -1;
+        }
+
 		if(!priv->sm_log.entries[buf_idx_current_N]) {
 			asguard_dbg("BUG! log entry at %d is NULL\n",
                         buf_idx_current_N );
@@ -109,8 +114,11 @@ void update_commit_idx(struct consensus_priv *priv)
 	if (priv->sm_log.commit_idx < N) {
 		priv->sm_log.commit_idx = N;
         priv->sm_log.last_applied = N; // Only valid for leader!
-
     }
+
+	/* Invalid entries can be overwritten again */
+	for(i = 0; i < priv->sm_log.last_applied; i++)
+	    priv->sm_log.entries[i]->valid = 0;
 
 }
 

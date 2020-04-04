@@ -177,6 +177,7 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 con_idx)
 	}
 
     idx = consensus_idx_to_buffer_idx(&cur_priv->sm_log, con_idx);
+
 	if(idx < 0) {
 	    asguard_dbg("Error converting consensus idx to buffer in %s", __FUNCTION__);
 	    return -1;

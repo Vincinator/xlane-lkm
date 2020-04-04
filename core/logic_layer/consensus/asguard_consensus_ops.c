@@ -56,7 +56,7 @@ int consensus_init(struct proto_instance *ins)
 	    // Both freed on consensus clean
         priv->sm_log.entries[i] = kmalloc(sizeof(struct sm_log_entry), GFP_KERNEL);
         priv->sm_log.entries[i]->dataChunk = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
-
+        priv->sm_log.entries[i]->valid = 0;
     }
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",

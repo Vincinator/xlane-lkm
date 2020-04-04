@@ -16,10 +16,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
 {
 	struct state_machine_cmd_log *log;
 	int applying;
-    int i;
-    int buf_last_applied, buf_commit_idx;
-
-
+    int i, buf_idx;
 
 	log = &priv->sm_log;
 
@@ -32,30 +29,18 @@ int apply_log_to_sm(struct consensus_priv *priv)
 	    return -1;
 	}
 
-    buf_last_applied = consensus_idx_to_buffer_idx(&priv->sm_log, log->last_applied);
-    buf_commit_idx = consensus_idx_to_buffer_idx(&priv->sm_log, log->commit_idx);
-
-    if(log->last_applied == log->commit_idx){
-        asguard_dbg("nothing to commit\n");
-        return 0;
-    }
-
-    if(buf_last_applied < buf_commit_idx) {
-
-    } else
-
-
-
     for(i = log->last_applied + 1; i <= log->commit_idx; i++) {
-        if(!log->entries[i]) {
-            asguard_error("Entry at index %d is invalid!\n", i);
-            return -1;
-        }
 
-        if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[i]->dataChunk)) {
-            asguard_error("Could not append to ring buffer tried to append index %d!\n", i);
+        buf_idx =  consensus_idx_to_buffer_idx(&priv->sm_log, i);
+
+        if(buf_idx == -1)
+            return -1;
+
+        if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[buf_idx]->dataChunk)) {
+            asguard_error("Could not append to ring buffer tried to append index %i buf_idx:%d!\n", i,  buf_idx);
             return -1;
         }
+        log->entries[buf_idx]->valid = 0; // element can be overwritten now
     }
 
 
@@ -120,13 +105,32 @@ EXPORT_SYMBOL(print_log_state);
 void update_stable_idx(struct consensus_priv *priv)
 {
 	int i;
-		// fix stable index after stable append
-	for (i = 0; i <= priv->sm_log.last_idx; i++) {
+	int cur_buf_idx;
 
-		if (!priv->sm_log.entries[i]) // stop at first missing entry
-			break;
+    /* Stable idx is already good */
+    if(priv->sm_log.stable_idx == priv->sm_log.last_idx)
+        return;
 
-		priv->sm_log.stable_idx = i;
+	/* Fix stable index after stable append
+	 *
+	 * We must use the consensus indices for this loop
+	 * because stable_idx will be set to the first entry not null.
+	 *
+	 *
+	 */
+	for (i = priv->sm_log.stable_idx; i <= priv->sm_log.last_idx; i++) {
+
+        cur_buf_idx = consensus_idx_to_buffer_idx(&priv->sm_log, i);
+
+        if(cur_buf_idx == -1) {
+            asguard_error("Invalid idx. could not convert to buffer idx in %s",__FUNCTION__);
+            return;
+        }
+
+		if (!priv->sm_log.entries[cur_buf_idx])
+			break; // stop at first missing entry
+
+		priv->sm_log.stable_idx = i; // i is a real consensus index (non modulo)
 	}
 
 }
@@ -139,6 +143,7 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 	int first_re_idx = -2;
 	int cur_idx = -2;
 	int skipped = 0;
+	int cur_buf_idx;
 
 	if(priv->sm_log.last_idx == -1){
 		asguard_dbg("Nothing has been received yet!\n");
@@ -160,8 +165,14 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 			skipped = 1;
 			continue;
 		}
+        cur_buf_idx = consensus_idx_to_buffer_idx(&priv->sm_log, i);
 
-		if(!priv->sm_log.entries[i]){
+        if(cur_buf_idx == -1) {
+            asguard_error("Invalid idx. could not convert to buffer idx in %s",__FUNCTION__);
+            return;
+        }
+
+		if(!priv->sm_log.entries[cur_buf_idx]){
 			cur_idx = i;
 
 			if (first_re_idx == -2)
@@ -225,7 +236,12 @@ int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s3
     buf_appliedidx = consensus_idx_to_buffer_idx(&priv->sm_log, priv->sm_log.last_applied);
     buf_commitidx = consensus_idx_to_buffer_idx(&priv->sm_log, priv->sm_log.commit_idx);
 
-    if(buf_appliedidx == -1 || buf_logidx == -1){
+    if( buf_logidx < 0 ){
+        err = -EINVAL;
+        goto error;
+    }
+
+    if( (log_idx != 0) && (buf_appliedidx == -1 || buf_commitidx == -1) ){
         err = -EINVAL;
         goto error;
     }
@@ -238,8 +254,11 @@ int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s3
      *       to user space. Because we are setting
      *       applied_idx = commit_idx, the leader won't run into any
      *       troubles in this guard.
+     *
+     * If log_idx is equal to 0, then applied and commit idx are initialized to -1
+     * but we are safe to write!
      */
-    if(!(buf_logidx < buf_appliedidx || buf_logidx > buf_commitidx) ) {
+    if( (log_idx != 0) && !(buf_logidx < buf_appliedidx || buf_logidx > buf_commitidx) ) {
         asguard_error("Invalid Idx to write! \n");
         err = -EINVAL;
         goto error;
@@ -247,15 +266,14 @@ int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s3
 
     entry = priv->sm_log.entries[buf_logidx];
 
-    if(!entry){
-        asguard_error("entry is NULL at buf idx: %d\n", buf_logidx);
-        err = -EINVAL;
-        goto error;
+    if(entry->valid == 1) {
+        asguard_error("WARNING: Overwriting data! \n");
     }
 
     /* Write request to ASGARD Kernel Buffer */
     memcpy(entry->dataChunk, dataChunk, sizeof(struct data_chunk));
 	entry->term = term;
+	entry->valid = 1;
 
 	if (priv->sm_log.last_idx < log_idx)
 		priv->sm_log.last_idx = log_idx;

@@ -51,6 +51,9 @@ enum node_state {
 
 struct sm_log_entry {
 
+	/* determines if this entry is valid to read */
+	u8 valid;
+
 	/* Term in which this command was appended to the log
 	 */
 	u32 term;
