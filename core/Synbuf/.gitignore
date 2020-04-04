@@ -1,4 +1,4 @@
-*.cmd
+*.dataChunk
 *.ko
 *.mod*
 *.o

@@ -51,8 +51,13 @@ int consensus_init(struct proto_instance *ins)
 	if (!priv->sm_log.entries)
 		BUG();
 
-	for(i = 0; i < MAX_CONSENSUS_LOG; i++)
-		priv->sm_log.entries[i] = NULL;
+	/* Pre Allocate Buffer Entries */
+	for(i = 0; i < MAX_CONSENSUS_LOG; i++){
+	    // Both freed on consensus clean
+        priv->sm_log.entries[i] = kmalloc(sizeof(struct sm_log_entry), GFP_KERNEL);
+        priv->sm_log.entries[i]->dataChunk = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
+
+    }
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
 			 priv->sdev->ifindex, ins->instance_id);
@@ -200,21 +205,15 @@ int consensus_clean(struct proto_instance *ins)
 
 	remove_proc_entry(name_buf, NULL);
 
-	if (priv->sm_log.last_idx != -1 && priv->sm_log.last_idx < MAX_CONSENSUS_LOG) {
-		for (i = 0; i < priv->sm_log.last_idx; i++){
-
-            // entries are NULL initialized
-            if (priv->sm_log.entries[i] != NULL){
-                if(priv->sm_log.entries[i]->cmd != NULL){
-                    kfree(priv->sm_log.entries[i]->cmd);
-                }
-                kfree(priv->sm_log.entries[i]);
+    for (i = 0; i < priv->sm_log.max_entries; i++){
+        if (priv->sm_log.entries[i] != NULL){
+            if(priv->sm_log.entries[i]->dataChunk != NULL){
+                kfree(priv->sm_log.entries[i]->dataChunk);
             }
-		}
+            kfree(priv->sm_log.entries[i]);
+        }
+    }
 
-	} else {
-		asguard_dbg("last_idx is -1, no logs to clean.\n");
-	}
 
 	return 0;
 }

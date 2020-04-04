@@ -17,6 +17,9 @@ int apply_log_to_sm(struct consensus_priv *priv)
 	struct state_machine_cmd_log *log;
 	int applying;
     int i;
+    int buf_last_applied, buf_commit_idx;
+
+
 
 	log = &priv->sm_log;
 
@@ -29,18 +32,35 @@ int apply_log_to_sm(struct consensus_priv *priv)
 	    return -1;
 	}
 
+    buf_last_applied = consensus_idx_to_buffer_idx(&priv->sm_log, log->last_applied);
+    buf_commit_idx = consensus_idx_to_buffer_idx(&priv->sm_log, log->commit_idx);
+
+    if(log->last_applied == log->commit_idx){
+        asguard_dbg("nothing to commit\n");
+        return 0;
+    }
+
+    if(buf_last_applied < buf_commit_idx) {
+
+    } else
+
+
+
     for(i = log->last_applied + 1; i <= log->commit_idx; i++) {
         if(!log->entries[i]) {
             asguard_error("Entry at index %d is invalid!\n", i);
             return -1;
         }
 
-
-        if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[i]->cmd)) {
+        if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[i]->dataChunk)) {
             asguard_error("Could not append to ring buffer tried to append index %d!\n", i);
             return -1;
         }
     }
+
+
+
+
 	//asguard_dbg("Added %d commands to State Machine.\n", applying);
 
 	return 0;
@@ -165,21 +185,33 @@ void update_next_retransmission_request_idx(struct consensus_priv *priv)
 EXPORT_SYMBOL(update_next_retransmission_request_idx);
 
 
-int append_command(struct consensus_priv *priv, struct data_chunk *cmd, s32 term, int log_idx, int unstable)
+int consensus_idx_to_buffer_idx(struct state_machine_cmd_log *log, u32 dividend)
+{
+    u32 divisor = log->max_entries;
+    u32 remainder = 0;
+
+    div_u64_rem(dividend, divisor, &remainder);
+
+
+    if(remainder < 0 || remainder > log->max_entries){
+        asguard_error("error converting consensus idx to buf_log idx\n");
+        return -1;
+    }
+
+    return remainder;
+}
+EXPORT_SYMBOL(consensus_idx_to_buffer_idx);
+
+
+int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s32 term, int log_idx, int unstable)
 {
 	int err;
 	struct sm_log_entry *entry;
+    int buf_logidx, buf_appliedidx,buf_commitidx;
 
 	if (!priv) {
 		err = -EINVAL;
 		asguard_error("Priv ptr points to NULL\n");
-		goto error;
-	}
-
-	// mind the off by one counting..
-	if (log_idx >= MAX_CONSENSUS_LOG) {
-		err = -ENOMEM;
-		asguard_error("Log is full\n");
 		goto error;
 	}
 
@@ -188,17 +220,42 @@ int append_command(struct consensus_priv *priv, struct data_chunk *cmd, s32 term
 		asguard_error("BUG - commit_idx=%d is greater than idx(%d) of entry to commit!\n", priv->sm_log.commit_idx, log_idx);
 		goto error;
 	}
-    // freed by consensus_clean
-    entry = kmalloc(sizeof(struct sm_log_entry), GFP_KERNEL);
 
-	if (!entry) {
-		err = -ENOMEM;
-		goto error;
-	}
+    buf_logidx = consensus_idx_to_buffer_idx(&priv->sm_log, log_idx);
+    buf_appliedidx = consensus_idx_to_buffer_idx(&priv->sm_log, priv->sm_log.last_applied);
+    buf_commitidx = consensus_idx_to_buffer_idx(&priv->sm_log, priv->sm_log.commit_idx);
 
-	entry->cmd = cmd;
+    if(buf_appliedidx == -1 || buf_logidx == -1){
+        err = -EINVAL;
+        goto error;
+    }
+
+    /* Never write between applied and commit_idx!
+     *
+     * Note: on leader we set the applied_idx equal commit_id,
+     *       because the leader received the request from the
+     *       user space, thus nothing has to be applied back
+     *       to user space. Because we are setting
+     *       applied_idx = commit_idx, the leader won't run into any
+     *       troubles in this guard.
+     */
+    if(!(buf_logidx < buf_appliedidx || buf_logidx > buf_commitidx) ) {
+        asguard_error("Invalid Idx to write! \n");
+        err = -EINVAL;
+        goto error;
+    }
+
+    entry = priv->sm_log.entries[buf_logidx];
+
+    if(!entry){
+        asguard_error("entry is NULL at buf idx: %d\n", buf_logidx);
+        err = -EINVAL;
+        goto error;
+    }
+
+    /* Write request to ASGARD Kernel Buffer */
+    memcpy(entry->dataChunk, dataChunk, sizeof(struct data_chunk));
 	entry->term = term;
-	priv->sm_log.entries[log_idx] = entry;
 
 	if (priv->sm_log.last_idx < log_idx)
 		priv->sm_log.last_idx = log_idx;

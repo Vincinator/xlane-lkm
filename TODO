@@ -2,7 +2,7 @@
 
 Debugging:
   ☐ GDB Kernel Module
-    ☐ Load sources in gdb (via list gdb-cmd)
+    ☐ Load sources in gdb (via list gdb-dataChunk)
     ☐ memory dump in kernel module
 
 Build Process:

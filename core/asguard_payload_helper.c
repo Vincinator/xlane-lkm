@@ -158,19 +158,28 @@ int _log_is_faulty(struct consensus_priv *priv)
 	return 0;
 }
 
-s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 idx)
+s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 con_idx)
 {
 
-	if (idx == -1) {
+    s32 idx;
+
+
+	if (con_idx == -1) {
 		// Logs are empty, because next index points to first element.
 		// Thus, there was no prev log term. And therefore we can use the
 		// current term.
 		return cur_priv->term;
 	}
 
-	if (idx < -1) {
+	if (con_idx < -1) {
 		asguard_dbg("invalid value - idx=%d\n", idx);
 		return -1;
+	}
+
+    idx = consensus_idx_to_buffer_idx(&cur_priv->sm_log, con_idx);
+	if(idx < 0) {
+	    asguard_dbg("Error converting consensus idx to buffer in %s", __FUNCTION__);
+	    return -1;
 	}
 
 	if (idx > cur_priv->sm_log.last_idx) {

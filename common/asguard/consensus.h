@@ -61,7 +61,7 @@ struct sm_log_entry {
 	 * A ordered set of commands applied to the state machine will
 	 * transition the state machine to a common state (shared across the cluster).
 	 */
-	struct data_chunk *cmd;
+	struct data_chunk *dataChunk;
 };
 
 
@@ -116,6 +116,7 @@ struct state_machine_cmd_log {
 
     struct sm_log_entry **entries;
 
+    int turn;
 };
 
 struct consensus_priv;
@@ -191,7 +192,7 @@ struct consensus_priv {
 
 
 int commit_log(struct consensus_priv *priv, s32 commit_idx);
-int append_command(struct consensus_priv *priv, struct data_chunk *cmd, int term, int log_idx, int unstable);
+int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, int term, int log_idx, int unstable);
 
 
 
@@ -241,6 +242,9 @@ int check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_
 void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv, unsigned char *pkt,  int remote_lid, int rcluster_id);
 
 void print_log_state(struct state_machine_cmd_log *log);
+
+int consensus_idx_to_buffer_idx(struct state_machine_cmd_log *log, u32 dividend);
+
 
 void update_stable_idx(struct consensus_priv *priv);
 void update_next_retransmission_request_idx(struct consensus_priv *priv);

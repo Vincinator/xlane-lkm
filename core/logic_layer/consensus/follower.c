@@ -91,8 +91,6 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 {
 	int i, err, new_last;
 	u32 *cur_ptr;
-	struct data_chunk *cur_cmd;
-    u32 *dptr;
 
 	new_last = start_log_idx + num_entries - 1;
 
@@ -113,30 +111,10 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 
 	for (i = start_log_idx; i <= new_last; i++) {
 
-		if(priv->sm_log.entries[i] != NULL) { // do not (re-)apply redundant retransmissions
-            asguard_dbg("prevented re-apply of entry %d", i);
-            continue;
-        }
-        // freed by consensus_clean
-		cur_cmd = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
-
-		if (!cur_cmd) {
-			err = -ENOMEM;
-			asguard_dbg("Out of Memory\n");
-			goto error;
-		}
-
-        dptr = (u32*) cur_cmd->data;
-        (*dptr) = *cur_ptr;
-        dptr += 1;
-        cur_ptr++;
-        (*dptr) = *cur_ptr;
-        cur_ptr++;
-
-		err = append_command(priv, cur_cmd, priv->term, i, unstable);
+	    /* Directly pass data ptr into pkt location */
+	    err = append_command(priv, (struct data_chunk *) cur_ptr, priv->term, i, unstable);
 
 		if (err) {
-			// kfree(cur_cmd); // free memory of failed log entry.. others from this loop (?)
 			goto error;
 		}
 	}
@@ -163,38 +141,12 @@ error:
 	return err;
 }
 
-void remove_from_log_until_last(struct state_machine_cmd_log *log, int start_idx)
-{
-	int i;
-
-	if (log->last_idx < 0) {
-		asguard_dbg("Log already empty.");
-		return;
-	}
-
-	if (start_idx > log->last_idx) {
-		asguard_dbg("No Items at index of %d", start_idx);
-		return;
-	}
-
-	if(start_idx < 0) {
-		asguard_error("start_idx=%d is invalid\n", start_idx);
-		return;
-	}
-
-	for (i = start_idx; i <= log->last_idx; i++){
-		if (log->entries[i]) // entries are NULL initialized
-			kfree(log->entries[i]);
-	}
-
-	log->last_idx = start_idx - 1;
-
-}
-
 
 u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 prev_log_idx)
 {
 	struct sm_log_entry *entry;
+	u32 buf_prevlogidx;
+
 
 	if (prev_log_idx == -1) {
 		if( prev_log_term < priv->term) {
@@ -209,9 +161,11 @@ u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 pr
 		return 1;
 	}
 
-	if(prev_log_idx > MAX_CONSENSUS_LOG) {
-		asguard_error("Entry at index %d does not exist. Expected stable append.\n", prev_log_idx);
-		return 1;
+    buf_prevlogidx = consensus_idx_to_buffer_idx(&cur_priv->sm_log, con_idx);
+
+	if(buf_prevlogidx < 0 ) {
+        asguard_dbg("Error converting consensus idx to buffer in %s", __FUNCTION__);
+        return -1;
 	}
 
 	if (prev_log_idx > priv->sm_log.last_idx) {
@@ -219,7 +173,7 @@ u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 pr
 		return 1;
 	}
 
-	entry = priv->sm_log.entries[prev_log_idx];
+	entry = priv->sm_log.entries[buf_prevlogidx];
 
 	if (entry == NULL) {
 		asguard_dbg("Unstable commit at index %d was not detected previously! ", prev_log_idx);
@@ -547,7 +501,8 @@ void print_follower_stats(struct consensus_priv *priv)
 	asguard_dbg("next_retrans_req_idx %d\n", priv->sm_log.next_retrans_req_idx );
 	asguard_dbg("max_entries %d\n", priv->sm_log.max_entries );
 
-	validate_log(&priv->sm_log);
+	/* TODO: redo for ring buffer implementation */
+	//validate_log(&priv->sm_log);
 
 }
 
@@ -576,6 +531,7 @@ int start_follower(struct proto_instance *ins)
 	priv->sdev->tx_port = 3319;
 	priv->sdev->is_leader = 0;
 	priv->sm_log.unstable_commits = 0;
+	priv->sm_log.turn = 0;
 	mutex_init(&priv->sm_log.mlock);
     mutex_init(&priv->sm_log.next_lock);
 

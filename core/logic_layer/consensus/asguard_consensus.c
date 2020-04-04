@@ -163,12 +163,12 @@ void set_ae_data(unsigned char *pkt,
 			return;
 		}
 
-		if (!entries[i]->cmd) {
-			asguard_dbg("BUG! - entries cmd at %d is null", i);
+		if (!entries[i]->dataChunk) {
+			asguard_dbg("BUG! - entries dataChunk at %d is null", i);
 			return;
 		}
 
-        memcpy(cur_ptr, entries[i]->cmd->data, sizeof(struct data_chunk));
+        memcpy(cur_ptr, entries[i]->dataChunk->data, sizeof(struct data_chunk));
 
 		// TODO: u32bit ptr increased twice to land at next data_chunk..
 		//         ... however, we need a stable method if we change the data_chunk size!!
@@ -182,6 +182,7 @@ void set_ae_data(unsigned char *pkt,
 
 int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2, u32 param3, u32 param4, int rcluster_id, int remote_lid)
 {
+    u32 buf_lastidx;
 
 	if (priv->term < param1) {
 		if (priv->voted == param1) {
@@ -200,17 +201,21 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 			if (priv->sm_log.last_idx == -1)
 				return 1;
 
+            buf_lastidx = consensus_idx_to_buffer_idx(&priv->sm_log, priv->sm_log.last_idx)
+
 			// Safety Check during development & Debugging..
-			if (priv->sm_log.entries[priv->sm_log.last_idx] == NULL) {
+			if (priv->sm_log.entries[buf_lastidx] == NULL) {
 				asguard_dbg("BUG! Log is faulty can not grant any votes. \n");
 				return 0;
 			}
 
 			// candidates log is at least as up to date as the local log!
-			if (param3 >= priv->sm_log.last_idx)
-				// Terms of previous log item must match with lastLogTerm of Candidate
-				if (priv->sm_log.entries[priv->sm_log.last_idx]->term == param4)
-					return 1;
+			if (param3 >= priv->sm_log.last_idx){
+                // Terms of previous log item must match with lastLogTerm of Candidate
+                if (priv->sm_log.entries[buf_lastidx]->term == param4)
+                    return 1;
+			}
+
 		}
 	}
 	return 0; // got request of invalid term! (lower or equal current term)

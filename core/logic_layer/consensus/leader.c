@@ -65,6 +65,7 @@ int _is_potential_commit_idx(struct consensus_priv *priv, int N)
 void update_commit_idx(struct consensus_priv *priv)
 {
 	s32 N, current_N, i;
+	int buf_idx_current_N;
 
 	if (!priv) {
 		asguard_error("priv is NULL!\n");
@@ -92,12 +93,14 @@ void update_commit_idx(struct consensus_priv *priv)
 			return;
 		}
 
-		if(!priv->sm_log.entries[current_N]) {
+        buf_idx_current_N = consensus_idx_to_buffer_idx(&priv->sm_log, current_N);
+
+		if(!priv->sm_log.entries[buf_idx_current_N]) {
 			asguard_dbg("BUG! log entry at %d is NULL\n",
-					current_N );
+                        buf_idx_current_N );
 			return;
 		}
-		if (priv->sm_log.entries[current_N]->term == priv->term)
+		if (priv->sm_log.entries[buf_idx_current_N]->term == priv->term)
 			if (_is_potential_commit_idx(priv, current_N))
 				if (current_N > N)
 					N = current_N;
@@ -105,7 +108,9 @@ void update_commit_idx(struct consensus_priv *priv)
 
 	if (priv->sm_log.commit_idx < N) {
 		priv->sm_log.commit_idx = N;
-	}
+        priv->sm_log.last_applied = N; // Only valid for leader!
+
+    }
 
 }
 
