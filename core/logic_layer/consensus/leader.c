@@ -66,7 +66,7 @@ void update_commit_idx(struct consensus_priv *priv)
 {
 	s32 N, current_N, i;
 	int buf_idx_current_N;
-	int prev_commit_idx;
+	int prev_commit_idx,cur_buf_idx;
 
 	if (!priv) {
 		asguard_error("priv is NULL!\n");
@@ -98,7 +98,7 @@ void update_commit_idx(struct consensus_priv *priv)
 
         if(buf_idx_current_N < 0) {
             asguard_dbg("Error converting consensus idx to buffer in %s", __FUNCTION__);
-            return -1;
+            return;
         }
 
 		if(!priv->sm_log.entries[buf_idx_current_N]) {
