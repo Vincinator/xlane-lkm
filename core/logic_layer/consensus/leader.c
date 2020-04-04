@@ -66,6 +66,7 @@ void update_commit_idx(struct consensus_priv *priv)
 {
 	s32 N, current_N, i;
 	int buf_idx_current_N;
+	int prev_commit_idx;
 
 	if (!priv) {
 		asguard_error("priv is NULL!\n");
@@ -110,15 +111,56 @@ void update_commit_idx(struct consensus_priv *priv)
 				if (current_N > N)
 					N = current_N;
 	}
+    prev_commit_idx = priv->sm_log.commit_idx;
 
 	if (priv->sm_log.commit_idx < N) {
 		priv->sm_log.commit_idx = N;
         priv->sm_log.last_applied = N; // Only valid for leader!
     }
 
-	/* Invalid entries can be overwritten again */
-	for(i = 0; i < priv->sm_log.last_applied; i++)
-	    priv->sm_log.entries[i]->valid = 0;
+	/*
+	 * Four possible Cases, where x represents valid data, and _ data to be invalidated.
+	 * Buffer indices increase from left to right.
+	 *
+	 * Case 1)
+	 * |xxxxx______xxxxx|
+	 *      b      a
+	 *
+	 * Case 2)
+	 * |_______xxxxxxxxx|
+	 *         a       b
+     *
+     * Case 3)
+     * |xxxxxxxxx_______|
+	 *  a       b
+     *
+     * Case 4)
+     * |____xxxxxxxxx___|
+	 *      a       b
+	 *
+	 * Case 5) same as Case 4!
+     * |____________x___|
+	 *              ab
+	 *
+	 * Case 6)
+     * |________________|
+	 *
+	 * NOTE: Invalid entries can be overwritten again */
+
+    /* Handle Case 6*/
+    if(priv->sm_log.last_applied == priv->sm_log.last_idx)
+	    return;
+
+    /* Handle Case 1 - 5 */
+	for(i = prev_commit_idx; i < priv->sm_log.commit_idx; i++) {
+	    cur_buf_idx = consensus_idx_to_buffer_idx(&priv->sm_log, i);
+
+	    if(cur_buf_idx < 0) {
+	        asguard_error("Could not invalidate due to con2buf idx conversion error\n");
+	        return;
+	    }
+        priv->sm_log.entries[cur_buf_idx]->valid = 0;
+    }
 
 }
 
