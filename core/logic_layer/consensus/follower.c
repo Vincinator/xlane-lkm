@@ -90,7 +90,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_entries, int pkt_size, int start_log_idx, int unstable)
 {
 	int i, err, new_last;
-	u32 *cur_ptr;
+    struct data_chunk *cur_ptr;
 
 	new_last = start_log_idx + num_entries - 1;
 
@@ -107,7 +107,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		goto error;
 	}
 
-	cur_ptr = GET_CON_PROTO_ENTRIES_START_PTR(pkt);
+	cur_ptr = (struct data_chunk *) GET_CON_PROTO_ENTRIES_START_PTR(pkt);
 
 	for (i = start_log_idx; i <= new_last; i++) {
 
@@ -117,6 +117,8 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		if (err) {
 			goto error;
 		}
+        cur_ptr++;
+
 	}
 
 	if(!unstable) {
