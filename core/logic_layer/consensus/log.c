@@ -37,6 +37,8 @@ int apply_log_to_sm(struct consensus_priv *priv)
             return -1;
         }
 
+        asguard_dbg("applying consensus entry: %d, and buf_idx: %d", i, buf_idx);
+
         if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[buf_idx]->dataChunk)) {
             asguard_error("Could not append to ring buffer tried to append index %i buf_idx:%d!\n", i,  buf_idx);
             return -1;
