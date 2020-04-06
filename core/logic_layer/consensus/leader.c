@@ -83,10 +83,6 @@ void update_commit_idx(struct consensus_priv *priv)
 		if(current_N == -1)
 			return; // nothing to commit yet.
 
-		if (current_N >= MAX_CONSENSUS_LOG) {
-			asguard_error("current_N=%d is invalid\n", current_N);
-			return;
-		}
 
 		if(current_N > priv->sm_log.last_idx){
 			asguard_dbg("BUG! current_N (%d) > priv->sm_log.last_idx(%d) \n",
