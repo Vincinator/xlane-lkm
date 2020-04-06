@@ -44,7 +44,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
             return -1;
         }
 
-        log->entries[buf_idx]->valid = 0; // element can be overwritten now
+        log->entries[buf_idx]->valid = 0; // can overwrite this ASGARD LOG element again
         log->last_applied++;
     }
 

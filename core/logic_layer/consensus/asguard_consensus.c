@@ -112,7 +112,7 @@ void set_ae_data(unsigned char *pkt,
 	u16 *opcode;
 	s32 *prev_log_idx, *leader_commit_idx;
 	u32 *included_entries, *term, *prev_log_term, *leader_id;
-	int i;
+	int i, buf_idx;
 	u32 *cur_ptr;
 
 	opcode = GET_CON_AE_OPCODE_PTR(pkt);
@@ -158,17 +158,28 @@ void set_ae_data(unsigned char *pkt,
 
 	for (i = first_idx; i < first_idx + num_of_entries; i++) {
 
-		if (!entries[i]) {
+	    /* Converting consensus idx to buffer idx */
+        buf_idx = consensus_idx_to_buffer_idx(&priv->sm_log, i);
+
+        if( buf_idx < 0 ){
+            asguard_dbg("Could not translate idx=%d to buffer index ", i);
+            return;
+        }
+
+        if (!entries[buf_idx]) {
 			asguard_dbg("BUG! - entries at %d is null", i);
 			return;
 		}
 
-		if (!entries[i]->dataChunk) {
+		if (!entries[buf_idx]->dataChunk) {
 			asguard_dbg("BUG! - entries dataChunk at %d is null", i);
 			return;
 		}
 
-        memcpy(cur_ptr, entries[i]->dataChunk->data, sizeof(struct data_chunk));
+        print_hex_dump(KERN_DEBUG, "writing to pkt: ", DUMP_PREFIX_NONE, 16,1,
+                       entries[buf_idx]->dataChunk->data, sizeof(struct data_chunk), 0);
+
+        memcpy(cur_ptr, entries[buf_idx]->dataChunk->data, sizeof(struct data_chunk));
 
 		// TODO: u32bit ptr increased twice to land at next data_chunk..
 		//         ... however, we need a stable method if we change the data_chunk size!!
