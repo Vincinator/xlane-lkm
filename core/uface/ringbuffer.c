@@ -93,6 +93,7 @@ u8 get_num_of_chunks(char *noc) {
 
     return (*ptr);
 }
+EXPORT_SYMBOL(get_num_of_chunks);
 
 int check_entry(struct asg_ring_buf *buf) {
 

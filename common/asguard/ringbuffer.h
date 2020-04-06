@@ -5,6 +5,8 @@
 #ifndef ASGUARD_RINGBUFFER_H
 #define ASGUARD_RINGBUFFER_H
 
+#include <linux/types.h>
+
 #ifndef ASG_CHUNK_SIZE
 /* Use 64 Bits (8 Bytes) as default chunk size for asgard
  *
@@ -54,6 +56,6 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *retval);
 int append_rb(struct asg_ring_buf *buf, struct data_chunk *data);
 void setup_asg_ring_buf(struct asg_ring_buf *buf, int max_elements);
 int check_entry(struct asg_ring_buf *buf);
-
+u8 get_num_of_chunks(char *noc);
 
 #endif //ASGUARD_RINGBUFFER_H

@@ -458,7 +458,7 @@ EXPORT_SYMBOL(_schedule_update_from_userspace);
 void pull_consensus_requests_from_rb(struct work_struct *w) {
     struct asguard_ringbuf_read_work_data *aw = NULL;
     struct consensus_priv *priv;
-    int cur_nxt_idx;
+    int cur_nxt_idx, i, num_of_chunks;
     struct data_chunk *new_chunk;
     int err = 0;
     struct asguard_ringbuf_read_work_data *next_work = NULL;
@@ -500,28 +500,29 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
             break;
         }
 
-        new_chunk = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
+        num_of_chunks = get_num_of_chunks((char*) &aw->rb[aw->rb->read_idx]);
 
-        /* Write from ringbuffer to ASGARD log slot */
-        err = read_rb(aw->rb, new_chunk);
+        /* +1 because we also transmit the header itself and the number of chunks */
+        for (i = 0; i < num_of_chunks + 1; i++) {
+            new_chunk = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
+            /* Write from ringbuffer to ASGARD log slot */
+            err = read_rb(aw->rb, new_chunk);
+            if(err) {
+                kfree(new_chunk);
+                asguard_dbg("Failed to read from ring buffer\n");
+                break;
+            }
+            print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
+                           new_chunk, sizeof(struct data_chunk), 0);
 
-
-        if(err) {
-            kfree(new_chunk);
-            asguard_dbg("Failed to read from ring buffer\n");
-            break;
+            err = append_command(priv, new_chunk, priv->term, cur_nxt_idx, 0);
+            if(err) {
+                asguard_error("Failed to append new chunk to ASGARD log\n");
+                break;
+            }
+            cur_nxt_idx++;
         }
 
-         print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
-                        new_chunk, sizeof(struct data_chunk), 0);
-
-        err = append_command(priv, new_chunk, priv->term, cur_nxt_idx, 0);
-
-        if(err) {
-            asguard_error("Failed to append new chunk to ASGARD log\n");
-            break;
-        }
-        cur_nxt_idx++;
     }
 
     /* ASGARD can now start transmitting ..
