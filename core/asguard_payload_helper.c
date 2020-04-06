@@ -490,6 +490,16 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
             break;
         }
 
+        /* Check header, read without read_idx increment
+         *
+         * Do we have enough data (considering the write idx)?
+         *
+         * Is the validation key correct in the header?
+         */
+        if(check_entry(aw->rb)) {
+            break;
+        }
+
         new_chunk = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
 
         /* Write from ringbuffer to ASGARD log slot */

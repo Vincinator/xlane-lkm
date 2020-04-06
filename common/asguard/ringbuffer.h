@@ -53,5 +53,7 @@ int is_rb_empty(struct asg_ring_buf *buf);
 int read_rb(struct asg_ring_buf *buf, struct data_chunk *retval);
 int append_rb(struct asg_ring_buf *buf, struct data_chunk *data);
 void setup_asg_ring_buf(struct asg_ring_buf *buf, int max_elements);
+int check_entry(struct asg_ring_buf *buf);
+
 
 #endif //ASGUARD_RINGBUFFER_H

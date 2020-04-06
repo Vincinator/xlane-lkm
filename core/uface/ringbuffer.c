@@ -2,6 +2,31 @@
 #include <asguard/asguard.h>
 #include <linux/uaccess.h>
 
+
+const char validation_key[] = { 0x39, 0x3e, 0x52, 0x73, 0x62, 0x1f, 0x2e };
+#define VALIDATION_KEY_SIZE ASG_CHUNK_SIZE - 1
+
+
+char* get_start_of_obj_key(char *noc, int *size) {
+
+    u8 *ptr;
+
+    ptr = ((u8 *) noc) + 1;
+
+    (*size) = sizeof(struct data_chunk) - sizeof(u8);
+
+    return ((char*) ptr);
+}
+
+int validate_header_key(char *noc) {
+    int size;
+    char *key_in_header;
+
+    key_in_header = get_start_of_obj_key(noc, &size);
+
+    return memcmp(key_in_header, validation_key, VALIDATION_KEY_SIZE) == 0;
+}
+
 /*
  * buf must be a pointer to a synbuf memory (that is already allocated)
  */
@@ -60,8 +85,55 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
     return 0;
 }
 
+u8 get_num_of_chunks(char *noc) {
+
+    u8 *ptr;
+
+    ptr = (u8 *) noc;
+
+    return (*ptr);
+}
+
+int check_entry(struct asg_ring_buf *buf) {
+
+    int num_of_chunks;
+
+
+    if(is_rb_empty(buf)) {
+        //log_info("Ring Buf is empty, nothing to read");
+        return -1;
+    }
+
+    /* Check if read_idx points to a header */
+    if(validate_header_key((char*) &buf->ring[buf->read_idx]) == 0 ){
+        asguard_error("first item is not a header! BUG!");
+        return 1;
+    }
+
+    num_of_chunks = get_num_of_chunks((char*) &buf->ring[buf->read_idx]);
+
+    /* Check if enough Chunks are in the buffer */
+    if(buf->turn) {
+
+        if(num_of_chunks + buf->read_idx >= buf->write_idx + buf->size) {
+            asguard_dbg("asObj not complete in ringBuffer (turn)!");
+            return 1;
+        }
+    } else {
+        if(num_of_chunks + buf->read_idx >= buf->write_idx) {
+            asguard_dbg("asObj not complete in ringBuffer!");
+            return 1;
+        }
+    }
+
+    return 0;
+}
+EXPORT_SYMBOL(check_entry);
+
+
+// TODO: check
 int is_rb_empty(struct asg_ring_buf *buf) {
-    return (buf->read_idx == buf->write_idx && !buf->turn);
+    return (buf->read_idx == buf->write_idx);
 }
 
 
