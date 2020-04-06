@@ -260,7 +260,7 @@ int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s3
      * but we are safe to write!
      */
     if( (log_idx != 0) && !(buf_logidx < buf_appliedidx || buf_logidx > buf_commitidx) ) {
-        asguard_error("Invalid Idx to write! \n");
+        asguard_error("Invalid Idx to write: log_idx = %d, buf_logidx = %d, buf_applied_idx = %d, buf_commitidx=%d\n", log_idx, buf_logidx, buf_appliedidx, buf_commitidx);
         err = -EINVAL;
         goto error;
     }
