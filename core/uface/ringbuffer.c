@@ -44,7 +44,7 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
 
     memcpy(&buf->ring[buf->write_idx], data, sizeof(struct data_chunk));
     print_hex_dump(KERN_DEBUG, "recevied consensus hexdump: ", DUMP_PREFIX_NONE, 16,1,
-                   &buf->ring[buf->read_idx], sizeof(struct data_chunk), 0);
+                   &buf->ring[buf->write_idx], sizeof(struct data_chunk), 0);
 
     buf->write_idx++;
 
