@@ -68,10 +68,10 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
     }
 
     memcpy(&buf->ring[buf->write_idx], data, sizeof(struct data_chunk));
-    //print_hex_dump(KERN_DEBUG, "rx consensus hexdump: ", DUMP_PREFIX_NONE, 16,1,
-        //           &buf->ring[buf->write_idx], sizeof(struct data_chunk), 0);
+    print_hex_dump(KERN_DEBUG, "rx consensus hexdump: ", DUMP_PREFIX_NONE, 16,1,
+                   &buf->ring[buf->write_idx], sizeof(struct data_chunk), 0);
 
-   // asguard_dbg("write_idx: %d, read_idx: %d, turn: %d \n", buf->write_idx, buf->read_idx, buf->turn);
+    asguard_dbg("write_idx: %d, read_idx: %d, turn: %d \n", buf->write_idx, buf->read_idx, buf->turn);
 
     buf->write_idx++;
 
@@ -109,7 +109,7 @@ int check_entry(struct asg_ring_buf *buf) {
     if(validate_header_key((char*) &buf->ring[buf->read_idx].data) == 0 ){
         asguard_error("first item is not a header! Read Idx = %d, write IDX = %d", buf->read_idx, buf->write_idx);
         print_hex_dump(KERN_DEBUG, "This should be the header: ", DUMP_PREFIX_OFFSET, 64, 1,
-                      &buf->ring[buf->read_idx].data, sizeof(struct data_chunk), 0);
+                       &buf->ring[buf->read_idx].data, sizeof(struct data_chunk), 0);
         return 1;
     }
 

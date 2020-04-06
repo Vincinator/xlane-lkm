@@ -503,8 +503,8 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
         }
 
         num_of_chunks = get_num_of_chunks((char*) &aw->rb->ring[aw->rb->read_idx].data);
-        //print_hex_dump(KERN_DEBUG, "Header: ", DUMP_PREFIX_OFFSET, 64, 1,
-        //               &aw->rb->ring[aw->rb->read_idx].data, sizeof(struct data_chunk), 0);
+        print_hex_dump(KERN_DEBUG, "Header: ", DUMP_PREFIX_OFFSET, 64, 1,
+                       &aw->rb->ring[aw->rb->read_idx].data, sizeof(struct data_chunk), 0);
 
         /* +1 because we also transmit the header itself and the number of chunks */
         for (i = 0; i < num_of_chunks + 1; i++) {
@@ -516,10 +516,10 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
                 asguard_dbg("Failed to read from ring buffer\n");
                 break;
             }
-            //asguard_dbg("asgObj append %u of %u chunks\n", i, num_of_chunks);
+            asguard_dbg("asgObj append %u of %u chunks\n", i, num_of_chunks);
 
-            //print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
-             //              new_chunk, sizeof(struct data_chunk), 0);
+            print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
+                           new_chunk, sizeof(struct data_chunk), 0);
 
             err = append_command(priv, new_chunk, priv->term, cur_nxt_idx, 0);
             if(err) {
