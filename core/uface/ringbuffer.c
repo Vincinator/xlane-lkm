@@ -79,8 +79,6 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
         return -1;
     }
 
-    asguard_dbg("read_idx: %d", buf->read_idx);
-
     memcpy(chunk_destination, &buf->ring[buf->read_idx], sizeof(struct data_chunk));
     //print_hex_dump(KERN_DEBUG, "consensus request hexdump: ", DUMP_PREFIX_NONE, 16,1,
      //              &buf->ring[buf->read_idx], sizeof(struct data_chunk), 0);
