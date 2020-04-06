@@ -485,13 +485,16 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
      * Exit on Error
      */
     while(1) {
+
+        if(is_rb_empty(aw->rb)) {
+            break;
+        }
+
         new_chunk = kmalloc(sizeof(struct data_chunk), GFP_KERNEL);
 
         /* Write from ringbuffer to ASGARD log slot */
         err = read_rb(aw->rb, new_chunk);
 
-       // print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
-       //                 new_chunk, sizeof(struct data_chunk), 0);
 
         if(err) {
             kfree(new_chunk);
@@ -499,6 +502,8 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
             break;
         }
 
+         print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
+                        new_chunk, sizeof(struct data_chunk), 0);
 
         err = append_command(priv, new_chunk, priv->term, cur_nxt_idx, 0);
 

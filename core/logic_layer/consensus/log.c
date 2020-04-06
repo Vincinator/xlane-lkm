@@ -37,16 +37,14 @@ int apply_log_to_sm(struct consensus_priv *priv)
             return -1;
         }
 
-
         if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[buf_idx]->dataChunk)) {
             asguard_error("Could not append to ring buffer tried to append index %i buf_idx:%d!\n", i,  buf_idx);
             return -1;
         }
+
         log->entries[buf_idx]->valid = 0; // element can be overwritten now
         log->last_applied++;
     }
-
-
 
 
 	//asguard_dbg("Added %d commands to State Machine.\n", applying);

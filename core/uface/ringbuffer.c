@@ -55,7 +55,6 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
         buf->turn = 1;
     }
 
-
     return 0;
 }
 
