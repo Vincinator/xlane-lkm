@@ -33,14 +33,17 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
         buf_idx =  consensus_idx_to_buffer_idx(&priv->sm_log, i);
 
-        if(buf_idx == -1)
+        if(buf_idx == -1) {
             return -1;
+        }
+
 
         if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[buf_idx]->dataChunk)) {
             asguard_error("Could not append to ring buffer tried to append index %i buf_idx:%d!\n", i,  buf_idx);
             return -1;
         }
         log->entries[buf_idx]->valid = 0; // element can be overwritten now
+        log->last_applied++;
     }
 
 
@@ -67,10 +70,8 @@ int commit_log(struct consensus_priv *priv, s32 commit_idx)
             priv->sm_log.commit_idx = commit_idx;
             err = apply_log_to_sm(priv);
 
-            if (!err) {
-                log->last_applied = log->commit_idx;
+            if (!err)
                 write_log(&priv->ins->logger, GOT_CONSENSUS_ON_VALUE, RDTSC_ASGUARD);
-            }
         }
     }
 
