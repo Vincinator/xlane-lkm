@@ -502,8 +502,8 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
             break;
         }
 
-         print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
-                        new_chunk, sizeof(struct data_chunk), 0);
+         //print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
+         //               new_chunk, sizeof(struct data_chunk), 0);
 
         err = append_command(priv, new_chunk, priv->term, cur_nxt_idx, 0);
 

@@ -176,8 +176,8 @@ void set_ae_data(unsigned char *pkt,
 			return;
 		}
 
-        print_hex_dump(KERN_DEBUG, "writing to pkt: ", DUMP_PREFIX_NONE, 16,1,
-                       entries[buf_idx]->dataChunk->data, sizeof(struct data_chunk), 0);
+        //print_hex_dump(KERN_DEBUG, "writing to pkt: ", DUMP_PREFIX_NONE, 16,1,
+         //              entries[buf_idx]->dataChunk->data, sizeof(struct data_chunk), 0);
 
         memcpy(cur_ptr, entries[buf_idx]->dataChunk->data, sizeof(struct data_chunk));
 

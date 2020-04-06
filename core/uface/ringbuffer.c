@@ -43,8 +43,8 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
     }
 
     memcpy(&buf->ring[buf->write_idx], data, sizeof(struct data_chunk));
-    print_hex_dump(KERN_DEBUG, "rx consensus hexdump: ", DUMP_PREFIX_NONE, 16,1,
-                   &buf->ring[buf->write_idx], sizeof(struct data_chunk), 0);
+    //print_hex_dump(KERN_DEBUG, "rx consensus hexdump: ", DUMP_PREFIX_NONE, 16,1,
+     //              &buf->ring[buf->write_idx], sizeof(struct data_chunk), 0);
 
     buf->write_idx++;
 
@@ -82,8 +82,8 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
     asguard_dbg("read_idx: %d", buf->read_idx);
 
     memcpy(chunk_destination, &buf->ring[buf->read_idx], sizeof(struct data_chunk));
-    print_hex_dump(KERN_DEBUG, "consensus request hexdump: ", DUMP_PREFIX_NONE, 16,1,
-                   &buf->ring[buf->read_idx], sizeof(struct data_chunk), 0);
+    //print_hex_dump(KERN_DEBUG, "consensus request hexdump: ", DUMP_PREFIX_NONE, 16,1,
+     //              &buf->ring[buf->read_idx], sizeof(struct data_chunk), 0);
 
     buf->read_idx++;
 
