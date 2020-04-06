@@ -458,7 +458,8 @@ EXPORT_SYMBOL(_schedule_update_from_userspace);
 void pull_consensus_requests_from_rb(struct work_struct *w) {
     struct asguard_ringbuf_read_work_data *aw = NULL;
     struct consensus_priv *priv;
-    int cur_nxt_idx, i, num_of_chunks;
+    int cur_nxt_idx;
+    u8 num_of_chunks, i;
     struct data_chunk *new_chunk;
     int err = 0;
     struct asguard_ringbuf_read_work_data *next_work = NULL;
@@ -513,6 +514,8 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
                 asguard_dbg("Failed to read from ring buffer\n");
                 break;
             }
+            asguard_dbg("asgObj append %u of %u chunks\n", i, num_of_chunks);
+
             print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
                            new_chunk, sizeof(struct data_chunk), 0);
 
