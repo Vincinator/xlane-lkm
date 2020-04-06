@@ -497,6 +497,7 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
          * Is the validation key correct in the header?
          */
         if(check_entry(aw->rb)) {
+
             break;
         }
 

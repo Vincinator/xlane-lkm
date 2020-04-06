@@ -107,7 +107,9 @@ int check_entry(struct asg_ring_buf *buf) {
 
     /* Check if read_idx points to a header */
     if(validate_header_key((char*) &buf->ring[buf->read_idx]) == 0 ){
-        asguard_error("first item is not a header! BUG!");
+        asguard_error("first item is not a header! Read Idx = %d, write IDX = %d", buf->read_idx, buf->write_idx);
+        print_hex_dump(KERN_DEBUG, "This should be the header: ", DUMP_PREFIX_OFFSET, 64, 1,
+                       &buf->ring[buf->read_idx], sizeof(struct data_chunk), 0);
         return 1;
     }
 
