@@ -441,7 +441,9 @@ void _schedule_update_from_userspace(struct asguard_device *sdev, struct synbuf_
     work->sdev = sdev;
 
     INIT_DELAYED_WORK(&work->dwork, pull_consensus_requests_from_rb);
-    if(!queue_delayed_work(sdev->asguard_ringbuf_reader_wq, &work->dwork, 0)) {
+
+    //if(!queue_delayed_work(sdev->asguard_ringbuf_reader_wq, &work->dwork, 0)) {
+    if(schedule_delayed_work_on(17,  &work->dwork, 0)) {
         asguard_dbg("Work item not put in queue ..");
         sdev->bug_counter++;
         if(work)
@@ -516,10 +518,10 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
                 asguard_dbg("Failed to read from ring buffer\n");
                 break;
             }
-            asguard_dbg("asgObj append %u of %u chunks\n", i, num_of_chunks);
+           // asguard_dbg("asgObj append %u of %u chunks\n", i, num_of_chunks);
 
-            print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
-                           new_chunk, sizeof(struct data_chunk), 0);
+            /*print_hex_dump(KERN_DEBUG, "after ringbuffer: ", DUMP_PREFIX_OFFSET, 64, 1,
+                           new_chunk, sizeof(struct data_chunk), 0);*/
 
             err = append_command(priv, new_chunk, priv->term, cur_nxt_idx, 0);
             if(err) {
@@ -557,7 +559,8 @@ cleanup:
 
         /* Delay is in jiffies and depends on the configured HZ for the Linux Kernel.
          */
-        queue_delayed_work(aw->sdev->asguard_ringbuf_reader_wq, &next_work->dwork, 5);
+        schedule_delayed_work_on(17, &next_work->dwork, 5);
+       // queue_delayed_work(aw->sdev->asguard_ringbuf_reader_wq, &next_work->dwork, 5);
     }
 
     kfree(aw);
