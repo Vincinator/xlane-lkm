@@ -306,13 +306,13 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
     if(!retrans)
         mutex_unlock(&cur_priv->sm_log.next_lock);
 
-    asguard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
+   /* asguard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
                 retrans,
                 target_id,
                 local_last_idx,
                 next_index,
                 prev_log_term,
-                num_entries);
+                num_entries);*/
 
 	// reserve space in asguard heartbeat for consensus LEAD
 	pkt_payload_sub =
