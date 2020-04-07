@@ -234,15 +234,9 @@ int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s3
 	}
 
     buf_logidx = consensus_idx_to_buffer_idx(&priv->sm_log, log_idx);
-    buf_appliedidx = consensus_idx_to_buffer_idx(&priv->sm_log, priv->sm_log.last_applied);
-    buf_commitidx = consensus_idx_to_buffer_idx(&priv->sm_log, priv->sm_log.commit_idx);
+
 
     if( buf_logidx < 0 ){
-        err = -EINVAL;
-        goto error;
-    }
-
-    if( (log_idx != 0) && (buf_appliedidx == -1 || buf_commitidx == -1) ){
         err = -EINVAL;
         goto error;
     }
