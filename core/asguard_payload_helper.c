@@ -443,7 +443,7 @@ void _schedule_update_from_userspace(struct asguard_device *sdev, struct synbuf_
     INIT_DELAYED_WORK(&work->dwork, pull_consensus_requests_from_rb);
 
     //if(!queue_delayed_work(sdev->asguard_ringbuf_reader_wq, &work->dwork, 0)) {
-    if(schedule_delayed_work_on(17,  &work->dwork, 0)) {
+    if(!schedule_delayed_work_on(17,  &work->dwork, 0)) {
         asguard_dbg("Work item not put in queue ..");
         sdev->bug_counter++;
         if(work)
