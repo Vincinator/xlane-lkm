@@ -247,24 +247,6 @@ int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s3
         goto error;
     }
 
-    /* Never write between applied and commit_idx!
-     *
-     * Note: on leader we set the applied_idx equal commit_id,
-     *       because the leader received the request from the
-     *       user space, thus nothing has to be applied back
-     *       to user space. Because we are setting
-     *       applied_idx = commit_idx, the leader won't run into any
-     *       troubles in this guard.
-     *
-     * If log_idx is equal to 0, then applied and commit idx are initialized to -1
-     * but we are safe to write!
-     */
-    if( (log_idx != 0) && !(buf_logidx < buf_appliedidx || buf_logidx > buf_commitidx) ) {
-        asguard_error("Invalid Idx to write: log_idx = %d, buf_logidx = %d, buf_applied_idx = %d, buf_commitidx=%d\n", log_idx, buf_logidx, buf_appliedidx, buf_commitidx);
-        err = -EINVAL;
-        goto error;
-    }
-
     entry = priv->sm_log.entries[buf_logidx];
 
     if(entry->valid == 1) {
