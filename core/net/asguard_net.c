@@ -106,6 +106,11 @@ EXPORT_SYMBOL(asguard_convert_mac);
 
 int is_ip_local(struct net_device *dev,	u32 ip_addr)
 {
+    if(!dev ||! dev->ip_ptr ||! dev->ip_ptr->ifa_list || !dev->ip_ptr->ifa_list->ifa_address) {
+        asguard_error("Network Device not initialized properly!\n");
+        return 0;
+    }
+
 	u32 local_ipaddr = ntohl(dev->ip_ptr->ifa_list->ifa_address);
 	return local_ipaddr == ip_addr;
 }
