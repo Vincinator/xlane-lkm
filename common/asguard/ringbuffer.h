@@ -17,7 +17,7 @@
 
 #ifndef ASG_RING_BUF_SIZE_LIMIT
 /* Use 8 Bytes (64 Bits) as default chunk size for asgard */
-#define ASG_RING_BUF_SIZE_LIMIT 1000000000
+#define ASG_RING_BUF_SIZE_LIMIT 100000000
 #endif
 /*
  *
