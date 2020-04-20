@@ -71,7 +71,12 @@ int consensus_init(struct proto_instance *ins)
 	init_eval_ctrl_interfaces(priv);
 
 	// requires "proto_instances/%d"
-    init_logger(&ins->logger, ins->instance_id, priv->sdev->ifindex, "consensus_le");
+    init_logger(&ins->logger, ins->instance_id, priv->sdev->ifindex, "consensus_le", 0);
+
+    init_logger(&ins->user_a, ins->instance_id, priv->sdev->ifindex, "user_a", 1);
+    init_logger(&ins->user_b, ins->instance_id, priv->sdev->ifindex, "user_b",1);
+    init_logger(&ins->user_c, ins->instance_id, priv->sdev->ifindex, "user_c",1);
+    init_logger(&ins->user_d, ins->instance_id, priv->sdev->ifindex, "user_d",1);
 
     init_logger(&priv->throughput_logger, ins->instance_id, priv->sdev->ifindex, "consensus_throughput");
     priv->throughput_logger.state = LOGGER_RUNNING;
@@ -192,6 +197,12 @@ int consensus_clean(struct proto_instance *ins)
 	clear_logger(&ins->logger);
 
 	clear_logger(&priv->throughput_logger);
+
+    clear_logger(&ins->user_a);
+    clear_logger(&ins->user_b);
+    clear_logger(&ins->user_c);
+    clear_logger(&ins->user_d);
+
 
     /* Clean Follower (RX) Synbuf */
     synbuf_chardev_exit(priv->synbuf_rx);

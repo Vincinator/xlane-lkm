@@ -142,7 +142,14 @@ error:
 static ssize_t asguard_log_write(struct file *file, const char __user *buffer,
 				size_t count, loff_t *data)
 {
-	/* Do nothing on write. */
+    struct asguard_logger *slog =
+            (struct asguard_logger *)file->private_data;
+
+    if(!slog->accept_user_ts)
+        return count;
+
+    write_log(slog, 0, RDTSC_ASGUARD);
+
 	return count;
 }
 
@@ -203,9 +210,7 @@ error:
 	asguard_error("error code: %d for %s\n", err, __func__);
 	return err;
 }
-
-
-int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char name[MAX_LOGGER_NAME])
+int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char name[MAX_LOGGER_NAME], int accept_user_ts)
 {
 	int err;
 
@@ -220,6 +225,7 @@ int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char 
     slog->instance_id = instance_id;
     slog->ifindex = ifindex;
     slog->name = kmalloc(MAX_LOGGER_NAME, GFP_KERNEL);
+    slog->accept_user_ts = accept_user_ts;
     strncpy(slog->name, name, MAX_LOGGER_NAME);
 
     // freed by clear_logger

@@ -191,6 +191,8 @@ struct asguard_logger {
 	/* Size is defined by LOGGER_EVENT_LIMIT */
 	struct logger_event *events;
 
+	int accept_user_ts;
+
 };
 
 enum w_state {
@@ -429,7 +431,11 @@ struct proto_instance {
 
 	enum asguard_protocol_type proto_type;
 
-	struct asguard_logger logger;
+    struct asguard_logger logger;
+    struct asguard_logger user_a;
+    struct asguard_logger user_b;
+    struct asguard_logger user_c;
+    struct asguard_logger user_d;
 
 	struct asguard_protocol_ctrl_ops ctrl_ops;
 
@@ -548,7 +554,7 @@ int compare_mac(unsigned char *m1, unsigned char *m2);
 void init_logger_ctrl(struct asguard_logger *slog);
 
 
-int init_logger(struct asguard_logger *slog, u16 i, int i1, char string[MAX_LOGGER_NAME]);
+int init_logger(struct asguard_logger *slog, u16 i, int i1, char string[MAX_LOGGER_NAME], int accept_user);
 void clear_logger(struct asguard_logger *slog);
 
 int asguard_log_stop(struct asguard_logger *slog);
