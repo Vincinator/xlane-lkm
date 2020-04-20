@@ -641,6 +641,11 @@ static int asguard_pm_loop(void *data)
 
     asguard_dbg(" starting pacemaker \n");
 
+    if(!sdev->ndev || !sdev->ndev->ip_ptr || !sdev->ndev->ip_ptr->ifa_list || !sdev->ndev->ip_ptr->ifa_list->ifa_address){
+        asguard_error("Initialization Failed. Aborting Pacemaker now\n");
+        return -ENODEV;
+    }
+
     __prepare_pm_loop(sdev, spminfo);
 
 	prev_time = RDTSC_ASGUARD;
