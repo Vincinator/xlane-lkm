@@ -78,7 +78,7 @@ int consensus_init(struct proto_instance *ins)
     init_logger(&ins->user_c, ins->instance_id, priv->sdev->ifindex, "user_c",1);
     init_logger(&ins->user_d, ins->instance_id, priv->sdev->ifindex, "user_d",1);
 
-    init_logger(&priv->throughput_logger, ins->instance_id, priv->sdev->ifindex, "consensus_throughput");
+    init_logger(&priv->throughput_logger, ins->instance_id, priv->sdev->ifindex, "consensus_throughput", 0 );
     priv->throughput_logger.state = LOGGER_RUNNING;
 
 
