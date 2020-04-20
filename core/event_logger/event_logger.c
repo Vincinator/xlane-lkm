@@ -139,18 +139,42 @@ error:
 }
 
 
-static ssize_t asguard_log_write(struct file *file, const char __user *buffer,
+static ssize_t asguard_log_write(struct file *file, const char __user *user_buffer,
 				size_t count, loff_t *data)
 {
     struct asguard_logger *slog =
             (struct asguard_logger *)PDE_DATA(file_inode(file));
+    int err = 0;
+    char kernel_buffer[MAX_PROCFS_BUF];
+    int in_type = 0;
 
     if(slog->accept_user_ts == 0){
         asguard_error("User timestamps not enabled for logger %s!\n", slog->name);
         return count;
     }
 
-    write_log(slog, 0, RDTSC_ASGUARD);
+    if (count == 0) {
+        asguard_error("asguard device is NULL.\n");
+        return -EINVAL;
+    }
+
+    err = copy_from_user(kernel_buffer, user_buffer, count);
+
+    if (err) {
+        asguard_error("Copy from user failed%s\n", __func__);
+        return err;
+    }
+
+    kernel_buffer[count] = '\0';
+
+    err = kstrtoint(kernel_buffer, 0, &in_type);
+
+    if (err) {
+        asguard_error("Can not convert input\n");
+        return err;
+    }
+
+    write_log(slog, in_type, RDTSC_ASGUARD);
 
 	return count;
 }
