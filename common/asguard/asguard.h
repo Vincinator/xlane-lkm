@@ -432,6 +432,7 @@ struct proto_instance {
 	enum asguard_protocol_type proto_type;
 
     struct asguard_logger logger;
+
     struct asguard_logger user_a;
     struct asguard_logger user_b;
     struct asguard_logger user_c;

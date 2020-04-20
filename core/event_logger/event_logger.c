@@ -145,8 +145,8 @@ static ssize_t asguard_log_write(struct file *file, const char __user *buffer,
     struct asguard_logger *slog =
             (struct asguard_logger *)file->private_data;
 
-    if(!slog->accept_user_ts){
-        asguard_error("User timestamps not enabled for this logger!\n");
+    if(slog->accept_user_ts == 0){
+        asguard_error("User timestamps not enabled for logger %s!\n", slog->name);
         return count;
     }
 
@@ -228,6 +228,7 @@ int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char 
     slog->ifindex = ifindex;
     slog->name = kmalloc(MAX_LOGGER_NAME, GFP_KERNEL);
     slog->accept_user_ts = accept_user_ts;
+    asguard_dbg("Accept User TS is: %d", slog->accept_user_ts );
     strncpy(slog->name, name, MAX_LOGGER_NAME);
 
     // freed by clear_logger
