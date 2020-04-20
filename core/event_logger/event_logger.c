@@ -143,7 +143,7 @@ static ssize_t asguard_log_write(struct file *file, const char __user *buffer,
 				size_t count, loff_t *data)
 {
     struct asguard_logger *slog =
-            (struct asguard_logger *)file->private_data;
+            (struct asguard_logger *)PDE_DATA(file_inode(file));
 
     if(slog->accept_user_ts == 0){
         asguard_error("User timestamps not enabled for logger %s!\n", slog->name);
