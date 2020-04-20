@@ -145,8 +145,10 @@ static ssize_t asguard_log_write(struct file *file, const char __user *buffer,
     struct asguard_logger *slog =
             (struct asguard_logger *)file->private_data;
 
-    if(!slog->accept_user_ts)
+    if(!slog->accept_user_ts){
+        asguard_error("User timestamps not enabled for this logger!\n");
         return count;
+    }
 
     write_log(slog, 0, RDTSC_ASGUARD);
 
@@ -202,7 +204,7 @@ static int init_logger_out(struct asguard_logger *slog)
 			slog->ifindex, slog->instance_id, slog->name);
 
 
-	proc_create_data(name_buf, S_IRUSR | S_IROTH, NULL, &asguard_log_ops, slog);
+	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_log_ops, slog);
 
 	return 0;
 
