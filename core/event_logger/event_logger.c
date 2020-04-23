@@ -227,8 +227,7 @@ static int init_logger_out(struct asguard_logger *slog)
 			"asguard/%d/proto_instances/%d/log_%s",
 			slog->ifindex, slog->instance_id, slog->name);
 
-
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_log_ops, slog);
+    proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_log_ops, slog);
 
 	return 0;
 

@@ -148,8 +148,7 @@ void init_proto_instance_ctrl(struct asguard_device *sdev)
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/ctrl",
 		 sdev->ifindex);
 
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &proto_instance_ctrl_ops,
-			 sdev);
+	sdev->proto_instances_ctrl_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &proto_instance_ctrl_ops, sdev);
 
 }
 EXPORT_SYMBOL(init_proto_instance_ctrl);
@@ -161,10 +160,15 @@ void remove_proto_instance_ctrl(struct asguard_device *sdev)
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/ctrl",
 		 sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
+
+	if(sdev->proto_instances_ctrl_entry) {
+        remove_proc_entry(name_buf, NULL);
+        sdev->proto_instances_ctrl_entry = NULL;
+    }
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances",
 		 sdev->ifindex);
+
 	remove_proc_entry(name_buf, NULL);
 }
 EXPORT_SYMBOL(remove_proto_instance_ctrl);

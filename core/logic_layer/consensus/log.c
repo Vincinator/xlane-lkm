@@ -49,6 +49,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
     }
 
 
+
 	//asguard_dbg("Added %d commands to State Machine.\n", applying);
 
 	return 0;

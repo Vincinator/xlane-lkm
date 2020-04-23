@@ -208,13 +208,13 @@ void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 			"asguard/%d/proto_instances/%d/le_config",
 			priv->sdev->ifindex, priv->ins->instance_id);
 
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_le_config_ops, priv);
+    priv->le_config_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_le_config_ops, priv);
 
     snprintf(name_buf, sizeof(name_buf),
              "asguard/%d/proto_instances/%d/uuid",
              priv->sdev->ifindex, priv->ins->instance_id);
 
-    proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_eval_uuid_ops, priv);
+    priv->uuid_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_eval_uuid_ops, priv);
 
 }
 EXPORT_SYMBOL(init_le_config_ctrl_interfaces);
@@ -227,13 +227,19 @@ void remove_le_config_ctrl_interfaces(struct consensus_priv *priv)
 			"asguard/%d/proto_instances/%d/le_config",
 			priv->sdev->ifindex, priv->ins->instance_id);
 
-	remove_proc_entry(name_buf, NULL);
+	if(priv->le_config_entry) {
+        remove_proc_entry(name_buf, NULL);
+        priv->le_config_entry = NULL;
+    }
 
     snprintf(name_buf, sizeof(name_buf),
              "asguard/%d/proto_instances/%d/uuid",
              priv->sdev->ifindex, priv->ins->instance_id);
 
-    remove_proc_entry(name_buf, NULL);
+    if(priv->uuid_entry) {
+        remove_proc_entry(name_buf, NULL);
+        priv->uuid_entry = NULL;
+    }
 
 }
 EXPORT_SYMBOL(remove_le_config_ctrl_interfaces);

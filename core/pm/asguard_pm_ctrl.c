@@ -669,34 +669,37 @@ void init_asguard_pm_ctrl_interfaces(struct asguard_device *sdev)
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/payload",
 		 sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_payload_ops,
+
+	sdev->pacemaker_payload_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_payload_ops,
 			 &sdev->pminfo);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/ctrl",
 		 sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_hb_ctrl_ops,
+
+	sdev->pacemaker_ctrl_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_hb_ctrl_ops,
 			 &sdev->pminfo);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/hbi",
 		 sdev->ifindex);
 
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_hbi_ops,
+    sdev->pacemaker_hbi_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_hbi_ops,
 			 &sdev->pminfo);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/waiting_window",
 		 sdev->ifindex);
 
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_ww_ops,
+	sdev->pacemaker_waiting_window_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_ww_ops,
 			 &sdev->pminfo);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/targets",
 		 sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_target_ops,
+	sdev->pacemaker_targets_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_target_ops,
 			 &sdev->pminfo);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/cpu",
 		 sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_cpumgmt_ops,
+
+	sdev->pacemaker_cpu_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_cpumgmt_ops,
 			 &sdev->pminfo);
 
 
@@ -709,30 +712,55 @@ void clean_asguard_pm_ctrl_interfaces(struct asguard_device *sdev)
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/payload",
 		 sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
+
+	if(sdev->pacemaker_payload_entry) {
+        remove_proc_entry(name_buf, NULL);
+        sdev->pacemaker_payload_entry = NULL;
+    }
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/cpu",
 		 sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
+
+	if(sdev->pacemaker_cpu_entry){
+        remove_proc_entry(name_buf, NULL);
+        sdev->pacemaker_cpu_entry = NULL;
+    }
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/ctrl",
 		 sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
+
+	if(sdev->pacemaker_ctrl_entry){
+        remove_proc_entry(name_buf, NULL);
+        sdev->pacemaker_ctrl_entry = NULL;
+	}
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/hbi",
 		 sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
+
+	if(sdev->pacemaker_hbi_entry) {
+        remove_proc_entry(name_buf, NULL);
+        sdev->pacemaker_hbi_entry = NULL;
+    }
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/waiting_window",
 		 sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
+
+	if(sdev->pacemaker_waiting_window_entry) {
+        remove_proc_entry(name_buf, NULL);
+        sdev->pacemaker_waiting_window_entry = NULL;
+    }
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/targets",
 		 sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
+
+	if(sdev->pacemaker_targets_entry) {
+        remove_proc_entry(name_buf, NULL);
+        sdev->pacemaker_targets_entry = NULL;
+    }
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker",
 		 sdev->ifindex);
+
 	remove_proc_entry(name_buf, NULL);
 }
 EXPORT_SYMBOL(clean_asguard_pm_ctrl_interfaces);

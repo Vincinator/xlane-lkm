@@ -151,11 +151,10 @@ void init_asguard_ctrl_interfaces(struct asguard_device *sdev)
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/rx_ctrl", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL,
-			 &asguard_core_ctrl_ops, sdev);
+	sdev->rx_ctrl_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_core_ctrl_ops, sdev);
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/debug", sdev->ifindex);
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL,
+	sdev->debug_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL,
 			 &asguard_verbose_ctrl_ops, sdev);
 }
 EXPORT_SYMBOL(init_asguard_ctrl_interfaces);
@@ -165,10 +164,18 @@ void clean_asguard_ctrl_interfaces(struct asguard_device *sdev)
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/rx_ctrl", sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
+
+	if(sdev->rx_ctrl_entry) {
+        remove_proc_entry(name_buf, NULL);
+        sdev->rx_ctrl_entry = NULL;
+    }
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/debug", sdev->ifindex);
-	remove_proc_entry(name_buf, NULL);
+
+	if(sdev->debug_entry) {
+        remove_proc_entry(name_buf, NULL);
+        sdev->debug_entry = NULL;
+    }
 }
 EXPORT_SYMBOL(clean_asguard_ctrl_interfaces);
 

@@ -395,6 +395,15 @@ struct asguard_device {
     struct cluster_info *ci;
     struct synbuf_device* synbuf_clustermem;
     struct workqueue_struct *asguard_ringbuf_reader_wq;
+    struct proc_dir_entry *rx_ctrl_entry;
+    struct proc_dir_entry *debug_entry;
+    struct proc_dir_entry *proto_instances_ctrl_entry;
+    struct proc_dir_entry *pacemaker_cpu_entry;
+    struct proc_dir_entry *pacemaker_targets_entry;
+    struct proc_dir_entry *pacemaker_waiting_window_entry;
+    struct proc_dir_entry *pacemaker_hbi_entry;
+    struct proc_dir_entry *pacemaker_ctrl_entry;
+    struct proc_dir_entry *pacemaker_payload_entry;
 };
 
 struct asguard_protocol_ctrl_ops {

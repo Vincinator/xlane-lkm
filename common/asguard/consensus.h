@@ -190,7 +190,9 @@ struct consensus_priv {
 
     struct synbuf_device *synbuf_tx;
     struct synbuf_device *synbuf_rx;
-
+    struct proc_dir_entry *le_config_entry;
+    struct proc_dir_entry *uuid_entry;
+    struct proc_dir_entry *consensus_eval_ctrl_entry;
 };
 
 
