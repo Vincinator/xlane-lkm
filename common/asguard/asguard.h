@@ -221,6 +221,7 @@ enum pmstate {
 	ASGUARD_PM_UNINIT = 0,
 	ASGUARD_PM_READY = 1,
 	ASGUARD_PM_EMITTING = 2,
+    ASGUARD_PM_FAILED = 3,
 };
 
 struct asguard_process_info {
@@ -349,6 +350,7 @@ struct pminfo {
 
 	struct hrtimer pm_timer;
 
+    int errors;
 };
 
 struct proto_instance;

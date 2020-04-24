@@ -80,6 +80,8 @@ const char *pm_state_string(enum pmstate state)
 		return "ASGUARD_PM_READY";
 	case ASGUARD_PM_EMITTING:
 		return "ASGUARD_PM_EMITTING";
+    case ASGUARD_PM_FAILED:
+        return "ASGUARD_PM_FAILED";
 	default:
 		return "UNKNOWN STATE";
 	}
@@ -141,9 +143,10 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 	if (unlikely(!netif_running(ndev) ||
 			!netif_carrier_ok(ndev))) {
 		asguard_error("Network device offline!\n exiting pacemaker\n");
+		spminfo->errors++;
 		return;
 	}
-
+    spminfo->errors = 0;
 	if( spminfo->num_of_targets == 0) {
 		asguard_dbg("No targets for pacemaker. \n");
 		return;
@@ -469,8 +472,11 @@ void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_a
     if (unlikely(!netif_running(ndev) ||
                  !netif_carrier_ok(ndev))) {
         asguard_error("Network device offline!\n exiting pacemaker\n");
+        spminfo->errors++;
         return;
     }
+
+    spminfo->errors = 0;
 
     /* The queue mapping is the same for each target <i>
      * Since we pinned the pacemaker to a single cpu,
@@ -657,6 +663,11 @@ static int asguard_pm_loop(void *data)
         out_of_sched_hb = 0;
         async_pkts = 0;
 		scheduled_hb = scheduled_tx(prev_time, cur_time, interval);
+
+		if(spminfo->errors > 1000) {
+            pm_state_transition_to(spminfo, ASGUARD_PM_FAILED);
+            break;
+		}
 
 		if(scheduled_hb)
 			goto emit;
