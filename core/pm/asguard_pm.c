@@ -644,6 +644,7 @@ static int asguard_pm_loop(void *data)
 	int scheduled_hb = 0;
 	int out_of_sched_hb = 0;
 	int async_pkts = 0;
+	spminfo->errors = 0;
 
     asguard_dbg(" starting pacemaker \n");
 
