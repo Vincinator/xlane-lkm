@@ -39,6 +39,10 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
        // asguard_dbg("applying consensus entry: %d, and buf_idx: %d", i, buf_idx);
 
+
+       // TODO: is the datachunk ready to append!?
+
+
         if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[buf_idx]->dataChunk)) {
             asguard_error("Could not append to ring buffer tried to append index %i buf_idx:%d!\n", i,  buf_idx);
             return -1;
@@ -248,9 +252,9 @@ int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s3
         asguard_error("WARNING: Overwriting data! \n");
     }
 
-    //asguard_dbg("appending to buf_idx: %d\n", buf_logidx);
-    //print_hex_dump(KERN_DEBUG, "append data:", DUMP_PREFIX_NONE, 16,1,
-     //              dataChunk, sizeof(struct data_chunk), 0);
+    asguard_dbg("appending to buf_idx: %d\n", buf_logidx);
+    print_hex_dump(KERN_DEBUG, "append data:", DUMP_PREFIX_NONE, 16,1,
+                   dataChunk, sizeof(struct data_chunk), 0);
 
     /* Write request to ASGARD Kernel Buffer */
     memcpy(entry->dataChunk->data, dataChunk, sizeof(struct data_chunk));
