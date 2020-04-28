@@ -354,6 +354,7 @@ struct pminfo {
 	struct hrtimer pm_timer;
 
     int errors;
+    struct sk_buff *multicast_skb;
 };
 
 struct proto_instance;
@@ -408,6 +409,10 @@ struct asguard_device {
     struct proc_dir_entry *pacemaker_ctrl_entry;
     struct proc_dir_entry *pacemaker_payload_entry;
     struct proc_dir_entry *pacemaker_cluster_id_entry;
+
+    u32 multicast_ip;
+    unsigned char *multicast_mac;
+
 };
 
 struct asguard_protocol_ctrl_ops {

@@ -99,7 +99,7 @@ void pm_state_transition_to(struct pminfo *spminfo,
 	spminfo->state = state;
 }
 
-static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
+static inline int asguard_setup_hb_skbs(struct asguard_device *sdev)
 {
 	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
@@ -110,17 +110,27 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
     if(!spminfo){
         asguard_error("spminfo is NULL \n");
         BUG();
+        return -1;
     }
 
 	// BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
-	for (i = 0; i < spminfo->num_of_targets; i++) {
+    /* Setup Multicast SKB */
+    if(!sdev->multicast_mac) {
+        asguard_error("Multicast MAC is NULL");
+        return -1;
+    }
+
+    spminfo->multicast_skb = asguard_reserve_skb(sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
+    skb_set_queue_mapping(spminfo->multicast_skb, smp_processor_id()); // Queue mapping same for each target i
+
+    for (i = 0; i < spminfo->num_of_targets; i++) {
 
 		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
 
         /* Setup SKB */
-		spminfo->pm_targets[i].skb = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
-		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
+		//spminfo->pm_targets[i].skb = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
+//		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
 
 		/* Out of schedule SKB */
         spminfo->pm_targets[i].skb_oos = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
@@ -130,6 +140,8 @@ static inline void asguard_setup_hb_skbs(struct asguard_device *sdev)
         // spminfo->pm_targets[i].skb_logrep = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
         // skb_set_queue_mapping(spminfo->pm_targets[i].skb_logrep, smp_processor_id()); // Queue mapping same for each target i
 	}
+
+    return 0;
 }
 
 static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spminfo, int fire, int target_fire[MAX_NODE_ID])
@@ -175,11 +187,7 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 		if(fire && !target_fire[i])
 			continue;
 
-		if(fire)
-            skb = spminfo->pm_targets[i].skb_oos;
-        else
-            skb = spminfo->pm_targets[i].skb;
-
+        skb = spminfo->pm_targets[i].skb_oos;
 
         skb_get(skb);
 
@@ -194,10 +202,8 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 		 */
 
 		// if fire, then do not xmit in batch mode
-		if(!fire)
-			ret = netdev_start_xmit(skb, ndev, txq, i + 1 != spminfo->num_of_targets);
-		else
-			ret = netdev_start_xmit(skb, ndev, txq, 0);
+
+		ret = netdev_start_xmit(skb, ndev, txq, 0);
 
 		switch (ret) {
 		case NETDEV_TX_OK:
@@ -374,8 +380,8 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 		    return -1;
 		}
 
-		asguard_update_skb_udp_port(spminfo->pm_targets[i].skb, sdev->tx_port);
-		asguard_update_skb_payload(spminfo->pm_targets[i].skb,
+		asguard_update_skb_udp_port(spminfo->multicast_skb, sdev->tx_port);
+		asguard_update_skb_payload(spminfo->multicast_skb,
 					 pkt_payload);
 	}
 
@@ -599,9 +605,10 @@ static int _validate_pm(struct asguard_device *sdev,
 }
 
 //#ifndef  CONFIG_KUNIT
-static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminfo)
+static int __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminfo)
 {
-	asguard_setup_hb_skbs(sdev);
+	if(asguard_setup_hb_skbs(sdev))
+	    return -1;
 
     pm_state_transition_to(spminfo, ASGUARD_PM_EMITTING);
 
@@ -609,6 +616,7 @@ static void __prepare_pm_loop(struct asguard_device *sdev, struct pminfo *spminf
 
 	get_cpu(); // disable preemption
 
+	return 0;
 }
 //#endif // ! CONFIG_KUNIT
 
@@ -627,8 +635,8 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 
     // free fixed skbs again
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-        if(sdev->pminfo.pm_targets[i].skb != NULL)
-            dev_kfree_skb(sdev->pminfo.pm_targets[i].skb);
+        if(sdev->pminfo.multicast_skb != NULL)
+            dev_kfree_skb(sdev->pminfo.multicast_skb);
 
         if(sdev->pminfo.pm_targets[i].skb_oos != NULL)
             dev_kfree_skb(sdev->pminfo.pm_targets[i].skb_oos);
@@ -659,7 +667,8 @@ static int asguard_pm_loop(void *data)
         return -ENODEV;
     }
 
-    __prepare_pm_loop(sdev, spminfo);
+    if(__prepare_pm_loop(sdev, spminfo))
+        return -1;
 
 	prev_time = RDTSC_ASGUARD;
 
