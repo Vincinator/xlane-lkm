@@ -320,6 +320,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		// param2 interpreted as candidateID
 		// param3 interpreted as lastLogIndex of Candidate
 		// param4 interpreted as lastLogTerm of Candidate
+    case ADVERTISE:
+        break;
 	case VOTE:
 		break;
 	case NOMI:

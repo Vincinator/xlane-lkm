@@ -114,6 +114,8 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
 #endif
 	switch (opcode) {
+    case ADVERTISE:
+        break;
 	case VOTE:
 
 		mutex_lock(&priv->accept_vote_lock);

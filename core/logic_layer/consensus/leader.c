@@ -206,6 +206,8 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	//s32 param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
 	switch (opcode) {
+    case ADVERTISE:
+        break;
 	case VOTE:
 		break;
 	case NOMI:
