@@ -126,23 +126,6 @@ static inline int asguard_setup_hb_skbs(struct asguard_device *sdev)
     spminfo->multicast_skb = asguard_reserve_skb(sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
     skb_set_queue_mapping(spminfo->multicast_skb, smp_processor_id()); // Queue mapping same for each target i
 
-    for (i = 0; i < spminfo->num_of_targets; i++) {
-
-		naddr = &spminfo->pm_targets[i].pkt_data.naddr;
-
-        /* Setup SKB */
-		//spminfo->pm_targets[i].skb = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
-//		skb_set_queue_mapping(spminfo->pm_targets[i].skb, smp_processor_id()); // Queue mapping same for each target i
-
-		/* Out of schedule SKB */
-        spminfo->pm_targets[i].skb_oos = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
-        skb_set_queue_mapping(spminfo->pm_targets[i].skb_oos, smp_processor_id()); // Queue mapping same for each target i
-
-        /* Log Replication SKB */
-        // spminfo->pm_targets[i].skb_logrep = asguard_reserve_skb(sdev->ndev, naddr->dst_ip, naddr->dst_mac, NULL);
-        // skb_set_queue_mapping(spminfo->pm_targets[i].skb_logrep, smp_processor_id()); // Queue mapping same for each target i
-	}
-
     return 0;
 }
 
@@ -449,8 +432,7 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
     }
 
     asguard_update_skb_udp_port(spminfo->multicast_skb, sdev->tx_port);
-    asguard_update_skb_payload(spminfo->multicast_skb,
-                 pkt_payload);
+    asguard_update_skb_payload(spminfo->multicast_skb, pkt_payload);
 
 
 	/* Send heartbeats to all targets */
@@ -700,7 +682,7 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 		if (sdev->protos[i] != NULL && sdev->protos[i]->ctrl_ops.stop != NULL){
             sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
         }
-
+    /*
     if(sdev->pminfo.multicast_skb != NULL)
         kfree_skb(sdev->pminfo.multicast_skb);
 
@@ -712,7 +694,7 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 
         if(sdev->pminfo.pm_targets[i].skb_logrep != NULL)
             kfree_skb(sdev->pminfo.pm_targets[i].skb_logrep);
-    }
+    } */
 }
 //#endif // ! CONFIG_KUNIT
 
