@@ -204,7 +204,7 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 	if (unlikely(sdev->warmup_state == WARMING_UP)) {
 
 	    if(spminfo->num_of_targets < 2) {
-	        asguard_error("number of targets in cluster is less than 3\n");
+	        asguard_error("number of targets in cluster is less than 2 (%d)\n", spminfo->num_of_targets);
             return 1;
         }
 
@@ -214,7 +214,7 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
                 live_nodes++;
 
         if(live_nodes < 2) {
-            asguard_error("live nodes is less than 3\n");
+            asguard_error("live nodes is less than 2\n");
             return 1;
         }
 

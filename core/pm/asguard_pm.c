@@ -683,14 +683,14 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
             sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
         }
 
-    if(sdev->pminfo.multicast_skb != NULL)
+   /* if(sdev->pminfo.multicast_skb != NULL)
         kfree_skb(sdev->pminfo.multicast_skb);
 
     // free fixed skbs again
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
         if(sdev->pminfo.pm_targets[i].skb_oos != NULL)
             kfree_skb(sdev->pminfo.pm_targets[i].skb_oos);
-    }
+    } */
 }
 //#endif // ! CONFIG_KUNIT
 
