@@ -331,7 +331,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	char *payload;
     char *remote_mac;
     char *user_data;
-    u32 *remote_ip;
+    u32 *dst_ip;
     u32 cluster_ip_ad;
     char *cluster_mac_ad;
 
@@ -359,13 +359,14 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if (unlikely(remote_lid == -1)){
-		remote_ip = ((u32 *) payload) + headroom + 26;
+
+		dst_ip = (u32 *) (((char *) payload) + headroom + 30);
         asguard_dbg("PKT START:");
         print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
                        payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
-		if(ntohl(*remote_ip) != sdev->multicast_ip) {
-		    asguard_error("Invalid PKT Source %x but %x\n",ntohl(*remote_ip), sdev->multicast_ip  );
+		if(ntohl(*dst_ip) != sdev->multicast_ip) {
+		    asguard_error("Invalid PKT Source %x but %x\n",ntohl(*dst_ip), sdev->multicast_ip  );
 		    return;
 		}
 
