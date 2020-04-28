@@ -380,9 +380,9 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
 
         /* Extract advertised Cluster ID */
-        cluster_id_ad = extract_cluster_id_from_ad(user_data);
-        cluster_ip_ad = extract_cluster_ip_from_ad(user_data);
-        cluster_mac_ad = extract_cluster_mac_from_ad(user_data);
+        cluster_id_ad = extract_cluster_id_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
+        cluster_ip_ad = extract_cluster_ip_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
+        cluster_mac_ad = extract_cluster_mac_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
 
         if(cluster_id_ad < 0||cluster_ip_ad < 0||!cluster_mac_ad){
             asguard_error("included ip, id or mac is wrong/n");
