@@ -242,11 +242,29 @@ exit:
 
 #define ASG_ETH_HEADER_SIZE 14
 
+int extract_cluster_id_from_ad(char *payload) {
+
+    u32 ad_cluster_id;
+    enum le_opcode opcode;
+
+    // check if opcode is ADVERTISE
+    opcode = GET_CON_PROTO_OPCODE_VAL(payload);
+
+    if(opcode != ADVERTISE) {
+        return -1;
+    }
+
+    ad_cluster_id = GET_CON_PROTO_PARAM1_VAL(payload);
+
+    asguard_dbg("extracted cluster ID from packet: %d ", ad_cluster_id);
+    return ad_cluster_id;
+}
+
 void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct pminfo *spminfo = &sdev->pminfo;
-	int remote_lid, rcluster_id;
+	int remote_lid, rcluster_id, cluster_id_ad;
 	u16 received_proto_instances;
 	struct asguard_pkt_work_data *work;
 	//uint64_t ts2, ts3;
@@ -281,8 +299,8 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
 	if (unlikely(remote_lid == -1)){
 		// asguard_dbg("Invalid ids! \n");
+		remote_ip = ((char *) payload) + headroom + 26;
 
-        remote_ip = NULL;
 
         /* TODO: accept new member? */
 		// Naive Approach A:
@@ -293,10 +311,15 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
         // Note: if we have atomic broadcasts, and an optional method to generate unique IDs (e.g. generate ID from MAC)
         //          ... then we are able to add members to the cluster faster (without negotiating within the cluster)
 
-       /* asguard_core_register_remote_host(sdev->asguard_id,
-                                          current_ip, remote_mac,
-                                          current_protocol, cluster_id);
-        */
+
+        /* Extract advertised Cluster ID */
+        cluster_id_ad = extract_cluster_id_from_ad(user_data);
+
+        if(cluster_id_ad < 0)
+            return;
+
+        asguard_core_register_remote_host(sdev->asguard_id,
+                                         remote_ip, remote_mac, 1, cluster_id_ad);
 
 		return;
 	}
