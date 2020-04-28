@@ -499,7 +499,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 
     if(score->sdevices[asguard_id]->ndev) {
 
-        score->sdevices[asguard_id]->self_ip = ntohl( score->sdevices[asguard_id]->ndev->ip_ptr->ifa_list->ifa_address);
+        score->sdevices[asguard_id]->self_ip = score->sdevices[asguard_id]->ndev->ip_ptr->ifa_list->ifa_address;
 
         if(!score->sdevices[asguard_id]->self_ip){
             asguard_error("self IP Address is NULL!");
