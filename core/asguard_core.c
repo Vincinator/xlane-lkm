@@ -282,10 +282,9 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
 	//ts2 = RDTSC_ASGUARD;
 
-    asguard_dbg("PKT START:");
-	// DEBUG ONLY: find out offset to source IP ..
-    print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
-                   payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
+    //asguard_dbg("PKT START:");
+    //print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
+    //               payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
