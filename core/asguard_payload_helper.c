@@ -202,7 +202,7 @@ s32 _get_prev_log_term(struct consensus_priv *cur_priv, s32 con_idx)
 	return cur_priv->sm_log.entries[idx]->term;
 }
 
-int setup_cluster_join_advertisement(struct asguard_payload *spay, int advertise_id)
+int setup_cluster_join_advertisement(struct asguard_payload *spay, int advertise_id, u32 ip, unsigned char *mac)
 {
     char *pkt_payload_sub;
 
@@ -211,7 +211,7 @@ int setup_cluster_join_advertisement(struct asguard_payload *spay, int advertise
     if(!pkt_payload_sub)
         return -1;
 
-    set_le_opcode((unsigned char *)pkt_payload_sub, ADVERTISE, advertise_id, 0, 0, 0);
+    set_le_opcode_ad((unsigned char *)pkt_payload_sub, ADVERTISE, advertise_id, ip, mac );
 
     return 0;
 }

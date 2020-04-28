@@ -413,6 +413,8 @@ struct asguard_device {
     u32 multicast_ip;
     unsigned char *multicast_mac;
 
+    u32 self_ip;
+    unsigned char *self_mac;
 };
 
 struct asguard_protocol_ctrl_ops {

@@ -7,6 +7,17 @@
 #include <linux/mutex.h>
 #include <linux/ip.h>
 #include <linux/udp.h>
+#include <net/ip.h>
+#include <linux/netdevice.h>
+#include <linux/etherdevice.h>
+
+#include <asm/checksum.h>
+#include <linux/skbuff.h>
+#include <linux/notifier.h>
+#include <linux/hrtimer.h>
+#include <linux/ktime.h>
+#include <linux/slab.h>
+#include <linux/inetdevice.h>
 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -268,6 +279,47 @@ int extract_cluster_id_from_ad(char *payload) {
     return ad_cluster_id;
 }
 
+
+u32 extract_cluster_ip_from_ad(char *payload) {
+
+    u32 ad_cluster_ip;
+    enum le_opcode opcode;
+
+    // check if opcode is ADVERTISE
+    opcode = GET_CON_PROTO_OPCODE_VAL(payload);
+
+    if(opcode != ADVERTISE) {
+        return -1;
+    }
+
+    ad_cluster_ip = GET_CON_PROTO_PARAM2_VAL(payload);
+    asguard_dbg("extracted cluster IP from packet: %d ", ad_cluster_ip);
+
+    return ad_cluster_ip;
+}
+
+char *extract_cluster_mac_from_ad(char *payload) {
+
+    char* ad_cluster_mac;
+    enum le_opcode opcode;
+
+    // check if opcode is ADVERTISE
+    opcode = GET_CON_PROTO_OPCODE_VAL(payload);
+
+    if(opcode != ADVERTISE) {
+        return NULL;
+    }
+
+    ad_cluster_mac = GET_CON_PROTO_PARAM3_MAC_PTR(payload);
+
+    if(!ad_cluster_mac)
+        return NULL;
+
+    asguard_dbg("extracted cluster mac from packet: %pM ", ad_cluster_mac);
+    return ad_cluster_mac;
+
+}
+
 void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cqe_bcnt)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
@@ -280,6 +332,8 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
     char *remote_mac;
     char *user_data;
     char *remote_ip;
+    u32 cluster_ip_ad;
+    char *cluster_mac_ad;
 
     // freed by pkt_process_handler
     payload = kzalloc(cqe_bcnt, GFP_KERNEL);
@@ -305,7 +359,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if (unlikely(remote_lid == -1)){
-		// asguard_dbg("Invalid ids! \n");
+	    asguard_dbg("Invalid ids! \n");
 		remote_ip = ((char *) payload) + headroom + 26;
 
 		// Naive Approach A:
@@ -319,12 +373,13 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
         /* Extract advertised Cluster ID */
         cluster_id_ad = extract_cluster_id_from_ad(user_data);
+        u32 cluster_ip_ad = extract_cluster_ip_from_ad(user_data);
+        char *cluster_mac_ad = extract_cluster_mac_from_ad(user_data);
 
-        if(cluster_id_ad < 0)
+        if(cluster_id_ad < 0||cluster_ip_ad < 0||!cluster_mac_ad)
             return;
 
-        asguard_core_register_remote_host(sdev->asguard_id,
-                                         remote_ip, remote_mac, 1, cluster_id_ad);
+        asguard_core_register_remote_host(sdev->asguard_id, cluster_ip_ad, cluster_mac_ad, 1, cluster_id_ad);
 
 	}
 
@@ -441,6 +496,17 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 
 	score->sdevices[asguard_id]->multicast_ip = asguard_ip_convert("232.43.211.234");
     score->sdevices[asguard_id]->multicast_mac = asguard_convert_mac("01:00:5e:2b:d3:ea");
+
+
+    score->sdevices[asguard_id]->self_ip = ntohl( score->sdevices[asguard_id]->ndev->ip_ptr->ifa_list->ifa_address);
+
+    if(!score->sdevices[asguard_id]->self_ip){
+        asguard_error("self IP Address is NULL!");
+    }
+
+    memcpy(score->sdevices[asguard_id]->self_mac, score->sdevices[asguard_id]->ndev->dev_addr, 6);
+
+    asguard_dbg("Using IP: %x and MAC: %pM",score->sdevices[asguard_id]->self_ip, score->sdevices[asguard_id]->self_mac);
 
 
     score->sdevices[asguard_id]->asguard_leader_wq =

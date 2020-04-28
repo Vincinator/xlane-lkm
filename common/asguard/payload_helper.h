@@ -72,6 +72,10 @@
 #define GET_CON_PROTO_PARAM3_VAL(p) (*(s32 *)((char *) p + 2 + 2 + 2 + 4 + 4))
 #define GET_CON_PROTO_PARAM3_PTR(p) (s32 *)((char *) p + 2 + 2 + 2 + 4 + 4)
 
+// protoid(u16) + offset(u16) + opcode(u16) + param1(u32) + param2(u32)
+//#define GET_CON_PROTO_PARAM3_MAC_VAL(p) (*(char *)((char *) p + 2 + 2 + 2 + 4 + 4))
+#define GET_CON_PROTO_PARAM3_MAC_PTR(p) (char *)((char *) p + 2 + 2 + 2 + 4 + 4)
+
 // protoid(u16) + offset(u16) + opcode(u16) + param1(u32) + param2(u32)  + param3(u32)
 #define GET_CON_PROTO_PARAM4_VAL(p) (*(s32 *)((char *) p + 2 + 2 + 2 + 4 + 4 + 4))
 #define GET_CON_PROTO_PARAM4_PTR(p) (s32 *)((char *) p + 2 + 2 + 2 + 4 + 4 + 4)
@@ -114,7 +118,7 @@ char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 p
 void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay, int i);
 int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, s32 next_index, int retrans);
 int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id);
-int setup_cluster_join_advertisement(struct asguard_payload *spay, int advertise_id);
+int setup_cluster_join_advertisement(struct asguard_payload *spay, int advertise_id, u32 ip, unsigned char *mac);
 void check_pending_log_rep(struct asguard_device *sdev);
 s32 _get_match_idx(struct consensus_priv *priv, int target_id);
 void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id);

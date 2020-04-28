@@ -342,7 +342,10 @@ void update_alive_msg(struct asguard_device *sdev, struct asguard_payload *pkt_p
 
 	/* Not a member of a cluster yet - thus, append advertising messages */
 	if(unlikely(sdev->warmup_state == WARMING_UP)) {
-        setup_cluster_join_advertisement(pkt_payload, sdev->pminfo.cluster_id);
+
+	    if(sdev->self_mac)
+	        setup_cluster_join_advertisement(pkt_payload, sdev->pminfo.cluster_id, sdev->self_ip, sdev->self_mac);
+
 	}
 
 	// only leaders will append an ALIVE operation to the heartbeat

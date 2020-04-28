@@ -239,6 +239,29 @@ int check_handle_nomination(struct consensus_priv *priv, u32 param1, u32 param2,
 }
 EXPORT_SYMBOL(check_handle_nomination);
 
+
+void set_le_opcode_ad(unsigned char *pkt, enum le_opcode opco, s32 cluster_id, s32 self_ip, unsigned char *self_mac)
+{
+    u16 *opcode;
+    u32 *param1;
+    s32 *param2;
+    char *param3;
+
+    opcode = GET_CON_PROTO_OPCODE_PTR(pkt);
+    *opcode = (u16) opco;
+
+    param1 = GET_CON_PROTO_PARAM1_PTR(pkt);
+    *param1 = (u32) cluster_id;
+
+    param2 = GET_CON_PROTO_PARAM2_PTR(pkt);
+    *param2 = (s32) self_ip;
+
+    param3 = GET_CON_PROTO_PARAM3_MAC_PTR(pkt);
+
+    memcpy(param3, self_mac, 6);
+
+}
+
 void set_le_opcode(unsigned char *pkt, enum le_opcode opco, s32 p1, s32 p2, s32 p3, s32 p4)
 {
 	u16 *opcode;
