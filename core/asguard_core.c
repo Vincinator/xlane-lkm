@@ -203,16 +203,20 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 
 	if (unlikely(sdev->warmup_state == WARMING_UP)) {
 
-	    if(spminfo->num_of_targets < 3)
-	        return 1;
+	    if(spminfo->num_of_targets < 3) {
+	        asguard_error("number of targets in cluster is less than 3\n");
+            return 1;
+        }
 
 		// Do not start Leader Election until at least three nodes are alive in the cluster
 		for (i = 0; i < spminfo->num_of_targets; i++)
 			if (spminfo->pm_targets[i].alive)
                 live_nodes++;
 
-        if(live_nodes < 3)
+        if(live_nodes < 3) {
+            asguard_error("live nodes is less than 3\n");
             return 1;
+        }
 
 		// Starting all protocols
 		for (i = 0; i < sdev->num_of_proto_instances; i++) {
@@ -289,7 +293,7 @@ u32 extract_cluster_ip_from_ad(char *payload) {
     opcode = GET_CON_PROTO_OPCODE_VAL(payload);
 
     if(opcode != ADVERTISE) {
-        return -1;
+        return 0;
     }
 
     ad_cluster_ip = GET_CON_PROTO_PARAM2_VAL(payload);
@@ -359,47 +363,36 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if (unlikely(remote_lid == -1)){
-
 		dst_ip = (u32 *) (((char *) payload) + headroom + 30);
-        asguard_dbg("PKT START:");
-        print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
-                       payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
 		if(*dst_ip != sdev->multicast_ip) {
 		    asguard_error("Invalid PKT Source %x but %x\n",*dst_ip, sdev->multicast_ip);
 		    return;
 		}
 
-		// Naive Approach A:
-		// 1) check if msg is an asgard advertise msg
-		// 2) get advertised cluster id
-		// 3) check if advertised cluster id already exists in cluster
-		// 4) if not: add (remote_mac, cluster id) to cluster members
-        // Note: if we have atomic broadcasts, and an optional method to generate unique IDs (e.g. generate ID from MAC)
-        //          ... then we are able to add members to the cluster faster (without negotiating within the cluster)
-
-
         /* Extract advertised Cluster ID */
         cluster_id_ad = extract_cluster_id_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
         cluster_ip_ad = extract_cluster_ip_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
         cluster_mac_ad = extract_cluster_mac_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
 
-        if(cluster_id_ad < 0||cluster_ip_ad < 0||!cluster_mac_ad){
-            asguard_error("included ip, id or mac is wrong/n");
+        if(cluster_id_ad < 0||cluster_ip_ad == 0||!cluster_mac_ad){
+            asguard_error("included ip, id or mac is wrong \n");
             return;
         }
 
         asguard_core_register_remote_host(sdev->asguard_id, cluster_ip_ad, cluster_mac_ad, 1, cluster_id_ad);
-
+        return;
 	}
 
 	// Update aliveness state and timestamps
+
 	spminfo->pm_targets[remote_lid].chb_ts = RDTSC_ASGUARD;
 	spminfo->pm_targets[remote_lid].alive = 1;
 
     update_cluster_member(sdev->ci, remote_lid, 1);
 
 	if(check_warmup_state(sdev, spminfo)){
+	    asguard_error("not warmed up yet.\n");
 		return;
 	}
 
