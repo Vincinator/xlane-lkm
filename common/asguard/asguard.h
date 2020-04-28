@@ -335,6 +335,8 @@ struct pminfo {
 
 	int active_cpu;
 
+	u32 cluster_id;
+
 	int num_of_targets;
 
 	//enum hb_interval hbi;
@@ -373,8 +375,6 @@ struct asguard_device {
 	// 3319 for normal traffic, 3320 for leader traffic.
 	int tx_port;
 
-	u32 cluster_id;
-
 	uint64_t last_leader_ts;
 
 	int verbose; /* Prints more information when set to 1 during RX/TX to dmesg*/
@@ -407,6 +407,7 @@ struct asguard_device {
     struct proc_dir_entry *pacemaker_hbi_entry;
     struct proc_dir_entry *pacemaker_ctrl_entry;
     struct proc_dir_entry *pacemaker_payload_entry;
+    struct proc_dir_entry *pacemaker_cluster_id_entry;
 };
 
 struct asguard_protocol_ctrl_ops {

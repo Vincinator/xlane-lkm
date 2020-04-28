@@ -281,7 +281,7 @@ void update_aliveness_states(struct asguard_device *sdev, struct pminfo *spminfo
 u32 get_lowest_alive_id(struct asguard_device *sdev, struct pminfo *spminfo)
 {
 	int i;
-	u32 cur_low = sdev->cluster_id;
+	u32 cur_low = sdev->pminfo.cluster_id;
 
 
 	for(i = 0; i < spminfo->num_of_targets; i++) {
@@ -298,7 +298,7 @@ u32 get_lowest_alive_id(struct asguard_device *sdev, struct pminfo *spminfo)
 void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 {
 	int leader_lid = sdev->cur_leader_lid;
-	u32 self_id = sdev->cluster_id;
+	u32 self_id = sdev->pminfo.cluster_id;
 	u32 lowest_follower_id = get_lowest_alive_id(sdev, spminfo);
 	struct consensus_priv *priv = sdev->consensus_priv;
 
@@ -334,7 +334,7 @@ void update_alive_msg(struct asguard_device *sdev, struct asguard_payload *pkt_p
 
 	/* Not a member of a cluster yet - thus, append advertising messages */
 	if(unlikely(sdev->warmup_state == WARMING_UP)) {
-        setup_cluster_join_advertisement(pkt_payload, sdev->cluster_id);
+        setup_cluster_join_advertisement(pkt_payload, sdev->pminfo.cluster_id);
 	}
 
 	// only leaders will append an ALIVE operation to the heartbeat

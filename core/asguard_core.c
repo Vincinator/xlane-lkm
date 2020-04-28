@@ -184,16 +184,24 @@ void _handle_sub_payloads(struct asguard_device *sdev, int remote_lid, int clust
 
 }
 
+/*Checks if at least 3 Nodes have joined the cluster yet  */
 int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 {
 	int i;
+	int live_nodes = 0;
 
 	if (unlikely(sdev->warmup_state == WARMING_UP)) {
 
-		// Do not start Leader Election until all targets have send a message to this node
+	    if(spminfo->num_of_targets < 3)
+	        return 1;
+
+		// Do not start Leader Election until at least three nodes are alive in the cluster
 		for (i = 0; i < spminfo->num_of_targets; i++)
-			if (!spminfo->pm_targets[i].alive)
-				return 1;
+			if (spminfo->pm_targets[i].alive)
+                live_nodes++;
+
+        if(live_nodes < 3)
+            return 1;
 
 		// Starting all protocols
 		for (i = 0; i < sdev->num_of_proto_instances; i++) {
@@ -300,8 +308,6 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 		// asguard_dbg("Invalid ids! \n");
 		remote_ip = ((char *) payload) + headroom + 26;
 
-
-        /* TODO: accept new member? */
 		// Naive Approach A:
 		// 1) check if msg is an asgard advertise msg
 		// 2) get advertised cluster id
@@ -320,12 +326,12 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
         asguard_core_register_remote_host(sdev->asguard_id,
                                          remote_ip, remote_mac, 1, cluster_id_ad);
 
-		return;
 	}
 
 	// Update aliveness state and timestamps
 	spminfo->pm_targets[remote_lid].chb_ts = RDTSC_ASGUARD;
 	spminfo->pm_targets[remote_lid].alive = 1;
+
     update_cluster_member(sdev->ci, remote_lid, 1);
 
 	if(check_warmup_state(sdev, spminfo)){
@@ -491,7 +497,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
             score->sdevices[asguard_id]->synbuf_clustermem->ubuf;
 
     score->sdevices[asguard_id]->ci->overall_cluster_member = 1; /* Node itself is a member */
-    score->sdevices[asguard_id]->ci->cluster_self_id = score->sdevices[asguard_id]->cluster_id;
+    score->sdevices[asguard_id]->ci->cluster_self_id = score->sdevices[asguard_id]->pminfo.cluster_id;
 
     return asguard_id;
 }

@@ -170,6 +170,76 @@ static int asguard_cpumgmt_open(struct inode *inode, struct file *file)
 			   PDE_DATA(file_inode(file)));
 }
 
+static ssize_t asguard_cluster_id_write(struct file *file,
+                                     const char __user *user_buffer, size_t count,
+                                     loff_t *data)
+{
+    int err;
+    char kernel_buffer[ASGUARD_NUMBUF];
+    int to_cluster_id = -1;
+    struct pminfo *spminfo =
+            (struct pminfo *)PDE_DATA(file_inode(file));
+    size_t size;
+
+    if (!spminfo)
+        return -ENODEV;
+
+    size = min(sizeof(kernel_buffer) - 1, count);
+
+    memset(kernel_buffer, 0, sizeof(kernel_buffer));
+
+    err = copy_from_user(kernel_buffer, user_buffer, count);
+
+    if (err) {
+        asguard_error("Copy from user failed%s\n", __func__);
+        goto error;
+    }
+
+    kernel_buffer[size] = '\0';
+    err = kstrtoint(kernel_buffer, 10, &to_cluster_id);
+    if (err) {
+        asguard_error(
+                "Error converting input buffer: %s, cluster id: 0x%x\n",
+                kernel_buffer, to_cluster_id);
+        goto error;
+    }
+
+    if (to_cluster_id > MAX_CLUSTER_MEMBER || to_cluster_id < 0)
+        return -ENODEV;
+
+    spminfo->cluster_id = to_cluster_id;
+    pm_state_transition_to(spminfo, ASGUARD_PM_READY);
+    asguard_error("Pacemaker Cluster ID is set to %d\n", spminfo->cluster_id);
+
+    return count;
+    error:
+    asguard_error("Could not set cpu.%s\n", __func__);
+    return err;
+}
+
+static int asguard_cluster_id_show(struct seq_file *m, void *v)
+{
+    struct pminfo *spminfo =
+            (struct pminfo *)m->private;
+
+    if (!spminfo)
+        return -ENODEV;
+
+    seq_printf(m, "%d\n", spminfo->cluster_id);
+
+
+    return 0;
+}
+
+static int asguard_cluster_id_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, asguard_cluster_id_show,
+                       PDE_DATA(file_inode(file)));
+}
+
+
+
+
 static ssize_t asguard_hbi_write(struct file *file,
 					const char __user *buffer, size_t count,
 					loff_t *data)
@@ -478,7 +548,7 @@ static ssize_t asguard_target_write(struct file *file,
 			err = kstrtoint(input_str, 10, &cluster_id);
 
 			if (is_ip_local(sdev->ndev, current_ip)) {
-				sdev->cluster_id = cluster_id;
+				sdev->pminfo.cluster_id = cluster_id;
 
 				if(sdev->ci)
                     sdev->ci->cluster_self_id = cluster_id;
@@ -623,6 +693,15 @@ static const struct file_operations asguard_cpumgmt_ops = {
 	.release = single_release,
 };
 
+static const struct file_operations asguard_cluster_id_ops = {
+        .owner = THIS_MODULE,
+        .open = asguard_cluster_id_open,
+        .write = asguard_cluster_id_write,
+        .read = seq_read,
+        .llseek = seq_lseek,
+        .release = single_release,
+};
+
 static const struct file_operations asguard_hbi_ops = {
 	.owner = THIS_MODULE,
 	.open = asguard_hbi_open,
@@ -703,6 +782,13 @@ void init_asguard_pm_ctrl_interfaces(struct asguard_device *sdev)
 			 &sdev->pminfo);
 
 
+    snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/cluster_id",
+             sdev->ifindex);
+
+    sdev->pacemaker_cluster_id_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_cluster_id_ops,
+                                                 &sdev->pminfo);
+
+
 }
 EXPORT_SYMBOL(init_asguard_pm_ctrl_interfaces);
 
@@ -751,12 +837,21 @@ void clean_asguard_pm_ctrl_interfaces(struct asguard_device *sdev)
     }
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/targets",
-		 sdev->ifindex);
+                  sdev->ifindex);
 
-	if(sdev->pacemaker_targets_entry) {
+    if(sdev->pacemaker_targets_entry) {
         remove_proc_entry(name_buf, NULL);
         sdev->pacemaker_targets_entry = NULL;
     }
+
+    snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker/cluster_id",
+             sdev->ifindex);
+
+    if(sdev->pacemaker_cluster_id_entry) {
+        remove_proc_entry(name_buf, NULL);
+        sdev->pacemaker_cluster_id_entry = NULL;
+    }
+
 
 	snprintf(name_buf, sizeof(name_buf), "asguard/%d/pacemaker",
 		 sdev->ifindex);
