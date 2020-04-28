@@ -162,10 +162,6 @@ static inline void asguard_send_multicast_hb(struct net_device *ndev, struct pmi
         return;
     }
     spminfo->errors = 0;
-    if( spminfo->num_of_targets == 0) {
-        asguard_dbg("No targets for pacemaker. \n");
-        return;
-    }
 
     local_irq_save(flags);
     local_bh_disable();
