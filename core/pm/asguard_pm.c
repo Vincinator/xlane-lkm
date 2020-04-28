@@ -121,7 +121,7 @@ static inline int asguard_setup_hb_skbs(struct asguard_device *sdev)
         return -1;
     }
 
-    asguard_dbg("broadcast ip: %d  mac: %s", sdev->multicast_ip, sdev->multicast_mac);
+    asguard_dbg("broadcast ip: %x  mac: %pM", sdev->multicast_ip, sdev->multicast_mac);
 
     spminfo->multicast_skb = asguard_reserve_skb(sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
     skb_set_queue_mapping(spminfo->multicast_skb, smp_processor_id()); // Queue mapping same for each target i
