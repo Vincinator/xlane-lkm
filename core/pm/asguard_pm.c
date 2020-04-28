@@ -146,7 +146,77 @@ static inline int asguard_setup_hb_skbs(struct asguard_device *sdev)
     return 0;
 }
 
-static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spminfo, int fire, int target_fire[MAX_NODE_ID])
+
+static inline void asguard_send_multicast_hb(struct net_device *ndev, struct pminfo *spminfo)
+{
+    struct netdev_queue *txq;
+    struct sk_buff *skb;
+    unsigned long flags;
+    int tx_index = smp_processor_id();
+    int i, ret;
+
+    if (unlikely(!netif_running(ndev) ||
+                 !netif_carrier_ok(ndev))) {
+        asguard_error("Network device offline!\n exiting pacemaker\n");
+        spminfo->errors++;
+        return;
+    }
+    spminfo->errors = 0;
+    if( spminfo->num_of_targets == 0) {
+        asguard_dbg("No targets for pacemaker. \n");
+        return;
+    }
+
+    local_irq_save(flags);
+    local_bh_disable();
+
+    /* The queue mapping is the same for each target <i>
+     * Since we pinned the pacemaker to a single cpu,
+     * we can use the smp_processor_id() directly.
+     */
+    txq = &ndev->_tx[tx_index];
+
+    HARD_TX_LOCK(ndev, txq, tx_index);
+
+    if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
+        //asguard_error("Device Busy unlocking.\n");
+        goto unlock;
+    }
+
+    skb = spminfo->multicast_skb;
+
+    skb_get(skb);
+    ret = netdev_start_xmit(skb, ndev, txq, 0);
+
+    switch (ret) {
+        case NETDEV_TX_OK:
+            break;
+        case NET_XMIT_DROP:
+            asguard_error("NETDEV TX DROP\n");
+            break;
+        case NET_XMIT_CN:
+            asguard_error("NETDEV XMIT CN\n");
+            break;
+        default:
+            asguard_error("NETDEV UNKNOWN \n");
+            /* fall through */
+        case NETDEV_TX_BUSY:
+            asguard_error("NETDEV TX BUSY\n");
+            break;
+    }
+
+
+    unlock:
+    HARD_TX_UNLOCK(ndev, txq);
+
+    local_bh_enable();
+    local_irq_restore(flags);
+
+}
+
+
+
+static inline void asguard_send_oos_pkts(struct net_device *ndev, struct pminfo *spminfo,  int *target_fire)
 {
 	struct netdev_queue *txq;
 	struct sk_buff *skb;
@@ -185,8 +255,8 @@ static inline void asguard_send_hbs(struct net_device *ndev, struct pminfo *spmi
 	/* send packets in batch processing mode */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
-		// if emission was scheduled via fire, only emit pkts marked with fire
-		if(fire && !target_fire[i])
+		// only emit pkts marked with fire
+		if(!target_fire[i])
 			continue;
 
         skb = spminfo->pm_targets[i].skb_oos;
@@ -391,7 +461,7 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 	}
 
 	/* Send heartbeats to all targets */
-	asguard_send_hbs(ndev, spminfo, 0, NULL);
+    asguard_send_multicast_hb(ndev, spminfo);
 
 	// TODO: timestamp for scheduled
 	//if(ts_state == ASGUARD_TS_RUNNING)
@@ -451,7 +521,7 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 					 pkt_payload);
 	}
 
-	asguard_send_hbs(ndev, spminfo, 1, target_fire);
+    asguard_send_oos_pkts(ndev, spminfo, target_fire);
 
 	// /* Leave pkts in clean state */
 	 for (i = 0; i < spminfo->num_of_targets; i++) {
