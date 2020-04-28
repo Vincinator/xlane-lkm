@@ -331,6 +331,12 @@ void update_alive_msg(struct asguard_device *sdev, struct asguard_payload *pkt_p
 {
 	int j;
 
+
+	/* Not a member of a cluster yet - thus, append advertising messages */
+	if(unlikely(sdev->warmup_state == WARMING_UP)) {
+        setup_cluster_join_advertisement(pkt_payload, sdev->cluster_id);
+	}
+
 	// only leaders will append an ALIVE operation to the heartbeat
 	if(sdev->is_leader == 0)
 		return;
@@ -395,8 +401,8 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 		 * .. and free the reservations for new protocols */
 		invalidate_proto_data(sdev, pkt_payload, i);
 
-		update_aliveness_states(sdev, spminfo, i);
-		update_alive_msg(sdev, pkt_payload, i);
+		update_aliveness_states(sdev, spminfo, i); // check if we received messages since last call of this check
+		update_alive_msg(sdev, pkt_payload, i);  // Setup next HB Message
 
 	}
 
@@ -421,7 +427,7 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
         spin_lock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
     }
 
-	/* Prepare heartbeat packets */
+	/* Prepare  packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
 		if(!target_fire[i])
@@ -436,7 +442,7 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 
 	asguard_send_hbs(ndev, spminfo, 1, target_fire);
 
-	// /* Leave Heartbeat pkts in clean state */
+	// /* Leave pkts in clean state */
 	 for (i = 0; i < spminfo->num_of_targets; i++) {
 
 		if(!target_fire[i])

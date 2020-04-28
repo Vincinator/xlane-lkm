@@ -100,6 +100,7 @@ enum le_opcode {
 	APPEND = 4,
 	APPEND_REPLY = 5,
 	ALIVE = 6,
+	ADVERTISE = 7,
 };
 
 

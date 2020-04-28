@@ -253,6 +253,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	char *payload;
     char *remote_mac;
     char *user_data;
+    char *remote_ip;
 
     // freed by pkt_process_handler
     payload = kzalloc(cqe_bcnt, GFP_KERNEL);
@@ -263,10 +264,10 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
 	//ts2 = RDTSC_ASGUARD;
 
-/*
-    print_hex_dump(KERN_DEBUG, "user data: ", DUMP_PREFIX_NONE, 32, 1,
-                   user_data, 16 , 0);
-*/
+
+	// DEBUG ONLY: find out offset to source IP ..
+    print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
+                   payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
@@ -279,7 +280,24 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if (unlikely(remote_lid == -1)){
-		asguard_dbg("Invalid ids! \n");
+		// asguard_dbg("Invalid ids! \n");
+
+        remote_ip = NULL;
+
+        /* TODO: accept new member? */
+		// Naive Approach A:
+		// 1) check if msg is an asgard advertise msg
+		// 2) get advertised cluster id
+		// 3) check if advertised cluster id already exists in cluster
+		// 4) if not: add (remote_mac, cluster id) to cluster members
+        // Note: if we have atomic broadcasts, and an optional method to generate unique IDs (e.g. generate ID from MAC)
+        //          ... then we are able to add members to the cluster faster (without negotiating within the cluster)
+
+       /* asguard_core_register_remote_host(sdev->asguard_id,
+                                          current_ip, remote_mac,
+                                          current_protocol, cluster_id);
+        */
+
 		return;
 	}
 
