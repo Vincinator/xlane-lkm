@@ -121,6 +121,8 @@ static inline int asguard_setup_hb_skbs(struct asguard_device *sdev)
         return -1;
     }
 
+    asguard_dbg("broadcast ip: %d  mac: %s", sdev->multicast_ip, sdev->multicast_mac);
+
     spminfo->multicast_skb = asguard_reserve_skb(sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
     skb_set_queue_mapping(spminfo->multicast_skb, smp_processor_id()); // Queue mapping same for each target i
 
@@ -633,10 +635,11 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
             sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
         }
 
+    if(sdev->pminfo.multicast_skb != NULL)
+        kfree_skb(sdev->pminfo.multicast_skb);
+
     // free fixed skbs again
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-        if(sdev->pminfo.multicast_skb != NULL)
-            kfree_skb(sdev->pminfo.multicast_skb);
 
         if(sdev->pminfo.pm_targets[i].skb_oos != NULL)
             kfree_skb(sdev->pminfo.pm_targets[i].skb_oos);
