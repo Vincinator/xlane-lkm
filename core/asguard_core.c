@@ -364,8 +364,8 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
         print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
                        payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
-		if(*remote_ip != sdev->multicast_ip) {
-		    asguard_error("Invalid PKT Source\n");
+		if(ntohl(*remote_ip) != sdev->multicast_ip) {
+		    asguard_error("Invalid PKT Source %x but %x\n",ntohl(*remote_ip), sdev->multicast_ip  );
 		    return;
 		}
 
