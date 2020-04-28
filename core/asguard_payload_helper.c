@@ -357,7 +357,7 @@ EXPORT_SYMBOL(setup_append_msg);
 
 /* Must be called after the asguard packet has been emitted.
  */
-void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay, int target_id)
+void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay)
 {
 
 	// free previous piggybacked protocols

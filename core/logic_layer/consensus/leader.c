@@ -17,7 +17,7 @@ struct consensus_priv;
 void initialize_indices(struct consensus_priv *priv)
 {
 	int i;
-    struct asguard_payload *pkt_payload;
+    struct asguard_payload *multicast_pkt_payload;
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 
@@ -32,13 +32,12 @@ void initialize_indices(struct consensus_priv *priv)
 
 		priv->sm_log.retrans_entries[i] = 0;
 
-        pkt_payload =
-                priv->sdev->pminfo.pm_targets[i].pkt_data.hb_pkt_payload;
-
-        update_alive_msg(priv->sdev, pkt_payload, i);
-
-
     }
+
+    multicast_pkt_payload =
+            priv->sdev->pminfo.multicast_pkt_data.hb_pkt_payload;
+
+    update_alive_msg(priv->sdev, multicast_pkt_payload);
 
 }
 

@@ -405,10 +405,9 @@ void update_leader(struct asguard_device *sdev, struct pminfo *spminfo)
 }
 EXPORT_SYMBOL(update_leader);
 
-void update_alive_msg(struct asguard_device *sdev, struct asguard_payload *pkt_payload, int target_id)
+void update_alive_msg(struct asguard_device *sdev, struct asguard_payload *pkt_payload)
 {
 	int j;
-
 
 	/* Not a member of a cluster yet - thus, append advertising messages */
 	if(unlikely(sdev->warmup_state == WARMING_UP)) {
@@ -425,7 +424,7 @@ void update_alive_msg(struct asguard_device *sdev, struct asguard_payload *pkt_p
 	// iterate through consensus protocols and include ALIVE message
 	for (j = 0; j < sdev->num_of_proto_instances; j++) {
 
-		if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
+		if (sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
 
 			// get corresponding local instance data for consensus
 			setup_alive_msg((struct consensus_priv *)sdev->protos[j]->proto_data,
@@ -445,47 +444,39 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 	// enum tsstate ts_state = sdev->ts_state;
 
 	/* Prepare heartbeat packets */
-	for (i = 0; i < spminfo->num_of_targets; i++) {
+    pkt_payload =
+         spminfo->multicast_pkt_data.hb_pkt_payload;
 
-		pkt_payload =
-		     spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
+    if(!pkt_payload) {
+        asguard_error("packet payload is NULL! \n");
+        return -1;
+    }
 
-		if(!pkt_payload) {
-		    asguard_error("packet payload is NULL! \n");
-		    return -1;
-		}
+    asguard_update_skb_udp_port(spminfo->multicast_skb, sdev->tx_port);
+    asguard_update_skb_payload(spminfo->multicast_skb,
+                 pkt_payload);
 
-		asguard_update_skb_udp_port(spminfo->multicast_skb, sdev->tx_port);
-		asguard_update_skb_payload(spminfo->multicast_skb,
-					 pkt_payload);
-	}
 
 	/* Send heartbeats to all targets */
     asguard_send_multicast_hb(ndev, spminfo);
 
-	// TODO: timestamp for scheduled
-	//if(ts_state == ASGUARD_TS_RUNNING)
-	//	asguard_write_timestamp(sdev, 0, RDTSC_ASGUARD, i);
+	/* Leave Heartbeat multicast pkt in clean state */
+    pkt_payload =
+         spminfo->multicast_pkt_data.hb_pkt_payload;
 
-	/* Leave Heartbeat pkts in clean state */
-	for (i = 0; i < spminfo->num_of_targets; i++) {
+    if(!pkt_payload){
+        asguard_error("pkt payload become NULL! \n");
+        return -1;
+    }
 
-		pkt_payload =
-		     spminfo->pm_targets[i].pkt_data.hb_pkt_payload;
+    /* Protocols have been emitted, do not send them again ..
+     * .. and free the reservations for new protocols */
+    invalidate_proto_data(sdev, pkt_payload);
 
-		if(!pkt_payload){
-		    asguard_error("pkt payload become NULL! \n");
-		    continue;
-		}
+    for(i = 0; i < spminfo->num_of_targets; i++)
+        update_aliveness_states(sdev, spminfo, i); // check if we received messages since last call of this check
 
-		/* Protocols have been emitted, do not send them again ..
-		 * .. and free the reservations for new protocols */
-		invalidate_proto_data(sdev, pkt_payload, i);
-
-		update_aliveness_states(sdev, spminfo, i); // check if we received messages since last call of this check
-		update_alive_msg(sdev, pkt_payload, i);  // Setup next HB Message
-
-	}
+    update_alive_msg(sdev, pkt_payload);  // Setup next HB Message
 
 	if(sdev->consensus_priv->nstate != LEADER) {
 		update_leader(sdev, spminfo);
@@ -534,7 +525,7 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 
 		/* Protocols have been emitted, do not sent them again ..
 		 * .. and free the reservations for new protocols */
-		invalidate_proto_data(sdev, pkt_payload, i);
+		invalidate_proto_data(sdev, pkt_payload);
 
 		memset(pkt_payload, 0, sizeof(struct asguard_payload ));
 

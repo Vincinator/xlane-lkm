@@ -115,7 +115,7 @@ typedef int(*handle_payload_fun)(struct asguard_device *,
 int get_proto_offset(char *cur);
 char *asguard_get_proto(struct asguard_payload *spay, int n);
 char *asguard_reserve_proto(u16 instance_id, struct asguard_payload *spay, u16 proto_size);
-void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay, int i);
+void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay);
 int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id, int target_id, s32 next_index, int retrans);
 int setup_alive_msg(struct consensus_priv *cur_priv, struct asguard_payload *spay, int instance_id);
 int setup_cluster_join_advertisement(struct asguard_payload *spay, int advertise_id, u32 ip, unsigned char *mac);
