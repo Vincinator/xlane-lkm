@@ -671,10 +671,16 @@ static int _validate_pm(struct asguard_device *sdev,
 		return -EINVAL;
 	}
 
-	if (spminfo->num_of_targets <= 0) {
-		asguard_error("num_of_targets is invalid.\n");
-		return -EINVAL;
+	if(!sdev->self_mac) {
+	    asguard_error("self mac is NULL\n");
+	    return -EINVAL;
 	}
+
+    if(!sdev->multicast_mac) {
+        asguard_error("multicast mac is NULL\n");
+        return -EINVAL;
+    }
+
 
 	return 0;
 }
