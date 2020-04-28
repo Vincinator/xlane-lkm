@@ -331,7 +331,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	char *payload;
     char *remote_mac;
     char *user_data;
-    char *remote_ip;
+    u32 *remote_ip;
     u32 cluster_ip_ad;
     char *cluster_mac_ad;
 
@@ -359,8 +359,15 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	get_cluster_ids(sdev, remote_mac, &remote_lid, &rcluster_id);
 
 	if (unlikely(remote_lid == -1)){
-	    asguard_dbg("Invalid ids! \n");
-		remote_ip = ((char *) payload) + headroom + 26;
+		remote_ip = ((u32 *) payload) + headroom + 26;
+        asguard_dbg("PKT START:");
+        print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
+                       payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
+
+		if(*remote_ip != sdev->multicast_ip) {
+		    asguard_error("Invalid PKT Source\n");
+		    return;
+		}
 
 		// Naive Approach A:
 		// 1) check if msg is an asgard advertise msg
@@ -373,11 +380,13 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
         /* Extract advertised Cluster ID */
         cluster_id_ad = extract_cluster_id_from_ad(user_data);
-        u32 cluster_ip_ad = extract_cluster_ip_from_ad(user_data);
-        char *cluster_mac_ad = extract_cluster_mac_from_ad(user_data);
+        cluster_ip_ad = extract_cluster_ip_from_ad(user_data);
+        cluster_mac_ad = extract_cluster_mac_from_ad(user_data);
 
-        if(cluster_id_ad < 0||cluster_ip_ad < 0||!cluster_mac_ad)
+        if(cluster_id_ad < 0||cluster_ip_ad < 0||!cluster_mac_ad){
+            asguard_error("included ip, id or mac is wrong/n");
             return;
+        }
 
         asguard_core_register_remote_host(sdev->asguard_id, cluster_ip_ad, cluster_mac_ad, 1, cluster_id_ad);
 
