@@ -497,16 +497,25 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->multicast_ip = asguard_ip_convert("232.43.211.234");
     score->sdevices[asguard_id]->multicast_mac = asguard_convert_mac("01:00:5e:2b:d3:ea");
 
+    if(score->sdevices[asguard_id]->ndev) {
 
-    score->sdevices[asguard_id]->self_ip = ntohl( score->sdevices[asguard_id]->ndev->ip_ptr->ifa_list->ifa_address);
+        score->sdevices[asguard_id]->self_ip = ntohl( score->sdevices[asguard_id]->ndev->ip_ptr->ifa_list->ifa_address);
 
-    if(!score->sdevices[asguard_id]->self_ip){
-        asguard_error("self IP Address is NULL!");
+        if(!score->sdevices[asguard_id]->self_ip){
+            asguard_error("self IP Address is NULL!");
+        }
+
+        if(!score->sdevices[asguard_id]->ndev->dev_addr){
+            asguard_error("self MAC Address is NULL!");
+        }
+        score->sdevices[asguard_id]->self_mac = kmalloc(6, GFP_KERNEL);
+
+        memcpy(score->sdevices[asguard_id]->self_mac, score->sdevices[asguard_id]->ndev->dev_addr, 6);
+
+        asguard_dbg("Using IP: %x and MAC: %pMF", score->sdevices[asguard_id]->self_ip, score->sdevices[asguard_id]->self_mac);
+
     }
 
-    memcpy(score->sdevices[asguard_id]->self_mac, score->sdevices[asguard_id]->ndev->dev_addr, 6);
-
-    asguard_dbg("Using IP: %x and MAC: %pM",score->sdevices[asguard_id]->self_ip, score->sdevices[asguard_id]->self_mac);
 
 
     score->sdevices[asguard_id]->asguard_leader_wq =
