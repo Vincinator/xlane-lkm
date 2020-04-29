@@ -278,8 +278,6 @@ int extract_cluster_id_from_ad(char *payload) {
     }
 
     ad_cluster_id = GET_CON_PROTO_PARAM1_VAL(payload);
-
-    asguard_dbg("extracted cluster ID from packet: %d ", ad_cluster_id);
     return ad_cluster_id;
 }
 
@@ -297,8 +295,6 @@ u32 extract_cluster_ip_from_ad(char *payload) {
     }
 
     ad_cluster_ip = GET_CON_PROTO_PARAM2_VAL(payload);
-    asguard_dbg("extracted cluster IP from packet: %d ", ad_cluster_ip);
-
     return ad_cluster_ip;
 }
 
@@ -319,7 +315,6 @@ char *extract_cluster_mac_from_ad(char *payload) {
     if(!ad_cluster_mac)
         return NULL;
 
-    asguard_dbg("extracted cluster mac from packet: %pM ", ad_cluster_mac);
     return ad_cluster_mac;
 
 }
@@ -364,7 +359,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 		dst_ip = (u32 *) (((char *) payload) + headroom + 30);
 
 		if(*dst_ip != sdev->multicast_ip) {
-		    asguard_error("Invalid PKT Source %x but %x\n",*dst_ip, sdev->multicast_ip);
+		    asguard_error("Invalid PKT Source %x but %x\n", *dst_ip, sdev->multicast_ip);
 		    return;
 		}
 
@@ -372,19 +367,18 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
         cluster_id_ad = extract_cluster_id_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
         cluster_ip_ad = extract_cluster_ip_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
         cluster_mac_ad = extract_cluster_mac_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
+
         asguard_error("\tMAC: %pMF", cluster_mac_ad);
         asguard_error("\tID: %d", cluster_id_ad);
         asguard_error("\tIP: %pI4", (void*) &cluster_ip_ad);
 
         if(cluster_id_ad < 0||cluster_ip_ad == 0||!cluster_mac_ad){
-
             asguard_error("included ip, id or mac is wrong \n");
-
-
             return;
         }
 
         asguard_core_register_remote_host(sdev->asguard_id, cluster_ip_ad, cluster_mac_ad, 1, cluster_id_ad);
+
         return;
 	}
 
@@ -396,7 +390,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
     update_cluster_member(sdev->ci, remote_lid, 1);
 
 	if(check_warmup_state(sdev, spminfo)){
-	    asguard_error("not warmed up yet.\n");
+	    // asguard_error("not warmed up yet.\n");
 		return;
 	}
 
@@ -720,14 +714,14 @@ void clear_protocol_instances(struct asguard_device *sdev)
 
 
 	}
-    
+
 
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		sdev->instance_id_mapping[i] = -1;
-    
+
 
 	sdev->num_of_proto_instances = 0;
-    
+
 
 }
 

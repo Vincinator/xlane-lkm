@@ -102,7 +102,7 @@ int push_front_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard
 EXPORT_SYMBOL(push_front_async_pkt);
 
 /* Dequeue and return tail of async pkt queue */
- struct asguard_async_pkt * dequeue_async_pkt(struct asguard_async_queue_priv *aqueue)
+ struct asguard_async_pkt *dequeue_async_pkt(struct asguard_async_queue_priv *aqueue)
  {
     struct asguard_async_pkt *queued_apkt;
 
@@ -148,6 +148,7 @@ EXPORT_SYMBOL(create_async_pkt);
 void ring_aa_doorbell(struct asguard_async_queue_priv *aqueue) 
 {
     aqueue->doorbell++;
+    asguard_dbg("Doorbell rung! \n");
 }
 EXPORT_SYMBOL(ring_aa_doorbell);
 

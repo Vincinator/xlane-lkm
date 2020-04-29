@@ -579,7 +579,7 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
 
 			cur_apkt = dequeue_async_pkt(spminfo->pm_targets[i].aapriv);
 
-            // Pkt has been handled
+            // consider packet already handled
             spminfo->pm_targets[i].aapriv->doorbell--;
 
             if(!cur_apkt || !cur_apkt->skb) {
@@ -609,9 +609,6 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
                     kfree_skb(cur_apkt->skb); // drop reference, and free skb if reference count hits 0
                 kfree(cur_apkt);
             }
-
-            // do not free skb!
-
         }
 	}
 	return 0;
@@ -725,6 +722,8 @@ static int asguard_pm_loop(void *data)
 
         out_of_sched_hb = 0;
         async_pkts = 0;
+
+        /* Scheduled Multicast Heartbeats */
 		scheduled_hb = scheduled_tx(prev_time, cur_time, interval);
 
 		if(spminfo->errors > 1000) {
@@ -740,11 +739,13 @@ static int asguard_pm_loop(void *data)
             continue;
         }
 
+		/* e.g. Leader Election Messages  */
 		out_of_sched_hb = out_of_schedule_tx(sdev);
 
 		if(out_of_sched_hb)
 			goto emit;
 
+		/* e.g. Log Replication Messages */
 		async_pkts = check_async_door(spminfo);
 
 		if(async_pkts)
