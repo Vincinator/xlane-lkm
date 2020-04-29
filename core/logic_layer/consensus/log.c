@@ -110,7 +110,7 @@ EXPORT_SYMBOL(print_log_state);
 
 void update_stable_idx(struct consensus_priv *priv)
 {
-	int i;
+	s32 i;
 	int cur_buf_idx;
 
     /* Stable idx is already good */
@@ -133,7 +133,7 @@ void update_stable_idx(struct consensus_priv *priv)
             return;
         }
 
-		if (!priv->sm_log.entries[cur_buf_idx]->valid)
+		if (priv->sm_log.entries[cur_buf_idx]->valid == 0)
 			break; // stop at first invalidated entry
 
 		priv->sm_log.stable_idx = i; // i is a real consensus index (non modulo)
