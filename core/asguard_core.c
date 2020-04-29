@@ -394,7 +394,11 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 		return;
 	}
 
-   // asguard_dbg("PKT START:");
+	// TODO: get leader election protocol ID (current workaround: hardcoded, only use one protocol instance
+    write_log(&sdev->protos[0]->logger, START_CONSENSUS, RDTSC_ASGUARD);
+
+
+    // asguard_dbg("PKT START:");
    //print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
    //                payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 

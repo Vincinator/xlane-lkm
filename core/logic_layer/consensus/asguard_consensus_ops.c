@@ -129,7 +129,6 @@ int consensus_start(struct proto_instance *ins)
 
 	err = node_transition(ins, FOLLOWER);
 
-	write_log(&ins->logger, START_CONSENSUS, RDTSC_ASGUARD);
 
 	if (err)
 		goto error;

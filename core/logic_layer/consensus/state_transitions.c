@@ -138,6 +138,7 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 		break;
 	case LEADER:
 		err = start_leader(ins);
+		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, RDTSC_ASGUARD);
 		break;
 	default:
 		asguard_error("Unknown node state %d\n - abort", state);
