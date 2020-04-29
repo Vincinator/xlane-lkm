@@ -178,6 +178,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 
 		break;
 	default:
+
 		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", remote_lid, opcode);
 	}
 

@@ -81,6 +81,9 @@ void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum 
 	if (opcode == ALIVE)
 		return;
 
+    if (opcode == ADVERTISE)
+        return;
+
 	if(verbose)
 		asguard_log_le("%s, %llu, %d: %s from %d with term %d\n",
 					nstate_string(nstate),
