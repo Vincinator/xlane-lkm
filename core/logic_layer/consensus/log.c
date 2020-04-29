@@ -44,7 +44,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
 
         if(append_rb((struct asg_ring_buf *) priv->synbuf_rx->ubuf, log->entries[buf_idx]->dataChunk)) {
-            asguard_error("Could not append to ring buffer tried to append index %i buf_idx:%d!\n", i,  buf_idx);
+            // asguard_error("Could not append to ring buffer tried to append index %i buf_idx:%d!\n", i,  buf_idx);
             return -1;
         }
 
