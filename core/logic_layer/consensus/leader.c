@@ -240,7 +240,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 			if(priv->sm_log.last_idx < param4) {
 				asguard_error("(1) match index (%d) is greater than local last idx (%d)!\n", param4, priv->sm_log.last_idx);
-                print_hex_dump(KERN_DEBUG, "response hexdump: ", DUMP_PREFIX_NONE, 16,1,
+                print_hex_dump(KERN_DEBUG, "response hexdump: ", DUMP_PREFIX_NONE, 32,1,
                                pkt, 32, 0);
 
                 break; // ignore this faulty packet
