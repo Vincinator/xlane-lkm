@@ -248,9 +248,9 @@ int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s3
 
     entry = priv->sm_log.entries[buf_logidx];
 
-    if(entry->valid == 1) {
+    /*if(entry->valid == 1) {
         asguard_error("WARNING: Overwriting data! \n");
-    }
+    }*/
 
     // asguard_dbg("appending to buf_idx: %d\n", buf_logidx);
     //print_hex_dump(KERN_DEBUG, "append data:", DUMP_PREFIX_NONE, 16,1,
