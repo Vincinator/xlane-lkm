@@ -573,11 +573,6 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
 
-        if(i > MAX_REMOTE_SOURCES){
-            asguard_error("Invalid Number of remote Targets! %d\n", i);
-            return 0;
-        }
-
         if(spminfo->pm_targets[i].aapriv->doorbell > 0) {
 
 			cur_apkt = dequeue_async_pkt(spminfo->pm_targets[i].aapriv);
@@ -601,17 +596,14 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             // update payload
             //asguard_update_skb_payload(spminfo->pm_targets[i].skb_logrep, cur_apkt->payload);
 
-
             emit_apkt(sdev->ndev, spminfo, cur_apkt);
 
             spminfo->pm_targets[i].pkt_tx_counter++;
 
+            if(cur_apkt->skb)
+                kfree_skb(cur_apkt->skb); // drop reference, and free skb if reference count hits 0
 
-            if(cur_apkt) {
-                if(cur_apkt->skb)
-                    kfree_skb(cur_apkt->skb); // drop reference, and free skb if reference count hits 0
-                kfree(cur_apkt);
-            }
+            kfree(cur_apkt);
         }
 	}
 	return 0;
@@ -635,7 +627,7 @@ static int _validate_pm(struct asguard_device *sdev,
 		return -ENODEV;
 	}
 
-	if (!sdev || !sdev->ndev) {
+	if (!sdev->ndev) {
 		asguard_error("netdevice is NULL\n");
 		return -EINVAL;
 	}
@@ -649,7 +641,6 @@ static int _validate_pm(struct asguard_device *sdev,
         asguard_error("multicast mac is NULL\n");
         return -EINVAL;
     }
-
 
 	return 0;
 }
@@ -683,14 +674,14 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
             sdev->protos[i]->ctrl_ops.stop(sdev->protos[i]);
         }
 
-   /* if(sdev->pminfo.multicast_skb != NULL)
+    if(sdev->pminfo.multicast_skb != NULL)
         kfree_skb(sdev->pminfo.multicast_skb);
 
     // free fixed skbs again
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
         if(sdev->pminfo.pm_targets[i].skb_oos != NULL)
             kfree_skb(sdev->pminfo.pm_targets[i].skb_oos);
-    } */
+    }
 }
 //#endif // ! CONFIG_KUNIT
 
@@ -705,9 +696,10 @@ static int asguard_pm_loop(void *data)
 	int scheduled_hb = 0;
 	int out_of_sched_hb = 0;
 	int async_pkts = 0;
+
 	spminfo->errors = 0;
 
-    asguard_dbg(" starting pacemaker \n");
+    asguard_dbg("Starting Pacemaker\n");
 
     if(!sdev->ndev || !sdev->ndev->ip_ptr || !sdev->ndev->ip_ptr->ifa_list || !sdev->ndev->ip_ptr->ifa_list->ifa_address){
         asguard_error("Initialization Failed. Aborting Pacemaker now\n");
