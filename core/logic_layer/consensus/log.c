@@ -137,7 +137,7 @@ void update_stable_idx(struct consensus_priv *priv)
 			break; // stop at first invalidated entry
 
         if(i == 83890432) {
-            asguard_error("Black magic fuckery happening right HERE.\n")
+            asguard_error("Black magic fuckery happening right HERE.\n");
         }
 
 		priv->sm_log.stable_idx = i; // i is a real consensus index (non modulo)
