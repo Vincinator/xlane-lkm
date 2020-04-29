@@ -504,14 +504,23 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 
     if(score->sdevices[asguard_id]->ndev) {
 
+        if(!score->sdevices[asguard_id]->ndev->ip_ptr||!score->sdevices[asguard_id]->ndev->ip_ptr->ifa_list){
+            asguard_error("Network Interface with ifindex %d has no IP Address configured!\n",ifindex);
+            return -EINVAL;
+        }
+
         score->sdevices[asguard_id]->self_ip = score->sdevices[asguard_id]->ndev->ip_ptr->ifa_list->ifa_address;
 
         if(!score->sdevices[asguard_id]->self_ip){
             asguard_error("self IP Address is NULL!");
+            return -EINVAL;
+
         }
 
         if(!score->sdevices[asguard_id]->ndev->dev_addr){
             asguard_error("self MAC Address is NULL!");
+            return -EINVAL;
+
         }
         score->sdevices[asguard_id]->self_mac = kmalloc(6, GFP_KERNEL);
 
