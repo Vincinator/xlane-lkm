@@ -91,7 +91,7 @@ int consensus_init(struct proto_instance *ins)
     }
 
     /* Initialize RingBuffer in sybuf */
-    setup_asg_ring_buf((struct asg_ring_buf*) priv->synbuf_rx->ubuf, 300000 );
+    setup_asg_ring_buf((struct asg_ring_buf*) priv->synbuf_rx->ubuf, 500000 );
 
     /* Initialize synbuf for Leader (TX) Buffer */
     priv->synbuf_tx = create_synbuf("tx", 250 * 20);
@@ -102,7 +102,7 @@ int consensus_init(struct proto_instance *ins)
     }
 
     /* Initialize RingBuffer in sybuf */
-    setup_asg_ring_buf((struct asg_ring_buf*) priv->synbuf_tx->ubuf, 300000 );
+    setup_asg_ring_buf((struct asg_ring_buf*) priv->synbuf_tx->ubuf, 500000 );
 
 	return 0;
 }
