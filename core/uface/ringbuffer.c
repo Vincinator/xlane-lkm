@@ -136,6 +136,12 @@ EXPORT_SYMBOL(check_entry);
 
 // TODO: check
 int is_rb_empty(struct asg_ring_buf *buf) {
+
+    if(!buf){
+        asguard_error("Ring Buffer is NULL! But was checked if it is empty \n");
+        return 1;
+    }
+
     return (buf->read_idx == buf->write_idx);
 }
 
