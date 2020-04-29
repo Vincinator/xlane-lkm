@@ -25,7 +25,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
 	// write_log(&priv->throughput_logger, applying, RDTSC_ASGUARD);
 
     if(priv->throughput_logger.first_ts == 0){
-        priv->throughput_logger.last_ts = RDTSC_ASGUARD;
+        priv->throughput_logger.first_ts = RDTSC_ASGUARD;
     }
 
     priv->throughput_logger.last_ts = RDTSC_ASGUARD;
