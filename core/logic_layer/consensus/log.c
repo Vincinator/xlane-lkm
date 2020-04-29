@@ -124,7 +124,7 @@ void update_stable_idx(struct consensus_priv *priv)
 	 *
 	 *
 	 */
-	for (i = priv->sm_log.stable_idx == -1 ? 0 : priv->sm_log.stable_idx; i <= priv->sm_log.last_idx; i++) {
+	for (i = priv->sm_log.stable_idx + 1; i <= priv->sm_log.last_idx; i++) {
 
         cur_buf_idx = consensus_idx_to_buffer_idx(&priv->sm_log, i);
 
