@@ -194,6 +194,12 @@ struct asguard_logger {
 
 	int accept_user_ts;
 
+	int applied;
+    uint64_t first_ts;
+    uint64_t last_ts;
+
+
+
 };
 
 enum w_state {

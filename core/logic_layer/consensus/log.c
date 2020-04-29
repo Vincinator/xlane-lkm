@@ -22,9 +22,17 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
 	applying = log->commit_idx - (log->last_applied == -1 ? 0 : log->last_applied);
 
-	write_log(&priv->throughput_logger, applying, RDTSC_ASGUARD);
+	// write_log(&priv->throughput_logger, applying, RDTSC_ASGUARD);
 
-	if(!priv->synbuf_rx || !priv->synbuf_rx->ubuf) {
+    if(priv->throughput_logger.first_ts == 0){
+        priv->throughput_logger.last_ts = RDTSC_ASGUARD;
+    }
+
+    priv->throughput_logger.last_ts = RDTSC_ASGUARD;
+    priv->throughput_logger.applied += applying;
+
+
+    if(!priv->synbuf_rx || !priv->synbuf_rx->ubuf) {
 	    asguard_error("synbuf is not initialized!\n");
 	    return -1;
 	}

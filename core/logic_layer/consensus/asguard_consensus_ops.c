@@ -152,6 +152,17 @@ int consensus_stop(struct proto_instance *ins)
 
     asguard_dbg("===================== End of Run: %pUB ====================\n", priv->uuid.b);
 
+
+    // Write Start Timestamp:
+    write_log(&priv->throughput_logger, 1, priv->throughput_logger.first_ts);
+
+    // Write End Timestamp:
+    write_log(&priv->throughput_logger, 2, priv->throughput_logger.last_ts);
+
+    // Write throughput:
+    write_log(&priv->throughput_logger, 3, priv->throughput_logger.applied);
+
+
     switch (priv->nstate) {
 	case FOLLOWER:
 		stop_follower(ins);
