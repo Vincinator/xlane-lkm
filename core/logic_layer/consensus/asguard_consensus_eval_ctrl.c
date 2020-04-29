@@ -47,7 +47,7 @@ static ssize_t asguard_eval_ctrl_write(struct file *file,
 		testcase_one_shot_big_log(priv);
 		break;
 	default:
-		if (eval_selection < 0 || eval_selection > MAX_CONSENSUS_LOG) {
+		if (eval_selection < 0) {
 			asguard_error("Invalid input: %d - %s\n", eval_selection, __func__);
 			err = -EINVAL;
 			goto error;
