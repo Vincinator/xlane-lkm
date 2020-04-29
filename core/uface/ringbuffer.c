@@ -56,10 +56,10 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
     }
 
     // TODO: if Reader catches up with writer?
-    if(buf->write_idx == buf->read_idx && buf->turn) {
+    /*if(buf->write_idx == buf->read_idx && buf->turn) {
         asguard_error("Stopping! Reader can't keep up with Writer");
         return -1;
-    }
+    }*/
 
 
     if(!&buf->ring[buf->write_idx]) {
