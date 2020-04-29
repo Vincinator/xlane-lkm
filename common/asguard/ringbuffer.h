@@ -10,7 +10,7 @@
 #ifndef ASG_CHUNK_SIZE
 /* Use 64 Bits (8 Bytes) as default chunk size for asgard
  *
- * Must be longer than 8 bits!
+ * Must be longer than 8 bits (1byte)!
  */
 #define ASG_CHUNK_SIZE 8
 #endif
