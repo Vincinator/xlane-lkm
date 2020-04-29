@@ -63,15 +63,18 @@ static inline bool check_async_door(struct pminfo *spminfo)
 
 static inline bool out_of_schedule_tx(struct asguard_device *sdev)
 {
-	int i, fire = 0;
+	int i;
 
 	if(sdev->hold_fire)
 		return 0;
 
-	for (i = 0; i < sdev->pminfo.num_of_targets; i++)
-		fire += sdev->pminfo.pm_targets[i].fire;
+	for (i = 0; i < sdev->pminfo.num_of_targets; i++){
 
-	return fire > 0;
+	    if( sdev->pminfo.pm_targets[i].fire)
+	        return 1;
+	}
+
+	return 0;
 }
 
 const char *pm_state_string(enum pmstate state)
@@ -435,13 +438,11 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
     asguard_update_skb_udp_port(spminfo->multicast_skb, sdev->tx_port);
     asguard_update_skb_payload(spminfo->multicast_skb, pkt_payload);
 
-
 	/* Send heartbeats to all targets */
     asguard_send_multicast_hb(ndev, spminfo);
 
 	/* Leave Heartbeat multicast pkt in clean state */
-    pkt_payload =
-         spminfo->multicast_pkt_data.hb_pkt_payload;
+    pkt_payload = spminfo->multicast_pkt_data.hb_pkt_payload;
 
     if(!pkt_payload){
         asguard_error("pkt payload become NULL! \n");
