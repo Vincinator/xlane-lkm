@@ -204,7 +204,7 @@ int check_warmup_state(struct asguard_device *sdev, struct pminfo *spminfo)
 	if (unlikely(sdev->warmup_state == WARMING_UP)) {
 
 	    if(spminfo->num_of_targets < 2) {
-	        asguard_error("number of targets in cluster is less than 2 (%d)\n", spminfo->num_of_targets);
+	        // asguard_error("number of targets in cluster is less than 2 (%d)\n", spminfo->num_of_targets);
             return 1;
         }
 
@@ -372,9 +372,15 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
         cluster_id_ad = extract_cluster_id_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
         cluster_ip_ad = extract_cluster_ip_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
         cluster_mac_ad = extract_cluster_mac_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
+        asguard_error("\tMAC: %pMF", cluster_mac_ad);
+        asguard_error("\tID: %d", cluster_id_ad);
+        asguard_error("\tIP: %pI4", (void*) &cluster_ip_ad);
 
         if(cluster_id_ad < 0||cluster_ip_ad == 0||!cluster_mac_ad){
+
             asguard_error("included ip, id or mac is wrong \n");
+
+
             return;
         }
 
