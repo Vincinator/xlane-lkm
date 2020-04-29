@@ -148,7 +148,6 @@ EXPORT_SYMBOL(create_async_pkt);
 void ring_aa_doorbell(struct asguard_async_queue_priv *aqueue) 
 {
     aqueue->doorbell++;
-    asguard_dbg("Doorbell rung! \n");
 }
 EXPORT_SYMBOL(ring_aa_doorbell);
 

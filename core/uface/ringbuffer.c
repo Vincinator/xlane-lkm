@@ -68,9 +68,9 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
     }
 
     memcpy(&buf->ring[buf->write_idx], data, sizeof(struct data_chunk));
-    asguard_dbg("write_idx: %d, read_idx: %d, turn: %d \n", buf->write_idx, buf->read_idx, buf->turn);
-    print_hex_dump(KERN_DEBUG, "rx consensus hexdump (at write idx): ", DUMP_PREFIX_NONE, 16,1,
-                  &buf->ring[buf->write_idx], sizeof(struct data_chunk), 0);
+    // asguard_dbg("write_idx: %d, read_idx: %d, turn: %d \n", buf->write_idx, buf->read_idx, buf->turn);
+    //print_hex_dump(KERN_DEBUG, "rx consensus hexdump (at write idx): ", DUMP_PREFIX_NONE, 16,1,
+    //             &buf->ring[buf->write_idx], sizeof(struct data_chunk), 0);
 
 
     buf->write_idx++;
