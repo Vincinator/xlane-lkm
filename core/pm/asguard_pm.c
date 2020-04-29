@@ -571,11 +571,16 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
 {
 	int i;
  	struct asguard_async_pkt *cur_apkt;
- 	u32 num_entries;
-    s32 *prev_log_idx;
+
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
-		if(spminfo->pm_targets[i].aapriv->doorbell > 0) {
+
+        if(i > MAX_REMOTE_SOURCES){
+            asguard_error("Invalid Number of remote Targets! %d\n", i);
+            return 0;
+        }
+
+        if(spminfo->pm_targets[i].aapriv->doorbell > 0) {
 
 			cur_apkt = dequeue_async_pkt(spminfo->pm_targets[i].aapriv);
 
