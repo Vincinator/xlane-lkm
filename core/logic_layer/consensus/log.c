@@ -136,6 +136,10 @@ void update_stable_idx(struct consensus_priv *priv)
 		if (priv->sm_log.entries[cur_buf_idx]->valid == 0)
 			break; // stop at first invalidated entry
 
+        if(i == 83890432) {
+            asguard_error("Black magic fuckery happening right HERE.\n")
+        }
+
 		priv->sm_log.stable_idx = i; // i is a real consensus index (non modulo)
 	}
 
@@ -239,7 +243,6 @@ int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s3
 	}
 
     buf_logidx = consensus_idx_to_buffer_idx(&priv->sm_log, log_idx);
-
 
     if( buf_logidx < 0 ){
         err = -EINVAL;

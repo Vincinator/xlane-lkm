@@ -45,7 +45,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 
 
 	if (!pkt_payload_sub) {
-		asguard_error("Sassy packet full!\n");
+		asguard_error("asgard packet full!\n");
         spin_unlock(&spminfo->pm_targets[remote_lid].pkt_data.pkt_lock);
         return;
     }
