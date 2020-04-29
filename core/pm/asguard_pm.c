@@ -50,12 +50,15 @@ static inline bool check_async_window(uint64_t prev_time, uint64_t cur_time, uin
 static inline bool check_async_door(struct pminfo *spminfo)
 {
 	int i;
-	int doorbell = 0;
 
-	for (i = 0; i < spminfo->num_of_targets; i++)
-		doorbell += spminfo->pm_targets[i].aapriv->doorbell;
+	for (i = 0; i < spminfo->num_of_targets; i++){
 
-	return doorbell > 0;
+	    if(spminfo->pm_targets[i].aapriv->doorbell)
+            return 1;
+
+	}
+
+	return 0;
 }
 
 static inline bool out_of_schedule_tx(struct asguard_device *sdev)
