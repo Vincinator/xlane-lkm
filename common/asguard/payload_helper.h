@@ -98,12 +98,12 @@ typedef int(*handle_payload_fun)(struct asguard_device *,
 								 unsigned char *remote_mac,
 								 void *payload);
 
-// TODO: why 20??
+// TODO: why 20?? Why not 22?
 #define ASGUARD_PROTO_CON_AE_BASE_SZ 20
 #define CONLOG_ENTRY_SIZE 8
 
-// TODO: why 17??
-#define ASGUARD_PROTO_CON_PAYLOAD_SZ 17
+// 2 isntance ID + 2 proto offset + 2 opcode + 4 param1 + 4 param2 + 4 param3 + 4 param4
+#define ASGUARD_PROTO_CON_PAYLOAD_SZ 22
 #define ASGUARD_CON_METADATA_SZ 23
 #define ASGUARD_CON_LOGCMD_SZ 8
 
