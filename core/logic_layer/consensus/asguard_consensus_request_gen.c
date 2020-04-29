@@ -93,8 +93,6 @@ static enum hrtimer_restart testcase_timer(struct hrtimer *timer)
 
 	asguard_dbg("Incoming Client requests..\n");
 
-
-
 	// write x random entries to local log (if node is leader)
 	for (i = start_idx; i < start_idx + test_data->x; i++) {
 
