@@ -51,7 +51,7 @@
 	5 /* Number of allowed mlx5 devices that can connect to ASGUARD */
 #define MAX_CPU_NUMBER 55
 
-#define ASGUARD_HEADER_BYTES 128
+#define ASGUARD_HEADER_BYTES 64
 
 #define MAX_ASGUARD_PAYLOAD_BYTES (1500 - ASGUARD_HEADER_BYTES) // asuming an ethernet mtu of ~1500 bytes
 
