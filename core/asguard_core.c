@@ -394,9 +394,9 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 		return;
 	}
 
-    asguard_dbg("PKT START:");
-    print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
-                   payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
+   // asguard_dbg("PKT START:");
+   //print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
+   //                payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
 	spminfo->pm_targets[remote_lid].pkt_rx_counter++;
 
