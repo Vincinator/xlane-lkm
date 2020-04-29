@@ -80,7 +80,9 @@ int consensus_init(struct proto_instance *ins)
 
     init_logger(&priv->throughput_logger, ins->instance_id, priv->sdev->ifindex, "consensus_throughput", 0 );
     priv->throughput_logger.state = LOGGER_RUNNING;
-
+    priv->throughput_logger.first_ts = 0;
+    priv->throughput_logger.applied = 0;
+    priv->throughput_logger.last_ts = 0;
 
     /* Initialize synbuf for Follower (RX) Buffer */
     priv->synbuf_rx = create_synbuf("rx", 250 * 20);
