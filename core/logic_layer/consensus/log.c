@@ -133,8 +133,8 @@ void update_stable_idx(struct consensus_priv *priv)
             return;
         }
 
-		if (!priv->sm_log.entries[cur_buf_idx])
-			break; // stop at first missing entry
+		if (!priv->sm_log.entries[cur_buf_idx]->valid)
+			break; // stop at first invalidated entry
 
 		priv->sm_log.stable_idx = i; // i is a real consensus index (non modulo)
 	}
