@@ -163,8 +163,8 @@ int read_rb(struct asg_ring_buf *buf, struct data_chunk *chunk_destination) {
     }
 
     memcpy(chunk_destination, &buf->ring[buf->read_idx], sizeof(struct data_chunk));
-    print_hex_dump(KERN_DEBUG, "consensus request hexdump: ", DUMP_PREFIX_NONE, 16,1,
-                   &buf->ring[buf->read_idx], sizeof(struct data_chunk), 0);
+    //print_hex_dump(KERN_DEBUG, "consensus request hexdump: ", DUMP_PREFIX_NONE, 16,1,
+    //              &buf->ring[buf->read_idx], sizeof(struct data_chunk), 0);
 
     buf->read_idx++;
 

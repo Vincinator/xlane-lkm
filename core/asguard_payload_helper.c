@@ -522,8 +522,8 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
         }
 
         num_of_chunks = get_num_of_chunks((char*) &aw->rb->ring[aw->rb->read_idx].data);
-        print_hex_dump(KERN_DEBUG, "Header: ", DUMP_PREFIX_OFFSET, 64, 1,
-                       &aw->rb->ring[aw->rb->read_idx].data, sizeof(struct data_chunk), 0);
+        //print_hex_dump(KERN_DEBUG, "Header: ", DUMP_PREFIX_OFFSET, 64, 1,
+        //               &aw->rb->ring[aw->rb->read_idx].data, sizeof(struct data_chunk), 0);
 
         /* +1 because we also transmit the header itself and the number of chunks */
         for (i = 0; i < num_of_chunks + 1; i++) {
