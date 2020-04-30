@@ -331,6 +331,7 @@ struct asguard_pm_target_info {
 	/* async packet queue for pm target*/
 	struct asguard_async_queue_priv *aapriv;
 
+    int pkt_tx_errors;
 };
 
 struct pminfo {

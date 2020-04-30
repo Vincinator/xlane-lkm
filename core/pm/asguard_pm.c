@@ -521,59 +521,63 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 	return 0;
 }
 
-void emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_async_pkt *apkt)
+int emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_async_pkt *apkt)
 {
 	struct netdev_queue *txq;
     unsigned long flags;
-    int tx_index = smp_processor_id();
+    int cpuid = smp_processor_id();
+    netdev_tx_t ret;
 
     if (unlikely(!netif_running(ndev) ||
                  !netif_carrier_ok(ndev))) {
         asguard_error("Network device offline!\n exiting pacemaker\n");
         spminfo->errors++;
-        return;
+        return NETDEV_TX_BUSY;
     }
 
-    spminfo->errors = 0;
+    if(!apkt->skb){
+        asguard_error("BUG! skb is not set (second check)\n");
+        spminfo->errors++;
+        return NET_XMIT_DROP;
+    }
 
     /* The queue mapping is the same for each target <i>
      * Since we pinned the pacemaker to a single cpu,
      * we can use the smp_processor_id() directly.
      */
-    txq = &(ndev->_tx[tx_index]);
+    txq = &(ndev->_tx[cpuid]);
 
     local_irq_save(flags);
     local_bh_disable();
 
-    HARD_TX_LOCK(ndev, txq, smp_processor_id());
+    HARD_TX_LOCK(ndev, txq, cpuid);
 
     if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
 		asguard_error("Device Busy unlocking in async window.\n");
+		ret = NETDEV_TX_BUSY;
 		goto unlock;
 	}
 
-    if(!apkt->skb){
-        asguard_error("BUG! skb is not set (second check)\n");
-        goto unlock;
-    }
-
     skb_get(apkt->skb);
 
+	ret = netdev_start_xmit(apkt->skb, ndev, txq, 0);
 
-	netdev_start_xmit(apkt->skb, ndev, txq, 0);
+    spminfo->errors = 0;
 
 unlock:
 	HARD_TX_UNLOCK(ndev, txq);
 
 	local_bh_enable();
 	local_irq_restore(flags);
+out:
+	return ret;
 }
 
 int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo) 
 {
 	int i;
  	struct asguard_async_pkt *cur_apkt;
-
+    int ret;
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
 
@@ -597,17 +601,31 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(get_payload_ptr(cur_apkt)->proto_data);
             asguard_dbg("Node: %d - Emitting %d entries, start_idx=%d", i, num_entries, *prev_log_idx);
 #endif
-            // update payload
-            //asguard_update_skb_payload(spminfo->pm_targets[i].skb_logrep, cur_apkt->payload);
+            // emit pkt, and check if transmission failed
+            ret = emit_apkt(sdev->ndev, spminfo, cur_apkt);
 
-            emit_apkt(sdev->ndev, spminfo, cur_apkt);
+            switch(ret){
+                case NETDEV_TX_OK:
 
+                    /* packet is not needed anymore */
+                    if(cur_apkt->skb)
+                        kfree_skb(cur_apkt->skb);
+                    kfree(cur_apkt);
+
+                    break;
+                case NET_XMIT_DROP:
+                    break;
+                case NETDEV_TX_BUSY:
+
+                    /* requeue packet */
+                    push_front_async_pkt(spminfo->pm_targets[i].aapriv, cur_apkt);
+                    spminfo->pm_targets[i].pkt_tx_errors++;
+
+                    return -1;
+                default:
+                    asguard_error("Unhandled Return code in async pkt handler (%d)\n", ret);
+            }
             spminfo->pm_targets[i].pkt_tx_counter++;
-
-            if(cur_apkt->skb)
-                kfree_skb(cur_apkt->skb); // drop reference, and free skb if reference count hits 0
-
-            kfree(cur_apkt);
         }
 	}
 	return 0;

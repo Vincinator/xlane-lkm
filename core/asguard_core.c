@@ -771,6 +771,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->cur_waiting_interval = 2;
 	pmtarget->pkt_tx_counter = 0;
 	pmtarget->pkt_rx_counter = 0;
+    pmtarget->pkt_tx_errors = 0;
 
 	pmtarget->scheduled_log_replications = 0;
 	pmtarget->received_log_replications = 0;
