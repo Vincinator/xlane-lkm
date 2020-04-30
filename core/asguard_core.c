@@ -323,7 +323,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
 	struct pminfo *spminfo = &sdev->pminfo;
-	int remote_lid, rcluster_id, cluster_id_ad;
+	int remote_lid, rcluster_id, cluster_id_ad, i;
 	u16 received_proto_instances;
 	struct asguard_pkt_work_data *work;
 	//uint64_t ts2, ts3;
@@ -358,8 +358,22 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 	if (unlikely(remote_lid == -1)){
 		dst_ip = (u32 *) (((char *) payload) + headroom + 30);
 
+		/* Receiving messages from self? */
 		if(*dst_ip != sdev->multicast_ip) {
 		    asguard_error("Invalid PKT Source %x but %x\n", *dst_ip, sdev->multicast_ip);
+
+            print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
+                            payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
+
+            asguard_dbg("Cluster has %d Members: \n", spminfo->num_of_targets);
+
+            for (i = 0; i < spminfo->num_of_targets; i++) {
+                asguard_dbg("\tCluster Member Node %d has IP: %pI4 MAC: %pMF\n",
+                        spminfo->pm_targets[i].pkt_data.naddr.cluster_id,
+                        (void*) & spminfo->pm_targets[i].pkt_data.naddr.dst_ip,
+                        spminfo->pm_targets[i].pkt_data.naddr.dst_mac);
+            }
+
 		    return;
 		}
 
