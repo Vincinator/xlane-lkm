@@ -938,7 +938,9 @@ static void __exit asguard_connection_core_exit(void)
     asguard_wq_lock = 1;
 
     mb();
-    flush_workqueue(asguard_wq);
+
+    if(asguard_wq)
+        flush_workqueue(asguard_wq);
 
     /* MUST unregister asguard for drivers first */
 	unregister_asguard();
@@ -953,6 +955,7 @@ static void __exit asguard_connection_core_exit(void)
 		if(!score->sdevices[i]) {
 			continue;
 		}
+
 		asguard_stop(i);
 
         // clear all async queues
@@ -969,8 +972,8 @@ static void __exit asguard_connection_core_exit(void)
         kfree(score->sdevices[i]);
 
     }
-
-    destroy_workqueue(asguard_wq);
+    if(asguard_wq)
+        destroy_workqueue(asguard_wq);
 
 
 
@@ -979,6 +982,7 @@ static void __exit asguard_connection_core_exit(void)
 
     if(score)
         kfree(score);
+
 
 	remove_proc_entry("asguard", NULL);
 
