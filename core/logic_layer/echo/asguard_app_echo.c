@@ -54,6 +54,8 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
     epriv->echo_logger.instance_id =  ins->instance_id;
     epriv->echo_logger.name = "echo_log";
 
+    init_logger(&epriv->echo_logger, ins->instance_id, epriv->sdev->ifindex, "echo_logger", 0 );
+
 	return ins;
 error:
 	asguard_dbg("Error in %s", __func__);
