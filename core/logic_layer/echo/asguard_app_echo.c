@@ -36,8 +36,8 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 
 	ins->proto_type = ASGUARD_PROTO_ECHO;
 	ins->ctrl_ops = echo_ops;
-	ins->logger.name = "echo";
-	ins->logger.ifindex = sdev->ifindex;
+
+    init_logger(&ins->logger, ins->instance_id, epriv->sdev->ifindex, "echo_ins", 0 );
 
     // freed by clear_protocol_instances
     ins->proto_data = kmalloc(sizeof(struct asguard_echo_priv), GFP_KERNEL);
@@ -50,11 +50,7 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 	epriv->sdev = sdev;
 	epriv->ins = ins;
 
-    epriv->echo_logger.ifindex = sdev->ifindex;
-    epriv->echo_logger.instance_id =  ins->instance_id;
-    epriv->echo_logger.name = "echo_log";
-
-    init_logger(&epriv->echo_logger, ins->instance_id, epriv->sdev->ifindex, "echo_logger", 0 );
+    init_logger(&epriv->echo_logger, ins->instance_id, epriv->sdev->ifindex, "echo2", 0 );
 
 	return ins;
 error:
