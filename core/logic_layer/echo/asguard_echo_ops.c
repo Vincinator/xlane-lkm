@@ -8,10 +8,13 @@
 
 int echo_init(struct proto_instance *ins)
 {
-	asguard_dbg("echo init");
     struct asguard_echo_priv *priv =
             (struct asguard_echo_priv *)ins->proto_data;
+
     char name_buf[MAX_ASGUARD_PROC_NAME];
+
+    asguard_dbg("echo init");
+
 
     snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
              priv->sdev->ifindex, ins->instance_id);
