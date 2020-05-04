@@ -15,6 +15,72 @@
 
 
 
+
+// TODO: continue here ..
+void setup_msg_multi_pong(struct proto_instance *ins, struct pminfo *spminfo,
+                          s32 sender_cluster_id, s32 receiver_cluster_id,
+                          uint64_t ts1, uint64_t ts2,  uint64_t ts3,
+                          enum echo_opcode opcode)
+{
+
+    struct asguard_payload *pkt_payload;
+    char *pkt_payload_sub;
+
+    spin_lock(&spminfo->multicast_pkt_data_oos.lock);
+
+    pkt_payload =
+            spminfo->multicast_pkt_data_oos.payload;
+
+    pkt_payload_sub =
+            asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
+
+    if (!pkt_payload_sub) {
+        asguard_error("asgard packet full!\n");
+        goto unlock;
+    }
+
+    set_echo_opcode((unsigned char *)pkt_payload_sub, opcode,
+                    sender_cluster_id, receiver_cluster_id, ts1, ts2, ts3);
+
+    spminfo->multicast_pkt_data_oos_fire = 1;
+
+    unlock:
+    spin_unlock(&spminfo->multicast_pkt_data_oos.lock);
+}
+
+void setup_msg_uni_pong(struct proto_instance *ins, struct pminfo *spminfo,
+                        int remote_lid, s32 sender_cluster_id, s32 receiver_cluster_id,
+                        uint64_t ts1, uint64_t ts2,  uint64_t ts3,
+                        enum echo_opcode opcode)
+{
+    struct asguard_payload *pkt_payload;
+    char *pkt_payload_sub;
+
+    spin_lock(&spminfo->multicast_pkt_data_oos.lock);
+
+    pkt_payload =
+            spminfo->pm_targets[remote_lid].pkt_data.payload;
+
+    pkt_payload_sub =
+            asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_ECHO_PAYLOAD_SZ);
+
+    if (!pkt_payload_sub) {
+        asguard_error("asgard packet full!\n");
+        goto unlock;
+    }
+
+    set_echo_opcode((unsigned char *)pkt_payload_sub, opcode,
+                    sender_cluster_id, receiver_cluster_id, ts1, ts2, ts3);
+
+    spminfo->pm_targets[remote_lid].fire = 1;
+
+    unlock:
+    spin_unlock(&spminfo->multicast_pkt_data_oos.lock);
+
+}
+
+
+
 void set_echo_opcode(unsigned char *pkt, enum echo_opcode opco,
         s32 sender_id, s32 receiver_id,
         s64 ts1, s64 ts2, s64 ts3)

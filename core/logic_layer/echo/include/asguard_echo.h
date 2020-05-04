@@ -44,3 +44,15 @@ struct echo_payload {
 void set_echo_opcode(unsigned char *pkt, enum echo_opcode opco,
                      s32 sender_id, s32 receiver_id,
                      s64 ts1, s64 ts2, s64 ts3);
+
+
+void setup_msg_multi_pong(struct proto_instance *ins, struct pminfo *spminfo,
+                          s32 sender_cluster_id, s32 receiver_cluster_id,
+                          uint64_t ts1, uint64_t ts2,  uint64_t ts3,
+                          enum echo_opcode opcode);
+
+
+void setup_msg_uni_pong(struct proto_instance *ins, struct pminfo *spminfo,
+                        int remote_lid, s32 sender_cluster_id, s32 receiver_cluster_id,
+                        uint64_t ts1, uint64_t ts2,  uint64_t ts3,
+                        enum echo_opcode opcode);
