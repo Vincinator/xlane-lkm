@@ -24,10 +24,10 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 	struct asguard_payload *pkt_payload;
 	char *pkt_payload_sub;
 
-    spin_lock(&spminfo->pm_targets[target_id].pkt_data.pkt_lock);
+    spin_lock(&spminfo->pm_targets[target_id].pkt_data.lock);
 
     pkt_payload =
-		spminfo->pm_targets[target_id].pkt_data.pkt_payload;
+		spminfo->pm_targets[target_id].pkt_data.payload;
 
 	pkt_payload_sub =
 		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
@@ -40,7 +40,7 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 	set_le_opcode((unsigned char *)pkt_payload_sub, opcode, param1, param2, param3, param4);
 
 unlock:
-    spin_unlock(&spminfo->pm_targets[target_id].pkt_data.pkt_lock);
+    spin_unlock(&spminfo->pm_targets[target_id].pkt_data.lock);
 	return 0;
 }
 

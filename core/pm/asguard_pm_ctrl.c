@@ -442,7 +442,7 @@ static int asguard_payload_show(struct seq_file *m, void *v)
 				spminfo->pm_targets[i].pkt_data.naddr.dst_ip);
 		seq_printf(m, "%s:\n", current_ip);
 		seq_hex_dump(m, "	", DUMP_PREFIX_OFFSET, 32, 1,
-			     spminfo->pm_targets[i].pkt_data.pkt_payload,
+			     spminfo->pm_targets[i].pkt_data.payload,
 			     ASGUARD_PAYLOAD_BYTES, false);
 	}
 

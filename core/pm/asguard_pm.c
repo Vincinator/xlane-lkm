@@ -61,6 +61,16 @@ static inline bool check_async_door(struct pminfo *spminfo)
 	return 0;
 }
 
+static inline bool out_of_schedule_multi_tx(struct asguard_device *sdev)
+{
+
+    if(sdev->hold_fire)
+        return 0;
+
+    return sdev->pminfo.multicast_pkt_data_oos_fire != 0;
+}
+
+
 static inline bool out_of_schedule_tx(struct asguard_device *sdev)
 {
 	int i;
@@ -135,6 +145,31 @@ static inline int asguard_setup_hb_skbs(struct asguard_device *sdev)
     return 0;
 }
 
+int asg_xmit_skb(const struct net_device *ndev, const struct netdev_queue *txq, const struct sk_buff *skb) {
+    int ret = 0;
+
+    skb_get(skb);
+
+    ret = netdev_start_xmit(skb, ndev, txq, 0);
+
+    switch (ret) {
+        case NETDEV_TX_OK:
+            break;
+        case NET_XMIT_DROP:
+            asguard_error("NETDEV TX DROP\n");
+            break;
+        case NET_XMIT_CN:
+            asguard_error("NETDEV XMIT CN\n");
+            break;
+        default:
+            asguard_error("NETDEV UNKNOWN \n");
+            /* fall through */
+        case NETDEV_TX_BUSY:
+            asguard_error("NETDEV TX BUSY\n");
+            break;
+    }
+    return ret;
+}
 
 static inline void asguard_send_multicast_hb(struct net_device *ndev, struct pminfo *spminfo)
 {
@@ -142,7 +177,6 @@ static inline void asguard_send_multicast_hb(struct net_device *ndev, struct pmi
     struct sk_buff *skb;
     unsigned long flags;
     int tx_index = smp_processor_id();
-    int i, ret;
 
     if (unlikely(!netif_running(ndev) ||
                  !netif_carrier_ok(ndev))) {
@@ -170,33 +204,51 @@ static inline void asguard_send_multicast_hb(struct net_device *ndev, struct pmi
 
     skb = spminfo->multicast_skb;
 
-    skb_get(skb);
-    ret = netdev_start_xmit(skb, ndev, txq, 0);
+    asg_xmit_skb(ndev, txq, skb);
 
-    switch (ret) {
-        case NETDEV_TX_OK:
-            break;
-        case NET_XMIT_DROP:
-            asguard_error("NETDEV TX DROP\n");
-            break;
-        case NET_XMIT_CN:
-            asguard_error("NETDEV XMIT CN\n");
-            break;
-        default:
-            asguard_error("NETDEV UNKNOWN \n");
-            /* fall through */
-        case NETDEV_TX_BUSY:
-            asguard_error("NETDEV TX BUSY\n");
-            break;
-    }
-
-
-    unlock:
+unlock:
     HARD_TX_UNLOCK(ndev, txq);
 
     local_bh_enable();
     local_irq_restore(flags);
 
+}
+
+
+
+static inline void asguard_send_oos_multi_pkts(struct net_device *ndev, struct pminfo *spminfo)
+{
+    struct netdev_queue *txq;
+    struct sk_buff *skb;
+    unsigned long flags;
+    int tx_index = smp_processor_id();
+
+    if (unlikely(!netif_running(ndev) ||
+                 !netif_carrier_ok(ndev))) {
+        asguard_error("Network device offline!\n exiting pacemaker\n");
+        spminfo->errors++;
+        return;
+    }
+    spminfo->errors = 0;
+
+    local_irq_save(flags);
+    local_bh_disable();
+
+    txq = &ndev->_tx[tx_index];
+
+    HARD_TX_LOCK(ndev, txq, tx_index);
+
+    if (unlikely(netif_xmit_frozen_or_drv_stopped(txq)))
+        goto unlock;
+
+    skb = spminfo->multicast_pkt_data_oos.skb;
+
+    asg_xmit_skb(ndev, txq, skb);
+
+unlock:
+    HARD_TX_UNLOCK(ndev, txq);
+    local_bh_enable();
+    local_irq_restore(flags);
 }
 
 
@@ -207,7 +259,7 @@ static inline void asguard_send_oos_pkts(struct net_device *ndev, struct pminfo 
 	struct sk_buff *skb;
 	unsigned long flags;
 	int tx_index = smp_processor_id();
-	int i, ret;
+	int i;
 
 	if (unlikely(!netif_running(ndev) ||
 			!netif_carrier_ok(ndev))) {
@@ -246,45 +298,9 @@ static inline void asguard_send_oos_pkts(struct net_device *ndev, struct pminfo 
 
         skb = spminfo->pm_targets[i].skb_oos;
 
-        skb_get(skb);
+        asg_xmit_skb(ndev, txq, skb);
 
-		/* Utilise batch process mechanism for the heartbeats.
-		 * HB pkts will be transmitted to the NIC,
-		 * but the NIC will only start emitting the pkts
-		 * when the last HB has been successfully prepared and transmitted
-		 * to the NIC.
-		 *
-		 * Locking and preparation overhead is reduced, because preparation
-		 * work can be done once per batch process (vs. for each pkt).
-		 */
-
-		// if fire, then do not xmit in batch mode
-
-		ret = netdev_start_xmit(skb, ndev, txq, 0);
-
-		switch (ret) {
-		case NETDEV_TX_OK:
-			break;
-		case NET_XMIT_DROP:
-			asguard_error("NETDEV TX DROP\n");
-			break;
-		case NET_XMIT_CN:
-			asguard_error("NETDEV XMIT CN\n");
-			break;
-		default:
-			asguard_error("NETDEV UNKNOWN \n");
-			/* fall through */
-		case NETDEV_TX_BUSY:
-			asguard_error("NETDEV TX BUSY\n");
-			break;
-		}
-
-		// if(ret != NETDEV_TX_OK) {
-		// 	asguard_error("netdev_start_xmit returned %d - DEBUG THIS - exiting PM now. \n", ret);
-		// 	goto unlock;
-		// }
-
-		spminfo->pm_targets[i].pkt_tx_counter++;
+        spminfo->pm_targets[i].pkt_tx_counter++;
 
 	}
 
@@ -423,12 +439,8 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 {
 	struct asguard_payload *pkt_payload;
 	int i;
-	struct net_device *ndev = sdev->ndev;
-	// enum tsstate ts_state = sdev->ts_state;
 
-	/* Prepare heartbeat packets */
-    pkt_payload =
-         spminfo->multicast_pkt_data.hb_pkt_payload;
+    pkt_payload = spminfo->multicast_pkt_data.payload;
 
     if(!pkt_payload) {
         asguard_error("packet payload is NULL! \n");
@@ -439,10 +451,10 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
     asguard_update_skb_payload(spminfo->multicast_skb, pkt_payload);
 
 	/* Send heartbeats to all targets */
-    asguard_send_multicast_hb(ndev, spminfo);
+    asguard_send_multicast_hb(sdev->ndev, spminfo);
 
 	/* Leave Heartbeat multicast pkt in clean state */
-    pkt_payload = spminfo->multicast_pkt_data.hb_pkt_payload;
+    pkt_payload = spminfo->multicast_pkt_data.payload;
 
     if(!pkt_payload){
         asguard_error("pkt payload become NULL! \n");
@@ -465,6 +477,29 @@ static inline int _emit_pkts_scheduled(struct asguard_device *sdev,
 	return 0;
 }
 
+static inline int _emit_pkts_non_scheduled_multi(struct asguard_device *sdev,
+                                           struct pminfo *spminfo)
+{
+    struct asguard_payload *pkt_payload = NULL;
+
+    spin_lock(&spminfo->multicast_pkt_data_oos.lock);
+
+    pkt_payload = spminfo->multicast_pkt_data_oos.payload;
+
+    asguard_update_skb_payload(spminfo->multicast_pkt_data_oos.skb, pkt_payload);
+
+    asguard_send_oos_multi_pkts(sdev->ndev, spminfo);
+
+    memset(pkt_payload, 0, sizeof(struct asguard_payload ));
+
+    spminfo->multicast_pkt_data_oos_fire = 0;
+
+    spin_unlock(&spminfo->multicast_pkt_data_oos.lock);
+
+    return 0;
+}
+
+
 static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		struct pminfo *spminfo)
 {
@@ -473,20 +508,18 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 	struct net_device *ndev = sdev->ndev;
 	int target_fire[MAX_NODE_ID];
 
-	/* Storing fire and locking ALL pkt locks */
     for (i = 0; i < spminfo->num_of_targets; i++) {
 		target_fire[i] = spminfo->pm_targets[i].fire;
-        spin_lock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
+        spin_lock(&spminfo->pm_targets[i].pkt_data.lock);
     }
 
-	/* Prepare  packets */
 	for (i = 0; i < spminfo->num_of_targets; i++) {
 
 		if(!target_fire[i])
 			continue;
 
 		pkt_payload =
-		     spminfo->pm_targets[i].pkt_data.pkt_payload;
+		     spminfo->pm_targets[i].pkt_data.payload;
 
 		asguard_update_skb_payload(spminfo->pm_targets[i].skb_oos,
 					 pkt_payload);
@@ -494,18 +527,14 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 
     asguard_send_oos_pkts(ndev, spminfo, target_fire);
 
-	// /* Leave pkts in clean state */
+	 /* Leave pkts in clean state */
 	 for (i = 0; i < spminfo->num_of_targets; i++) {
 
 		if(!target_fire[i])
 			continue;
 
          pkt_payload =
-                 spminfo->pm_targets[i].pkt_data.pkt_payload;
-
-		/* Protocols have been emitted, do not sent them again ..
-		 * .. and free the reservations for new protocols */
-		invalidate_proto_data(sdev, pkt_payload);
+                 spminfo->pm_targets[i].pkt_data.payload;
 
 		memset(pkt_payload, 0, sizeof(struct asguard_payload ));
 
@@ -513,9 +542,9 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		spminfo->pm_targets[i].fire = 0;
 
 	}
-    /* Unlocking ALL pkt locks */
+
     for (i = 0; i < spminfo->num_of_targets; i++) {
-        spin_unlock(&spminfo->pm_targets[i].pkt_data.pkt_lock);
+        spin_unlock(&spminfo->pm_targets[i].pkt_data.lock);
     }
 
 	return 0;
@@ -541,12 +570,7 @@ int emit_apkt(struct net_device *ndev, struct pminfo *spminfo, struct asguard_as
         return NET_XMIT_DROP;
     }
 
-    /* The queue mapping is the same for each target <i>
-     * Since we pinned the pacemaker to a single cpu,
-     * we can use the smp_processor_id() directly.
-     */
     txq = &(ndev->_tx[cpuid]);
-
     local_irq_save(flags);
     local_bh_disable();
 
@@ -718,6 +742,7 @@ static int asguard_pm_loop(void *data)
 	int scheduled_hb = 0;
 	int out_of_sched_hb = 0;
 	int async_pkts = 0;
+	int out_of_sched_multi = 0;
 
 	spminfo->errors = 0;
 
@@ -762,6 +787,11 @@ static int asguard_pm_loop(void *data)
 		if(out_of_sched_hb)
 			goto emit;
 
+        out_of_sched_multi = out_of_schedule_multi_tx(sdev);
+
+        if(out_of_sched_multi)
+            goto emit;
+
 		/* e.g. Log Replication Messages */
 		async_pkts = check_async_door(spminfo);
 
@@ -779,7 +809,10 @@ emit:
 			err = _emit_pkts_non_scheduled(sdev, spminfo);
         } else if (async_pkts) {
 			err = _emit_async_pkts(sdev, spminfo);
-		}
+		} else if (out_of_sched_multi) {
+            err = _emit_pkts_non_scheduled_multi(sdev, spminfo);
+        }
+
 
 		if (err) {
 			asguard_pm_stop(spminfo);

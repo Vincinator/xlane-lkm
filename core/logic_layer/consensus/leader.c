@@ -35,7 +35,7 @@ void initialize_indices(struct consensus_priv *priv)
     }
 
     multicast_pkt_payload =
-            priv->sdev->pminfo.multicast_pkt_data.hb_pkt_payload;
+            priv->sdev->pminfo.multicast_pkt_data.payload;
 
     update_alive_msg(priv->sdev, multicast_pkt_payload);
 

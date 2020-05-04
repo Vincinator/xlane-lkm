@@ -16,13 +16,7 @@ enum echo_logger_events {
     LOG_ECHO_MULTI_LATENCY_DELTA = 4,
 };
 
-enum echo_opcode {
-	ASGUARD_PING_REQ_UNI = 0,
-	ASGUARD_PONG_UNI = 1,
-    ASGUARD_PING_REQ_MULTI = 2,
-    ASGUARD_PONG_MULTI = 3,
 
-};
 
 /* MUST not exceed ASGUARD_PAYLOAD_BYTES in size! */
 struct echo_payload {
@@ -41,4 +35,6 @@ struct echo_payload {
 } while (0)
 
 
-int setup_echo_msg(struct pminfo *spminfo, u32 target_id, uint64_t ts, enum echo_opcode opcode);
+void set_echo_opcode(unsigned char *pkt, enum echo_opcode opco,
+                     s32 sender_id, s32 receiver_id,
+                     s64 ts1, s64 ts2, s64 ts3);

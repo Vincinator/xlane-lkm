@@ -468,8 +468,8 @@ void asguard_reset_remote_host_counter(int asguard_id)
 
 	for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
 		pmtarget = &sdev->pminfo.pm_targets[i];
-		//kfree(pmtarget->pkt_data.hb_pkt_payload);
-		kfree(pmtarget->pkt_data.pkt_payload);
+		//kfree(pmtarget->pkt_data.payload);
+		kfree(pmtarget->pkt_data.payload);
 	}
 
 	sdev->pminfo.num_of_targets = 0;
@@ -546,10 +546,14 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 
     }
 
-
-    score->sdevices[asguard_id]->pminfo.multicast_pkt_data.hb_pkt_payload =
+    score->sdevices[asguard_id]->pminfo.multicast_pkt_data.payload =
             kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
+    score->sdevices[asguard_id]->pminfo.multicast_pkt_data_oos.payload =
+            kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
+
+
+    spin_lock_init(&score->sdevices[asguard_id]->pminfo.multicast_pkt_data_oos.lock);
 
     score->sdevices[asguard_id]->asguard_leader_wq =
 		 alloc_workqueue("asguard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
@@ -788,10 +792,10 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget->scheduled_log_replications = 0;
 	pmtarget->received_log_replications = 0;
 
-	pmtarget->pkt_data.pkt_payload =
+	pmtarget->pkt_data.payload =
 		kzalloc(sizeof(struct asguard_payload), GFP_KERNEL);
 
-    spin_lock_init(&pmtarget->pkt_data.pkt_lock);
+    spin_lock_init(&pmtarget->pkt_data.lock);
 
 	memcpy(&pmtarget->pkt_data.naddr.dst_mac, mac, sizeof(unsigned char) * 6);
 

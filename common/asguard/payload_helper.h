@@ -95,21 +95,25 @@
 
 
 
-// protoid(u16) + offset(u16)
+/*  Payload Offset BYte Helper for Echo Protocol  */
+
 #define GET_ECHO_PROTO_OPCODE_VAL(p) (*(u16 *)((char *) p + 2 + 2))
 #define GET_ECHO_PROTO_OPCODE_PTR(p) (u16 *)((char *) p + 2 + 2)
 
-// protoid(u16) + offset(u16) + opcode(u16)
-#define GET_ECHO_PROTO_PARAM1_VAL(p) (*(u32 *)((char *) p + 2 + 2 + 2))
-#define GET_ECHO_PROTO_PARAM1_PTR(p) (u32 *)((char *) p + 2 + 2 + 2)
+#define GET_ECHO_PROTO_SENDER_ID_VAL(p) (*(u32 *)((char *) p + 2 + 2 + 2))
+#define GET_ECHO_PROTO_SENDER_ID_PTR(p) (u32 *)((char *) p + 2 + 2 + 2)
 
-// protoid(u16) + offset(u16) + opcode(u16) + param1(u32)
-#define GET_ECHO_PROTO_PARAM2_VAL(p) (*(s32 *)((char *) p + 2 + 2 + 2 + 4))
-#define GET_ECHO_PROTO_PARAM2_PTR(p) (s32 *)((char *) p + 2 + 2 + 2 + 4)
+#define GET_ECHO_PROTO_RECEIVER_ID_VAL(p) (*(u32 *)((char *) p + 2 + 2 + 2 + 4))
+#define GET_ECHO_PROTO_RECEIVER_ID_PTR(p) (u32 *)((char *) p + 2 + 2 + 2 + 4)
 
-// protoid(u16) + offset(u16) + opcode(u16) + param1(u32) + param2(u32)
-#define GET_ECHO_PROTO_PARAM3_VAL(p) (*(s64 *)((char *) p + 2 + 2 + 2 + 4 + 4))
-#define GET_ECHO_PROTO_PARAM3_PTR(p) (s64 *)((char *) p + 2 + 2 + 2 + 4 + 4)
+#define GET_ECHO_PROTO_TS1_VAL(p) (*(s64 *)((char *) p + 2 + 2 + 2 + 4 + 4))
+#define GET_ECHO_PROTO_TS1_PTR(p) (s64 *)((char *) p + 2 + 2 + 2 + 4 + 4)
+
+#define GET_ECHO_PROTO_TS2_VAL(p) (*(s64 *)((char *) p + 2 + 2 + 2 + 4 + 4 + 8))
+#define GET_ECHO_PROTO_TS2_PTR(p) (s64 *)((char *) p + 2 + 2 + 2 + 4 + 4 + 8)
+
+#define GET_ECHO_PROTO_TS3_VAL(p) (*(s64 *)((char *) p + 2 + 2 + 2 + 4 + 4 + 8 + 8))
+#define GET_ECHO_PROTO_TS3_PTR(p) (s64 *)((char *) p + 2 + 2 + 2 + 4 + 4 + 8 + 8)
 
 
 
@@ -128,7 +132,8 @@ typedef int(*handle_payload_fun)(struct asguard_device *,
 
 // TODO: correct payload sizes!!
 #define ASGUARD_PROTO_FD_PAYLOAD_SZ 2
-#define ASGUARD_PROTO_ECHO_PAYLOAD_SZ 2
+// 34 Bytes for opcode, id, id,ts,ts,ts + 2 instance id, 2 proto offset
+#define ASGUARD_PROTO_ECHO_PAYLOAD_SZ 38
 
 
 int get_proto_offset(char *cur);

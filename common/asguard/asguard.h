@@ -103,6 +103,14 @@ enum le_opcode {
 	ADVERTISE = 7,
 };
 
+enum echo_opcode {
+    ASGUARD_PING_REQ_UNI = 0,
+    ASGUARD_PONG_UNI = 1,
+    ASGUARD_PING_REQ_MULTI = 2,
+    ASGUARD_PONG_MULTI = 3,
+
+};
+
 
 enum hb_interval {
 	CYC_1MS = 1,
@@ -266,13 +274,14 @@ struct asguard_payload {
 
 
 struct asguard_packet_data {
+
 	struct node_addr naddr;
 
-	struct asguard_payload *pkt_payload;
+	struct asguard_payload *payload;
 
-	spinlock_t pkt_lock;
+	spinlock_t lock;
 
-	struct asguard_payload *hb_pkt_payload;
+    struct sk_buff *skb;
 
 };
 
@@ -359,7 +368,13 @@ struct pminfo {
 
     int errors;
     struct sk_buff *multicast_skb;
+
+    // For Heartbeats
     struct asguard_packet_data multicast_pkt_data;
+
+    // For out of schedule multicast
+    struct asguard_packet_data multicast_pkt_data_oos;
+    int multicast_pkt_data_oos_fire;
 };
 
 struct proto_instance;
