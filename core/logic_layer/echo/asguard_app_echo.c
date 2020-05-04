@@ -50,8 +50,9 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 	epriv->sdev = sdev;
 	epriv->ins = ins;
 
-    strncpy(epriv->echo_logger.name, "echo", MAX_LOGGER_NAME);
     epriv->echo_logger.ifindex = sdev->ifindex;
+    epriv->echo_logger.instance_id =  ins->instance_id;
+    epriv->echo_logger.name = "echo_log";
 
 	return ins;
 error:
