@@ -25,7 +25,7 @@ int echo_init(struct proto_instance *ins)
 
     // requires "proto_instances/%d"
     init_logger(&ins->logger, ins->instance_id, priv->sdev->ifindex, "echo_log", 0);
-
+    init_logger(&priv->echo_logger, ins->instance_id, priv->sdev->ifindex, "echo_log2", 0 );
 	return 0;
 }
 

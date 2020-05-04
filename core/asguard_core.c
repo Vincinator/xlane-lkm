@@ -683,7 +683,6 @@ int register_protocol_instance(struct asguard_device *sdev, int instance_id, int
 
 		goto error;
 	}
-    sdev->protos[idx]->instance_id = instance_id;
 
 	sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
 
@@ -693,8 +692,9 @@ int register_protocol_instance(struct asguard_device *sdev, int instance_id, int
 		goto error;
 	}
 
-    sdev->instance_id_mapping[instance_id] = idx;
+	sdev->instance_id_mapping[instance_id] = idx;
 
+	sdev->protos[idx]->instance_id = instance_id;
 
 	sdev->num_of_proto_instances++;
 
