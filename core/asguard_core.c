@@ -343,8 +343,6 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
 
 	//ts2 = RDTSC_ASGUARD;
 
-
-
 	if (unlikely(!sdev)) {
 		asguard_error("sdev is NULL\n");
 		return;

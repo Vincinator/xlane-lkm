@@ -94,6 +94,25 @@
 #define GET_PROTO_OFFSET_PTR(p) (u16 *)(((char *)p) + 2)
 
 
+
+// protoid(u16) + offset(u16)
+#define GET_ECHO_PROTO_OPCODE_VAL(p) (*(u16 *)((char *) p + 2 + 2))
+#define GET_ECHO_PROTO_OPCODE_PTR(p) (u16 *)((char *) p + 2 + 2)
+
+// protoid(u16) + offset(u16) + opcode(u16)
+#define GET_ECHO_PROTO_PARAM1_VAL(p) (*(u32 *)((char *) p + 2 + 2 + 2))
+#define GET_ECHO_PROTO_PARAM1_PTR(p) (u32 *)((char *) p + 2 + 2 + 2)
+
+// protoid(u16) + offset(u16) + opcode(u16) + param1(u32)
+#define GET_ECHO_PROTO_PARAM2_VAL(p) (*(s32 *)((char *) p + 2 + 2 + 2 + 4))
+#define GET_ECHO_PROTO_PARAM2_PTR(p) (s32 *)((char *) p + 2 + 2 + 2 + 4)
+
+// protoid(u16) + offset(u16) + opcode(u16) + param1(u32) + param2(u32)
+#define GET_ECHO_PROTO_PARAM3_VAL(p) (*(s64 *)((char *) p + 2 + 2 + 2 + 4 + 4))
+#define GET_ECHO_PROTO_PARAM3_PTR(p) (s64 *)((char *) p + 2 + 2 + 2 + 4 + 4)
+
+
+
 typedef int(*handle_payload_fun)(struct asguard_device *,
 								 unsigned char *remote_mac,
 								 void *payload);

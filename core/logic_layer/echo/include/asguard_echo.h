@@ -9,14 +9,19 @@
 
 
 enum echo_logger_events {
-	LOG_ECHO_RX_PING = 0,
-	LOG_ECHO_RX_PONG = 1,
-	LOG_ECHO_PINGPONG_LATENCY = 2, // timestamp is delta of rx_pong and tx_ping
+	LOG_ECHO_RX_PING_UNI = 0,
+	LOG_ECHO_RX_PONG_UNI = 1,
+	LOG_ECHO_UNI_LATENCY_DELTA = 2, // timestamp is delta of rx_pong and tx_ping
+    LOG_ECHO_RX_PING_MULTI = 3,
+    LOG_ECHO_MULTI_LATENCY_DELTA = 4,
 };
 
 enum echo_opcode {
-	ASGUARD_PING = 0,
-	ASGUARD_PONG = 1,
+	ASGUARD_PING_REQ_UNI = 0,
+	ASGUARD_PONG_UNI = 1,
+    ASGUARD_PING_REQ_MULTI = 2,
+    ASGUARD_PONG_MULTI = 3,
+
 };
 
 /* MUST not exceed ASGUARD_PAYLOAD_BYTES in size! */
