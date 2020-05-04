@@ -17,9 +17,9 @@
 
 
 // TODO: continue here ..
-void setup_msg_multi_pong(struct proto_instance *ins, struct pminfo *spminfo,
+void setup_echo_msg_multi(struct proto_instance *ins, struct pminfo *spminfo,
                           s32 sender_cluster_id, s32 receiver_cluster_id,
-                          uint64_t ts1, uint64_t ts2,  uint64_t ts3,
+                          uint64_t ts1, uint64_t ts2, uint64_t ts3,
                           enum echo_opcode opcode)
 {
 
@@ -48,9 +48,9 @@ void setup_msg_multi_pong(struct proto_instance *ins, struct pminfo *spminfo,
     spin_unlock(&spminfo->multicast_pkt_data_oos.lock);
 }
 
-void setup_msg_uni_pong(struct proto_instance *ins, struct pminfo *spminfo,
+void setup_echo_msg_uni(struct proto_instance *ins, struct pminfo *spminfo,
                         int remote_lid, s32 sender_cluster_id, s32 receiver_cluster_id,
-                        uint64_t ts1, uint64_t ts2,  uint64_t ts3,
+                        uint64_t ts1, uint64_t ts2, uint64_t ts3,
                         enum echo_opcode opcode)
 {
     struct asguard_payload *pkt_payload;

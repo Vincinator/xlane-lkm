@@ -100,9 +100,9 @@ int echo_post_payload(struct proto_instance *ins, int remote_lid, int rcluster_i
 
         write_log(&ins->logger, LOG_ECHO_RX_PING_MULTI, RDTSC_ASGUARD);
 
-        setup_msg_multi_pong(ins, &epriv->sdev->pminfo,
-                         sdev->pminfo.cluster_id, param1_sender_cluster_id,
-                         ts1, ts2, ts3, ASGUARD_PONG_MULTI);
+            setup_echo_msg_multi(ins, &epriv->sdev->pminfo,
+                                 sdev->pminfo.cluster_id, param1_sender_cluster_id,
+                                 ts1, ts2, ts3, ASGUARD_PONG_MULTI);
 
         break;
     case ASGUARD_PING_REQ_UNI:
@@ -111,9 +111,9 @@ int echo_post_payload(struct proto_instance *ins, int remote_lid, int rcluster_i
 
         write_log(&ins->logger, LOG_ECHO_RX_PING_UNI, RDTSC_ASGUARD);
 
-        setup_msg_uni_pong(ins, &epriv->sdev->pminfo, remote_lid,
-                           sdev->pminfo.cluster_id, param1_sender_cluster_id,
-                           ts1, ts2, ts3, ASGUARD_PONG_UNI);
+            setup_echo_msg_uni(ins, &epriv->sdev->pminfo, remote_lid,
+                               sdev->pminfo.cluster_id, param1_sender_cluster_id,
+                               ts1, ts2, ts3, ASGUARD_PONG_UNI);
         break;
     case ASGUARD_PONG_MULTI:
         ts4 = RDTSC_ASGUARD;

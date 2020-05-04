@@ -10,8 +10,10 @@ struct asguard_echo_priv {
     struct asguard_logger echo_logger;
     struct asguard_device *sdev;
     struct proto_instance *ins;
-    struct proc_dir_entry *echo_ping_unicast_entry;
-    bool echo_ping_multicast_entry;
+    struct proc_dir_entry *echo_pupu_entry;
+    bool echo_pmpu_entry;
+    struct proc_dir_entry *echo_pmpm_entry;
+    struct proc_dir_entry *echo_pupm_entry;
 };
 
 enum echo_logger_events {
@@ -46,15 +48,15 @@ void set_echo_opcode(unsigned char *pkt, enum echo_opcode opco,
                      s64 ts1, s64 ts2, s64 ts3);
 
 
-void setup_msg_multi_pong(struct proto_instance *ins, struct pminfo *spminfo,
+void setup_echo_msg_multi(struct proto_instance *ins, struct pminfo *spminfo,
                           s32 sender_cluster_id, s32 receiver_cluster_id,
-                          uint64_t ts1, uint64_t ts2,  uint64_t ts3,
+                          uint64_t ts1, uint64_t ts2, uint64_t ts3,
                           enum echo_opcode opcode);
 
 
-void setup_msg_uni_pong(struct proto_instance *ins, struct pminfo *spminfo,
+void setup_echo_msg_uni(struct proto_instance *ins, struct pminfo *spminfo,
                         int remote_lid, s32 sender_cluster_id, s32 receiver_cluster_id,
-                        uint64_t ts1, uint64_t ts2,  uint64_t ts3,
+                        uint64_t ts1, uint64_t ts2, uint64_t ts3,
                         enum echo_opcode opcode);
 
 
