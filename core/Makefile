@@ -41,7 +41,7 @@ asguard-objs += logic_layer/consensus/asguard_consensus_ops.o logic_layer/consen
 asguard-objs += logic_layer/consensus/asguard_consensus_request_gen.o logic_layer/consensus/log.o logic_layer/consensus/asguard_consensus_eval_ctrl.o
 
 # echo protocol
-asguard-objs += logic_layer/echo/asguard_app_echo.o  logic_layer/echo/asguard_echo_ops.o  logic_layer/echo/asguard_echo.o
+asguard-objs += logic_layer/echo/asguard_app_echo.o  logic_layer/echo/asguard_echo_ops.o logic_layer/echo/asguard_echo.o logic_layer/echo/asguard_ping_ctrl.o
 
 
 endif
