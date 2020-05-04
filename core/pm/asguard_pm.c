@@ -785,7 +785,7 @@ static int asguard_pm_loop(void *data)
             continue;
         }
 
-		/* e.g. Leader Election Messages  */
+		/* including Leader Election Messages  */
 		out_of_sched_hb = out_of_schedule_tx(sdev);
 
 		if(out_of_sched_hb)
@@ -796,7 +796,7 @@ static int asguard_pm_loop(void *data)
         if(out_of_sched_multi)
             goto emit;
 
-		/* e.g. Log Replication Messages */
+		/* including Log Replication Messages */
 		async_pkts = check_async_door(spminfo);
 
 		if(async_pkts)
@@ -816,7 +816,6 @@ emit:
 		} else if (out_of_sched_multi) {
             err = _emit_pkts_non_scheduled_multi(sdev, spminfo);
         }
-
 
 		if (err) {
 			asguard_pm_stop(spminfo);

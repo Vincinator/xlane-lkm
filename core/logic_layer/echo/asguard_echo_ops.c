@@ -88,7 +88,7 @@ int echo_post_payload(struct proto_instance *ins, int remote_lid, int rcluster_i
 
     // Note ts2 and ts3 are not used in the current implementation
     s64 ts1 = 0, ts2 = 0, ts3 = 0, ts4 = 0;
-
+    s64 delta;
     opcode = GET_ECHO_PROTO_OPCODE_VAL(payload);
 
 	switch (opcode) {
@@ -98,7 +98,7 @@ int echo_post_payload(struct proto_instance *ins, int remote_lid, int rcluster_i
         param1_sender_cluster_id = GET_ECHO_PROTO_SENDER_ID_VAL(payload);
         ts1 = GET_ECHO_PROTO_TS1_VAL(payload);
 
-        write_log(&ins->logger, LOG_ECHO_RX_PING_MULTI, RDTSC_ASGUARD);
+        write_log(&epriv->echo_logger, LOG_ECHO_RX_PING_MULTI, RDTSC_ASGUARD);
 
             setup_echo_msg_multi(ins, &epriv->sdev->pminfo,
                                  sdev->pminfo.cluster_id, param1_sender_cluster_id,
@@ -109,22 +109,25 @@ int echo_post_payload(struct proto_instance *ins, int remote_lid, int rcluster_i
         param1_sender_cluster_id = GET_ECHO_PROTO_SENDER_ID_VAL(payload);
         ts1 = GET_ECHO_PROTO_TS1_VAL(payload);
 
-        write_log(&ins->logger, LOG_ECHO_RX_PING_UNI, RDTSC_ASGUARD);
+        write_log(&epriv->echo_logger, LOG_ECHO_RX_PING_UNI, RDTSC_ASGUARD);
 
-            setup_echo_msg_uni(ins, &epriv->sdev->pminfo, remote_lid,
-                               sdev->pminfo.cluster_id, param1_sender_cluster_id,
-                               ts1, ts2, ts3, ASGUARD_PONG_UNI);
+        setup_echo_msg_uni(ins, &epriv->sdev->pminfo, remote_lid,
+                           sdev->pminfo.cluster_id, param1_sender_cluster_id,
+                           ts1, ts2, ts3, ASGUARD_PONG_UNI);
         break;
     case ASGUARD_PONG_MULTI:
         ts4 = RDTSC_ASGUARD;
         param2_receiver_cluster_id = GET_ECHO_PROTO_RECEIVER_ID_VAL(payload);
 
         ts1 = GET_ECHO_PROTO_TS1_VAL(payload);
+        delta = ts1 - ts4;
 
         if(param2_receiver_cluster_id == sdev->pminfo.cluster_id) {
-            write_log(&ins->logger, LOG_ECHO_MULTI_LATENCY_DELTA, ts1 - ts4);
-            asguard_dbg("Received Multicast Pong. ts1=%lld ts4=%lld",ts1, ts4);
-        }else {
+
+            write_log(&epriv->echo_logger, LOG_ECHO_MULTI_LATENCY_DELTA, delta);
+
+            asguard_dbg("Received Multicast Pong. \n\tts1=%lld \n\tts4=%lld \n\tdelta: %lld\n",ts1, ts4, delta);
+        } else {
             asguard_error("Received Multicast Pong for cluster id=%d, but my cluster id is %d\n",
                           param2_receiver_cluster_id, sdev->pminfo.cluster_id);
         }
@@ -138,7 +141,7 @@ int echo_post_payload(struct proto_instance *ins, int remote_lid, int rcluster_i
         ts1 = GET_ECHO_PROTO_TS1_VAL(payload);
 
         if(param2_receiver_cluster_id == sdev->pminfo.cluster_id) {
-            write_log(&ins->logger, LOG_ECHO_UNI_LATENCY_DELTA, ts1 - ts4);
+            write_log(&epriv->echo_logger, LOG_ECHO_UNI_LATENCY_DELTA, ts1 - ts4);
             asguard_dbg("Received unicast pong. ts1=%lld ts4=%lld",ts1, ts4);
         } else {
             asguard_error("Received Unicast for cluster id=%d, but my cluster id is %d\n",
