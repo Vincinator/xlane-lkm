@@ -59,6 +59,7 @@ int echo_clean(struct proto_instance *ins)
     remove_ping_ctrl_interfaces(priv);
 
     clear_logger(&ins->logger);
+    clear_logger(&priv->echo_logger);
 
     snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
              priv->sdev->ifindex, ins->instance_id);
