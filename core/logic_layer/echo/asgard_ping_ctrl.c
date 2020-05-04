@@ -165,7 +165,7 @@ void init_ping_ctrl_interfaces(struct asguard_echo_priv *priv)
 
 
 }
-EXPORT_SYMBOL(init_eval_ctrl_interfaces);
+EXPORT_SYMBOL(init_ping_ctrl_interfaces);
 
 void remove_ping_ctrl_interfaces(struct asguard_echo_priv *priv)
 {
@@ -190,5 +190,5 @@ void remove_ping_ctrl_interfaces(struct asguard_echo_priv *priv)
     }
 
 }
-EXPORT_SYMBOL(remove_eval_ctrl_interfaces);
+EXPORT_SYMBOL(remove_ping_ctrl_interfaces);
 
