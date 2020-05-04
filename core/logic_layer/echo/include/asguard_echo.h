@@ -56,3 +56,8 @@ void setup_msg_uni_pong(struct proto_instance *ins, struct pminfo *spminfo,
                         int remote_lid, s32 sender_cluster_id, s32 receiver_cluster_id,
                         uint64_t ts1, uint64_t ts2,  uint64_t ts3,
                         enum echo_opcode opcode);
+
+
+void init_ping_ctrl_interfaces(struct asguard_echo_priv *priv);
+
+void remove_ping_ctrl_interfaces(struct asguard_echo_priv *priv);

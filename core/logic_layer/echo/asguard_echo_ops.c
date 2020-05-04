@@ -3,12 +3,25 @@
 
 #include "include/asguard_echo.h"
 #include <asguard/payload_helper.h>
+#include <linux/proc_fs.h>
 
 
 int echo_init(struct proto_instance *ins)
 {
 	asguard_dbg("echo init");
-    //init_logger(&ins->logger);
+    struct asguard_echo_priv *priv =
+            (struct asguard_echo_priv *)ins->proto_data;
+    char name_buf[MAX_ASGUARD_PROC_NAME];
+
+    snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
+             priv->sdev->ifindex, ins->instance_id);
+
+    proc_mkdir(name_buf, NULL);
+
+    init_ping_ctrl_interfaces(priv);
+
+    // requires "proto_instances/%d"
+    init_logger(&ins->logger, ins->instance_id, priv->sdev->ifindex, "echo_log", 0);
 
 	return 0;
 }
@@ -34,8 +47,20 @@ int echo_us_update(struct proto_instance *ins)
 int echo_clean(struct proto_instance *ins)
 {
 
-	asguard_dbg("echo clean");
-	//clear_logger(epriv);
+    struct asguard_echo_priv *priv =
+            (struct asguard_echo_priv *)ins->proto_data;
+    char name_buf[MAX_ASGUARD_PROC_NAME];
+
+    asguard_dbg("echo clean");
+
+    remove_ping_ctrl_interfaces(priv);
+
+    clear_logger(&ins->logger);
+
+    snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
+             priv->sdev->ifindex, ins->instance_id);
+
+    remove_proc_entry(name_buf, NULL);
 
 	return 0;
 }
