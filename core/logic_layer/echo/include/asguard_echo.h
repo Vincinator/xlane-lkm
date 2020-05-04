@@ -6,7 +6,13 @@
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 #endif
 
-
+struct asguard_echo_priv {
+    struct asguard_logger echo_logger;
+    struct asguard_device *sdev;
+    struct proto_instance *ins;
+    struct proc_dir_entry *echo_ping_unicast_entry;
+    bool echo_ping_multicast_entry;
+};
 
 enum echo_logger_events {
 	LOG_ECHO_RX_PING_UNI = 0,

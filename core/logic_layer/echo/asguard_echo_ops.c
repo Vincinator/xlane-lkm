@@ -2,9 +2,7 @@
 #include <asguard/asguard.h>
 
 #include "include/asguard_echo.h"
-#include "include/asguard_echo_ops.h"
-#include "payload_helper.h"
-
+#include <asguard/payload_helper.h>
 
 
 int echo_init(struct proto_instance *ins)

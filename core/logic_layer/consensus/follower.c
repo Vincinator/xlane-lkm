@@ -20,7 +20,6 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 		(struct consensus_priv *)ins->proto_data;
 	struct asguard_payload *pkt_payload;
 	char *pkt_payload_sub;
-	int hb_passive_ix;
 
 #if 0
 	if(priv->sdev->verbose)
@@ -205,9 +204,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 {
 	u32 *prev_log_term, num_entries;
 	s32 *prev_log_idx;
-    s32 *leader_commit_idx;
 
-    s32 *prev_log_commit_idx;
 	u16 pkt_size;
 	int unstable = 0;
 	int start_idx;
@@ -439,7 +436,7 @@ void validate_log(struct state_machine_cmd_log *log)
 {
     int i, err = 0;
 
-    asguard_dbg("Log Validation Results: \n", err);
+    asguard_dbg("Log Validation Results: \n");
 
     for(i = 0; i < log->max_entries; i++) {
 

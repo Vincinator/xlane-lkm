@@ -121,10 +121,6 @@ void update_stable_idx(struct consensus_priv *priv)
 	s32 i;
 	int cur_buf_idx;
 
-    /* Stable idx is already good */
-    if(priv->sm_log.stable_idx == priv->sm_log.last_idx)
-        return;
-
 	/* Fix stable index after stable append
 	 *
 	 * We must use the consensus indices for this loop
@@ -236,7 +232,7 @@ int append_command(struct consensus_priv *priv, struct data_chunk *dataChunk, s3
 {
 	int err;
 	struct sm_log_entry *entry;
-    int buf_logidx, buf_appliedidx,buf_commitidx;
+    int buf_logidx;
 
 	if (!priv) {
 		err = -EINVAL;

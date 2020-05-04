@@ -555,6 +555,33 @@ core/logic_layer/consensus/state_transitions.c.s:
 	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/state_transitions.c.s
 .PHONY : core/logic_layer/consensus/state_transitions.c.s
 
+core/logic_layer/echo/asgard_ping_ctrl.o: core/logic_layer/echo/asgard_ping_ctrl.c.o
+
+.PHONY : core/logic_layer/echo/asgard_ping_ctrl.o
+
+# target to build an object file
+core/logic_layer/echo/asgard_ping_ctrl.c.o:
+	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asgard_ping_ctrl.c.o
+.PHONY : core/logic_layer/echo/asgard_ping_ctrl.c.o
+
+core/logic_layer/echo/asgard_ping_ctrl.i: core/logic_layer/echo/asgard_ping_ctrl.c.i
+
+.PHONY : core/logic_layer/echo/asgard_ping_ctrl.i
+
+# target to preprocess a source file
+core/logic_layer/echo/asgard_ping_ctrl.c.i:
+	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asgard_ping_ctrl.c.i
+.PHONY : core/logic_layer/echo/asgard_ping_ctrl.c.i
+
+core/logic_layer/echo/asgard_ping_ctrl.s: core/logic_layer/echo/asgard_ping_ctrl.c.s
+
+.PHONY : core/logic_layer/echo/asgard_ping_ctrl.s
+
+# target to generate assembly for a file
+core/logic_layer/echo/asgard_ping_ctrl.c.s:
+	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asgard_ping_ctrl.c.s
+.PHONY : core/logic_layer/echo/asgard_ping_ctrl.c.s
+
 core/logic_layer/echo/asguard_app_echo.o: core/logic_layer/echo/asguard_app_echo.c.o
 
 .PHONY : core/logic_layer/echo/asguard_app_echo.o
@@ -1152,6 +1179,9 @@ help:
 	@echo "... core/logic_layer/consensus/state_transitions.o"
 	@echo "... core/logic_layer/consensus/state_transitions.i"
 	@echo "... core/logic_layer/consensus/state_transitions.s"
+	@echo "... core/logic_layer/echo/asgard_ping_ctrl.o"
+	@echo "... core/logic_layer/echo/asgard_ping_ctrl.i"
+	@echo "... core/logic_layer/echo/asgard_ping_ctrl.s"
 	@echo "... core/logic_layer/echo/asguard_app_echo.o"
 	@echo "... core/logic_layer/echo/asguard_app_echo.i"
 	@echo "... core/logic_layer/echo/asguard_app_echo.s"

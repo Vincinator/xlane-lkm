@@ -2,11 +2,7 @@
 
 #include <asguard/asguard.h>
 
-struct asguard_echo_priv {
-	struct asguard_logger echo_logger;
-	struct asguard_device *sdev;
-	struct proto_instance *ins;
-};
+
 
 int echo_init(struct proto_instance *);
 int echo_start(struct proto_instance *);
