@@ -10,7 +10,7 @@
 #include <asguard/logger.h>
 #include <asguard/consensus.h>
 
-#include "asguard_echo.h"
+#include "include/asguard_echo.h"
 
 
 static ssize_t asguard_ping_ctrl_write(struct file *file,
