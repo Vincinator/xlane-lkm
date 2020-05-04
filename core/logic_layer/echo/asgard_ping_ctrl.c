@@ -27,11 +27,6 @@ static int get_remote_lid(struct pminfo *spminfo, int cluster_id)
     return -1;
 }
 
-int read_user_input() {
-
-}
-
-
 int read_pingpong_user_input(const char *user_buffer, size_t count, const struct asguard_echo_priv *priv,
                               char *kernel_buffer,  int *target_cluster_id,
                               int *remote_lid)
