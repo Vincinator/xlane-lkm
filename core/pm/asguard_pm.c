@@ -139,6 +139,9 @@ static inline int asguard_setup_hb_skbs(struct asguard_device *sdev)
 
     asguard_dbg("broadcast ip: %x  mac: %pM", sdev->multicast_ip, sdev->multicast_mac);
 
+    spminfo->multicast_pkt_data_oos.skb = asguard_reserve_skb(sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
+    skb_set_queue_mapping(spminfo->multicast_pkt_data_oos.skb, smp_processor_id()); // Queue mapping same for each target i
+
     spminfo->multicast_skb = asguard_reserve_skb(sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
     skb_set_queue_mapping(spminfo->multicast_skb, smp_processor_id()); // Queue mapping same for each target i
 
@@ -604,7 +607,6 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
     int ret;
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
-
         if(spminfo->pm_targets[i].aapriv->doorbell > 0) {
 
 			cur_apkt = dequeue_async_pkt(spminfo->pm_targets[i].aapriv);
@@ -652,7 +654,8 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             spminfo->pm_targets[i].pkt_tx_counter++;
         }
 	}
-	return 0;
+
+    return 0;
 }
 
 static int _validate_pm(struct asguard_device *sdev,
@@ -764,6 +767,7 @@ static int asguard_pm_loop(void *data)
 
         out_of_sched_hb = 0;
         async_pkts = 0;
+        out_of_sched_multi = 0;
 
         /* Scheduled Multicast Heartbeats */
 		scheduled_hb = scheduled_tx(prev_time, cur_time, interval);

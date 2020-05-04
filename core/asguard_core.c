@@ -975,14 +975,11 @@ static void __exit asguard_connection_core_exit(void)
     if(asguard_wq)
         destroy_workqueue(asguard_wq);
 
-
-
     if(score->sdevices)
         kfree(score->sdevices);
 
     if(score)
         kfree(score);
-
 
 	remove_proc_entry("asguard", NULL);
 
