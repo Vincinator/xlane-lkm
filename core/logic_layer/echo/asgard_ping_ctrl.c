@@ -13,6 +13,20 @@
 #include "include/asguard_echo.h"
 
 
+static int get_remote_lid(struct pminfo *spminfo, int cluster_id)
+{
+    int i;
+
+    for(i = 0; i < spminfo->num_of_targets; i++) {
+
+        if (spminfo->pm_targets[i].pkt_data.naddr.cluster_id == cluster_id) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 static ssize_t asguard_ping_ctrl_write(struct file *file,
                                        const char __user *user_buffer, size_t count,
                                        loff_t *data)
@@ -20,9 +34,10 @@ static ssize_t asguard_ping_ctrl_write(struct file *file,
     struct asguard_echo_priv *priv =
             (struct asguard_echo_priv *)PDE_DATA(file_inode(file));
     char kernel_buffer[ASGUARD_NUMBUF];
-    int eval_selection = -3;
+    int target_cluster_id = -3;
     size_t size;
     int err;
+    int remote_lid;
 
     size = min(sizeof(kernel_buffer) - 1, count);
 
@@ -35,15 +50,31 @@ static ssize_t asguard_ping_ctrl_write(struct file *file,
     }
 
     kernel_buffer[size] = '\0';
-    err = kstrtoint(kernel_buffer, 10, &eval_selection);
+    err = kstrtoint(kernel_buffer, 10, &target_cluster_id);
     if (err) {
         asguard_dbg("Error converting input buffer: %s, todevid: 0x%x\n",
-                    kernel_buffer, eval_selection);
+                    kernel_buffer, target_cluster_id);
         goto error;
     }
 
     /* TODO: trigger unicast ping to target. Add -1 case to ping all cluster nodes */
 
+    if(target_cluster_id < 0 || target_cluster_id > MAX_NODE_ID){
+        asguard_error("Invalid Cluster ID: %d", target_cluster_id);
+        goto error;
+    }
+
+    remote_lid = get_remote_lid(&priv->sdev->pminfo, target_cluster_id);
+
+
+    if(remote_lid < 0){
+        asguard_error("could not find local data for cluster node %d\n", target_cluster_id);
+        goto error;
+    }
+
+    setup_msg_uni_pong(priv->ins, &priv->sdev->pminfo, remote_lid,
+                       priv->sdev->pminfo.cluster_id, target_cluster_id,
+                       RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_MULTI);
 
 
     return count;
@@ -102,6 +133,10 @@ static ssize_t asguard_ping_multicast_ctrl_write(struct file *file,
     }
 
     /* TODO: trigger multicast ping (ignore input) */
+
+    setup_msg_multi_pong(priv->ins, &priv->sdev->pminfo,
+                         priv->sdev->pminfo.cluster_id, 0,
+                         RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_MULTI);
 
     return count;
     error:
