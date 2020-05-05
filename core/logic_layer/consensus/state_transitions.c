@@ -135,6 +135,12 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 		break;
 	case CANDIDATE:
 		err = start_candidate(ins);
+
+		/* If Candidature fails, stop ASGARD to prevent endless retry loop. */
+		if(err) {
+            asguard_pm_stop(&priv->sdev->pminfo);
+        }
+
 		break;
 	case LEADER:
 		err = start_leader(ins);

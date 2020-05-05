@@ -198,6 +198,12 @@ int start_candidate(struct proto_instance *ins)
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
+
+	if(priv->sdev->pminfo.num_of_targets < 2) {
+	    asguard_error("Not enough Cluster Members for a Leader Election!\n");
+	    return -1;
+	}
+
 	priv->votes = 0;
 	priv->nstate = CANDIDATE;
 	priv->candidate_counter = 0;
