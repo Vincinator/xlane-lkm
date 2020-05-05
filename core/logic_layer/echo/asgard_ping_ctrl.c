@@ -247,7 +247,7 @@ error:
     return err;
 }
 
-static int asguard_ping_multicast_ctrl_show(struct seq_file *m, void *v)
+static int asguard_pupm_ctrl_show(struct seq_file *m, void *v)
 {
     struct echo_priv *priv =
             (struct echo_priv *)m->private;
@@ -259,6 +259,12 @@ static int asguard_ping_multicast_ctrl_show(struct seq_file *m, void *v)
 
     return 0;
 }
+static int asguard_pupm_ctrl_open(struct inode *inode, struct file *file)
+{
+    return single_open(file, asguard_pupm_ctrl_show,
+                       PDE_DATA(file_inode(file)));
+}
+
 
 static ssize_t asguard_ppwt_ctrl_write(struct file *file,
                                        const char __user *user_buffer, size_t count,
