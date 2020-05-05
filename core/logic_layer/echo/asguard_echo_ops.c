@@ -8,8 +8,8 @@
 
 int echo_init(struct proto_instance *ins)
 {
-    struct asguard_echo_priv *priv =
-            (struct asguard_echo_priv *)ins->proto_data;
+    struct echo_priv *priv =
+            (struct echo_priv *)ins->proto_data;
 
     char name_buf[MAX_ASGUARD_PROC_NAME];
 
@@ -50,8 +50,8 @@ int echo_us_update(struct proto_instance *ins)
 int echo_clean(struct proto_instance *ins)
 {
 
-    struct asguard_echo_priv *priv =
-            (struct asguard_echo_priv *)ins->proto_data;
+    struct echo_priv *priv =
+            (struct echo_priv *)ins->proto_data;
     char name_buf[MAX_ASGUARD_PROC_NAME];
 
     asguard_dbg("echo clean");
@@ -80,8 +80,8 @@ int echo_post_payload(struct proto_instance *ins, int remote_lid, int rcluster_i
 {
 	enum echo_opcode opcode;
 
-	struct asguard_echo_priv *epriv =
-			(struct asguard_echo_priv *)ins->proto_data;
+	struct echo_priv *epriv =
+			(struct echo_priv *)ins->proto_data;
 
     struct asguard_device *sdev = epriv->sdev;
 
@@ -167,9 +167,13 @@ int echo_init_payload(void *payload)
 int echo_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 		 uint64_t ts)
 {
+    struct echo_priv *epriv =
+            (struct echo_priv *)ins->proto_data;
 
-	asguard_dbg("SRC MAC=%pM", remote_mac);
-	asguard_dbg("echo post optimistical ts %lld", RDTSC_ASGUARD);
+    epriv->last_echo_ts = ts;
+
+    asguard_dbg("Posted optimistical Timestamp for received Echo Message: %lld\n", ts);
+
 	return 0;
 }
 

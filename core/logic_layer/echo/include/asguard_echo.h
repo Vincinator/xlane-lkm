@@ -6,7 +6,7 @@
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 #endif
 
-struct asguard_echo_priv {
+struct echo_priv {
     struct asguard_logger echo_logger;
     struct asguard_device *sdev;
     struct proto_instance *ins;
@@ -14,6 +14,10 @@ struct asguard_echo_priv {
     bool echo_pmpu_entry;
     struct proc_dir_entry *echo_pmpm_entry;
     struct proc_dir_entry *echo_pupm_entry;
+    struct proc_dir_entry *echo_ppwt_entry;
+
+    int pong_waiting_interval;
+    uint64_t last_echo_ts;
 };
 
 enum echo_logger_events {
@@ -60,6 +64,6 @@ void setup_echo_msg_uni(struct proto_instance *ins, struct pminfo *spminfo,
                         enum echo_opcode opcode);
 
 
-void init_ping_ctrl_interfaces(struct asguard_echo_priv *priv);
+void init_ping_ctrl_interfaces(struct echo_priv *priv);
 
-void remove_ping_ctrl_interfaces(struct asguard_echo_priv *priv);
+void remove_ping_ctrl_interfaces(struct echo_priv *priv);

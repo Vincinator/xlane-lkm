@@ -24,6 +24,7 @@
 #include <asguard/consensus.h>
 #include <asguard/asguard_async.h>
 #include <asguard/asgard_uface.h>
+#include <logic_layer/echo/include/asguard_echo.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][PACEMAKER]"
@@ -64,9 +65,35 @@ static inline bool check_async_door(struct pminfo *spminfo)
 static inline bool out_of_schedule_multi_tx(struct asguard_device *sdev)
 {
 
+    struct echo_priv *epriv = (struct echo_priv*) sdev->echo_priv;
+
     if(sdev->hold_fire)
         return 0;
 
+
+    /* ---------  ONLY FOR ECHO TEST  --------- */
+
+    if(epriv == NULL)
+        return 0;
+
+
+    if(sdev->pminfo.multicast_pkt_data_oos_fire == 0)
+        return 0;
+
+
+    /* Timestamp is set to 0 again after pong is emitted */
+    if(epriv->last_echo_ts == 0)
+        return 0;
+
+
+    if(epriv->pong_waiting_interval < RDTSC_ASGUARD - epriv->last_echo_ts)
+        return 0;
+
+    /* ---------  ONLY FOR ECHO TEST  --------- */
+
+
+    /* ONLY FOR ECHO TEST COMMENT: return will be evaluated to true if we got here,
+     * leave this in case we remove the echo test again */
     return sdev->pminfo.multicast_pkt_data_oos_fire != 0;
 }
 
