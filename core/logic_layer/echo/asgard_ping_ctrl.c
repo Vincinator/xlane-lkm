@@ -154,6 +154,7 @@ static ssize_t asguard_pmpm_ctrl_write(struct file *file,
                          priv->sdev->pminfo.cluster_id, 0,
                          RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_MULTI);
     priv->fire_ping = 1;
+    priv->sdev->pminfo.multicast_pkt_data_oos.port = 3321;
     return count;
 }
 
@@ -195,7 +196,9 @@ static ssize_t asguard_pmpu_ctrl_write(struct file *file,
     setup_echo_msg_multi(priv->ins, &priv->sdev->pminfo,
                        priv->sdev->pminfo.cluster_id, target_cluster_id,
                        RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_UNI);
+
     priv->fire_ping = 1;
+    priv->sdev->pminfo.multicast_pkt_data_oos.port = 3321;
 
     return count;
 
@@ -246,7 +249,6 @@ static ssize_t asguard_pupm_ctrl_write(struct file *file,
 
     /* Use Echo Protocol Port for ping */
     priv->sdev->pminfo.pm_targets[remote_lid].pkt_data.port = 3321;
-
 
     return count;
 
