@@ -26,7 +26,7 @@ static const struct asguard_protocol_ctrl_ops echo_ops = {
 struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 {
 	struct proto_instance *ins;
-	struct asguard_echo_priv *epriv;
+	struct echo_priv *epriv;
 
     // freed by clear_protocol_instances
     ins = kmalloc(sizeof(struct proto_instance), GFP_KERNEL);
@@ -40,16 +40,17 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
     ins->logger.ifindex = sdev->ifindex;
 
     // freed by clear_protocol_instances
-    ins->proto_data = kmalloc(sizeof(struct asguard_echo_priv), GFP_KERNEL);
+    ins->proto_data = kmalloc(sizeof(struct echo_priv), GFP_KERNEL);
 
 	if (!ins->proto_data)
 		goto error;
 
-	epriv = (struct asguard_echo_priv *)ins->proto_data;
+	epriv = (struct echo_priv *)ins->proto_data;
 
 	epriv->sdev = sdev;
 	epriv->ins = ins;
-
+    epriv->pong_waiting_interval = 0;
+    epriv->last_echo_ts = RDTSC_ASGUARD;
     epriv->echo_logger.instance_id = ins->instance_id;
     epriv->echo_logger.ifindex = sdev->ifindex;
 

@@ -35,6 +35,7 @@
 #include <synbuf-chardev.h>
 #include <asguard/asgard_uface.h>
 #include <synbuf-chardev.h>
+#include <logic_layer/echo/include/asguard_echo.h>
 
 
 MODULE_LICENSE("GPL");
@@ -97,7 +98,7 @@ EXPORT_SYMBOL(asguard_get_protocol_name);
 void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 {
 	struct asguard_device *sdev = get_sdev(asguard_id);
-
+    struct echo_priv *epriv;
 	//if (sdev->ts_state == ASGUARD_TS_RUNNING)
 	//	asguard_write_timestamp(sdev, 1, cycles, asguard_id);
 
@@ -107,7 +108,13 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 			sdev->pminfo.pm_targets[sdev->cur_leader_lid].chb_ts = cycles;
 			sdev->pminfo.pm_targets[sdev->cur_leader_lid].alive = 1;
 		}
+	} else if(ctype == 3) { /* Channel Type is echo channel*/
+        epriv = (struct echo_priv*) sdev->echo_priv;
+        if(epriv != NULL) {
+            epriv->ins->ctrl_ops.post_ts(epriv->ins, NULL, cycles);
+        }
 	}
+
 }
 EXPORT_SYMBOL(asguard_post_ts);
 

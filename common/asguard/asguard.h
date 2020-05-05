@@ -390,6 +390,7 @@ struct asguard_device {
 	int bug_counter;
 
 	struct consensus_priv *consensus_priv;
+    void *echo_priv;
 
 	int is_leader; /* Is this node a leader? */
 
