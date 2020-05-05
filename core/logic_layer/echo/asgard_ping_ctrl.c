@@ -10,7 +10,7 @@
 #include <asguard/logger.h>
 #include <asguard/consensus.h>
 
-#include "include/asguard_echo.h"
+#include <asguard/asguard_echo.h>
 
 
 static int get_remote_lid(struct pminfo *spminfo, int cluster_id)

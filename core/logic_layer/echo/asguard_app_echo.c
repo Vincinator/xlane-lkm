@@ -1,4 +1,3 @@
-#include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <asguard/logger.h>
@@ -6,7 +5,7 @@
 #include <linux/slab.h>
 
 #include "include/asguard_echo_ops.h"
-#include "include/asguard_echo.h"
+#include <asguard/asguard_echo.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][PROTO][ECHO]"

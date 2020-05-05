@@ -42,7 +42,7 @@ SET( MODULE_SOURCE_FILES
         core/logic_layer/consensus/leader.c
         core/logic_layer/consensus/log.c
         core/logic_layer/consensus/state_transitions.c
-        core/logic_layer/echo/include/asguard_echo.h
+        common/asguard/asguard_echo.h
         core/logic_layer/echo/include/asguard_echo_ops.h
         core/logic_layer/echo/asguard_app_echo.c
         core/logic_layer/echo/asguard_echo.c

@@ -35,7 +35,7 @@
 #include <synbuf-chardev.h>
 #include <asguard/asgard_uface.h>
 #include <synbuf-chardev.h>
-#include <logic_layer/echo/include/asguard_echo.h>
+#include <asguard/asguard_echo.h>
 
 
 MODULE_LICENSE("GPL");

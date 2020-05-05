@@ -1,19 +1,10 @@
-#include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <asguard/logger.h>
-
-#include <linux/random.h>
 #include <linux/timer.h>
-
 #include <asguard/asguard.h>
-#include <linux/slab.h>
-
 #include <asguard/payload_helper.h>
-
-#include "include/asguard_echo.h"
-
-
+#include <asguard/asguard_echo.h>
 
 
 // TODO: continue here ..

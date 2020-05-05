@@ -24,7 +24,7 @@
 #include <asguard/consensus.h>
 #include <asguard/asguard_async.h>
 #include <asguard/asgard_uface.h>
-#include <logic_layer/echo/include/asguard_echo.h>
+#include <asguard/asguard_echo.h>
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][PACEMAKER]"

@@ -1,7 +1,7 @@
 #include <asguard/logger.h>
 #include <asguard/asguard.h>
 
-#include "include/asguard_echo.h"
+#include <asguard/asguard_echo.h>
 #include <asguard/payload_helper.h>
 #include <linux/proc_fs.h>
 
