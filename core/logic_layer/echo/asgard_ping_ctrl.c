@@ -121,7 +121,7 @@ static ssize_t asguard_pupu_ctrl_write(struct file *file,
     return count;
 error:
     asguard_error("Error during parsing of input.%s\n", __func__);
-    return err;
+    return count;
 }
 
 static int asguard_ping_ctrl_show(struct seq_file *m, void *v)
@@ -208,7 +208,7 @@ static ssize_t asguard_pmpu_ctrl_write(struct file *file,
 
 error:
     asguard_error("Error during parsing of input.%s\n", __func__);
-    return err;
+    return count;
 
 }
 
@@ -259,7 +259,7 @@ static ssize_t asguard_pupm_ctrl_write(struct file *file,
 
 error:
     asguard_error("Error during parsing of input.%s\n", __func__);
-    return err;
+    return count;
 }
 
 static int asguard_pupm_ctrl_show(struct seq_file *m, void *v)

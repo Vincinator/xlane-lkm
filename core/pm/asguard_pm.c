@@ -41,12 +41,10 @@ static inline bool scheduled_tx(uint64_t prev_time, uint64_t cur_time, uint64_t 
 	return (cur_time - prev_time) >= interval;
 }
 
-
 static inline bool check_async_window(uint64_t prev_time, uint64_t cur_time, uint64_t interval, uint64_t sync_window)
 {
 	return (cur_time - prev_time) <= (interval - sync_window);
 }
-
 
 static inline bool check_async_door(struct pminfo *spminfo)
 {
@@ -93,7 +91,6 @@ static inline bool out_of_schedule_multi_tx(struct asguard_device *sdev)
         return 0;
 
     }
-
 
     if(epriv->pong_waiting_interval >= RDTSC_ASGUARD - epriv->last_echo_ts){
         // asguard_dbg("Blocking emission\n");
