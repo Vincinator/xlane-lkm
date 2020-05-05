@@ -18,6 +18,7 @@ struct echo_priv {
 
     int pong_waiting_interval;
     uint64_t last_echo_ts;
+    bool fire_ping;
 };
 
 enum echo_logger_events {

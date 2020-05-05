@@ -48,6 +48,7 @@ struct proto_instance *get_echo_proto_instance(struct asguard_device *sdev)
 
 	epriv->sdev = sdev;
 	epriv->ins = ins;
+	epriv->fire_ping = 0;
     epriv->pong_waiting_interval = 0;
     epriv->last_echo_ts = RDTSC_ASGUARD;
     epriv->echo_logger.instance_id = ins->instance_id;

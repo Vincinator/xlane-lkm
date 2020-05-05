@@ -81,13 +81,25 @@ static inline bool out_of_schedule_multi_tx(struct asguard_device *sdev)
         return 0;
 
 
+    /* Only applicable if this multicast is a ping */
+    if(epriv->fire_ping){
+        epriv->fire_ping = 0;
+        return 1;
+    }
+
     /* Timestamp is set to 0 again after pong is emitted */
-    if(epriv->last_echo_ts == 0)
+    if(epriv->last_echo_ts == 0){
+        asguard_dbg("Last echo ts is 0\n");
         return 0;
 
+    }
 
-    if(epriv->pong_waiting_interval < RDTSC_ASGUARD - epriv->last_echo_ts)
+
+    if(epriv->pong_waiting_interval < RDTSC_ASGUARD - epriv->last_echo_ts){
+        asguard_dbg("Blocking emission\n");
         return 0;
+
+    }
 
     epriv->last_echo_ts = 0;
     /* ---------  ONLY FOR ECHO TEST  --------- */
