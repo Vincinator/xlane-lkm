@@ -332,12 +332,6 @@ struct asguard_pm_target_info {
 	/* Params used to build the SKB for TX */
 	struct asguard_packet_data pkt_data;
 
-	/* Data for transmitting the packet  */
-	struct sk_buff *skb;
-
-    /* Data for transmitting the packet  */
-    struct sk_buff *skb_oos;
-
 	/* async packet queue for pm target*/
 	struct asguard_async_queue_priv *aapriv;
 

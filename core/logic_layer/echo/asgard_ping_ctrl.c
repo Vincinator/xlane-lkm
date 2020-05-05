@@ -114,6 +114,9 @@ static ssize_t asguard_pupu_ctrl_write(struct file *file,
                        priv->sdev->pminfo.cluster_id, target_cluster_id,
                        RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_UNI);
 
+    /* Use Echo Protocol Port for ping */
+    priv->sdev->pminfo.pm_targets[remote_lid].pkt_data.port = 3321;
+
     return count;
 error:
     asguard_error("Error during parsing of input.%s\n", __func__);
@@ -240,6 +243,10 @@ static ssize_t asguard_pupm_ctrl_write(struct file *file,
     setup_echo_msg_uni(priv->ins, &priv->sdev->pminfo, remote_lid,
                          priv->sdev->pminfo.cluster_id, target_cluster_id,
                          RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_MULTI);
+
+    /* Use Echo Protocol Port for ping */
+    priv->sdev->pminfo.pm_targets[remote_lid].pkt_data.port = 3321;
+
 
     return count;
 

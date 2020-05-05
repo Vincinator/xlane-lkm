@@ -339,7 +339,7 @@ static inline void asguard_send_oos_pkts(struct net_device *ndev, struct pminfo 
 		if(!target_fire[i])
 			continue;
 
-        skb = spminfo->pm_targets[i].skb_oos;
+        skb = spminfo->pm_targets[i].pkt_data.skb;
 
         asg_xmit_skb(ndev, txq, skb);
 
@@ -566,7 +566,13 @@ static inline int _emit_pkts_non_scheduled(struct asguard_device *sdev,
 		pkt_payload =
 		     spminfo->pm_targets[i].pkt_data.payload;
 
-		asguard_update_skb_payload(spminfo->pm_targets[i].skb_oos,
+        asguard_update_skb_udp_port(spminfo->pm_targets[i].pkt_data.skb,
+                                    spminfo->pm_targets[i].pkt_data.port);
+
+        /* use default port for next transmission again */
+        spminfo->pm_targets[i].pkt_data.port= sdev->tx_port;
+
+		asguard_update_skb_payload(spminfo->pm_targets[i].pkt_data.skb,
 					 pkt_payload);
 	}
 
@@ -770,8 +776,8 @@ static void __postwork_pm_loop(struct asguard_device *sdev)
 
     // free fixed skbs again
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-        if(sdev->pminfo.pm_targets[i].skb_oos != NULL)
-            kfree_skb(sdev->pminfo.pm_targets[i].skb_oos);
+        if(sdev->pminfo.pm_targets[i].pkt_data.skb != NULL)
+            kfree_skb(sdev->pminfo.pm_targets[i].pkt_data.skb);
     }
 }
 //#endif // ! CONFIG_KUNIT

@@ -782,12 +782,13 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
 	pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
 
 	if (!pmtarget) {
-		asguard_error("pmtarget is NULL\n");
+		asguard_error("Pacemaker target is NULL\n");
 		return -1;
 	}
 	pmtarget->alive = 0;
 	pmtarget->pkt_data.naddr.dst_ip = ip;
 	pmtarget->pkt_data.naddr.cluster_id = cluster_id;
+    pmtarget->pkt_data.port = 3320;
 	pmtarget->lhb_ts = 0;
 	pmtarget->chb_ts = 0;
 	pmtarget->resp_factor = 4;
@@ -813,8 +814,8 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
     init_asguard_async_queue(pmtarget->aapriv);
 
     /* Out of schedule SKB  pre-allocation*/
-    sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].skb_oos = asguard_reserve_skb(sdev->ndev, ip, mac, NULL);
-    skb_set_queue_mapping(sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].skb_oos, sdev->pminfo.active_cpu); // Queue mapping same for each target i
+    sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb = asguard_reserve_skb(sdev->ndev, ip, mac, NULL);
+    skb_set_queue_mapping(sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb, sdev->pminfo.active_cpu); // Queue mapping same for each target i
 
     sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
 
