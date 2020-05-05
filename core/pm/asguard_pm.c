@@ -98,7 +98,6 @@ static inline bool out_of_schedule_multi_tx(struct asguard_device *sdev)
     if(epriv->pong_waiting_interval < RDTSC_ASGUARD - epriv->last_echo_ts){
         asguard_dbg("Blocking emission\n");
         return 0;
-
     }
 
     epriv->last_echo_ts = 0;
