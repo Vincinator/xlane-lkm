@@ -169,6 +169,7 @@ static inline int asguard_setup_hb_skbs(struct asguard_device *sdev)
 
     spminfo->multicast_pkt_data_oos.skb = asguard_reserve_skb(sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
     skb_set_queue_mapping(spminfo->multicast_pkt_data_oos.skb, smp_processor_id()); // Queue mapping same for each target i
+    spminfo->multicast_pkt_data_oos.port = 3321; /* TODO */
 
     spminfo->multicast_skb = asguard_reserve_skb(sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
     skb_set_queue_mapping(spminfo->multicast_skb, smp_processor_id()); // Queue mapping same for each target i
@@ -516,6 +517,8 @@ static inline int _emit_pkts_non_scheduled_multi(struct asguard_device *sdev,
     spin_lock(&spminfo->multicast_pkt_data_oos.lock);
 
     pkt_payload = spminfo->multicast_pkt_data_oos.payload;
+
+    asguard_update_skb_udp_port(spminfo->multicast_pkt_data_oos.skb, spminfo->multicast_pkt_data_oos.port);
 
     asguard_update_skb_payload(spminfo->multicast_pkt_data_oos.skb, pkt_payload);
 

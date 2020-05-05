@@ -283,6 +283,7 @@ struct asguard_packet_data {
 
     struct sk_buff *skb;
 
+    int port;
 };
 
 struct asguard_pacemaker_test_data {
