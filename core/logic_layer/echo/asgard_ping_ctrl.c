@@ -116,6 +116,7 @@ static ssize_t asguard_pupu_ctrl_write(struct file *file,
 
     /* Use Echo Protocol Port for ping */
     priv->sdev->pminfo.pm_targets[remote_lid].pkt_data.port = 3321;
+    asguard_dbg("pupu triggered\n");
 
     return count;
 error:
@@ -155,6 +156,8 @@ static ssize_t asguard_pmpm_ctrl_write(struct file *file,
                          RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_MULTI);
     priv->fire_ping = 1;
     priv->sdev->pminfo.multicast_pkt_data_oos.port = 3321;
+    asguard_dbg("pmpm triggered\n");
+
     return count;
 }
 
@@ -199,6 +202,7 @@ static ssize_t asguard_pmpu_ctrl_write(struct file *file,
 
     priv->fire_ping = 1;
     priv->sdev->pminfo.multicast_pkt_data_oos.port = 3321;
+    asguard_dbg("pmpu triggered\n");
 
     return count;
 
@@ -249,6 +253,7 @@ static ssize_t asguard_pupm_ctrl_write(struct file *file,
 
     /* Use Echo Protocol Port for ping */
     priv->sdev->pminfo.pm_targets[remote_lid].pkt_data.port = 3321;
+    asguard_dbg("pupm triggered\n");
 
     return count;
 

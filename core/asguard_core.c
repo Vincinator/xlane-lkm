@@ -102,6 +102,8 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 	//if (sdev->ts_state == ASGUARD_TS_RUNNING)
 	//	asguard_write_timestamp(sdev, 1, cycles, asguard_id);
 
+    asguard_dbg("optimistical timestamp on channel %d received\n", ctype);
+
 	if(ctype == 2) { // channel type 2 is leader channel
 		sdev->last_leader_ts = cycles;
 		if(sdev->cur_leader_lid != -1) {
@@ -109,7 +111,9 @@ void asguard_post_ts(int asguard_id, uint64_t cycles, int ctype)
 			sdev->pminfo.pm_targets[sdev->cur_leader_lid].alive = 1;
 		}
 	} else if(ctype == 3) { /* Channel Type is echo channel*/
+
         epriv = (struct echo_priv*) sdev->echo_priv;
+
         if(epriv != NULL) {
             epriv->ins->ctrl_ops.post_ts(epriv->ins, NULL, cycles);
         }
