@@ -86,6 +86,7 @@ int read_pingpong_user_input(const char *user_buffer, size_t count, const struct
 
     if((*remote_lid) < 0){
         asguard_error("could not find local data for cluster node %d\n", (*target_cluster_id));
+        asguard_dbg("Have %d registered cluster nodes\n", priv->sdev->pminfo.num_of_targets);
         return -1;
     }
 
