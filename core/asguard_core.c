@@ -835,7 +835,6 @@ static int __init asguard_connection_core_init(void)
     int ret = 0;
 
 	if (ifindex < 0) {
-
 		asguard_error("ifindex parameter is missing\n");
 		goto error;
 	}
@@ -844,6 +843,15 @@ static int __init asguard_connection_core_init(void)
 
 	if (err)
 		goto error;
+
+    /* Initialize User Space interfaces
+     * NOTE: BEFORE call to asguard_core_register_nic! */
+    err = synbuf_bypass_init_class();
+    if(err) {
+        asguard_error("synbuf_bypass_init_class failed\n");
+        return -ENODEV;
+    }
+
 
     // freed by asguard_connection_core_exit
     score = kmalloc(sizeof(struct asguard_core), GFP_KERNEL);
@@ -866,14 +874,6 @@ static int __init asguard_connection_core_init(void)
 
 	for(i = 0; i < MAX_NIC_DEVICES; i++)
 		score->sdevices[i] = NULL;
-
-    /* Initialize User Space interfaces
-     * NOTE: BEFORE call to asguard_core_register_nic! */
-    err = synbuf_bypass_init_class();
-    if(err) {
-        asguard_error("synbuf_bypass_init_class failed\n");
-        return -ENODEV;
-    }
 
     proc_mkdir("asguard", NULL);
 
