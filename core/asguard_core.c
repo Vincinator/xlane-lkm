@@ -840,13 +840,6 @@ static int __init asguard_connection_core_init(void)
 		goto error;
 	}
 
-    /* Initialize User Space interfaces */
-    err = synbuf_bypass_init_class();
-    if(err) {
-        asguard_error("synbuf_bypass_init_class failed\n");
-        return -ENODEV;
-    }
-
 	err = register_asguard_at_nic(ifindex, asguard_post_ts, asguard_post_payload);
 
 	if (err)
@@ -888,6 +881,15 @@ static int __init asguard_connection_core_init(void)
 	/* Allocate Workqueues */
 	asguard_wq = alloc_workqueue("asguard",  WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_FREEZABLE, 1);
     asguard_wq_lock = 0;
+
+
+    /* Initialize User Space interfaces */
+    err = synbuf_bypass_init_class();
+    if(err) {
+        asguard_error("synbuf_bypass_init_class failed\n");
+        return -ENODEV;
+    }
+
 
     asguard_dbg("asgard core initialized.\n");
     return 0;
