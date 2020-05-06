@@ -638,8 +638,6 @@ int asguard_core_remove_nic(int asguard_id)
 	if (asguard_validate_asguard_device(asguard_id))
 		return -1;
 
-    /* Clean Cluster Membership Synbuf*/
-    synbuf_chardev_exit(score->sdevices[asguard_id]->synbuf_clustermem);
 
     asguard_clean_timestamping(score->sdevices[asguard_id]);
 
@@ -656,6 +654,8 @@ int asguard_core_remove_nic(int asguard_id)
 
 	remove_proc_entry(name_buf, NULL);
 
+    /* Clean Cluster Membership Synbuf*/
+    synbuf_chardev_exit(score->sdevices[asguard_id]->synbuf_clustermem);
 
 	return 0;
 }

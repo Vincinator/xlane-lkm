@@ -501,10 +501,13 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
         goto cleanup;
     }
 
-    /* Read until the buffer is empty
+    /* Read until the buffer is empty or consensus stopped.
      * Exit on Error
      */
     while(1) {
+
+        if(priv->state != LE_RUNNING)
+            goto cleanup;
 
         if(is_rb_empty(aw->rb)) {
             break;

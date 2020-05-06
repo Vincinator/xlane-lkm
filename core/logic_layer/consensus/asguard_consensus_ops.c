@@ -216,12 +216,6 @@ int consensus_clean(struct proto_instance *ins)
     clear_logger(&ins->user_d);
 
 
-    /* Clean Follower (RX) Synbuf */
-    synbuf_chardev_exit(priv->synbuf_rx);
-
-    /* Clean Leader (TX) Synbuf  */
-    synbuf_chardev_exit(priv->synbuf_tx);
-
 
     snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",
 		 priv->sdev->ifindex, ins->instance_id);
@@ -236,6 +230,12 @@ int consensus_clean(struct proto_instance *ins)
             kfree(priv->sm_log.entries[i]);
         }
     }
+
+    /* Clean Follower (RX) Synbuf */
+    synbuf_chardev_exit(priv->synbuf_rx);
+
+    /* Clean Leader (TX) Synbuf  */
+    synbuf_chardev_exit(priv->synbuf_tx);
 
 
 	return 0;
