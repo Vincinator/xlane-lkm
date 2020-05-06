@@ -867,7 +867,15 @@ static int __init asguard_connection_core_init(void)
 	for(i = 0; i < MAX_NIC_DEVICES; i++)
 		score->sdevices[i] = NULL;
 
-	proc_mkdir("asguard", NULL);
+    /* Initialize User Space interfaces
+     * NOTE: BEFORE call to asguard_core_register_nic! */
+    err = synbuf_bypass_init_class();
+    if(err) {
+        asguard_error("synbuf_bypass_init_class failed\n");
+        return -ENODEV;
+    }
+
+    proc_mkdir("asguard", NULL);
 
 	ret = asguard_core_register_nic(ifindex, get_asguard_id_by_ifindex(ifindex));
 
@@ -883,12 +891,6 @@ static int __init asguard_connection_core_init(void)
     asguard_wq_lock = 0;
 
 
-    /* Initialize User Space interfaces */
-    err = synbuf_bypass_init_class();
-    if(err) {
-        asguard_error("synbuf_bypass_init_class failed\n");
-        return -ENODEV;
-    }
 
 
     asguard_dbg("asgard core initialized.\n");
