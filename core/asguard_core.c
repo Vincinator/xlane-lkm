@@ -694,6 +694,17 @@ int register_protocol_instance(struct asguard_device *sdev, int instance_id, int
 
 		goto error;
 	}
+	if(idx < 0) {
+	    ret = -EPERM;
+        asguard_dbg("Invalid Instance ID: %d\n",instance_id);
+        goto error;
+	}
+
+	if(sdev->instance_id_mapping[instance_id] != -1){
+	    asguard_dbg("Instance Already registered! (%d)\n", instance_id);
+	    ret = -EINVAL;
+	    goto error;
+	}
 
 	sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
 
@@ -847,11 +858,11 @@ static int __init asguard_connection_core_init(void)
     /* Initialize User Space interfaces
      * NOTE: BEFORE call to asguard_core_register_nic! */
     err = synbuf_bypass_init_class();
+
     if(err) {
         asguard_error("synbuf_bypass_init_class failed\n");
         return -ENODEV;
     }
-
 
     // freed by asguard_connection_core_exit
     score = kmalloc(sizeof(struct asguard_core), GFP_KERNEL);
@@ -889,8 +900,6 @@ static int __init asguard_connection_core_init(void)
 	/* Allocate Workqueues */
 	asguard_wq = alloc_workqueue("asguard",  WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_FREEZABLE, 1);
     asguard_wq_lock = 0;
-
-
 
 
     asguard_dbg("asgard core initialized.\n");
