@@ -206,8 +206,8 @@ struct asguard_logger {
     uint64_t first_ts;
     uint64_t last_ts;
 
-
-
+    struct proc_dir_entry *ctrl_logger_entry;
+    struct proc_dir_entry *log_logger_entry;
 };
 
 enum w_state {

@@ -209,12 +209,10 @@ int consensus_clean(struct proto_instance *ins)
 	clear_logger(&ins->logger);
 
 	clear_logger(&priv->throughput_logger);
-
     clear_logger(&ins->user_a);
     clear_logger(&ins->user_b);
     clear_logger(&ins->user_c);
     clear_logger(&ins->user_d);
-
 
 
     snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/%d",

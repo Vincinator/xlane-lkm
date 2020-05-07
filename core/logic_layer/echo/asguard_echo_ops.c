@@ -174,7 +174,7 @@ int echo_post_ts(struct proto_instance *ins, unsigned char *remote_mac,
 
     epriv->last_echo_ts = ts;
 
-    asguard_dbg("Posted optimistical Timestamp for received Echo Message: %lld\n", ts);
+    // asguard_dbg("Posted optimistical Timestamp for received Echo Message: %lld\n", ts);
 
 	return 0;
 }

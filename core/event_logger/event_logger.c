@@ -223,11 +223,17 @@ static int init_logger_out(struct asguard_logger *slog)
 		goto error;
 	}
 
-	snprintf(name_buf, sizeof(name_buf),
-			"asguard/%d/proto_instances/%d/log_%s",
-			slog->ifindex, slog->instance_id, slog->name);
 
-    proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_log_ops, slog);
+	if(slog->log_logger_entry == NULL) {
+        snprintf(name_buf, sizeof(name_buf),
+                 "asguard/%d/proto_instances/%d/log_%s",
+                 slog->ifindex, slog->instance_id, slog->name);
+
+        slog->log_logger_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_log_ops, slog);
+	} else {
+        asguard_error("Log Logger procfs entry already present!\n");
+    }
+
 
 	return 0;
 
@@ -249,6 +255,8 @@ int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char 
 
     slog->instance_id = instance_id;
     slog->ifindex = ifindex;
+    slog->log_logger_entry = NULL;
+    slog->ctrl_logger_entry = NULL;
     slog->name = kmalloc(MAX_LOGGER_NAME, GFP_KERNEL);
     slog->accept_user_ts = accept_user_ts;
     asguard_dbg("Accept User TS is: %d", slog->accept_user_ts );
@@ -280,16 +288,26 @@ void remove_logger_ifaces(struct asguard_logger *slog)
 {
 	char name_buf[MAX_ASGUARD_PROC_NAME];
 
-	snprintf(name_buf, sizeof(name_buf),
-			"asguard/%d/proto_instances/%d/log_%s",
-			slog->ifindex, slog->instance_id, slog->name);
+	if(slog->log_logger_entry) {
+        snprintf(name_buf, sizeof(name_buf),
+                 "asguard/%d/proto_instances/%d/log_%s",
+                 slog->ifindex, slog->instance_id, slog->name);
 
-	remove_proc_entry(name_buf, NULL);
+        remove_proc_entry(name_buf, NULL);
+        slog->log_logger_entry = NULL;
+	}
 
-	snprintf(name_buf, sizeof(name_buf),
-			"asguard/%d/proto_instances/%d/ctrl_%s",
-			slog->ifindex, slog->instance_id, slog->name);
+	if(slog->ctrl_logger_entry) {
+        snprintf(name_buf, sizeof(name_buf),
+                 "asguard/%d/proto_instances/%d/ctrl_%s",
+                 slog->ifindex, slog->instance_id, slog->name);
 
-	remove_proc_entry(name_buf, NULL);
+        remove_proc_entry(name_buf, NULL);
+        slog->ctrl_logger_entry = NULL;
+	}
+
+
+
+
 }
 EXPORT_SYMBOL(remove_logger_ifaces);

@@ -92,19 +92,24 @@ static const struct file_operations asguard_event_ctrl_ops = {
 void clear_logger(struct asguard_logger *slog)
 {
 	char name_buf[MAX_ASGUARD_PROC_NAME];
-    int i;
 
-	snprintf(name_buf, sizeof(name_buf),
-			"asguard/%d/proto_instances/%d/log_%s",
-			slog->ifindex, slog->instance_id, slog->name);
+    if(slog->log_logger_entry) {
+        snprintf(name_buf, sizeof(name_buf),
+                 "asguard/%d/proto_instances/%d/log_%s",
+                 slog->ifindex, slog->instance_id, slog->name);
 
-	remove_proc_entry(name_buf, NULL);
+        remove_proc_entry(name_buf, NULL);
+        slog->log_logger_entry = NULL;
+    }
 
-	snprintf(name_buf, sizeof(name_buf),
-			"asguard/%d/proto_instances/%d/ctrl_%s",
-			slog->ifindex, slog->instance_id, slog->name);
+    if(slog->ctrl_logger_entry) {
+        snprintf(name_buf, sizeof(name_buf),
+                 "asguard/%d/proto_instances/%d/ctrl_%s",
+                 slog->ifindex, slog->instance_id, slog->name);
 
-	remove_proc_entry(name_buf, NULL);
+        remove_proc_entry(name_buf, NULL);
+    }
+
 
 	if(slog->events)
 	    kfree(slog->events);
@@ -121,12 +126,15 @@ void init_logger_ctrl(struct asguard_logger *slog)
 		return;
 	}
 
-	snprintf(name_buf, sizeof(name_buf),
-			"asguard/%d/proto_instances/%d/ctrl_%s",
-			slog->ifindex, slog->instance_id, slog->name);
+	if(slog->ctrl_logger_entry == NULL) {
+        snprintf(name_buf, sizeof(name_buf),
+                 "asguard/%d/proto_instances/%d/ctrl_%s",
+                 slog->ifindex, slog->instance_id, slog->name);
 
-	proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_event_ctrl_ops, slog);
+        slog->ctrl_logger_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_event_ctrl_ops, slog);
+    } else {
+        asguard_error("Ctrl Logger Entry already present!\n");
+    }
 
-	return;
 }
 EXPORT_SYMBOL(init_logger_ctrl);
