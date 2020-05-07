@@ -251,6 +251,7 @@ void print_log_state(struct state_machine_cmd_log *log);
 
 int consensus_idx_to_buffer_idx(struct state_machine_cmd_log *log, u32 dividend);
 
+void dump_consensus_throughput(struct asguard_logger *slog);
 
 void update_stable_idx(struct consensus_priv *priv);
 void update_next_retransmission_request_idx(struct consensus_priv *priv);

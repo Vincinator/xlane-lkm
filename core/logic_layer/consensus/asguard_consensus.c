@@ -301,6 +301,20 @@ static const struct asguard_protocol_ctrl_ops consensus_ops = {
 	.us_update = consensus_us_update,
 };
 
+void dump_consensus_throughput(struct asguard_logger *slog)
+{// Write Start Timestamp:
+    write_log(slog, 1, slog->first_ts);
+    asguard_dbg("Consensus Throughput first TS: %lld\n", slog->first_ts);
+    // Write End Timestamp:
+    write_log(slog, 2, slog->last_ts);
+    asguard_dbg("Consensus Throughput last TS: %lld\n", slog->last_ts);
+    // Write throughput:
+    write_log(slog, 3, slog->applied);
+    asguard_dbg("Consensus Throughput applied: %d\n", slog->applied);
+}
+EXPORT_SYMBOL(dump_consensus_throughput);
+
+
 struct proto_instance *get_consensus_proto_instance(struct asguard_device *sdev)
 {
     struct consensus_priv *cpriv;

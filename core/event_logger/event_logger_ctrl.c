@@ -8,6 +8,7 @@
 #include <linux/kernel.h>
 #include <asguard/asguard.h>
 #include <asguard/logger.h>
+#include <asguard/consensus.h>
 
 static ssize_t asguard_event_ctrl_write(struct file *file,
 				   const char __user *user_buffer, size_t count,
@@ -48,6 +49,9 @@ static ssize_t asguard_event_ctrl_write(struct file *file,
 	case 2:
 		asguard_log_reset(slog);
 		break;
+    case 3:
+        dump_consensus_throughput(slog);
+        break;
 	default:
 		asguard_error("Invalid input: %d - %s\n",
 			    logging_state, __func__);
