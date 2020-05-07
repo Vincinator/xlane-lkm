@@ -156,7 +156,6 @@ int consensus_stop(struct proto_instance *ins)
 
     asguard_dbg("===================== End of Run: %pUB ====================\n", priv->uuid.b);
 
-    dump_consensus_throughput(priv);
 
     switch (priv->nstate) {
 	case FOLLOWER:
