@@ -506,9 +506,6 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
      */
     while(1) {
 
-        if(priv->state != LE_RUNNING)
-            goto cleanup;
-
         if(is_rb_empty(aw->rb)) {
             break;
         }
