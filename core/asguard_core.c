@@ -391,9 +391,9 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
         cluster_ip_ad = extract_cluster_ip_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
         cluster_mac_ad = extract_cluster_mac_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
 
-        asguard_error("\tMAC: %pMF", cluster_mac_ad);
-        asguard_error("\tID: %d", cluster_id_ad);
-        asguard_error("\tIP: %pI4", (void*) &cluster_ip_ad);
+        asguard_dbg("\tMAC: %pMF", cluster_mac_ad);
+        asguard_dbg("\tID: %d", cluster_id_ad);
+        asguard_dbg("\tIP: %pI4", (void*) &cluster_ip_ad);
 
         if(cluster_id_ad < 0||cluster_ip_ad == 0||!cluster_mac_ad){
             asguard_error("included ip, id or mac is wrong \n");
@@ -525,6 +525,8 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->tx_port = 3319;
 	score->sdevices[asguard_id]->cur_leader_lid = -1;
 	score->sdevices[asguard_id]->is_leader = 0;
+    score->sdevices[asguard_id]->consensus_priv = NULL;
+    score->sdevices[asguard_id]->echo_priv = NULL;
 
 	score->sdevices[asguard_id]->multicast_ip = asguard_ip_convert("232.43.211.234");
     score->sdevices[asguard_id]->multicast_mac = asguard_convert_mac("01:00:5e:2b:d3:ea");

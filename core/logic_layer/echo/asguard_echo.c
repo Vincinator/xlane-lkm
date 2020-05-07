@@ -65,7 +65,7 @@ void setup_echo_msg_uni(struct proto_instance *ins, struct pminfo *spminfo,
 
     spminfo->pm_targets[remote_lid].fire = 1;
 
-    unlock:
+unlock:
     spin_unlock(&spminfo->multicast_pkt_data_oos.lock);
 
 }
