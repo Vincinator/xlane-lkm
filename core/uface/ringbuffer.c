@@ -119,12 +119,20 @@ int check_entry(struct asg_ring_buf *buf) {
     if(buf->turn) {
 
         if(num_of_chunks + buf->read_idx >= buf->write_idx + buf->size) {
-            asguard_dbg("asObj not complete in ringBuffer (turn)!");
+            asguard_dbg("asgObj not complete in ringBuffer (TURN)!");
+            asguard_dbg("\tNumber of Chunks: %d", num_of_chunks);
+            asguard_dbg("\tBuffer Read Index: %d", buf->read_idx);
+            asguard_dbg("\tBuffer Write Index: %d", buf->write_idx);
             return 1;
         }
     } else {
         if(num_of_chunks + buf->read_idx >= buf->write_idx) {
-            asguard_dbg("asObj not complete in ringBuffer!");
+            asguard_dbg("asgObj not complete in ringBuffer!");
+            asguard_dbg("\tNumber of Chunks: %d", num_of_chunks);
+            asguard_dbg("\tBuffer Read Index: %d", buf->read_idx);
+            asguard_dbg("\tBuffer Write Index: %d", buf->write_idx);
+            print_hex_dump(KERN_DEBUG, "Ring Buffer Header Dump: ", DUMP_PREFIX_OFFSET, 64, 1,
+                           &buf->ring[buf->read_idx].data, sizeof(struct data_chunk), 0);
             return 1;
         }
     }
