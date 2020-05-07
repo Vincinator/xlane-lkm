@@ -17,6 +17,10 @@ static int get_remote_lid(struct pminfo *spminfo, int cluster_id)
 {
     int i;
 
+    if(cluster_id == spminfo->cluster_id) {
+        return -2;
+    }
+
     for(i = 0; i < spminfo->num_of_targets; i++) {
 
         if (spminfo->pm_targets[i].pkt_data.naddr.cluster_id == cluster_id) {
@@ -83,13 +87,16 @@ int read_pingpong_user_input(const char *user_buffer, size_t count, const struct
 
     (*remote_lid) = get_remote_lid(&priv->sdev->pminfo, (*target_cluster_id));
 
+    if((*remote_lid) == -2)
+        goto out;
 
-    if((*remote_lid) < 0){
+    if((*remote_lid) == -1){
         asguard_error("could not find local data for cluster node %d\n", (*target_cluster_id));
         asguard_dbg("Have %d registered cluster nodes\n", priv->sdev->pminfo.num_of_targets);
         return -1;
     }
 
+out:
     return 0;
 }
 
@@ -110,6 +117,7 @@ static ssize_t asguard_pupu_ctrl_write(struct file *file,
 
     if(err)
         goto error;
+
 
     setup_echo_msg_uni(priv->ins, &priv->sdev->pminfo, remote_lid,
                        priv->sdev->pminfo.cluster_id, target_cluster_id,

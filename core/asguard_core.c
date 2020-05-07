@@ -766,13 +766,9 @@ void clear_protocol_instances(struct asguard_device *sdev)
 
 	}
 
-
 	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
 		sdev->instance_id_mapping[i] = -1;
-
-
 	sdev->num_of_proto_instances = 0;
-
 
 }
 
@@ -833,6 +829,7 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
     skb_set_queue_mapping(sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb, sdev->pminfo.active_cpu); // Queue mapping same for each target i
 
     sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
+    asguard_error("Registered Cluster Member with ID %d\n", cluster_id);
 
 	return 0;
 }
