@@ -67,7 +67,7 @@ SET( MODULE_SOURCE_FILES
         core/asguard_core.c
         core/asguard_core.h
         core/asguard_core_ctrl.c
-        core/asguard_payload_helper.c core/uface/cluster_membership.c core/uface/apply_data.c core/uface/consensus_request.c common/asguard/asgard_uface.h core/uface/ringbuffer.c common/asguard/ringbuffer.h core/logic_layer/echo/asgard_ping_ctrl.c core/logic_layer/echo/asgard_ping_ctrl.h)
+        core/asguard_payload_helper.c core/uface/cluster_membership.c core/uface/apply_data.c core/uface/consensus_request.c common/asguard/asgard_uface.h core/uface/ringbuffer.c common/asguard/ringbuffer.h core/logic_layer/echo/asgard_ping_ctrl.c core/logic_layer/echo/asgard_ping_ctrl.h core/multicast/multicast_ctrl.c common/asguard/multicast.h)
 
 # Use KBuild System in Container to compile
 if (TARGET_ENV EQUAL 1)
@@ -96,7 +96,7 @@ elseif(TARGET_ENV EQUAL 0)
 
     MESSAGE("Using Local Environment (No Container)")
     MESSAGE(${CMAKE_SOURCE_DIR})
-    set(ASGUARD_KERNEL_ROOT /Volumes/Workspace/asguard/asguard-kernel/)
+    set(ASGUARD_KERNEL_ROOT /Volumes/Workspace/slicedNetwork/asguard-kernel/)
 
     execute_process(
             COMMAND git rev-parse --short HEAD

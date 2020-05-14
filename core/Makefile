@@ -43,5 +43,7 @@ asguard-objs += logic_layer/consensus/asguard_consensus_request_gen.o logic_laye
 # echo protocol
 asguard-objs += logic_layer/echo/asguard_app_echo.o  logic_layer/echo/asguard_echo_ops.o logic_layer/echo/asguard_echo.o logic_layer/echo/asgard_ping_ctrl.o
 
+# multicast
+asguard-objs += multicast/multicast_ctrl.o
 
 endif

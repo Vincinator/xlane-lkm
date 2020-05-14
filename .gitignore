@@ -19,6 +19,7 @@ CMakeFiles/
 __pycache__/
 .vscode/
 CMakeCache.txt
+CMakeLists.txt
 hello_world
 test_follower
 cmake-build-debug/
