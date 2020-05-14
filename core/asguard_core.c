@@ -36,6 +36,7 @@
 #include <asguard/asgard_uface.h>
 #include <synbuf-chardev.h>
 #include <asguard/asguard_echo.h>
+#include <asguard/multicast.h>
 
 
 MODULE_LICENSE("GPL");
@@ -605,7 +606,11 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	/*  Initialize protocol instance controller */
 	init_proto_instance_ctrl(score->sdevices[asguard_id]);
 
-	/* Initialize Control Interfaces for NIC */
+    /*  Initialize multicast controller */
+    init_multicast_ctrl(score->sdevices[asguard_id]);
+
+
+    /* Initialize Control Interfaces for NIC */
 	init_asguard_pm_ctrl_interfaces(score->sdevices[asguard_id]);
 	init_asguard_ctrl_interfaces(score->sdevices[asguard_id]);
 
@@ -653,13 +658,18 @@ int asguard_core_remove_nic(int asguard_id)
 
 	//remove_logger_ifaces(&score->sdevices[asguard_id]->le_logger);
 
-	snprintf(name_buf, sizeof(name_buf), "asguard/%d",
+    /* Clean Multicast*/
+    remove_multicast_ctrl(score->sdevices[asguard_id]);
+
+    snprintf(name_buf, sizeof(name_buf), "asguard/%d",
 		 score->sdevices[asguard_id]->ifindex);
 
 	remove_proc_entry(name_buf, NULL);
 
     /* Clean Cluster Membership Synbuf*/
     synbuf_chardev_exit(score->sdevices[asguard_id]->synbuf_clustermem);
+
+
 
 	return 0;
 }

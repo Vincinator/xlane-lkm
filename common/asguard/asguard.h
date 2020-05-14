@@ -3,6 +3,7 @@
 
 #include <linux/workqueue.h>
 #include <asguard/ringbuffer.h>
+#include <asguard/multicast.h>
 
 
 #define VERBOSE_DEBUG 1
@@ -374,6 +375,13 @@ struct pminfo {
 
 struct proto_instance;
 
+struct multicast {
+    struct asguard_logger logger;
+
+    int delay;
+};
+
+
 struct asguard_device {
 	int ifindex; /* corresponds to ifindex of net_device */
 
@@ -425,6 +433,8 @@ struct asguard_device {
     struct proc_dir_entry *pacemaker_ctrl_entry;
     struct proc_dir_entry *pacemaker_payload_entry;
     struct proc_dir_entry *pacemaker_cluster_id_entry;
+    struct proc_dir_entry *multicast_ctrl_entry;
+    struct multicast multicast;
 
     u32 multicast_ip;
     unsigned char *multicast_mac;
