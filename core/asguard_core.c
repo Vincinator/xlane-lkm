@@ -607,7 +607,7 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	init_proto_instance_ctrl(score->sdevices[asguard_id]);
 
     /*  Initialize multicast controller */
-    init_multicast_ctrl(score->sdevices[asguard_id]);
+    init_multicast(score->sdevices[asguard_id]);
 
 
     /* Initialize Control Interfaces for NIC */
@@ -659,7 +659,7 @@ int asguard_core_remove_nic(int asguard_id)
 	//remove_logger_ifaces(&score->sdevices[asguard_id]->le_logger);
 
     /* Clean Multicast*/
-    remove_multicast_ctrl(score->sdevices[asguard_id]);
+    remove_multicast(score->sdevices[asguard_id]);
 
     snprintf(name_buf, sizeof(name_buf), "asguard/%d",
 		 score->sdevices[asguard_id]->ifindex);

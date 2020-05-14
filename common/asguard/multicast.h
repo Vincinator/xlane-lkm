@@ -6,8 +6,8 @@
 
 #include <asguard/asguard.h>
 
-void init_multicast_ctrl(struct asguard_device *sdev);
-void remove_multicast_ctrl(struct asguard_device *sdev);
+void init_multicast(struct asguard_device *sdev);
+void remove_multicast(struct asguard_device *sdev);
 
 #endif //ASGUARD_MULTICAST_H
 

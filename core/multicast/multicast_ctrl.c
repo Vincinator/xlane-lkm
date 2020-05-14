@@ -23,22 +23,22 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGUARD][MULTICAST INSTANCE CTRL]"
 
-static ssize_t multicast_ctrl_write(struct file *file,
+static ssize_t multicast_delay_write(struct file *file,
                                     const char __user *user_buffer,
                                     size_t count, loff_t *data);
-static int multicast_ctrl_open(struct inode *inode, struct file *file);
+static int multicast_delay_open(struct inode *inode, struct file *file);
 
 
-static const struct file_operations multicast_ctrl_ops = {
+static const struct file_operations multicast_delay_ops = {
         .owner = THIS_MODULE,
-        .open = multicast_ctrl_open,
-        .write = multicast_ctrl_write,
+        .open = multicast_delay_open,
+        .write = multicast_delay_write,
         .read = seq_read,
         .llseek = seq_lseek,
         .release = single_release,
 };
 
-static ssize_t multicast_ctrl_write(struct file *file,
+static ssize_t multicast_delay_write(struct file *file,
                                          const char __user *user_buffer,
                                          size_t count, loff_t *data)
 {
@@ -82,7 +82,7 @@ static ssize_t multicast_ctrl_write(struct file *file,
     return err;
 }
 
-static int multicast_ctrl_show(struct seq_file *m, void *v)
+static int multicast_delay_show(struct seq_file *m, void *v)
 {
     struct asguard_device *sdev =
             (struct asguard_device *)m->private;
@@ -97,14 +97,14 @@ static int multicast_ctrl_show(struct seq_file *m, void *v)
     return 0;
 }
 
-static int multicast_ctrl_open(struct inode *inode, struct file *file)
+static int multicast_delay_open(struct inode *inode, struct file *file)
 {
-    return single_open(file, multicast_ctrl_show,
+    return single_open(file, multicast_delay_show,
                        PDE_DATA(file_inode(file)));
 }
 
 
-void init_multicast_ctrl(struct asguard_device *sdev)
+void init_multicast(struct asguard_device *sdev)
 {
     char name_buf[MAX_ASGUARD_PROC_NAME];
 
@@ -113,20 +113,20 @@ void init_multicast_ctrl(struct asguard_device *sdev)
 
     proc_mkdir(name_buf, NULL);
 
-    snprintf(name_buf, sizeof(name_buf), "asguard/%d/multicast/ctrl",
+    snprintf(name_buf, sizeof(name_buf), "asguard/%d/multicast/delay",
              sdev->ifindex);
 
-    sdev->multicast_ctrl_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &multicast_ctrl_ops, sdev);
+    sdev->multicast_ctrl_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &multicast_delay_ops, sdev);
 
 }
-EXPORT_SYMBOL(init_multicast_ctrl);
+EXPORT_SYMBOL(init_multicast);
 
 
-void remove_multicast_ctrl(struct asguard_device *sdev)
+void remove_multicast(struct asguard_device *sdev)
 {
     char name_buf[MAX_ASGUARD_PROC_NAME];
 
-    snprintf(name_buf, sizeof(name_buf), "asguard/%d/multicast/ctrl",
+    snprintf(name_buf, sizeof(name_buf), "asguard/%d/multicast/delay",
              sdev->ifindex);
 
     if(sdev->multicast_ctrl_entry) {
@@ -139,4 +139,4 @@ void remove_multicast_ctrl(struct asguard_device *sdev)
 
     remove_proc_entry(name_buf, NULL);
 }
-EXPORT_SYMBOL(remove_multicast_ctrl);
+EXPORT_SYMBOL(remove_multicast);
