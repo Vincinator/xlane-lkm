@@ -156,7 +156,7 @@ void init_multicast_ctrl(struct asguard_device *sdev)
     snprintf(name_buf, sizeof(name_buf), "asguard/%d/proto_instances/ctrl",
              sdev->ifindex);
 
-    sdev->proto_instances_ctrl_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &proto_instance_ctrl_ops, sdev);
+    sdev->proto_instances_ctrl_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &multicast_ctrl_ops, sdev);
 
 }
 EXPORT_SYMBOL(init_multicast_ctrl);
