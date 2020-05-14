@@ -324,7 +324,7 @@ static int asguard_ppwt_show(struct seq_file *m, void *v)
     if (!priv)
         return -ENODEV;
 
-    //seq_printf(m, "%pUB\n", priv->uuid.b);
+    seq_printf(m, "%d\n", priv->pong_waiting_interval);
 
     return 0;
 }

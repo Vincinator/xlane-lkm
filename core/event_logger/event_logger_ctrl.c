@@ -110,7 +110,7 @@ void clear_logger(struct asguard_logger *slog)
         snprintf(name_buf, sizeof(name_buf),
                  "asguard/%d/proto_instances/%d/ctrl_%s",
                  slog->ifindex, slog->instance_id, slog->name);
-
+        slog->ctrl_logger_entry = NULL;
         remove_proc_entry(name_buf, NULL);
     }
 

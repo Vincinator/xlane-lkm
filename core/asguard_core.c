@@ -349,7 +349,7 @@ void asguard_post_payload(int asguard_id, void *payload_in, u16 headroom, u32 cq
     payload = kzalloc(cqe_bcnt, GFP_KERNEL);
 	memcpy(payload, payload_in, cqe_bcnt);
 
-    asguard_write_timestamp(sdev, 1, RDTSC_ASGUARD, asguard_id);
+    // asguard_write_timestamp(sdev, 1, RDTSC_ASGUARD, asguard_id);
 
 	remote_mac = ((char *) payload) + headroom + 6;
 	user_data = ((char *) payload) + headroom + ETH_HLEN + sizeof(struct iphdr) + sizeof(struct udphdr);
