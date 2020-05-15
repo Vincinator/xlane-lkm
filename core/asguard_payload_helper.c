@@ -533,7 +533,6 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 
 int _do_prepare_log_replication_multicast(struct asguard_device *sdev, u32 dst_ip, unsigned char *dst_mac){
     int ret;
-    int more = 0;
 
     struct asguard_async_pkt *apkt = NULL;
 

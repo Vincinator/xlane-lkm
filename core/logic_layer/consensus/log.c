@@ -76,7 +76,8 @@ int commit_log(struct consensus_priv *priv, s32 commit_idx)
 
     // Check if commit index must be updated
     if (commit_idx > priv->sm_log.commit_idx) {
-        if(commit_idx > priv->sm_log.stable_idx){
+
+        if(!priv->sdev->multicast.enable && commit_idx > priv->sm_log.stable_idx){
             asguard_error("Commit idx is greater than local stable idx\n");
             asguard_dbg("\t leader commit idx: %d, local stable idx: %d\n", commit_idx, priv->sm_log.stable_idx);
         } else {
