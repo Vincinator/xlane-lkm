@@ -40,6 +40,7 @@ int setup_nomination(struct proto_instance *ins)
 
 	priv->sdev->hold_fire = 1;
 
+
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++)
 		priv->sdev->pminfo.pm_targets[i].fire = 1;
 
@@ -199,7 +200,7 @@ int start_candidate(struct proto_instance *ins)
 		(struct consensus_priv *)ins->proto_data;
 
 
-	if(priv->sdev->pminfo.num_of_targets < 2) {
+	if(priv->sdev->pminfo.num_of_targets <= 2) {
 	    asguard_error("Not enough Cluster Members for a Leader Election!\n");
 	    return -1;
 	}
