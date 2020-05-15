@@ -779,15 +779,13 @@ void prepare_log_replication_multicast_handler(struct work_struct *w)
     more = _do_prepare_log_replication_multicast(aw->sdev, aw->sdev->multicast_ip, aw->sdev->multicast_mac);
 
     /* not ready to prepare log replication */
-    if(more < 0){
+    if(more < 0)
         goto cleanup;
-    }
 
-    if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
+    if(more)
         check_pending_log_rep_for_multicast(aw->sdev);
-    }
 
-    cleanup:
+cleanup:
     if(aw)
         kfree(aw);
 }
