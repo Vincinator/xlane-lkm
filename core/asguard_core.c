@@ -534,6 +534,15 @@ int asguard_core_register_nic(int ifindex,  int asguard_id)
 	score->sdevices[asguard_id]->multicast_ip = asguard_ip_convert("232.43.211.234");
     score->sdevices[asguard_id]->multicast_mac = asguard_convert_mac("01:00:5e:2b:d3:ea");
 
+    score->sdevices[asguard_id]->multicast.aapriv
+            = kmalloc(sizeof(struct asguard_async_queue_priv), GFP_KERNEL);
+
+    score->sdevices[asguard_id]->multicast.delay = 0;
+    score->sdevices[asguard_id]->multicast.enable = 0;
+    score->sdevices[asguard_id]->multicast.nextIdx = 0;
+
+    init_asguard_async_queue(score->sdevices[asguard_id]->multicast.aapriv);
+
     if(score->sdevices[asguard_id]->ndev) {
 
         if(!score->sdevices[asguard_id]->ndev->ip_ptr||!score->sdevices[asguard_id]->ndev->ip_ptr->ifa_list){
@@ -838,7 +847,10 @@ int asguard_core_register_remote_host(int asguard_id, u32 ip, char *mac,
     pmtarget->aapriv = kmalloc(sizeof(struct asguard_async_queue_priv), GFP_KERNEL);
     init_asguard_async_queue(pmtarget->aapriv);
 
-    /* Out of schedule SKB  pre-allocation*/
+
+
+
+            /* Out of schedule SKB  pre-allocation*/
     sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb = asguard_reserve_skb(sdev->ndev, ip, mac, NULL);
     skb_set_queue_mapping(sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb, sdev->pminfo.active_cpu); // Queue mapping same for each target i
 
