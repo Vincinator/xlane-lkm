@@ -264,8 +264,10 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		asguard_dbg("append commands failed. start_idx=%d, unstable=%d\n", start_idx, unstable);
 		goto reply_false_unlock;
 	}
-    if (priv->sdev->multicast.enable)
+    if (priv->sdev->multicast.enable) {
         priv->sm_log.commit_idx = priv->sm_log.last_idx;
+
+    }
 
 	// update_next_retransmission_request_idx(priv);
 

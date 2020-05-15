@@ -437,6 +437,7 @@ int setup_append_multicast_msg(struct asguard_device *sdev, struct asguard_paylo
                 more);
 
     sdev->multicast.nextIdx += num_entries;
+    sdev->consensus_priv->sm_log.commit_idx += num_entries - 1;
 
     return more;
 }
@@ -542,7 +543,6 @@ int _do_prepare_log_replication_multicast(struct asguard_device *sdev, u32 dst_i
     // asguard_dbg("Calling setup_append_msg with next_index=%d, retrans=%d, target_id=%d", next_index, retrans, target_id);
 
     ret = setup_append_multicast_msg(sdev, get_payload_ptr(apkt));
-
         // handle errors
     if(ret < 0) {
         //kfree(apkt->payload);

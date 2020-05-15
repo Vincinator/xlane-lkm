@@ -72,6 +72,10 @@ void update_commit_idx(struct consensus_priv *priv)
 		return;
 	}
 
+	if(priv->sdev->multicast.enable) {
+	    return;
+	}
+
 	N = -1;
 
 	// each match_index is a potential new commit_idx candidate
