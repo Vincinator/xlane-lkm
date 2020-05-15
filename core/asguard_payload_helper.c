@@ -360,25 +360,28 @@ int setup_append_multicast_msg(struct asguard_device *sdev, struct asguard_paylo
     s32 local_last_idx;
     s32 prev_log_term, leader_commit_idx;
     s32 num_entries = 0;
-    s32 next_index = sdev->multicast.nextIdx;
+    s32 next_index;
     char *pkt_payload_sub;
     int more = 0;
 
     // Check if entries must be appended
     local_last_idx = _get_last_idx_safe(sdev->consensus_priv);
 
-    if (next_index == -1) {
+    if (sdev->multicast.nextIdx == -1) {
         asguard_dbg("Invalid target id resulted in invalid next_index!\n");
         return -1;
     }
 
     // asguard_dbg("PREP AE: local_last_idx=%d, next_index=%d\n", local_last_idx, next_index);
-    prev_log_term = _get_prev_log_term(sdev->consensus_priv, next_index - 1);
+    prev_log_term = _get_prev_log_term(sdev->consensus_priv, sdev->multicast.nextIdx - 1);
 
     if (prev_log_term < 0) {
         asguard_error("BUG! - prev_log_term is invalid. next_index=%d\n", next_index);
         return -1;
     }
+
+    mutex_lock(&sdev->consensus_priv->sm_log.next_lock);
+    next_index = sdev->multicast.nextIdx;
 
     if (local_last_idx >= next_index) {
         // Facts:
@@ -398,10 +401,12 @@ int setup_append_multicast_msg(struct asguard_device *sdev, struct asguard_paylo
 
         if(num_entries <= 0) {
             asguard_dbg("No entries to replicate\n");
+            mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
             return -1;
         }
 
     } else {
+        mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
         return -2;
     }
 
@@ -420,6 +425,7 @@ int setup_append_multicast_msg(struct asguard_device *sdev, struct asguard_paylo
                                   ASGUARD_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
     if (!pkt_payload_sub) {
+        mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
         return -1;
     }
 
@@ -438,6 +444,7 @@ int setup_append_multicast_msg(struct asguard_device *sdev, struct asguard_paylo
 
     sdev->multicast.nextIdx += num_entries;
     sdev->consensus_priv->sm_log.commit_idx += num_entries - 1;
+    mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
 
     return more;
 }
