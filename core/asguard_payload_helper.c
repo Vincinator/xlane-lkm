@@ -423,7 +423,7 @@ int setup_append_multicast_msg(struct asguard_device *sdev, struct asguard_paylo
         return -1;
     }
 
-    leader_commit_idx = next_index + num_entries;
+    leader_commit_idx = next_index + num_entries - 1;
 
     set_ae_data(pkt_payload_sub,
                 sdev->consensus_priv->term,
