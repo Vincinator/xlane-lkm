@@ -36,7 +36,7 @@ int push_front_async_pkt(struct asguard_async_queue_priv *aqueue, struct asguard
 /* Dequeue and return tail of async pkt queue */
 struct asguard_async_pkt * dequeue_async_pkt(struct asguard_async_queue_priv *aqueue);
 
-struct asguard_async_pkt * create_async_pkt(struct net_device *ndev, u32 dst_ip, unsigned char dst_mac[6]);
+struct asguard_async_pkt * create_async_pkt(struct net_device *ndev, u32 dst_ip, unsigned char *dst_mac);
 
 void ring_aa_doorbell(struct asguard_async_queue_priv *aqueue);
 

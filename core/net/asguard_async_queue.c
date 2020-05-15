@@ -123,7 +123,7 @@ EXPORT_SYMBOL(push_front_async_pkt);
 EXPORT_SYMBOL(dequeue_async_pkt);
 
 
-struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, unsigned char dst_mac[6])
+struct asguard_async_pkt *create_async_pkt(struct net_device *ndev, u32 dst_ip, unsigned char *dst_mac)
 {
     struct asguard_async_pkt *apkt = NULL;
     // freed by _emit_async_pkts

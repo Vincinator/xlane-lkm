@@ -483,7 +483,7 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 
             apkt = create_async_pkt(sdev->ndev,
                                     spminfo->pm_targets[target_id].pkt_data.naddr.dst_ip,
-                                    spminfo->pm_targets[target_id].pkt_data.naddr.dst_mac);
+                                    &spminfo->pm_targets[target_id].pkt_data.naddr.dst_mac[0]);
 
             if(!apkt) {
                 asguard_error("Could not allocate async pkt!\n");
@@ -523,10 +523,12 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 
 }
 
-int _do_prepare_log_replication_multicast(struct asguard_device *sdev, u32 dst_ip, unsigned char dst_mac[6]){
+int _do_prepare_log_replication_multicast(struct asguard_device *sdev, u32 dst_ip, unsigned char *dst_mac){
     int ret;
     int more = 0;
+
     struct asguard_async_pkt *apkt = NULL;
+
     if (!sdev->is_leader)
         return -1;
 
@@ -539,8 +541,7 @@ int _do_prepare_log_replication_multicast(struct asguard_device *sdev, u32 dst_i
 
     // asguard_dbg("Calling setup_append_msg with next_index=%d, retrans=%d, target_id=%d", next_index, retrans, target_id);
 
-    ret = setup_append_multicast_msg(sdev,
-                           get_payload_ptr(apkt));
+    ret = setup_append_multicast_msg(sdev, get_payload_ptr(apkt));
 
         // handle errors
     if(ret < 0) {
