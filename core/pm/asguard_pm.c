@@ -645,16 +645,16 @@ out:
 	return ret;
 }
 
-int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo) 
+int _emit_async_unicast_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
 {
-	int i;
- 	struct asguard_async_pkt *cur_apkt;
+    int i;
+    struct asguard_async_pkt *cur_apkt;
     int ret;
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
         if(spminfo->pm_targets[i].aapriv->doorbell > 0) {
 
-			cur_apkt = dequeue_async_pkt(spminfo->pm_targets[i].aapriv);
+            cur_apkt = dequeue_async_pkt(spminfo->pm_targets[i].aapriv);
 
             // consider packet already handled
             spminfo->pm_targets[i].aapriv->doorbell--;
@@ -698,9 +698,63 @@ int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo)
             }
             spminfo->pm_targets[i].pkt_tx_counter++;
         }
-	}
+    }
 
     return 0;
+}
+
+int _emit_async_multicast_pkt(struct asguard_device *sdev, struct pminfo *spminfo)
+{
+    struct asguard_async_pkt *cur_apkt;
+    int ret;
+
+    if(sdev->multicast.aapriv->doorbell > 0) {
+
+        cur_apkt = dequeue_async_pkt(sdev->multicast.aapriv);
+
+        // consider packet already handled
+        sdev->multicast.aapriv->doorbell--;
+
+        if(!cur_apkt || !cur_apkt->skb) {
+            asguard_error("pkt or skb is NULL! \n");
+            return -1;
+        }
+
+        skb_set_queue_mapping(cur_apkt->skb, smp_processor_id());
+
+        // emit pkt, and check if transmission failed
+        ret = emit_apkt(sdev->ndev, spminfo, cur_apkt);
+
+        switch(ret){
+            case NETDEV_TX_OK:
+
+                /* packet is not needed anymore */
+                if(cur_apkt->skb)
+                    kfree_skb(cur_apkt->skb);
+                kfree(cur_apkt);
+
+                break;
+            case NET_XMIT_DROP:
+                break;
+            case NETDEV_TX_BUSY:
+                /* requeue packet */
+                push_front_async_pkt(sdev->multicast.aapriv, cur_apkt);
+                return -1;
+            default:
+                asguard_error("Unhandled Return code in async pkt handler (%d)\n", ret);
+        }
+    }
+
+    return 0;
+}
+
+
+int _emit_async_pkts(struct asguard_device *sdev, struct pminfo *spminfo) 
+{
+    if (sdev->multicast.enable)
+        return _emit_async_multicast_pkt(sdev, spminfo);
+    else
+        return _emit_async_unicast_pkts(sdev, spminfo);
 }
 
 static int _validate_pm(struct asguard_device *sdev,

@@ -18,6 +18,7 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
+
 	struct asguard_payload *pkt_payload;
 	char *pkt_payload_sub;
 
@@ -263,6 +264,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 		asguard_dbg("append commands failed. start_idx=%d, unstable=%d\n", start_idx, unstable);
 		goto reply_false_unlock;
 	}
+    if (priv->sdev->multicast.enable)
+        priv->sm_log.commit_idx = priv->sm_log.last_idx;
 
 	// update_next_retransmission_request_idx(priv);
 
@@ -280,6 +283,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 // default: reply success
 	mutex_unlock(&priv->sm_log.mlock);
+    if (priv->sdev->multicast.enable)
+        return;
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
     return;

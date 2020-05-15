@@ -355,6 +355,93 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asguard_payload *sp
 }
 EXPORT_SYMBOL(setup_append_msg);
 
+int setup_append_multicast_msg(struct asguard_device *sdev, struct asguard_payload *spay)
+{
+    s32 local_last_idx;
+    s32 prev_log_term, leader_commit_idx;
+    s32 num_entries = 0;
+    s32 next_index = sdev->multicast.nextIdx;
+    char *pkt_payload_sub;
+    int more = 0;
+
+    // Check if entries must be appended
+    local_last_idx = _get_last_idx_safe(sdev->consensus_priv);
+
+    if (next_index == -1) {
+        asguard_dbg("Invalid target id resulted in invalid next_index!\n");
+        return -1;
+    }
+
+    // asguard_dbg("PREP AE: local_last_idx=%d, next_index=%d\n", local_last_idx, next_index);
+    prev_log_term = _get_prev_log_term(sdev->consensus_priv, next_index - 1);
+
+    if (prev_log_term < 0) {
+        asguard_error("BUG! - prev_log_term is invalid. next_index=%d\n", next_index);
+        return -1;
+    }
+
+    if (local_last_idx >= next_index) {
+        // Facts:
+        //	- local_last_idx >= next_index
+        //  - Must include entries in next consensus append message
+        //  - thus, num_of_entries will not be 0
+
+        // Decide how many entries to update for the current target
+
+        if (sdev->consensus_priv->max_entries_per_pkt < local_last_idx - next_index + 1) {
+            num_entries = sdev->consensus_priv->max_entries_per_pkt;
+            more = 1;
+        } else {
+            num_entries = (local_last_idx - next_index + 1);
+            more = 0;
+        }
+
+        if(num_entries <= 0) {
+            asguard_dbg("No entries to replicate\n");
+            return -1;
+        }
+
+    } else {
+        return -2;
+    }
+
+    /* asguard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
+                 retrans,
+                 target_id,
+                 local_last_idx,
+                 next_index,
+                 prev_log_term,
+                 num_entries);*/
+
+    // reserve space in asguard heartbeat for consensus LEAD
+
+    pkt_payload_sub =
+            asguard_reserve_proto(sdev->consensus_priv->ins->instance_id, spay,
+                                  ASGUARD_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
+
+    if (!pkt_payload_sub) {
+        return -1;
+    }
+
+    leader_commit_idx = next_index + num_entries;
+
+    set_ae_data(pkt_payload_sub,
+                sdev->consensus_priv->term,
+                sdev->consensus_priv->node_id,
+            // previous is one before the "this should be send next" index
+                next_index,
+                prev_log_term,
+                leader_commit_idx,
+                sdev->consensus_priv,
+                num_entries,
+                more);
+
+    sdev->multicast.nextIdx += num_entries;
+
+    return more;
+}
+EXPORT_SYMBOL(setup_append_multicast_msg);
+
 /* Must be called after the asguard packet has been emitted.
  */
 void invalidate_proto_data(struct asguard_device *sdev, struct asguard_payload *spay)
@@ -382,17 +469,17 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 		return -1; // Current target is not alive!
 	}
 
-	// iterate through consensus protocols and include LEAD messages if node is leader
-	for (j = 0; j < sdev->num_of_proto_instances; j++) {
+    // iterate through consensus protocols and include LEAD messages if node is leader
+    for (j = 0; j < sdev->num_of_proto_instances; j++) {
 
-		if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
+        if (sdev->protos[target_id] != NULL && sdev->protos[j]->proto_type == ASGUARD_PROTO_CONSENSUS) {
 
-			// get corresponding local instance data for consensus
-			cur_priv =
-				(struct consensus_priv *)sdev->protos[j]->proto_data;
+            // get corresponding local instance data for consensus
+            cur_priv =
+                    (struct consensus_priv *)sdev->protos[j]->proto_data;
 
-			if (cur_priv->nstate != LEADER)
-				continue;
+            if (cur_priv->nstate != LEADER)
+                continue;
 
             apkt = create_async_pkt(sdev->ndev,
                                     spminfo->pm_targets[target_id].pkt_data.naddr.dst_ip,
@@ -403,14 +490,14 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
                 continue;
             }
 
-           // asguard_dbg("Calling setup_append_msg with next_index=%d, retrans=%d, target_id=%d", next_index, retrans, target_id);
+            // asguard_dbg("Calling setup_append_msg with next_index=%d, retrans=%d, target_id=%d", next_index, retrans, target_id);
 
             ret = setup_append_msg(cur_priv,
-                            get_payload_ptr(apkt),
-                            sdev->protos[j]->instance_id,
-                            target_id,
-                            next_index,
-                            retrans);
+                                   get_payload_ptr(apkt),
+                                   sdev->protos[j]->instance_id,
+                                   target_id,
+                                   next_index,
+                                   retrans);
 
             // handle errors
             if(ret < 0) {
@@ -423,17 +510,50 @@ int _do_prepare_log_replication(struct asguard_device *sdev, int target_id, s32 
 
             sdev->pminfo.pm_targets[target_id].scheduled_log_replications++;
 
-			if(retrans)
-				push_front_async_pkt(spminfo->pm_targets[target_id].aapriv, apkt);
-			else
-				enqueue_async_pkt(spminfo->pm_targets[target_id].aapriv, apkt);
-			
-			ring_aa_doorbell(spminfo->pm_targets[target_id].aapriv);
-		}
-	}
+            if(retrans)
+                push_front_async_pkt(spminfo->pm_targets[target_id].aapriv, apkt);
+            else
+                enqueue_async_pkt(spminfo->pm_targets[target_id].aapriv, apkt);
+
+            ring_aa_doorbell(spminfo->pm_targets[target_id].aapriv);
+        }
+    }
 
 	return more;
 
+}
+
+int _do_prepare_log_replication_multicast(struct asguard_device *sdev, u32 dst_ip, unsigned char dst_mac[6]){
+    int ret;
+    int more = 0;
+    struct asguard_async_pkt *apkt = NULL;
+    if (!sdev->is_leader)
+        return -1;
+
+    apkt = create_async_pkt(sdev->ndev, dst_ip, dst_mac);
+
+    if(!apkt) {
+        asguard_error("Could not allocate async pkt!\n");
+        return -1;
+    }
+
+    // asguard_dbg("Calling setup_append_msg with next_index=%d, retrans=%d, target_id=%d", next_index, retrans, target_id);
+
+    ret = setup_append_multicast_msg(sdev,
+                           get_payload_ptr(apkt));
+
+        // handle errors
+    if(ret < 0) {
+        //kfree(apkt->payload);
+        kfree(apkt);
+        return ret;
+    }
+
+    enqueue_async_pkt(sdev->multicast.aapriv, apkt);
+
+    ring_aa_doorbell(sdev->multicast.aapriv);
+
+    return more;
 }
 
 void pull_consensus_requests_from_rb( struct work_struct *w);
@@ -585,10 +705,11 @@ cleanup:
 }
 
 
-void prepare_log_replication_handler( struct work_struct *w);
+void prepare_log_replication_handler(struct work_struct *w);
+void prepare_log_replication_multicast_handler (struct work_struct *w);
 
 
-void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_index, s32 retrans)
+void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_index, s32 retrans, int multicast_enabled)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
 
@@ -607,11 +728,15 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
     // freed by prepare_log_replication_handler
 	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_KERNEL);
 	work->sdev = sdev;
-	work->target_id = target_id;
 	work->next_index = next_index;
 	work->retrans = retrans;
 
-	INIT_WORK(&work->work, prepare_log_replication_handler);
+    if (multicast_enabled > 0 )
+        INIT_WORK(&work->work, prepare_log_replication_multicast_handler);
+    else{
+        work->target_id = target_id;
+        INIT_WORK(&work->work, prepare_log_replication_handler);
+    }
 	if(!queue_work(sdev->asguard_leader_wq, &work->work)) {
 		asguard_dbg("Work item not put in queue ..");
 		sdev->bug_counter++;
@@ -620,6 +745,28 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 		return;
 	}
 
+}
+void prepare_log_replication_multicast_handler(struct work_struct *w)
+{
+    struct asguard_leader_pkt_work_data *aw = NULL;
+    int more = 0;
+
+    aw = container_of(w, struct asguard_leader_pkt_work_data, work);
+
+    more = _do_prepare_log_replication_multicast(aw->sdev, aw->sdev->multicast_ip, aw->sdev->multicast_mac);
+
+    /* not ready to prepare log replication */
+    if(more < 0){
+        goto cleanup;
+    }
+
+    if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
+        check_pending_log_rep_for_target(aw->sdev, aw->target_id);
+    }
+
+    cleanup:
+    if(aw)
+        kfree(aw);
 }
 
 void prepare_log_replication_handler(struct work_struct *w)
@@ -725,10 +872,33 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 		return;
 	}
 
-	_schedule_log_rep(sdev, target_id, next_index, retrans);
+	_schedule_log_rep(sdev, target_id, next_index, retrans, 0);
 }
 EXPORT_SYMBOL(check_pending_log_rep_for_target);
 
+
+/*
+ *
+ */
+void check_pending_log_rep_for_multicast(struct asguard_device *sdev)
+{
+    s32 next_index, match_index;
+    int retrans;
+
+    if(sdev->is_leader == 0)
+        return;
+
+    if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
+        return;
+
+    next_index = sdev->multicast.nextIdx;
+
+    if(next_index < 0)
+        return;
+
+    _schedule_log_rep(sdev, 0, next_index, retrans, 1);
+}
+EXPORT_SYMBOL(check_pending_log_rep_for_multicast);
 
 void check_pending_log_rep(struct asguard_device *sdev)
 {
@@ -740,8 +910,13 @@ void check_pending_log_rep(struct asguard_device *sdev)
 	if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
 		return;
 
-	for(i = 0; i < sdev->pminfo.num_of_targets; i++)
-		check_pending_log_rep_for_target(sdev, i);
+    if (sdev->multicast.enable)
+        check_pending_log_rep_for_multicast(sdev);
+    else{
+        for(i = 0; i < sdev->pminfo.num_of_targets; i++)
+            check_pending_log_rep_for_target(sdev, i);
+    }
+
 
 }
 EXPORT_SYMBOL(check_pending_log_rep);

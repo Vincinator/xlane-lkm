@@ -376,9 +376,13 @@ struct pminfo {
 struct proto_instance;
 
 struct multicast {
-    struct asguard_logger logger;
-
+    /*Internal Usage*/
     int delay;
+    int enable;
+    /*Internal Usage*/
+    struct asguard_logger logger;
+    struct asguard_async_queue_priv *aapriv;
+    int nextIdx;
 };
 
 
@@ -433,7 +437,8 @@ struct asguard_device {
     struct proc_dir_entry *pacemaker_ctrl_entry;
     struct proc_dir_entry *pacemaker_payload_entry;
     struct proc_dir_entry *pacemaker_cluster_id_entry;
-    struct proc_dir_entry *multicast_ctrl_entry;
+    struct proc_dir_entry *multicast_delay_entry;
+    struct proc_dir_entry *multicast_enable_entry;
     struct multicast multicast;
 
     u32 multicast_ip;
