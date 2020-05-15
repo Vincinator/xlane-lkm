@@ -554,7 +554,7 @@ int _do_prepare_log_replication_multicast(struct asguard_device *sdev, u32 dst_i
 
     ring_aa_doorbell(sdev->multicast.aapriv);
 
-    return more;
+    return ret;
 }
 
 void pull_consensus_requests_from_rb( struct work_struct *w);
