@@ -200,7 +200,7 @@ int start_candidate(struct proto_instance *ins)
 		(struct consensus_priv *)ins->proto_data;
 
 
-	if(priv->sdev->pminfo.num_of_targets <= 2 && priv->sdev->warmup_state == WARMED_UP) {
+	if(priv->sdev->pminfo.num_of_targets < 2 && priv->sdev->warmup_state == WARMED_UP) {
 	    asguard_error("Not enough Cluster Members for a Leader Election!\n");
 	    return -1;
 	}
