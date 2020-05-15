@@ -46,13 +46,16 @@ static inline bool check_async_window(uint64_t prev_time, uint64_t cur_time, uin
 	return (cur_time - prev_time) <= (interval - sync_window);
 }
 
-static inline bool check_async_door(struct pminfo *spminfo)
+static inline bool check_async_door(struct asguard_device *sdev)
 {
 	int i;
 
-	for (i = 0; i < spminfo->num_of_targets; i++){
+    if(sdev->multicast.enable)
+        return sdev->multicast.aapriv->doorbell;
 
-	    if(spminfo->pm_targets[i].aapriv->doorbell)
+	for (i = 0; i < sdev->pminfo.num_of_targets; i++){
+
+	    if(sdev->pminfo.pm_targets[i].aapriv->doorbell)
             return 1;
 
 	}
@@ -896,7 +899,7 @@ static int asguard_pm_loop(void *data)
             goto emit;
 
 		/* including Log Replication Messages */
-		async_pkts = check_async_door(spminfo);
+		async_pkts = check_async_door(sdev);
 
 		if(async_pkts)
 			goto emit;
