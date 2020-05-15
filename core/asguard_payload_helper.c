@@ -744,8 +744,30 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
             kfree(work); //right?
 		return;
 	}
-
 }
+/*
+ *
+ */
+void check_pending_log_rep_for_multicast(struct asguard_device *sdev)
+{
+    s32 next_index, match_index;
+    int retrans;
+
+    if(sdev->is_leader == 0)
+        return;
+
+    if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
+        return;
+
+    next_index = sdev->multicast.nextIdx;
+
+    if(next_index < 0)
+        return;
+
+    _schedule_log_rep(sdev, 0, next_index, retrans, 1);
+}
+EXPORT_SYMBOL(check_pending_log_rep_for_multicast);
+
 void prepare_log_replication_multicast_handler(struct work_struct *w)
 {
     struct asguard_leader_pkt_work_data *aw = NULL;
@@ -761,7 +783,7 @@ void prepare_log_replication_multicast_handler(struct work_struct *w)
     }
 
     if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
-        check_pending_log_rep_for_target(aw->sdev, aw->target_id);
+        check_pending_log_rep_for_multicast(aw->sdev);
     }
 
     cleanup:
@@ -877,28 +899,7 @@ void check_pending_log_rep_for_target(struct asguard_device *sdev, int target_id
 EXPORT_SYMBOL(check_pending_log_rep_for_target);
 
 
-/*
- *
- */
-void check_pending_log_rep_for_multicast(struct asguard_device *sdev)
-{
-    s32 next_index, match_index;
-    int retrans;
 
-    if(sdev->is_leader == 0)
-        return;
-
-    if(sdev->pminfo.state != ASGUARD_PM_EMITTING)
-        return;
-
-    next_index = sdev->multicast.nextIdx;
-
-    if(next_index < 0)
-        return;
-
-    _schedule_log_rep(sdev, 0, next_index, retrans, 1);
-}
-EXPORT_SYMBOL(check_pending_log_rep_for_multicast);
 
 void check_pending_log_rep(struct asguard_device *sdev)
 {
