@@ -660,6 +660,7 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
             if(err) {
                 kfree(new_chunk);
                 asguard_dbg("Failed to read from ring buffer\n");
+
                 break;
             }
            // asguard_dbg("asgObj append %u of %u chunks\n", i, num_of_chunks);
