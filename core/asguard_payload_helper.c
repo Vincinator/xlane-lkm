@@ -713,7 +713,7 @@ cleanup:
 
 
 void prepare_log_replication_handler(struct work_struct *w);
-void prepare_log_replication_multicast_handler (struct work_struct *w);
+void prepare_log_replication_multicast_handler (struct asguard_device *sdev);
 
 
 void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_index, s32 retrans, int multicast_enabled)
@@ -739,7 +739,7 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 	work->retrans = retrans;
 
     if (multicast_enabled > 0 )
-        INIT_WORK(&work->work, prepare_log_replication_multicast_handler);
+        prepare_log_replication_multicast_handler(sdev);
     else{
         work->target_id = target_id;
         INIT_WORK(&work->work, prepare_log_replication_handler);
@@ -775,25 +775,18 @@ void check_pending_log_rep_for_multicast(struct asguard_device *sdev)
 }
 EXPORT_SYMBOL(check_pending_log_rep_for_multicast);
 
-void prepare_log_replication_multicast_handler(struct work_struct *w)
+void prepare_log_replication_multicast_handler(struct asguard_device *sdev)
 {
-    struct asguard_leader_pkt_work_data *aw = NULL;
     int more = 0;
 
-    aw = container_of(w, struct asguard_leader_pkt_work_data, work);
-
-    more = _do_prepare_log_replication_multicast(aw->sdev, aw->sdev->multicast_ip, aw->sdev->multicast_mac);
+    more = _do_prepare_log_replication_multicast(sdev, sdev->multicast_ip, sdev->multicast_mac);
 
     /* not ready to prepare log replication */
     if(more < 0)
-        goto cleanup;
+        return;
 
     if(more)
-        check_pending_log_rep_for_multicast(aw->sdev);
-
-cleanup:
-    if(aw)
-        kfree(aw);
+        check_pending_log_rep_for_multicast(sdev);
 }
 
 void prepare_log_replication_handler(struct work_struct *w)
