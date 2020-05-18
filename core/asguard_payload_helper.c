@@ -614,7 +614,6 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
     dw = container_of(w, struct delayed_work, work);
     aw = container_of(dw, struct asguard_ringbuf_read_work_data, dwork);
     priv = aw->sdev->consensus_priv;
-    asguard_dbg("After getting priv %d\n", __LINE__);
 
     if(!priv) {
         asguard_dbg("consensus priv is NULL \n");
@@ -623,7 +622,6 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
 
     /* Get next free slot in ASGARD log */
     cur_nxt_idx = priv->sm_log.last_idx + 1;
-    asguard_dbg("After getting cur_nxt_idx %d \n %d\n", cur_nxt_idx, __LINE__);
 
     /* Make sure that this node is still the leader! */
     if(priv->nstate != LEADER) {
