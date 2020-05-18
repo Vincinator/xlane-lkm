@@ -732,15 +732,17 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 		return;
 	}
 
-    // freed by prepare_log_replication_handler
-	work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_KERNEL);
-	work->sdev = sdev;
-	work->next_index = next_index;
-	work->retrans = retrans;
 
     if (multicast_enabled > 0 )
         prepare_log_replication_multicast_handler(sdev);
     else{
+        // freed by prepare_log_replication_handler
+        work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_KERNEL);
+        work->sdev = sdev;
+        work->next_index = next_index;
+        work->retrans = retrans;
+
+
         work->target_id = target_id;
         INIT_WORK(&work->work, prepare_log_replication_handler);
 
