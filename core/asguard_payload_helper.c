@@ -614,6 +614,7 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
     dw = container_of(w, struct delayed_work, work);
     aw = container_of(dw, struct asguard_ringbuf_read_work_data, dwork);
     priv = aw->sdev->consensus_priv;
+    asguard_dbg("After getting priv %d\n", __LINE__);
 
     if(!priv) {
         asguard_dbg("consensus priv is NULL \n");
@@ -622,6 +623,7 @@ void pull_consensus_requests_from_rb(struct work_struct *w) {
 
     /* Get next free slot in ASGARD log */
     cur_nxt_idx = priv->sm_log.last_idx + 1;
+    asguard_dbg("After getting cur_nxt_idx %d \n %d\n", cur_nxt_idx, __LINE__);
 
     /* Make sure that this node is still the leader! */
     if(priv->nstate != LEADER) {
@@ -719,6 +721,7 @@ void prepare_log_replication_multicast_handler (struct asguard_device *sdev);
 void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_index, s32 retrans, int multicast_enabled)
 {
 	struct asguard_leader_pkt_work_data *work = NULL;
+    int more = 0;
 
 	// if leadership has been dropped, do not schedule leader work
 	if(sdev->is_leader == 0) {
@@ -733,8 +736,13 @@ void _schedule_log_rep(struct asguard_device *sdev, int target_id, int next_inde
 	}
 
 
-    if (multicast_enabled > 0 )
-        prepare_log_replication_multicast_handler(sdev);
+    if (multicast_enabled > 0 ){
+        do{
+            more = _do_prepare_log_replication_multicast(sdev, sdev->multicast_ip, sdev->multicast_mac);
+        }
+        while(more > 0);
+    }
+    //prepare_log_replication_multicast_handler(sdev);
     else{
         // freed by prepare_log_replication_handler
         work = kmalloc(sizeof(struct asguard_leader_pkt_work_data), GFP_KERNEL);
