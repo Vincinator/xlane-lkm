@@ -4,6 +4,12 @@
 #include <linux/ip.h>
 #include <linux/rwlock_types.h>
 
+
+
+#ifdef LOG_PREFIX
+#undef LOG_PREFIX
+#endif
+
 #define LOG_PREFIX "[ASGARD][ASYNC QUEUE]"
 
 #define NIPQUAD(addr) \
@@ -65,7 +71,7 @@ int init_asgard_async_queue(struct asgard_async_queue_priv *new_queue)
 
     asgard_dbg("Async Queue initialized - updated version\n");
     asgard_dbg("ASGARD_PAYLOAD_BYTES=%d\n", ASGARD_PAYLOAD_BYTES);
-    asgard_dbg("size of asgard_payload struct=%d\n", sizeof(struct asgard_payload));
+    asgard_dbg("size of asgard_payload struct=%ld\n", sizeof(struct asgard_payload));
 
     return 0;
 

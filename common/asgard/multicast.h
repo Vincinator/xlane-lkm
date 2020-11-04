@@ -6,6 +6,8 @@
 
 #include <asgard/asgard.h>
 
+struct asgard_device;
+
 void init_multicast(struct asgard_device *sdev);
 void remove_multicast(struct asgard_device *sdev);
 

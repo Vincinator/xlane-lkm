@@ -29,16 +29,19 @@ install:
 	make -C $(ASGARD_KERNEL_SRC) M=$(ASGARD_MODULES_WORKING_DIR)
 	cp core/asgard.ko build/
 
+
+
 pull:
     git subtree pull --prefix=core/Synbuf --squash git@github.com:Distributed-Systems-Programming-Group/Synbuf.git synbuf
 
 clean:
 	test $(ASGARD_KERNEL_SRC)
 	rm -Rf build
-	make -C $(ASGARD_KERNEL_SRC) M=$(ASGARD_MODULES_WORKING_DIR) clean
+	make -C $(ASGARD_KERNEL_SRC) M=$(ASGARD_MODULES_WORKING_DIR) clean $(KBUILD_CFLAGS)
 
 else
 $(info =================== Asgard Top Level Make ===================)
+
 
 #GIT_VERSION := "$(shell git describe --abbrev=4 --dirty --always --tags)"
 EXTRA_CFLAGS += -I$(src)/common/

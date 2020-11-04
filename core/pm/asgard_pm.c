@@ -50,13 +50,13 @@ static inline bool check_async_door(struct asgard_device *sdev)
 {
 	int i;
 
-    if(sdev->multicast.enable)
-        return sdev->multicast.aapriv->doorbell;
+	if(sdev->multicast.enable)
+		return sdev->multicast.aapriv->doorbell;
 
 	for (i = 0; i < sdev->pminfo.num_of_targets; i++){
 
-	    if(sdev->pminfo.pm_targets[i].aapriv->doorbell)
-            return 1;
+		if(sdev->pminfo.pm_targets[i].aapriv->doorbell)
+			return 1;
 
 	}
 
@@ -156,9 +156,7 @@ void pm_state_transition_to(struct pminfo *spminfo,
 
 static inline int asgard_setup_hb_skbs(struct asgard_device *sdev)
 {
-	int i;
 	struct pminfo *spminfo = &sdev->pminfo;
-	struct node_addr *naddr;
 
     asgard_dbg("setup hb skbs. \n");
 
@@ -188,7 +186,7 @@ static inline int asgard_setup_hb_skbs(struct asgard_device *sdev)
     return 0;
 }
 
-int asg_xmit_skb(const struct net_device *ndev, const struct netdev_queue *txq, const struct sk_buff *skb) {
+int asg_xmit_skb(struct net_device *ndev, struct netdev_queue *txq,  struct sk_buff *skb) {
     int ret = 0;
 
     skb_get(skb);
@@ -644,7 +642,6 @@ unlock:
 
 	local_bh_enable();
 	local_irq_restore(flags);
-out:
 	return ret;
 }
 
@@ -851,15 +848,15 @@ static int asgard_pm_loop(void *data)
 
 	spminfo->errors = 0;
 
-    asgard_dbg("Starting Pacemaker\n");
+	asgard_dbg("Starting Pacemaker\n");
 
-    if(!sdev->ndev || !sdev->ndev->ip_ptr || !sdev->ndev->ip_ptr->ifa_list || !sdev->ndev->ip_ptr->ifa_list->ifa_address){
-        asgard_error("Initialization Failed. Aborting Pacemaker now\n");
-        return -ENODEV;
-    }
+	if(!sdev->ndev || !sdev->ndev->ip_ptr || !sdev->ndev->ip_ptr->ifa_list || !sdev->ndev->ip_ptr->ifa_list->ifa_address){
+		asgard_error("Initialization Failed. Aborting Pacemaker now\n");
+		return -ENODEV;
+	}
 
-    if(__prepare_pm_loop(sdev, spminfo))
-        return -1;
+	if(__prepare_pm_loop(sdev, spminfo))
+		return -1;
 
 	prev_time = RDTSC_ASGARD;
 
@@ -940,7 +937,7 @@ static int asgard_pm_loop(void *data)
 {
 	return 0;
 }
-#endif*/
+#endif
 
 #ifndef CONFIG_KUNIT
 static enum hrtimer_restart asgard_pm_timer(struct hrtimer *timer)
@@ -963,7 +960,7 @@ static enum hrtimer_restart asgard_pm_timer(struct hrtimer *timer)
 
 	asgard_setup_hb_skbs(sdev);
 
-	get_cpu(); /* disable preemption */
+	get_cpu(); // disable preemption
 
 	local_irq_save(flags);
 	local_bh_disable();
@@ -982,7 +979,7 @@ static enum hrtimer_restart asgard_pm_timer(struct hrtimer *timer)
 	return 0;
 }
 #endif
-
+*/
 int asgard_pm_start_loop(void *data)
 {
 	struct pminfo *spminfo =

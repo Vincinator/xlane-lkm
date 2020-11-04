@@ -146,13 +146,13 @@ ssize_t synbuf_bypass_write(struct file *filp, const char *buf, size_t count, lo
 	if (mutex_lock_killable(&sdev->ubuf_mutex))
 		return -EINTR;
 
-    /* End of File */
-    if (*f_pos >= sdev->bufsize)
-        goto out;
+	/* End of File */
+	if (*f_pos >= sdev->bufsize)
+		goto out;
 
-    /* Would exceed end of file,  */
-    if (*f_pos + count > sdev->bufsize)
-        count = sdev->bufsize - *f_pos;
+	/* Would exceed end of file,  */
+	if (*f_pos + count > sdev->bufsize)
+		count = sdev->bufsize - *f_pos;
 	
 	if (count > SYNBUF_MEMBLOCK_SIZE)
 		count = SYNBUF_MEMBLOCK_SIZE;
@@ -208,7 +208,7 @@ vm_fault_t bypass_vm_fault(struct vm_fault *vmf)
     }
 
 	if (sdev->ubuf) {
-        printk(KERN_INFO"[SYNBUF] vmf->pgoff: %d  \n", vmf->pgoff);
+        printk(KERN_INFO"[SYNBUF] vmf->pgoff: %ld  \n", vmf->pgoff);
 
         page = get_synbuf_buf_page(sdev, vmf->pgoff);
         get_page(page);
@@ -292,7 +292,7 @@ int synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 	ret = cdev_add(&sdev->cdev, devno, 1);
 
 	if (ret) {
-		printk(KERN_ERR"[SYNBUF] Failed to to add %s%d (error %ld)\n", DEVNAME, synbuf_bypass_minor, ret);
+		printk(KERN_ERR"[SYNBUF] Failed to to add %s %d (error %d)\n", DEVNAME, synbuf_bypass_minor, ret);
 		goto cdev_error;
 	}
 
@@ -341,7 +341,7 @@ void synbuf_chardev_exit(struct synbuf_device *sdev)
     cdev_del(&sdev->cdev);
 
     if(sdev->ubuf){
-        printk(KERN_INFO"[SYNBUF] cleaning ubuf now..\n", __FUNCTION__);
+        printk(KERN_INFO"[SYNBUF] cleaning ubuf now..\n");
         vfree(sdev->ubuf); // Make sure to match allocation method - and use the right friend!
     }
     printk(KERN_INFO"[SYNBUF] Success: %s \n", __FUNCTION__);

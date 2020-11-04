@@ -281,9 +281,12 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 
 // default: reply success
 	mutex_unlock(&priv->sm_log.mlock);
-    if (priv->sdev->multicast.enable)
-        return;
+
+	if (priv->sdev->multicast.enable)
+		return;
+
 	reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
+
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
     return;
 reply_retransmission:

@@ -71,7 +71,6 @@ unlock:
 }
 
 
-
 void set_echo_opcode(unsigned char *pkt, enum echo_opcode opco,
         s32 sender_id, s32 receiver_id,
         s64 ts1, s64 ts2, s64 ts3)
@@ -100,9 +99,3 @@ void set_echo_opcode(unsigned char *pkt, enum echo_opcode opco,
     *ts3_pptr = ts3;
 
 }
-
-void set_echo_tx_ts(unsigned char *pkt, uint64_t ts)
-{
-	SET_ECHO_PAYLOAD(pkt, tx_ts, ts);
-}
-

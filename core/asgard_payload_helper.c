@@ -57,7 +57,7 @@ char *asgard_reserve_proto(u16 instance_id, struct asgard_payload *spay, u16 pro
 	u16 *pid, *poff;
 
 	if(!spay){
-	    asgard_error("payload is NULL\N");
+	    asgard_error("payload is NULL\n");
 	    return NULL;
 	}
 
@@ -767,7 +767,7 @@ void _schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index
  */
 void check_pending_log_rep_for_multicast(struct asgard_device *sdev)
 {
-    s32 next_index, match_index;
+    s32 next_index;
     int retrans;
 
     if(sdev->is_leader == 0)

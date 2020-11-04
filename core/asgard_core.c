@@ -993,7 +993,7 @@ static void __exit asgard_connection_core_exit(void)
     /* MUST unregister asgard for drivers first */
 	unregister_asgard();
 
-    if(!score){
+	if(!score){
 		asgard_error("score is NULL \n");
 		return;
 	}
@@ -1020,14 +1020,14 @@ static void __exit asgard_connection_core_exit(void)
         kfree(score->sdevices[i]);
 
     }
-    if(asgard_wq)
-        destroy_workqueue(asgard_wq);
+	if(asgard_wq)
+		destroy_workqueue(asgard_wq);
 
-    if(score->sdevices)
-        kfree(score->sdevices);
+	if(score->sdevices)
+		kfree(score->sdevices);
 
-    if(score)
-        kfree(score);
+	if(score)
+		kfree(score);
 
 	remove_proc_entry("asgard", NULL);
 
