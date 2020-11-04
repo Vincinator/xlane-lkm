@@ -84,13 +84,12 @@ static int asgard_eval_ctrl_open(struct inode *inode, struct file *file)
 }
 
 
-static const struct file_operations asgard_eval_ctrl_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_eval_ctrl_open,
-	.write = asgard_eval_ctrl_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_eval_ctrl_ops = {
+	.proc_open = asgard_eval_ctrl_open,
+	.proc_write = asgard_eval_ctrl_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
 void init_eval_ctrl_interfaces(struct consensus_priv *priv)

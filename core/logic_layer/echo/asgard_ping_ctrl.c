@@ -335,49 +335,44 @@ static int asgard_ppwt_ctrl_open(struct inode *inode, struct file *file)
                        PDE_DATA(file_inode(file)));
 }
 
-static const struct file_operations asgard_pupm_ops = {
-        .owner = THIS_MODULE,
-        .open = asgard_pupm_ctrl_open,
-        .write = asgard_pupm_ctrl_write,
-        .read = seq_read,
-        .llseek = seq_lseek,
-        .release = single_release,
+static const struct proc_ops asgard_pupm_ops = {
+        .proc_open = asgard_pupm_ctrl_open,
+        .proc_write = asgard_pupm_ctrl_write,
+        .proc_read = seq_read,
+        .proc_lseek = seq_lseek,
+        .proc_release = single_release,
 };
 
-static const struct file_operations asgard_pupu_ops = {
-        .owner = THIS_MODULE,
-        .open = asgard_pupu_ctrl_open,
-        .write = asgard_pupu_ctrl_write,
-        .read = seq_read,
-        .llseek = seq_lseek,
-        .release = single_release,
+static const struct proc_ops asgard_pupu_ops = {
+        .proc_open = asgard_pupu_ctrl_open,
+        .proc_write = asgard_pupu_ctrl_write,
+        .proc_read = seq_read,
+        .proc_lseek = seq_lseek,
+        .proc_release = single_release,
 };
 
-static const struct file_operations asgard_pmpu_ops = {
-        .owner = THIS_MODULE,
-        .open = asgard_pmpu_ctrl_open,
-        .write = asgard_pmpu_ctrl_write,
-        .read = seq_read,
-        .llseek = seq_lseek,
-        .release = single_release,
+static const struct proc_ops asgard_pmpu_ops = {
+        .proc_open = asgard_pmpu_ctrl_open,
+        .proc_write = asgard_pmpu_ctrl_write,
+        .proc_read = seq_read,
+        .proc_lseek = seq_lseek,
+        .proc_release = single_release,
 };
 
-static const struct file_operations asgard_pmpm_ops = {
-        .owner = THIS_MODULE,
-        .open = asgard_pmpm_ctrl_open,
-        .write = asgard_pmpm_ctrl_write,
-        .read = seq_read,
-        .llseek = seq_lseek,
-        .release = single_release,
+static const struct proc_ops asgard_pmpm_ops = {
+        .proc_open = asgard_pmpm_ctrl_open,
+        .proc_write = asgard_pmpm_ctrl_write,
+        .proc_read = seq_read,
+        .proc_lseek = seq_lseek,
+        .proc_release = single_release,
 };
 
-static const struct file_operations asgard_ppwt_ops = {
-        .owner = THIS_MODULE,
-        .open = asgard_ppwt_ctrl_open,
-        .write = asgard_ppwt_ctrl_write,
-        .read = seq_read,
-        .llseek = seq_lseek,
-        .release = single_release,
+static const struct proc_ops asgard_ppwt_ops = {
+        .proc_open = asgard_ppwt_ctrl_open,
+        .proc_write = asgard_ppwt_ctrl_write,
+        .proc_read = seq_read,
+        .proc_lseek = seq_lseek,
+        .proc_release = single_release,
 };
 
 void init_ping_ctrl_interfaces(struct echo_priv *priv)

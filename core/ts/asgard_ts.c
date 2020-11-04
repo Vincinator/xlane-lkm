@@ -62,13 +62,12 @@ static int asgard_proc_open(struct inode *inode, struct file *file)
 	return single_open(file, asgard_proc_show, PDE_DATA(inode));
 }
 
-static const struct file_operations asgard_procfs_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_proc_open,
-	.write = asgard_proc_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_procfs_ops = {
+	.proc_open = asgard_proc_open,
+	.proc_write = asgard_proc_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
 /* Get the corresponding array for type and calls write_to_logmem. */

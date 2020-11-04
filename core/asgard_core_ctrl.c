@@ -73,13 +73,12 @@ static int asgard_rx_ctrl_open(struct inode *inode, struct file *file)
 			   PDE_DATA(file_inode(file)));
 }
 
-static const struct file_operations asgard_core_ctrl_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_rx_ctrl_open,
-	.write = asgard_rx_ctrl_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_core_ctrl_ops = {
+	.proc_open = asgard_rx_ctrl_open,
+	.proc_write = asgard_rx_ctrl_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
 static ssize_t asgard_verbose_ctrl_write(struct file *file,
@@ -137,13 +136,12 @@ static int asgard_verbose_ctrl_open(struct inode *inode, struct file *file)
 			   PDE_DATA(file_inode(file)));
 }
 
-static const struct file_operations asgard_verbose_ctrl_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_verbose_ctrl_open,
-	.write = asgard_verbose_ctrl_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_verbose_ctrl_ops = {
+	.proc_open = asgard_verbose_ctrl_open,
+	.proc_write = asgard_verbose_ctrl_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
 void init_asgard_ctrl_interfaces(struct asgard_device *sdev)

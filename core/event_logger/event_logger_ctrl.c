@@ -84,13 +84,12 @@ static int asgard_event_ctrl_open(struct inode *inode, struct file *file)
 }
 
 
-static const struct file_operations asgard_event_ctrl_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_event_ctrl_open,
-	.write = asgard_event_ctrl_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_event_ctrl_ops = {
+	.proc_open = asgard_event_ctrl_open,
+	.proc_write = asgard_event_ctrl_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
 void clear_logger(struct asgard_logger *slog)

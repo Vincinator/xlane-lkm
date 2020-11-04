@@ -6,6 +6,7 @@
 #include <linux/uaccess.h>
 #include <linux/version.h>
 #include <linux/slab.h>
+#include <linux/vmalloc.h>
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION (4, 17, 0)
 #define vm_fault_t int

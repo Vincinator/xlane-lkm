@@ -34,22 +34,20 @@ static ssize_t multicast_enable_write(struct file *file,
 static int multicast_enable_open(struct inode *inode, struct file *file);
 
 
-static const struct file_operations multicast_delay_ops = {
-        .owner = THIS_MODULE,
-        .open = multicast_delay_open,
-        .write = multicast_delay_write,
-        .read = seq_read,
-        .llseek = seq_lseek,
-        .release = single_release,
+static const struct proc_ops multicast_delay_ops = {
+        .proc_open = multicast_delay_open,
+        .proc_write = multicast_delay_write,
+        .proc_read = seq_read,
+        .proc_lseek = seq_lseek,
+        .proc_release = single_release,
 };
 
-static const struct file_operations multicast_enable_ops = {
-        .owner = THIS_MODULE,
-        .open = multicast_enable_open,
-        .write = multicast_enable_write,
-        .read = seq_read,
-        .llseek = seq_lseek,
-        .release = single_release,
+static const struct proc_ops multicast_enable_ops = {
+        .proc_open = multicast_enable_open,
+        .proc_write = multicast_enable_write,
+        .proc_read = seq_read,
+        .proc_lseek = seq_lseek,
+        .proc_release = single_release,
 };
 
 static ssize_t multicast_delay_write(struct file *file,
@@ -58,7 +56,6 @@ static ssize_t multicast_delay_write(struct file *file,
 {
     int err;
     char kernel_buffer[ASGARD_TARGETS_BUF];
-    char *search_str;
     struct asgard_device *sdev =
             (struct asgard_device *)PDE_DATA(file_inode(file));
     size_t size = min(sizeof(kernel_buffer) - 1, count);
@@ -101,8 +98,6 @@ static int multicast_delay_show(struct seq_file *m, void *v)
     struct asgard_device *sdev =
             (struct asgard_device *)m->private;
 
-    int i;
-
     if (!sdev)
         return -ENODEV;
 
@@ -123,7 +118,6 @@ static ssize_t multicast_enable_write(struct file *file,
 {
     int err;
     char kernel_buffer[ASGARD_TARGETS_BUF];
-    char *search_str;
     struct asgard_device *sdev =
             (struct asgard_device *)PDE_DATA(file_inode(file));
     size_t size = min(sizeof(kernel_buffer) - 1, count);
@@ -165,8 +159,6 @@ static int multicast_enable_show(struct seq_file *m, void *v)
 {
     struct asgard_device *sdev =
             (struct asgard_device *)m->private;
-
-    int i;
 
     if (!sdev)
         return -ENODEV;

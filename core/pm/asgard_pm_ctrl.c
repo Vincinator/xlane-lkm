@@ -666,76 +666,68 @@ static int asgard_test_ctrl_open(struct inode *inode, struct file *file)
 			   PDE_DATA(file_inode(file)));
 }
 
-static const struct file_operations asgard_target_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_target_open,
-	.write = asgard_target_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_target_ops = {
+	.proc_open = asgard_target_open,
+	.proc_write = asgard_target_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
-static const struct file_operations asgard_hb_ctrl_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_hb_ctrl_proc_open,
-	.write = asgard_hb_ctrl_proc_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_hb_ctrl_ops = {
+	.proc_open = asgard_hb_ctrl_proc_open,
+	.proc_write = asgard_hb_ctrl_proc_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
-static const struct file_operations asgard_cpumgmt_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_cpumgmt_open,
-	.write = asgard_cpumgmt_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_cpumgmt_ops = {
+	.proc_open = asgard_cpumgmt_open,
+	.proc_write = asgard_cpumgmt_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
-static const struct file_operations asgard_cluster_id_ops = {
-        .owner = THIS_MODULE,
-        .open = asgard_cluster_id_open,
-        .write = asgard_cluster_id_write,
-        .read = seq_read,
-        .llseek = seq_lseek,
-        .release = single_release,
+static const struct proc_ops asgard_cluster_id_ops = {
+        .proc_open = asgard_cluster_id_open,
+        .proc_write = asgard_cluster_id_write,
+        .proc_read = seq_read,
+        .proc_lseek = seq_lseek,
+        .proc_release = single_release,
 };
 
-static const struct file_operations asgard_hbi_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_hbi_open,
-	.write = asgard_hbi_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_hbi_ops = {
+	.proc_open = asgard_hbi_open,
+	.proc_write = asgard_hbi_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
-static const struct file_operations asgard_ww_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_ww_open,
-	.write = asgard_ww_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_ww_ops = {
+	.proc_open = asgard_ww_open,
+	.proc_write = asgard_ww_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
-static const struct file_operations asgard_payload_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_payload_open,
-	.write = asgard_payload_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_payload_ops = {
+	.proc_open = asgard_payload_open,
+	.proc_write = asgard_payload_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
-static const struct file_operations asgard_test_ctrl_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_test_ctrl_open,
-	.write = asgard_test_ctrl_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_test_ctrl_ops = {
+	.proc_open = asgard_test_ctrl_open,
+	.proc_write = asgard_test_ctrl_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
 void init_asgard_pm_ctrl_interfaces(struct asgard_device *sdev)

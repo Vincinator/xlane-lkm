@@ -127,13 +127,12 @@ static int proto_instance_ctrl_open(struct inode *inode, struct file *file)
 			   PDE_DATA(file_inode(file)));
 }
 
-static const struct file_operations proto_instance_ctrl_ops = {
-	.owner = THIS_MODULE,
-	.open = proto_instance_ctrl_open,
-	.write = proto_instance_ctrl_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops proto_instance_ctrl_ops = {
+	.proc_open = proto_instance_ctrl_open,
+	.proc_write = proto_instance_ctrl_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 
 void init_proto_instance_ctrl(struct asgard_device *sdev)

@@ -124,13 +124,12 @@ static int asgard_le_config_open(struct inode *inode, struct file *file)
 			   PDE_DATA(file_inode(file)));
 }
 
-static const struct file_operations asgard_le_config_ops = {
-	.owner = THIS_MODULE,
-	.open = asgard_le_config_open,
-	.write = asgard_le_config_write,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
+static const struct proc_ops asgard_le_config_ops = {
+	.proc_open = asgard_le_config_open,
+	.proc_write = asgard_le_config_write,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
 };
 static ssize_t asgard_eval_uuid_write(struct file *file,
                                        const char __user *user_buffer, size_t count,
@@ -191,13 +190,12 @@ static int asgard_eval_uuid_open(struct inode *inode, struct file *file)
                        PDE_DATA(file_inode(file)));
 }
 
-static const struct file_operations asgard_eval_uuid_ops = {
-        .owner = THIS_MODULE,
-        .open = asgard_eval_uuid_open,
-        .write = asgard_eval_uuid_write,
-        .read = seq_read,
-        .llseek = seq_lseek,
-        .release = single_release,
+static const struct proc_ops asgard_eval_uuid_ops = {
+        .proc_open = asgard_eval_uuid_open,
+        .proc_write = asgard_eval_uuid_write,
+        .proc_read = seq_read,
+        .proc_lseek = seq_lseek,
+        .proc_release = single_release,
 };
 
 void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
