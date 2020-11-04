@@ -2,12 +2,12 @@
 # Sassy subsystem configuration
 #
 
-menuconfig ASGUARD
-	bool "Enable ASGUARD"
+menuconfig ASGARD
+	bool "Enable ASGARD"
 	default y
 	help
-	  This enables the network submodule ASGUARD
+	  This enables the network submodule ASGARD
 
-config ASGUARD_FOLLOWER_TEST
+config ASGARD_FOLLOWER_TEST
         bool "Follower test"
-        depends on ASGUARD && KUNIT
+        depends on ASGARD && KUNIT

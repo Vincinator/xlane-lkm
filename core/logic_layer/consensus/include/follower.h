@@ -1,8 +1,8 @@
 #pragma once
 
-#include <asguard/asguard.h>
+#include <asgard/asgard.h>
 
-#include <asguard/consensus.h>
+#include <asgard/consensus.h>
 
 int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt);
 int stop_follower(struct proto_instance *ins);

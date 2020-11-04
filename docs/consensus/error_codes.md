@@ -1,8 +1,8 @@
 
 ## Why
 
-The error table shows an overview of all asguard errors. 
-Errors thrown by the implemented version of asguard must be linkable to 
+The error table shows an overview of all asgard errors. 
+Errors thrown by the implemented version of asgard must be linkable to 
 the theoretical world. 
 By providing these error codes, 
 we can discuss how errors should be handled in the theoretical world,

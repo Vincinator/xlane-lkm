@@ -1,5 +1,5 @@
-$(info =================== ASGuard TS Make ===================)
+$(info =================== Asgard TS Make ===================)
 
 EXTRA_CFLAGS += -I$(src)/../../common/
 
-obj-m := asguard_ts.o asguard_ts_ctrl.o
+obj-m := asgard_ts.o asgard_ts_ctrl.o

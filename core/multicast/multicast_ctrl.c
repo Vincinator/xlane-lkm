@@ -5,8 +5,8 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 
-#include <asguard/logger.h>
-#include <asguard/multicast.h>
+#include <asgard/logger.h>
+#include <asgard/multicast.h>
 
 #include <linux/list.h>
 
@@ -17,11 +17,11 @@
 
 #include <linux/err.h>
 
-#include "../asguard_core.h"
+#include "../asgard_core.h"
 
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[ASGUARD][MULTICAST INSTANCE CTRL]"
+#define LOG_PREFIX "[ASGARD][MULTICAST INSTANCE CTRL]"
 
 static ssize_t multicast_delay_write(struct file *file,
                                     const char __user *user_buffer,
@@ -57,15 +57,15 @@ static ssize_t multicast_delay_write(struct file *file,
                                          size_t count, loff_t *data)
 {
     int err;
-    char kernel_buffer[ASGUARD_TARGETS_BUF];
+    char kernel_buffer[ASGARD_TARGETS_BUF];
     char *search_str;
-    struct asguard_device *sdev =
-            (struct asguard_device *)PDE_DATA(file_inode(file));
+    struct asgard_device *sdev =
+            (struct asgard_device *)PDE_DATA(file_inode(file));
     size_t size = min(sizeof(kernel_buffer) - 1, count);
     long new_value = -1;
 
     if (!sdev) {
-        asguard_error(" Could not find asguard device!\n");
+        asgard_error(" Could not find asgard device!\n");
         return -ENODEV;
     }
 
@@ -74,7 +74,7 @@ static ssize_t multicast_delay_write(struct file *file,
     err = copy_from_user(kernel_buffer, user_buffer, count);
 
     if (err) {
-        asguard_error("Copy from user failed%s\n", __func__);
+        asgard_error("Copy from user failed%s\n", __func__);
         goto error;
     }
 
@@ -83,7 +83,7 @@ static ssize_t multicast_delay_write(struct file *file,
     err = kstrtol(kernel_buffer, 0, &new_value);
 
     if (err) {
-        asguard_error(" Error converting input%s\n", __func__);
+        asgard_error(" Error converting input%s\n", __func__);
         return err;
     }
 
@@ -92,14 +92,14 @@ static ssize_t multicast_delay_write(struct file *file,
     return count;
     error:
 
-    asguard_error("Error during parsing of input.%s\n", __func__);
+    asgard_error("Error during parsing of input.%s\n", __func__);
     return err;
 }
 
 static int multicast_delay_show(struct seq_file *m, void *v)
 {
-    struct asguard_device *sdev =
-            (struct asguard_device *)m->private;
+    struct asgard_device *sdev =
+            (struct asgard_device *)m->private;
 
     int i;
 
@@ -122,15 +122,15 @@ static ssize_t multicast_enable_write(struct file *file,
                                      size_t count, loff_t *data)
 {
     int err;
-    char kernel_buffer[ASGUARD_TARGETS_BUF];
+    char kernel_buffer[ASGARD_TARGETS_BUF];
     char *search_str;
-    struct asguard_device *sdev =
-            (struct asguard_device *)PDE_DATA(file_inode(file));
+    struct asgard_device *sdev =
+            (struct asgard_device *)PDE_DATA(file_inode(file));
     size_t size = min(sizeof(kernel_buffer) - 1, count);
     long new_value = -1;
 
     if (!sdev) {
-        asguard_error(" Could not find asguard device!\n");
+        asgard_error(" Could not find asgard device!\n");
         return -ENODEV;
     }
 
@@ -139,7 +139,7 @@ static ssize_t multicast_enable_write(struct file *file,
     err = copy_from_user(kernel_buffer, user_buffer, count);
 
     if (err) {
-        asguard_error("Copy from user failed%s\n", __func__);
+        asgard_error("Copy from user failed%s\n", __func__);
         goto error;
     }
 
@@ -148,7 +148,7 @@ static ssize_t multicast_enable_write(struct file *file,
     err = kstrtol(kernel_buffer, 0, &new_value);
 
     if (err) {
-        asguard_error(" Error converting input%s\n", __func__);
+        asgard_error(" Error converting input%s\n", __func__);
         return err;
     }
 
@@ -157,14 +157,14 @@ static ssize_t multicast_enable_write(struct file *file,
     return count;
     error:
 
-    asguard_error("Error during parsing of input.%s\n", __func__);
+    asgard_error("Error during parsing of input.%s\n", __func__);
     return err;
 }
 
 static int multicast_enable_show(struct seq_file *m, void *v)
 {
-    struct asguard_device *sdev =
-            (struct asguard_device *)m->private;
+    struct asgard_device *sdev =
+            (struct asgard_device *)m->private;
 
     int i;
 
@@ -183,21 +183,21 @@ static int multicast_enable_open(struct inode *inode, struct file *file)
 }
 
 
-void init_multicast(struct asguard_device *sdev)
+void init_multicast(struct asgard_device *sdev)
 {
-    char name_buf[MAX_ASGUARD_PROC_NAME];
+    char name_buf[MAX_ASGARD_PROC_NAME];
 
-    snprintf(name_buf, sizeof(name_buf), "asguard/%d/multicast",
+    snprintf(name_buf, sizeof(name_buf), "asgard/%d/multicast",
              sdev->ifindex);
 
     proc_mkdir(name_buf, NULL);
 
-    snprintf(name_buf, sizeof(name_buf), "asguard/%d/multicast/delay",
+    snprintf(name_buf, sizeof(name_buf), "asgard/%d/multicast/delay",
              sdev->ifindex);
 
     sdev->multicast_delay_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &multicast_delay_ops, sdev);
 
-    snprintf(name_buf, sizeof(name_buf), "asguard/%d/multicast/enable",
+    snprintf(name_buf, sizeof(name_buf), "asgard/%d/multicast/enable",
              sdev->ifindex);
 
     sdev->multicast_enable_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &multicast_enable_ops, sdev);
@@ -206,11 +206,11 @@ void init_multicast(struct asguard_device *sdev)
 EXPORT_SYMBOL(init_multicast);
 
 
-void remove_multicast(struct asguard_device *sdev)
+void remove_multicast(struct asgard_device *sdev)
 {
-    char name_buf[MAX_ASGUARD_PROC_NAME];
+    char name_buf[MAX_ASGARD_PROC_NAME];
 
-    snprintf(name_buf, sizeof(name_buf), "asguard/%d/multicast/delay",
+    snprintf(name_buf, sizeof(name_buf), "asgard/%d/multicast/delay",
              sdev->ifindex);
 
     if(sdev->multicast_delay_entry) {
@@ -218,7 +218,7 @@ void remove_multicast(struct asguard_device *sdev)
         sdev->multicast_delay_entry = NULL;
     }
 
-    snprintf(name_buf, sizeof(name_buf), "asguard/%d/multicast/enable",
+    snprintf(name_buf, sizeof(name_buf), "asgard/%d/multicast/enable",
              sdev->ifindex);
 
     if(sdev->multicast_enable_entry) {
@@ -226,7 +226,7 @@ void remove_multicast(struct asguard_device *sdev)
         sdev->multicast_enable_entry = NULL;
     }
 
-    snprintf(name_buf, sizeof(name_buf), "asguard/%d/multicast",
+    snprintf(name_buf, sizeof(name_buf), "asgard/%d/multicast",
              sdev->ifindex);
 
     remove_proc_entry(name_buf, NULL);

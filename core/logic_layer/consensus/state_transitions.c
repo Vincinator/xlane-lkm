@@ -1,9 +1,9 @@
-#include <asguard/logger.h>
-#include <asguard/asguard.h>
-#include <asguard/payload_helper.h>
+#include <asgard/logger.h>
+#include <asgard/asgard.h>
+#include <asgard/payload_helper.h>
 
-#include <asguard/consensus.h>
-#include <asguard/asgard_uface.h>
+#include <asgard/consensus.h>
+#include <asgard/asgard_uface.h>
 #include "include/leader.h"
 #include "include/follower.h"
 #include "include/candidate.h"
@@ -21,7 +21,7 @@ char *_le_state_name(enum le_state state)
 
 int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode, u32 target_id, s32 param1, s32 param2, s32 param3, s32 param4)
 {
-	struct asguard_payload *pkt_payload;
+	struct asgard_payload *pkt_payload;
 	char *pkt_payload_sub;
 
     spin_lock(&spminfo->pm_targets[target_id].pkt_data.lock);
@@ -30,10 +30,10 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
 		spminfo->pm_targets[target_id].pkt_data.payload;
 
 	pkt_payload_sub =
-		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
+		asgard_reserve_proto(ins->instance_id, pkt_payload, ASGARD_PROTO_CON_PAYLOAD_SZ);
 
 	if (!pkt_payload_sub) {
-		asguard_error("Sassy packet full!\n");
+		asgard_error("Sassy packet full!\n");
 		goto unlock;
 	}
 
@@ -59,11 +59,11 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode)
 	if (priv->sm_log.stable_idx == -1)
 		last_log_term = priv->term;
 	else{
-		asguard_dbg("priv->sm_log.stable_idx=%d\n", priv->sm_log.stable_idx);
+		asgard_dbg("priv->sm_log.stable_idx=%d\n", priv->sm_log.stable_idx);
         buf_stable_idx = consensus_idx_to_buffer_idx(&priv->sm_log, priv->sm_log.last_applied);
 
         if(buf_stable_idx == -1) {
-            asguard_error("Invalid idx. could not convert to buffer idx in %s",__FUNCTION__);
+            asgard_error("Invalid idx. could not convert to buffer idx in %s",__FUNCTION__);
             return -1;
         }
 		last_log_term = priv->sm_log.entries[buf_stable_idx]->term;
@@ -81,9 +81,9 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, u
 		(struct consensus_priv *)ins->proto_data;
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
+		asgard_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
 			nstate_string(priv->nstate),
-			RDTSC_ASGUARD,
+			RDTSC_ASGARD,
 			priv->term,
 			cluster_id,
 			term);
@@ -100,7 +100,7 @@ void le_state_transition_to(struct consensus_priv *priv, enum le_state state)
 {
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
-		asguard_dbg("Leader Election Activation State Transition from %s to %s\n", _le_state_name(priv->state), _le_state_name(state));
+		asgard_dbg("Leader Election Activation State Transition from %s to %s\n", _le_state_name(priv->state), _le_state_name(state));
 #endif
 	priv->state = state;
 
@@ -125,7 +125,7 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 		err = stop_leader(ins);
 		break;
 	default:
-		asguard_error("Unknown node state %d\n - abort", state);
+		asgard_error("Unknown node state %d\n - abort", state);
 		err = -EINVAL;
 	}
 
@@ -138,25 +138,25 @@ int node_transition(struct proto_instance *ins, enum node_state state)
 
 		/* If Candidature fails, stop ASGARD to prevent endless retry loop. */
 		if(err) {
-            asguard_pm_stop(&priv->sdev->pminfo);
+            asgard_pm_stop(&priv->sdev->pminfo);
         }
 
 		break;
 	case LEADER:
 		err = start_leader(ins);
-		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, RDTSC_ASGUARD);
+		write_log(&ins->logger, CANDIDATE_BECOME_LEADER, RDTSC_ASGARD);
 		break;
 	default:
-		asguard_error("Unknown node state %d\n - abort", state);
+		asgard_error("Unknown node state %d\n - abort", state);
 		err = -EINVAL;
 	}
 
 	if (err)
 		goto error;
 #if VERBOSE_DEBUG
-	asguard_log_le("%s, %llu, %d: transition to state %s\n",
+	asgard_log_le("%s, %llu, %d: transition to state %s\n",
 				nstate_string(priv->nstate),
-				RDTSC_ASGUARD,
+				RDTSC_ASGARD,
 				priv->term,
 				nstate_string(state));
 #endif
@@ -170,7 +170,7 @@ int node_transition(struct proto_instance *ins, enum node_state state)
     return 0;
 
 error:
-	asguard_error(" node transition failed\n");
+	asgard_error(" node transition failed\n");
 	return err;
 }
 

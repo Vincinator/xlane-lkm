@@ -16,7 +16,7 @@ Build Process:
       ☐ Jitter
       ☐ Throughput
     ☐ Leave performance tests clean
-      ☐ Reloading kernel module should reset all states of ASGuard
+      ☐ Reloading kernel module should reset all states of Asgard
     ☐ Automate performance tests
     ☐ Archive performance test logs
     ☐ Evaluate metrics (latency, jitter, throughput) from test logs
@@ -29,11 +29,11 @@ Build Process:
       ☐ Leader Logic
       ☐ Candidate Logic
       ☐ Net Helper / Payload Helper @high
-    ASGuard basic services:
+    Asgard basic services:
       ☐ pacemaker (possible?)
       ☐ Kernel Module registration services
-      ☐ ASGuard Sub-Payload Extraction
-      ☐ ASGuard Sub-Payload Integration
+      ☐ Asgard Sub-Payload Extraction
+      ☐ Asgard Sub-Payload Integration
 
 
 

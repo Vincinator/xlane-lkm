@@ -14,8 +14,8 @@
 
 #include <linux/compiler.h>
 
-#include <asguard/asguard.h>
-#include <asguard/logger.h>
+#include <asgard/asgard.h>
+#include <asgard/logger.h>
 
 
 

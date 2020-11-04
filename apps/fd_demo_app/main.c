@@ -10,13 +10,13 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#define DEVNAME "asguard_fd_tx_mem"
+#define DEVNAME "asgard_fd_tx_mem"
 #define MAX_NAME_SIZE 64
 #define RX_OFFSET_BYTES 8
 
 char *shared_mem_page;
 
-int asguard_ulib_setup(int ifindex) {
+int asgard_ulib_setup(int ifindex) {
         int fd;
         size_t pagesize = getpagesize();
         char name_buf[MAX_NAME_SIZE];
@@ -56,7 +56,7 @@ int asguard_ulib_setup(int ifindex) {
 // Very unsecure to let the proc decide where to write - not for production!
 // NOTE: memory protection mechanism - process can only write to its assigned memory
 //			... however, this is just a prototype to show the mechanics.
-int asguard_update_status(int procid, uint64_t status) {
+int asgard_update_status(int procid, uint64_t status) {
         if (!shared_mem_page) {
                 printf(" Update status failed, shared mem page not available\n");
                 return -EFAULT;
@@ -94,14 +94,14 @@ int main(int argc, char **argv)
 	}
 
     // Get aliveness counter;
-    asguard_ulib_setup(devid);
+    asgard_ulib_setup(devid);
 
     while(running) {
 
 	    if (counter >= 255)
 	    	counter = 0;
 
-	    asguard_update_status(procid, counter);
+	    asgard_update_status(procid, counter);
 
 	    running++;
 	    counter++;

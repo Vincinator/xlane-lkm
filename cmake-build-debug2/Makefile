@@ -48,10 +48,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Volumes/Workspace/asguard/asguard
+CMAKE_SOURCE_DIR = /Volumes/Workspace/asgard/asgard
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Volumes/Workspace/asguard/asguard/cmake-build-debug2
+CMAKE_BINARY_DIR = /Volumes/Workspace/asgard/asgard/cmake-build-debug2
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Volumes/Workspace/asguard/asguard/cmake-build-debug2/CMakeFiles /Volumes/Workspace/asguard/asguard/cmake-build-debug2/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Volumes/Workspace/asgard/asgard/cmake-build-debug2/CMakeFiles /Volumes/Workspace/asgard/asgard/cmake-build-debug2/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Volumes/Workspace/asguard/asguard/cmake-build-debug2/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Volumes/Workspace/asgard/asgard/cmake-build-debug2/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named asguard
+# Target rules for targets named asgard
 
 # Build rule for target.
-asguard: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 asguard
-.PHONY : asguard
+asgard: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 asgard
+.PHONY : asgard
 
 # fast build rule for target.
-asguard/fast:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/build
-.PHONY : asguard/fast
+asgard/fast:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/build
+.PHONY : asgard/fast
 
 core/Synbuf/kernel-space/synbuf-chardev.o: core/Synbuf/kernel-space/synbuf-chardev.c.o
 
@@ -129,7 +129,7 @@ core/Synbuf/kernel-space/synbuf-chardev.o: core/Synbuf/kernel-space/synbuf-chard
 
 # target to build an object file
 core/Synbuf/kernel-space/synbuf-chardev.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/Synbuf/kernel-space/synbuf-chardev.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/Synbuf/kernel-space/synbuf-chardev.c.o
 .PHONY : core/Synbuf/kernel-space/synbuf-chardev.c.o
 
 core/Synbuf/kernel-space/synbuf-chardev.i: core/Synbuf/kernel-space/synbuf-chardev.c.i
@@ -138,7 +138,7 @@ core/Synbuf/kernel-space/synbuf-chardev.i: core/Synbuf/kernel-space/synbuf-chard
 
 # target to preprocess a source file
 core/Synbuf/kernel-space/synbuf-chardev.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/Synbuf/kernel-space/synbuf-chardev.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/Synbuf/kernel-space/synbuf-chardev.c.i
 .PHONY : core/Synbuf/kernel-space/synbuf-chardev.c.i
 
 core/Synbuf/kernel-space/synbuf-chardev.s: core/Synbuf/kernel-space/synbuf-chardev.c.s
@@ -147,89 +147,89 @@ core/Synbuf/kernel-space/synbuf-chardev.s: core/Synbuf/kernel-space/synbuf-chard
 
 # target to generate assembly for a file
 core/Synbuf/kernel-space/synbuf-chardev.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/Synbuf/kernel-space/synbuf-chardev.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/Synbuf/kernel-space/synbuf-chardev.c.s
 .PHONY : core/Synbuf/kernel-space/synbuf-chardev.c.s
 
-core/asguard_core.o: core/asguard_core.c.o
+core/asgard_core.o: core/asgard_core.c.o
 
-.PHONY : core/asguard_core.o
-
-# target to build an object file
-core/asguard_core.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/asguard_core.c.o
-.PHONY : core/asguard_core.c.o
-
-core/asguard_core.i: core/asguard_core.c.i
-
-.PHONY : core/asguard_core.i
-
-# target to preprocess a source file
-core/asguard_core.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/asguard_core.c.i
-.PHONY : core/asguard_core.c.i
-
-core/asguard_core.s: core/asguard_core.c.s
-
-.PHONY : core/asguard_core.s
-
-# target to generate assembly for a file
-core/asguard_core.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/asguard_core.c.s
-.PHONY : core/asguard_core.c.s
-
-core/asguard_core_ctrl.o: core/asguard_core_ctrl.c.o
-
-.PHONY : core/asguard_core_ctrl.o
+.PHONY : core/asgard_core.o
 
 # target to build an object file
-core/asguard_core_ctrl.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/asguard_core_ctrl.c.o
-.PHONY : core/asguard_core_ctrl.c.o
+core/asgard_core.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/asgard_core.c.o
+.PHONY : core/asgard_core.c.o
 
-core/asguard_core_ctrl.i: core/asguard_core_ctrl.c.i
+core/asgard_core.i: core/asgard_core.c.i
 
-.PHONY : core/asguard_core_ctrl.i
+.PHONY : core/asgard_core.i
 
 # target to preprocess a source file
-core/asguard_core_ctrl.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/asguard_core_ctrl.c.i
-.PHONY : core/asguard_core_ctrl.c.i
+core/asgard_core.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/asgard_core.c.i
+.PHONY : core/asgard_core.c.i
 
-core/asguard_core_ctrl.s: core/asguard_core_ctrl.c.s
+core/asgard_core.s: core/asgard_core.c.s
 
-.PHONY : core/asguard_core_ctrl.s
+.PHONY : core/asgard_core.s
 
 # target to generate assembly for a file
-core/asguard_core_ctrl.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/asguard_core_ctrl.c.s
-.PHONY : core/asguard_core_ctrl.c.s
+core/asgard_core.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/asgard_core.c.s
+.PHONY : core/asgard_core.c.s
 
-core/asguard_payload_helper.o: core/asguard_payload_helper.c.o
+core/asgard_core_ctrl.o: core/asgard_core_ctrl.c.o
 
-.PHONY : core/asguard_payload_helper.o
+.PHONY : core/asgard_core_ctrl.o
 
 # target to build an object file
-core/asguard_payload_helper.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/asguard_payload_helper.c.o
-.PHONY : core/asguard_payload_helper.c.o
+core/asgard_core_ctrl.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/asgard_core_ctrl.c.o
+.PHONY : core/asgard_core_ctrl.c.o
 
-core/asguard_payload_helper.i: core/asguard_payload_helper.c.i
+core/asgard_core_ctrl.i: core/asgard_core_ctrl.c.i
 
-.PHONY : core/asguard_payload_helper.i
+.PHONY : core/asgard_core_ctrl.i
 
 # target to preprocess a source file
-core/asguard_payload_helper.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/asguard_payload_helper.c.i
-.PHONY : core/asguard_payload_helper.c.i
+core/asgard_core_ctrl.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/asgard_core_ctrl.c.i
+.PHONY : core/asgard_core_ctrl.c.i
 
-core/asguard_payload_helper.s: core/asguard_payload_helper.c.s
+core/asgard_core_ctrl.s: core/asgard_core_ctrl.c.s
 
-.PHONY : core/asguard_payload_helper.s
+.PHONY : core/asgard_core_ctrl.s
 
 # target to generate assembly for a file
-core/asguard_payload_helper.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/asguard_payload_helper.c.s
-.PHONY : core/asguard_payload_helper.c.s
+core/asgard_core_ctrl.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/asgard_core_ctrl.c.s
+.PHONY : core/asgard_core_ctrl.c.s
+
+core/asgard_payload_helper.o: core/asgard_payload_helper.c.o
+
+.PHONY : core/asgard_payload_helper.o
+
+# target to build an object file
+core/asgard_payload_helper.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/asgard_payload_helper.c.o
+.PHONY : core/asgard_payload_helper.c.o
+
+core/asgard_payload_helper.i: core/asgard_payload_helper.c.i
+
+.PHONY : core/asgard_payload_helper.i
+
+# target to preprocess a source file
+core/asgard_payload_helper.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/asgard_payload_helper.c.i
+.PHONY : core/asgard_payload_helper.c.i
+
+core/asgard_payload_helper.s: core/asgard_payload_helper.c.s
+
+.PHONY : core/asgard_payload_helper.s
+
+# target to generate assembly for a file
+core/asgard_payload_helper.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/asgard_payload_helper.c.s
+.PHONY : core/asgard_payload_helper.c.s
 
 core/event_logger/event_logger.o: core/event_logger/event_logger.c.o
 
@@ -237,7 +237,7 @@ core/event_logger/event_logger.o: core/event_logger/event_logger.c.o
 
 # target to build an object file
 core/event_logger/event_logger.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/event_logger/event_logger.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/event_logger/event_logger.c.o
 .PHONY : core/event_logger/event_logger.c.o
 
 core/event_logger/event_logger.i: core/event_logger/event_logger.c.i
@@ -246,7 +246,7 @@ core/event_logger/event_logger.i: core/event_logger/event_logger.c.i
 
 # target to preprocess a source file
 core/event_logger/event_logger.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/event_logger/event_logger.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/event_logger/event_logger.c.i
 .PHONY : core/event_logger/event_logger.c.i
 
 core/event_logger/event_logger.s: core/event_logger/event_logger.c.s
@@ -255,7 +255,7 @@ core/event_logger/event_logger.s: core/event_logger/event_logger.c.s
 
 # target to generate assembly for a file
 core/event_logger/event_logger.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/event_logger/event_logger.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/event_logger/event_logger.c.s
 .PHONY : core/event_logger/event_logger.c.s
 
 core/event_logger/event_logger_ctrl.o: core/event_logger/event_logger_ctrl.c.o
@@ -264,7 +264,7 @@ core/event_logger/event_logger_ctrl.o: core/event_logger/event_logger_ctrl.c.o
 
 # target to build an object file
 core/event_logger/event_logger_ctrl.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/event_logger/event_logger_ctrl.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/event_logger/event_logger_ctrl.c.o
 .PHONY : core/event_logger/event_logger_ctrl.c.o
 
 core/event_logger/event_logger_ctrl.i: core/event_logger/event_logger_ctrl.c.i
@@ -273,7 +273,7 @@ core/event_logger/event_logger_ctrl.i: core/event_logger/event_logger_ctrl.c.i
 
 # target to preprocess a source file
 core/event_logger/event_logger_ctrl.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/event_logger/event_logger_ctrl.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/event_logger/event_logger_ctrl.c.i
 .PHONY : core/event_logger/event_logger_ctrl.c.i
 
 core/event_logger/event_logger_ctrl.s: core/event_logger/event_logger_ctrl.c.s
@@ -282,143 +282,143 @@ core/event_logger/event_logger_ctrl.s: core/event_logger/event_logger_ctrl.c.s
 
 # target to generate assembly for a file
 core/event_logger/event_logger_ctrl.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/event_logger/event_logger_ctrl.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/event_logger/event_logger_ctrl.c.s
 .PHONY : core/event_logger/event_logger_ctrl.c.s
 
-core/logic_layer/consensus/asguard_consensus.o: core/logic_layer/consensus/asguard_consensus.c.o
+core/logic_layer/consensus/asgard_consensus.o: core/logic_layer/consensus/asgard_consensus.c.o
 
-.PHONY : core/logic_layer/consensus/asguard_consensus.o
-
-# target to build an object file
-core/logic_layer/consensus/asguard_consensus.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus.c.o
-.PHONY : core/logic_layer/consensus/asguard_consensus.c.o
-
-core/logic_layer/consensus/asguard_consensus.i: core/logic_layer/consensus/asguard_consensus.c.i
-
-.PHONY : core/logic_layer/consensus/asguard_consensus.i
-
-# target to preprocess a source file
-core/logic_layer/consensus/asguard_consensus.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus.c.i
-.PHONY : core/logic_layer/consensus/asguard_consensus.c.i
-
-core/logic_layer/consensus/asguard_consensus.s: core/logic_layer/consensus/asguard_consensus.c.s
-
-.PHONY : core/logic_layer/consensus/asguard_consensus.s
-
-# target to generate assembly for a file
-core/logic_layer/consensus/asguard_consensus.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus.c.s
-.PHONY : core/logic_layer/consensus/asguard_consensus.c.s
-
-core/logic_layer/consensus/asguard_consensus_config_ctrl.o: core/logic_layer/consensus/asguard_consensus_config_ctrl.c.o
-
-.PHONY : core/logic_layer/consensus/asguard_consensus_config_ctrl.o
+.PHONY : core/logic_layer/consensus/asgard_consensus.o
 
 # target to build an object file
-core/logic_layer/consensus/asguard_consensus_config_ctrl.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_config_ctrl.c.o
-.PHONY : core/logic_layer/consensus/asguard_consensus_config_ctrl.c.o
+core/logic_layer/consensus/asgard_consensus.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus.c.o
+.PHONY : core/logic_layer/consensus/asgard_consensus.c.o
 
-core/logic_layer/consensus/asguard_consensus_config_ctrl.i: core/logic_layer/consensus/asguard_consensus_config_ctrl.c.i
+core/logic_layer/consensus/asgard_consensus.i: core/logic_layer/consensus/asgard_consensus.c.i
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_config_ctrl.i
+.PHONY : core/logic_layer/consensus/asgard_consensus.i
 
 # target to preprocess a source file
-core/logic_layer/consensus/asguard_consensus_config_ctrl.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_config_ctrl.c.i
-.PHONY : core/logic_layer/consensus/asguard_consensus_config_ctrl.c.i
+core/logic_layer/consensus/asgard_consensus.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus.c.i
+.PHONY : core/logic_layer/consensus/asgard_consensus.c.i
 
-core/logic_layer/consensus/asguard_consensus_config_ctrl.s: core/logic_layer/consensus/asguard_consensus_config_ctrl.c.s
+core/logic_layer/consensus/asgard_consensus.s: core/logic_layer/consensus/asgard_consensus.c.s
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_config_ctrl.s
+.PHONY : core/logic_layer/consensus/asgard_consensus.s
 
 # target to generate assembly for a file
-core/logic_layer/consensus/asguard_consensus_config_ctrl.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_config_ctrl.c.s
-.PHONY : core/logic_layer/consensus/asguard_consensus_config_ctrl.c.s
+core/logic_layer/consensus/asgard_consensus.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus.c.s
+.PHONY : core/logic_layer/consensus/asgard_consensus.c.s
 
-core/logic_layer/consensus/asguard_consensus_eval_ctrl.o: core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.o
+core/logic_layer/consensus/asgard_consensus_config_ctrl.o: core/logic_layer/consensus/asgard_consensus_config_ctrl.c.o
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_eval_ctrl.o
+.PHONY : core/logic_layer/consensus/asgard_consensus_config_ctrl.o
 
 # target to build an object file
-core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.o
-.PHONY : core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.o
+core/logic_layer/consensus/asgard_consensus_config_ctrl.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_config_ctrl.c.o
+.PHONY : core/logic_layer/consensus/asgard_consensus_config_ctrl.c.o
 
-core/logic_layer/consensus/asguard_consensus_eval_ctrl.i: core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.i
+core/logic_layer/consensus/asgard_consensus_config_ctrl.i: core/logic_layer/consensus/asgard_consensus_config_ctrl.c.i
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_eval_ctrl.i
+.PHONY : core/logic_layer/consensus/asgard_consensus_config_ctrl.i
 
 # target to preprocess a source file
-core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.i
-.PHONY : core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.i
+core/logic_layer/consensus/asgard_consensus_config_ctrl.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_config_ctrl.c.i
+.PHONY : core/logic_layer/consensus/asgard_consensus_config_ctrl.c.i
 
-core/logic_layer/consensus/asguard_consensus_eval_ctrl.s: core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.s
+core/logic_layer/consensus/asgard_consensus_config_ctrl.s: core/logic_layer/consensus/asgard_consensus_config_ctrl.c.s
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_eval_ctrl.s
+.PHONY : core/logic_layer/consensus/asgard_consensus_config_ctrl.s
 
 # target to generate assembly for a file
-core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.s
-.PHONY : core/logic_layer/consensus/asguard_consensus_eval_ctrl.c.s
+core/logic_layer/consensus/asgard_consensus_config_ctrl.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_config_ctrl.c.s
+.PHONY : core/logic_layer/consensus/asgard_consensus_config_ctrl.c.s
 
-core/logic_layer/consensus/asguard_consensus_ops.o: core/logic_layer/consensus/asguard_consensus_ops.c.o
+core/logic_layer/consensus/asgard_consensus_eval_ctrl.o: core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.o
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_ops.o
+.PHONY : core/logic_layer/consensus/asgard_consensus_eval_ctrl.o
 
 # target to build an object file
-core/logic_layer/consensus/asguard_consensus_ops.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_ops.c.o
-.PHONY : core/logic_layer/consensus/asguard_consensus_ops.c.o
+core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.o
+.PHONY : core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.o
 
-core/logic_layer/consensus/asguard_consensus_ops.i: core/logic_layer/consensus/asguard_consensus_ops.c.i
+core/logic_layer/consensus/asgard_consensus_eval_ctrl.i: core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.i
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_ops.i
+.PHONY : core/logic_layer/consensus/asgard_consensus_eval_ctrl.i
 
 # target to preprocess a source file
-core/logic_layer/consensus/asguard_consensus_ops.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_ops.c.i
-.PHONY : core/logic_layer/consensus/asguard_consensus_ops.c.i
+core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.i
+.PHONY : core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.i
 
-core/logic_layer/consensus/asguard_consensus_ops.s: core/logic_layer/consensus/asguard_consensus_ops.c.s
+core/logic_layer/consensus/asgard_consensus_eval_ctrl.s: core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.s
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_ops.s
+.PHONY : core/logic_layer/consensus/asgard_consensus_eval_ctrl.s
 
 # target to generate assembly for a file
-core/logic_layer/consensus/asguard_consensus_ops.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_ops.c.s
-.PHONY : core/logic_layer/consensus/asguard_consensus_ops.c.s
+core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.s
+.PHONY : core/logic_layer/consensus/asgard_consensus_eval_ctrl.c.s
 
-core/logic_layer/consensus/asguard_consensus_request_gen.o: core/logic_layer/consensus/asguard_consensus_request_gen.c.o
+core/logic_layer/consensus/asgard_consensus_ops.o: core/logic_layer/consensus/asgard_consensus_ops.c.o
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_request_gen.o
+.PHONY : core/logic_layer/consensus/asgard_consensus_ops.o
 
 # target to build an object file
-core/logic_layer/consensus/asguard_consensus_request_gen.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_request_gen.c.o
-.PHONY : core/logic_layer/consensus/asguard_consensus_request_gen.c.o
+core/logic_layer/consensus/asgard_consensus_ops.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_ops.c.o
+.PHONY : core/logic_layer/consensus/asgard_consensus_ops.c.o
 
-core/logic_layer/consensus/asguard_consensus_request_gen.i: core/logic_layer/consensus/asguard_consensus_request_gen.c.i
+core/logic_layer/consensus/asgard_consensus_ops.i: core/logic_layer/consensus/asgard_consensus_ops.c.i
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_request_gen.i
+.PHONY : core/logic_layer/consensus/asgard_consensus_ops.i
 
 # target to preprocess a source file
-core/logic_layer/consensus/asguard_consensus_request_gen.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_request_gen.c.i
-.PHONY : core/logic_layer/consensus/asguard_consensus_request_gen.c.i
+core/logic_layer/consensus/asgard_consensus_ops.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_ops.c.i
+.PHONY : core/logic_layer/consensus/asgard_consensus_ops.c.i
 
-core/logic_layer/consensus/asguard_consensus_request_gen.s: core/logic_layer/consensus/asguard_consensus_request_gen.c.s
+core/logic_layer/consensus/asgard_consensus_ops.s: core/logic_layer/consensus/asgard_consensus_ops.c.s
 
-.PHONY : core/logic_layer/consensus/asguard_consensus_request_gen.s
+.PHONY : core/logic_layer/consensus/asgard_consensus_ops.s
 
 # target to generate assembly for a file
-core/logic_layer/consensus/asguard_consensus_request_gen.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/asguard_consensus_request_gen.c.s
-.PHONY : core/logic_layer/consensus/asguard_consensus_request_gen.c.s
+core/logic_layer/consensus/asgard_consensus_ops.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_ops.c.s
+.PHONY : core/logic_layer/consensus/asgard_consensus_ops.c.s
+
+core/logic_layer/consensus/asgard_consensus_request_gen.o: core/logic_layer/consensus/asgard_consensus_request_gen.c.o
+
+.PHONY : core/logic_layer/consensus/asgard_consensus_request_gen.o
+
+# target to build an object file
+core/logic_layer/consensus/asgard_consensus_request_gen.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_request_gen.c.o
+.PHONY : core/logic_layer/consensus/asgard_consensus_request_gen.c.o
+
+core/logic_layer/consensus/asgard_consensus_request_gen.i: core/logic_layer/consensus/asgard_consensus_request_gen.c.i
+
+.PHONY : core/logic_layer/consensus/asgard_consensus_request_gen.i
+
+# target to preprocess a source file
+core/logic_layer/consensus/asgard_consensus_request_gen.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_request_gen.c.i
+.PHONY : core/logic_layer/consensus/asgard_consensus_request_gen.c.i
+
+core/logic_layer/consensus/asgard_consensus_request_gen.s: core/logic_layer/consensus/asgard_consensus_request_gen.c.s
+
+.PHONY : core/logic_layer/consensus/asgard_consensus_request_gen.s
+
+# target to generate assembly for a file
+core/logic_layer/consensus/asgard_consensus_request_gen.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/asgard_consensus_request_gen.c.s
+.PHONY : core/logic_layer/consensus/asgard_consensus_request_gen.c.s
 
 core/logic_layer/consensus/candidate.o: core/logic_layer/consensus/candidate.c.o
 
@@ -426,7 +426,7 @@ core/logic_layer/consensus/candidate.o: core/logic_layer/consensus/candidate.c.o
 
 # target to build an object file
 core/logic_layer/consensus/candidate.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/candidate.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/candidate.c.o
 .PHONY : core/logic_layer/consensus/candidate.c.o
 
 core/logic_layer/consensus/candidate.i: core/logic_layer/consensus/candidate.c.i
@@ -435,7 +435,7 @@ core/logic_layer/consensus/candidate.i: core/logic_layer/consensus/candidate.c.i
 
 # target to preprocess a source file
 core/logic_layer/consensus/candidate.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/candidate.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/candidate.c.i
 .PHONY : core/logic_layer/consensus/candidate.c.i
 
 core/logic_layer/consensus/candidate.s: core/logic_layer/consensus/candidate.c.s
@@ -444,7 +444,7 @@ core/logic_layer/consensus/candidate.s: core/logic_layer/consensus/candidate.c.s
 
 # target to generate assembly for a file
 core/logic_layer/consensus/candidate.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/candidate.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/candidate.c.s
 .PHONY : core/logic_layer/consensus/candidate.c.s
 
 core/logic_layer/consensus/follower.o: core/logic_layer/consensus/follower.c.o
@@ -453,7 +453,7 @@ core/logic_layer/consensus/follower.o: core/logic_layer/consensus/follower.c.o
 
 # target to build an object file
 core/logic_layer/consensus/follower.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/follower.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/follower.c.o
 .PHONY : core/logic_layer/consensus/follower.c.o
 
 core/logic_layer/consensus/follower.i: core/logic_layer/consensus/follower.c.i
@@ -462,7 +462,7 @@ core/logic_layer/consensus/follower.i: core/logic_layer/consensus/follower.c.i
 
 # target to preprocess a source file
 core/logic_layer/consensus/follower.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/follower.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/follower.c.i
 .PHONY : core/logic_layer/consensus/follower.c.i
 
 core/logic_layer/consensus/follower.s: core/logic_layer/consensus/follower.c.s
@@ -471,7 +471,7 @@ core/logic_layer/consensus/follower.s: core/logic_layer/consensus/follower.c.s
 
 # target to generate assembly for a file
 core/logic_layer/consensus/follower.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/follower.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/follower.c.s
 .PHONY : core/logic_layer/consensus/follower.c.s
 
 core/logic_layer/consensus/leader.o: core/logic_layer/consensus/leader.c.o
@@ -480,7 +480,7 @@ core/logic_layer/consensus/leader.o: core/logic_layer/consensus/leader.c.o
 
 # target to build an object file
 core/logic_layer/consensus/leader.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/leader.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/leader.c.o
 .PHONY : core/logic_layer/consensus/leader.c.o
 
 core/logic_layer/consensus/leader.i: core/logic_layer/consensus/leader.c.i
@@ -489,7 +489,7 @@ core/logic_layer/consensus/leader.i: core/logic_layer/consensus/leader.c.i
 
 # target to preprocess a source file
 core/logic_layer/consensus/leader.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/leader.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/leader.c.i
 .PHONY : core/logic_layer/consensus/leader.c.i
 
 core/logic_layer/consensus/leader.s: core/logic_layer/consensus/leader.c.s
@@ -498,7 +498,7 @@ core/logic_layer/consensus/leader.s: core/logic_layer/consensus/leader.c.s
 
 # target to generate assembly for a file
 core/logic_layer/consensus/leader.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/leader.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/leader.c.s
 .PHONY : core/logic_layer/consensus/leader.c.s
 
 core/logic_layer/consensus/log.o: core/logic_layer/consensus/log.c.o
@@ -507,7 +507,7 @@ core/logic_layer/consensus/log.o: core/logic_layer/consensus/log.c.o
 
 # target to build an object file
 core/logic_layer/consensus/log.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/log.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/log.c.o
 .PHONY : core/logic_layer/consensus/log.c.o
 
 core/logic_layer/consensus/log.i: core/logic_layer/consensus/log.c.i
@@ -516,7 +516,7 @@ core/logic_layer/consensus/log.i: core/logic_layer/consensus/log.c.i
 
 # target to preprocess a source file
 core/logic_layer/consensus/log.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/log.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/log.c.i
 .PHONY : core/logic_layer/consensus/log.c.i
 
 core/logic_layer/consensus/log.s: core/logic_layer/consensus/log.c.s
@@ -525,7 +525,7 @@ core/logic_layer/consensus/log.s: core/logic_layer/consensus/log.c.s
 
 # target to generate assembly for a file
 core/logic_layer/consensus/log.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/log.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/log.c.s
 .PHONY : core/logic_layer/consensus/log.c.s
 
 core/logic_layer/consensus/state_transitions.o: core/logic_layer/consensus/state_transitions.c.o
@@ -534,7 +534,7 @@ core/logic_layer/consensus/state_transitions.o: core/logic_layer/consensus/state
 
 # target to build an object file
 core/logic_layer/consensus/state_transitions.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/state_transitions.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/state_transitions.c.o
 .PHONY : core/logic_layer/consensus/state_transitions.c.o
 
 core/logic_layer/consensus/state_transitions.i: core/logic_layer/consensus/state_transitions.c.i
@@ -543,7 +543,7 @@ core/logic_layer/consensus/state_transitions.i: core/logic_layer/consensus/state
 
 # target to preprocess a source file
 core/logic_layer/consensus/state_transitions.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/state_transitions.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/state_transitions.c.i
 .PHONY : core/logic_layer/consensus/state_transitions.c.i
 
 core/logic_layer/consensus/state_transitions.s: core/logic_layer/consensus/state_transitions.c.s
@@ -552,7 +552,7 @@ core/logic_layer/consensus/state_transitions.s: core/logic_layer/consensus/state
 
 # target to generate assembly for a file
 core/logic_layer/consensus/state_transitions.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/consensus/state_transitions.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/consensus/state_transitions.c.s
 .PHONY : core/logic_layer/consensus/state_transitions.c.s
 
 core/logic_layer/echo/asgard_ping_ctrl.o: core/logic_layer/echo/asgard_ping_ctrl.c.o
@@ -561,7 +561,7 @@ core/logic_layer/echo/asgard_ping_ctrl.o: core/logic_layer/echo/asgard_ping_ctrl
 
 # target to build an object file
 core/logic_layer/echo/asgard_ping_ctrl.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asgard_ping_ctrl.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_ping_ctrl.c.o
 .PHONY : core/logic_layer/echo/asgard_ping_ctrl.c.o
 
 core/logic_layer/echo/asgard_ping_ctrl.i: core/logic_layer/echo/asgard_ping_ctrl.c.i
@@ -570,7 +570,7 @@ core/logic_layer/echo/asgard_ping_ctrl.i: core/logic_layer/echo/asgard_ping_ctrl
 
 # target to preprocess a source file
 core/logic_layer/echo/asgard_ping_ctrl.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asgard_ping_ctrl.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_ping_ctrl.c.i
 .PHONY : core/logic_layer/echo/asgard_ping_ctrl.c.i
 
 core/logic_layer/echo/asgard_ping_ctrl.s: core/logic_layer/echo/asgard_ping_ctrl.c.s
@@ -579,251 +579,251 @@ core/logic_layer/echo/asgard_ping_ctrl.s: core/logic_layer/echo/asgard_ping_ctrl
 
 # target to generate assembly for a file
 core/logic_layer/echo/asgard_ping_ctrl.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asgard_ping_ctrl.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_ping_ctrl.c.s
 .PHONY : core/logic_layer/echo/asgard_ping_ctrl.c.s
 
-core/logic_layer/echo/asguard_app_echo.o: core/logic_layer/echo/asguard_app_echo.c.o
+core/logic_layer/echo/asgard_app_echo.o: core/logic_layer/echo/asgard_app_echo.c.o
 
-.PHONY : core/logic_layer/echo/asguard_app_echo.o
-
-# target to build an object file
-core/logic_layer/echo/asguard_app_echo.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asguard_app_echo.c.o
-.PHONY : core/logic_layer/echo/asguard_app_echo.c.o
-
-core/logic_layer/echo/asguard_app_echo.i: core/logic_layer/echo/asguard_app_echo.c.i
-
-.PHONY : core/logic_layer/echo/asguard_app_echo.i
-
-# target to preprocess a source file
-core/logic_layer/echo/asguard_app_echo.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asguard_app_echo.c.i
-.PHONY : core/logic_layer/echo/asguard_app_echo.c.i
-
-core/logic_layer/echo/asguard_app_echo.s: core/logic_layer/echo/asguard_app_echo.c.s
-
-.PHONY : core/logic_layer/echo/asguard_app_echo.s
-
-# target to generate assembly for a file
-core/logic_layer/echo/asguard_app_echo.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asguard_app_echo.c.s
-.PHONY : core/logic_layer/echo/asguard_app_echo.c.s
-
-core/logic_layer/echo/asguard_echo.o: core/logic_layer/echo/asguard_echo.c.o
-
-.PHONY : core/logic_layer/echo/asguard_echo.o
+.PHONY : core/logic_layer/echo/asgard_app_echo.o
 
 # target to build an object file
-core/logic_layer/echo/asguard_echo.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asguard_echo.c.o
-.PHONY : core/logic_layer/echo/asguard_echo.c.o
+core/logic_layer/echo/asgard_app_echo.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_app_echo.c.o
+.PHONY : core/logic_layer/echo/asgard_app_echo.c.o
 
-core/logic_layer/echo/asguard_echo.i: core/logic_layer/echo/asguard_echo.c.i
+core/logic_layer/echo/asgard_app_echo.i: core/logic_layer/echo/asgard_app_echo.c.i
 
-.PHONY : core/logic_layer/echo/asguard_echo.i
+.PHONY : core/logic_layer/echo/asgard_app_echo.i
 
 # target to preprocess a source file
-core/logic_layer/echo/asguard_echo.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asguard_echo.c.i
-.PHONY : core/logic_layer/echo/asguard_echo.c.i
+core/logic_layer/echo/asgard_app_echo.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_app_echo.c.i
+.PHONY : core/logic_layer/echo/asgard_app_echo.c.i
 
-core/logic_layer/echo/asguard_echo.s: core/logic_layer/echo/asguard_echo.c.s
+core/logic_layer/echo/asgard_app_echo.s: core/logic_layer/echo/asgard_app_echo.c.s
 
-.PHONY : core/logic_layer/echo/asguard_echo.s
+.PHONY : core/logic_layer/echo/asgard_app_echo.s
 
 # target to generate assembly for a file
-core/logic_layer/echo/asguard_echo.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asguard_echo.c.s
-.PHONY : core/logic_layer/echo/asguard_echo.c.s
+core/logic_layer/echo/asgard_app_echo.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_app_echo.c.s
+.PHONY : core/logic_layer/echo/asgard_app_echo.c.s
 
-core/logic_layer/echo/asguard_echo_ops.o: core/logic_layer/echo/asguard_echo_ops.c.o
+core/logic_layer/echo/asgard_echo.o: core/logic_layer/echo/asgard_echo.c.o
 
-.PHONY : core/logic_layer/echo/asguard_echo_ops.o
+.PHONY : core/logic_layer/echo/asgard_echo.o
 
 # target to build an object file
-core/logic_layer/echo/asguard_echo_ops.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asguard_echo_ops.c.o
-.PHONY : core/logic_layer/echo/asguard_echo_ops.c.o
+core/logic_layer/echo/asgard_echo.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_echo.c.o
+.PHONY : core/logic_layer/echo/asgard_echo.c.o
 
-core/logic_layer/echo/asguard_echo_ops.i: core/logic_layer/echo/asguard_echo_ops.c.i
+core/logic_layer/echo/asgard_echo.i: core/logic_layer/echo/asgard_echo.c.i
 
-.PHONY : core/logic_layer/echo/asguard_echo_ops.i
+.PHONY : core/logic_layer/echo/asgard_echo.i
 
 # target to preprocess a source file
-core/logic_layer/echo/asguard_echo_ops.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asguard_echo_ops.c.i
-.PHONY : core/logic_layer/echo/asguard_echo_ops.c.i
+core/logic_layer/echo/asgard_echo.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_echo.c.i
+.PHONY : core/logic_layer/echo/asgard_echo.c.i
 
-core/logic_layer/echo/asguard_echo_ops.s: core/logic_layer/echo/asguard_echo_ops.c.s
+core/logic_layer/echo/asgard_echo.s: core/logic_layer/echo/asgard_echo.c.s
 
-.PHONY : core/logic_layer/echo/asguard_echo_ops.s
+.PHONY : core/logic_layer/echo/asgard_echo.s
 
 # target to generate assembly for a file
-core/logic_layer/echo/asguard_echo_ops.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/echo/asguard_echo_ops.c.s
-.PHONY : core/logic_layer/echo/asguard_echo_ops.c.s
+core/logic_layer/echo/asgard_echo.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_echo.c.s
+.PHONY : core/logic_layer/echo/asgard_echo.c.s
 
-core/logic_layer/fd/asguard_fd.o: core/logic_layer/fd/asguard_fd.c.o
+core/logic_layer/echo/asgard_echo_ops.o: core/logic_layer/echo/asgard_echo_ops.c.o
 
-.PHONY : core/logic_layer/fd/asguard_fd.o
+.PHONY : core/logic_layer/echo/asgard_echo_ops.o
 
 # target to build an object file
-core/logic_layer/fd/asguard_fd.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/asguard_fd.c.o
-.PHONY : core/logic_layer/fd/asguard_fd.c.o
+core/logic_layer/echo/asgard_echo_ops.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_echo_ops.c.o
+.PHONY : core/logic_layer/echo/asgard_echo_ops.c.o
 
-core/logic_layer/fd/asguard_fd.i: core/logic_layer/fd/asguard_fd.c.i
+core/logic_layer/echo/asgard_echo_ops.i: core/logic_layer/echo/asgard_echo_ops.c.i
 
-.PHONY : core/logic_layer/fd/asguard_fd.i
+.PHONY : core/logic_layer/echo/asgard_echo_ops.i
 
 # target to preprocess a source file
-core/logic_layer/fd/asguard_fd.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/asguard_fd.c.i
-.PHONY : core/logic_layer/fd/asguard_fd.c.i
+core/logic_layer/echo/asgard_echo_ops.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_echo_ops.c.i
+.PHONY : core/logic_layer/echo/asgard_echo_ops.c.i
 
-core/logic_layer/fd/asguard_fd.s: core/logic_layer/fd/asguard_fd.c.s
+core/logic_layer/echo/asgard_echo_ops.s: core/logic_layer/echo/asgard_echo_ops.c.s
 
-.PHONY : core/logic_layer/fd/asguard_fd.s
+.PHONY : core/logic_layer/echo/asgard_echo_ops.s
 
 # target to generate assembly for a file
-core/logic_layer/fd/asguard_fd.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/asguard_fd.c.s
-.PHONY : core/logic_layer/fd/asguard_fd.c.s
+core/logic_layer/echo/asgard_echo_ops.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/echo/asgard_echo_ops.c.s
+.PHONY : core/logic_layer/echo/asgard_echo_ops.c.s
 
-core/logic_layer/fd/asguard_fd_ops.o: core/logic_layer/fd/asguard_fd_ops.c.o
+core/logic_layer/fd/asgard_fd.o: core/logic_layer/fd/asgard_fd.c.o
 
-.PHONY : core/logic_layer/fd/asguard_fd_ops.o
+.PHONY : core/logic_layer/fd/asgard_fd.o
 
 # target to build an object file
-core/logic_layer/fd/asguard_fd_ops.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/asguard_fd_ops.c.o
-.PHONY : core/logic_layer/fd/asguard_fd_ops.c.o
+core/logic_layer/fd/asgard_fd.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/asgard_fd.c.o
+.PHONY : core/logic_layer/fd/asgard_fd.c.o
 
-core/logic_layer/fd/asguard_fd_ops.i: core/logic_layer/fd/asguard_fd_ops.c.i
+core/logic_layer/fd/asgard_fd.i: core/logic_layer/fd/asgard_fd.c.i
 
-.PHONY : core/logic_layer/fd/asguard_fd_ops.i
+.PHONY : core/logic_layer/fd/asgard_fd.i
 
 # target to preprocess a source file
-core/logic_layer/fd/asguard_fd_ops.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/asguard_fd_ops.c.i
-.PHONY : core/logic_layer/fd/asguard_fd_ops.c.i
+core/logic_layer/fd/asgard_fd.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/asgard_fd.c.i
+.PHONY : core/logic_layer/fd/asgard_fd.c.i
 
-core/logic_layer/fd/asguard_fd_ops.s: core/logic_layer/fd/asguard_fd_ops.c.s
+core/logic_layer/fd/asgard_fd.s: core/logic_layer/fd/asgard_fd.c.s
 
-.PHONY : core/logic_layer/fd/asguard_fd_ops.s
+.PHONY : core/logic_layer/fd/asgard_fd.s
 
 # target to generate assembly for a file
-core/logic_layer/fd/asguard_fd_ops.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/asguard_fd_ops.c.s
-.PHONY : core/logic_layer/fd/asguard_fd_ops.c.s
+core/logic_layer/fd/asgard_fd.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/asgard_fd.c.s
+.PHONY : core/logic_layer/fd/asgard_fd.c.s
 
-core/logic_layer/fd/asguard_fdtx.o: core/logic_layer/fd/asguard_fdtx.c.o
+core/logic_layer/fd/asgard_fd_ops.o: core/logic_layer/fd/asgard_fd_ops.c.o
 
-.PHONY : core/logic_layer/fd/asguard_fdtx.o
+.PHONY : core/logic_layer/fd/asgard_fd_ops.o
 
 # target to build an object file
-core/logic_layer/fd/asguard_fdtx.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/asguard_fdtx.c.o
-.PHONY : core/logic_layer/fd/asguard_fdtx.c.o
+core/logic_layer/fd/asgard_fd_ops.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/asgard_fd_ops.c.o
+.PHONY : core/logic_layer/fd/asgard_fd_ops.c.o
 
-core/logic_layer/fd/asguard_fdtx.i: core/logic_layer/fd/asguard_fdtx.c.i
+core/logic_layer/fd/asgard_fd_ops.i: core/logic_layer/fd/asgard_fd_ops.c.i
 
-.PHONY : core/logic_layer/fd/asguard_fdtx.i
+.PHONY : core/logic_layer/fd/asgard_fd_ops.i
 
 # target to preprocess a source file
-core/logic_layer/fd/asguard_fdtx.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/asguard_fdtx.c.i
-.PHONY : core/logic_layer/fd/asguard_fdtx.c.i
+core/logic_layer/fd/asgard_fd_ops.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/asgard_fd_ops.c.i
+.PHONY : core/logic_layer/fd/asgard_fd_ops.c.i
 
-core/logic_layer/fd/asguard_fdtx.s: core/logic_layer/fd/asguard_fdtx.c.s
+core/logic_layer/fd/asgard_fd_ops.s: core/logic_layer/fd/asgard_fd_ops.c.s
 
-.PHONY : core/logic_layer/fd/asguard_fdtx.s
+.PHONY : core/logic_layer/fd/asgard_fd_ops.s
 
 # target to generate assembly for a file
-core/logic_layer/fd/asguard_fdtx.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/asguard_fdtx.c.s
-.PHONY : core/logic_layer/fd/asguard_fdtx.c.s
+core/logic_layer/fd/asgard_fd_ops.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/asgard_fd_ops.c.s
+.PHONY : core/logic_layer/fd/asgard_fd_ops.c.s
 
-core/logic_layer/fd/tx/asguard_fd_tx_procfs.o: core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.o
+core/logic_layer/fd/asgard_fdtx.o: core/logic_layer/fd/asgard_fdtx.c.o
 
-.PHONY : core/logic_layer/fd/tx/asguard_fd_tx_procfs.o
+.PHONY : core/logic_layer/fd/asgard_fdtx.o
 
 # target to build an object file
-core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.o
-.PHONY : core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.o
+core/logic_layer/fd/asgard_fdtx.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/asgard_fdtx.c.o
+.PHONY : core/logic_layer/fd/asgard_fdtx.c.o
 
-core/logic_layer/fd/tx/asguard_fd_tx_procfs.i: core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.i
+core/logic_layer/fd/asgard_fdtx.i: core/logic_layer/fd/asgard_fdtx.c.i
 
-.PHONY : core/logic_layer/fd/tx/asguard_fd_tx_procfs.i
+.PHONY : core/logic_layer/fd/asgard_fdtx.i
 
 # target to preprocess a source file
-core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.i
-.PHONY : core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.i
+core/logic_layer/fd/asgard_fdtx.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/asgard_fdtx.c.i
+.PHONY : core/logic_layer/fd/asgard_fdtx.c.i
 
-core/logic_layer/fd/tx/asguard_fd_tx_procfs.s: core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.s
+core/logic_layer/fd/asgard_fdtx.s: core/logic_layer/fd/asgard_fdtx.c.s
 
-.PHONY : core/logic_layer/fd/tx/asguard_fd_tx_procfs.s
+.PHONY : core/logic_layer/fd/asgard_fdtx.s
 
 # target to generate assembly for a file
-core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.s
-.PHONY : core/logic_layer/fd/tx/asguard_fd_tx_procfs.c.s
+core/logic_layer/fd/asgard_fdtx.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/asgard_fdtx.c.s
+.PHONY : core/logic_layer/fd/asgard_fdtx.c.s
 
-core/net/asguard_async_queue.o: core/net/asguard_async_queue.c.o
+core/logic_layer/fd/tx/asgard_fd_tx_procfs.o: core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.o
 
-.PHONY : core/net/asguard_async_queue.o
+.PHONY : core/logic_layer/fd/tx/asgard_fd_tx_procfs.o
 
 # target to build an object file
-core/net/asguard_async_queue.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/net/asguard_async_queue.c.o
-.PHONY : core/net/asguard_async_queue.c.o
+core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.o
+.PHONY : core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.o
 
-core/net/asguard_async_queue.i: core/net/asguard_async_queue.c.i
+core/logic_layer/fd/tx/asgard_fd_tx_procfs.i: core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.i
 
-.PHONY : core/net/asguard_async_queue.i
+.PHONY : core/logic_layer/fd/tx/asgard_fd_tx_procfs.i
 
 # target to preprocess a source file
-core/net/asguard_async_queue.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/net/asguard_async_queue.c.i
-.PHONY : core/net/asguard_async_queue.c.i
+core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.i
+.PHONY : core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.i
 
-core/net/asguard_async_queue.s: core/net/asguard_async_queue.c.s
+core/logic_layer/fd/tx/asgard_fd_tx_procfs.s: core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.s
 
-.PHONY : core/net/asguard_async_queue.s
+.PHONY : core/logic_layer/fd/tx/asgard_fd_tx_procfs.s
 
 # target to generate assembly for a file
-core/net/asguard_async_queue.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/net/asguard_async_queue.c.s
-.PHONY : core/net/asguard_async_queue.c.s
+core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.s
+.PHONY : core/logic_layer/fd/tx/asgard_fd_tx_procfs.c.s
 
-core/net/asguard_net.o: core/net/asguard_net.c.o
+core/net/asgard_async_queue.o: core/net/asgard_async_queue.c.o
 
-.PHONY : core/net/asguard_net.o
+.PHONY : core/net/asgard_async_queue.o
 
 # target to build an object file
-core/net/asguard_net.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/net/asguard_net.c.o
-.PHONY : core/net/asguard_net.c.o
+core/net/asgard_async_queue.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/net/asgard_async_queue.c.o
+.PHONY : core/net/asgard_async_queue.c.o
 
-core/net/asguard_net.i: core/net/asguard_net.c.i
+core/net/asgard_async_queue.i: core/net/asgard_async_queue.c.i
 
-.PHONY : core/net/asguard_net.i
+.PHONY : core/net/asgard_async_queue.i
 
 # target to preprocess a source file
-core/net/asguard_net.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/net/asguard_net.c.i
-.PHONY : core/net/asguard_net.c.i
+core/net/asgard_async_queue.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/net/asgard_async_queue.c.i
+.PHONY : core/net/asgard_async_queue.c.i
 
-core/net/asguard_net.s: core/net/asguard_net.c.s
+core/net/asgard_async_queue.s: core/net/asgard_async_queue.c.s
 
-.PHONY : core/net/asguard_net.s
+.PHONY : core/net/asgard_async_queue.s
 
 # target to generate assembly for a file
-core/net/asguard_net.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/net/asguard_net.c.s
-.PHONY : core/net/asguard_net.c.s
+core/net/asgard_async_queue.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/net/asgard_async_queue.c.s
+.PHONY : core/net/asgard_async_queue.c.s
+
+core/net/asgard_net.o: core/net/asgard_net.c.o
+
+.PHONY : core/net/asgard_net.o
+
+# target to build an object file
+core/net/asgard_net.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/net/asgard_net.c.o
+.PHONY : core/net/asgard_net.c.o
+
+core/net/asgard_net.i: core/net/asgard_net.c.i
+
+.PHONY : core/net/asgard_net.i
+
+# target to preprocess a source file
+core/net/asgard_net.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/net/asgard_net.c.i
+.PHONY : core/net/asgard_net.c.i
+
+core/net/asgard_net.s: core/net/asgard_net.c.s
+
+.PHONY : core/net/asgard_net.s
+
+# target to generate assembly for a file
+core/net/asgard_net.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/net/asgard_net.c.s
+.PHONY : core/net/asgard_net.c.s
 
 core/net/payload_helper.o: core/net/payload_helper.c.o
 
@@ -831,7 +831,7 @@ core/net/payload_helper.o: core/net/payload_helper.c.o
 
 # target to build an object file
 core/net/payload_helper.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/net/payload_helper.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/net/payload_helper.c.o
 .PHONY : core/net/payload_helper.c.o
 
 core/net/payload_helper.i: core/net/payload_helper.c.i
@@ -840,7 +840,7 @@ core/net/payload_helper.i: core/net/payload_helper.c.i
 
 # target to preprocess a source file
 core/net/payload_helper.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/net/payload_helper.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/net/payload_helper.c.i
 .PHONY : core/net/payload_helper.c.i
 
 core/net/payload_helper.s: core/net/payload_helper.c.s
@@ -849,62 +849,62 @@ core/net/payload_helper.s: core/net/payload_helper.c.s
 
 # target to generate assembly for a file
 core/net/payload_helper.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/net/payload_helper.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/net/payload_helper.c.s
 .PHONY : core/net/payload_helper.c.s
 
-core/pm/asguard_pm.o: core/pm/asguard_pm.c.o
+core/pm/asgard_pm.o: core/pm/asgard_pm.c.o
 
-.PHONY : core/pm/asguard_pm.o
-
-# target to build an object file
-core/pm/asguard_pm.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/pm/asguard_pm.c.o
-.PHONY : core/pm/asguard_pm.c.o
-
-core/pm/asguard_pm.i: core/pm/asguard_pm.c.i
-
-.PHONY : core/pm/asguard_pm.i
-
-# target to preprocess a source file
-core/pm/asguard_pm.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/pm/asguard_pm.c.i
-.PHONY : core/pm/asguard_pm.c.i
-
-core/pm/asguard_pm.s: core/pm/asguard_pm.c.s
-
-.PHONY : core/pm/asguard_pm.s
-
-# target to generate assembly for a file
-core/pm/asguard_pm.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/pm/asguard_pm.c.s
-.PHONY : core/pm/asguard_pm.c.s
-
-core/pm/asguard_pm_ctrl.o: core/pm/asguard_pm_ctrl.c.o
-
-.PHONY : core/pm/asguard_pm_ctrl.o
+.PHONY : core/pm/asgard_pm.o
 
 # target to build an object file
-core/pm/asguard_pm_ctrl.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/pm/asguard_pm_ctrl.c.o
-.PHONY : core/pm/asguard_pm_ctrl.c.o
+core/pm/asgard_pm.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/pm/asgard_pm.c.o
+.PHONY : core/pm/asgard_pm.c.o
 
-core/pm/asguard_pm_ctrl.i: core/pm/asguard_pm_ctrl.c.i
+core/pm/asgard_pm.i: core/pm/asgard_pm.c.i
 
-.PHONY : core/pm/asguard_pm_ctrl.i
+.PHONY : core/pm/asgard_pm.i
 
 # target to preprocess a source file
-core/pm/asguard_pm_ctrl.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/pm/asguard_pm_ctrl.c.i
-.PHONY : core/pm/asguard_pm_ctrl.c.i
+core/pm/asgard_pm.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/pm/asgard_pm.c.i
+.PHONY : core/pm/asgard_pm.c.i
 
-core/pm/asguard_pm_ctrl.s: core/pm/asguard_pm_ctrl.c.s
+core/pm/asgard_pm.s: core/pm/asgard_pm.c.s
 
-.PHONY : core/pm/asguard_pm_ctrl.s
+.PHONY : core/pm/asgard_pm.s
 
 # target to generate assembly for a file
-core/pm/asguard_pm_ctrl.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/pm/asguard_pm_ctrl.c.s
-.PHONY : core/pm/asguard_pm_ctrl.c.s
+core/pm/asgard_pm.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/pm/asgard_pm.c.s
+.PHONY : core/pm/asgard_pm.c.s
+
+core/pm/asgard_pm_ctrl.o: core/pm/asgard_pm_ctrl.c.o
+
+.PHONY : core/pm/asgard_pm_ctrl.o
+
+# target to build an object file
+core/pm/asgard_pm_ctrl.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/pm/asgard_pm_ctrl.c.o
+.PHONY : core/pm/asgard_pm_ctrl.c.o
+
+core/pm/asgard_pm_ctrl.i: core/pm/asgard_pm_ctrl.c.i
+
+.PHONY : core/pm/asgard_pm_ctrl.i
+
+# target to preprocess a source file
+core/pm/asgard_pm_ctrl.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/pm/asgard_pm_ctrl.c.i
+.PHONY : core/pm/asgard_pm_ctrl.c.i
+
+core/pm/asgard_pm_ctrl.s: core/pm/asgard_pm_ctrl.c.s
+
+.PHONY : core/pm/asgard_pm_ctrl.s
+
+# target to generate assembly for a file
+core/pm/asgard_pm_ctrl.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/pm/asgard_pm_ctrl.c.s
+.PHONY : core/pm/asgard_pm_ctrl.c.s
 
 core/proto/proto_instance_ctrl.o: core/proto/proto_instance_ctrl.c.o
 
@@ -912,7 +912,7 @@ core/proto/proto_instance_ctrl.o: core/proto/proto_instance_ctrl.c.o
 
 # target to build an object file
 core/proto/proto_instance_ctrl.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/proto/proto_instance_ctrl.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/proto/proto_instance_ctrl.c.o
 .PHONY : core/proto/proto_instance_ctrl.c.o
 
 core/proto/proto_instance_ctrl.i: core/proto/proto_instance_ctrl.c.i
@@ -921,7 +921,7 @@ core/proto/proto_instance_ctrl.i: core/proto/proto_instance_ctrl.c.i
 
 # target to preprocess a source file
 core/proto/proto_instance_ctrl.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/proto/proto_instance_ctrl.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/proto/proto_instance_ctrl.c.i
 .PHONY : core/proto/proto_instance_ctrl.c.i
 
 core/proto/proto_instance_ctrl.s: core/proto/proto_instance_ctrl.c.s
@@ -930,7 +930,7 @@ core/proto/proto_instance_ctrl.s: core/proto/proto_instance_ctrl.c.s
 
 # target to generate assembly for a file
 core/proto/proto_instance_ctrl.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/proto/proto_instance_ctrl.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/proto/proto_instance_ctrl.c.s
 .PHONY : core/proto/proto_instance_ctrl.c.s
 
 core/proto/proto_mgmt.o: core/proto/proto_mgmt.c.o
@@ -939,7 +939,7 @@ core/proto/proto_mgmt.o: core/proto/proto_mgmt.c.o
 
 # target to build an object file
 core/proto/proto_mgmt.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/proto/proto_mgmt.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/proto/proto_mgmt.c.o
 .PHONY : core/proto/proto_mgmt.c.o
 
 core/proto/proto_mgmt.i: core/proto/proto_mgmt.c.i
@@ -948,7 +948,7 @@ core/proto/proto_mgmt.i: core/proto/proto_mgmt.c.i
 
 # target to preprocess a source file
 core/proto/proto_mgmt.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/proto/proto_mgmt.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/proto/proto_mgmt.c.i
 .PHONY : core/proto/proto_mgmt.c.i
 
 core/proto/proto_mgmt.s: core/proto/proto_mgmt.c.s
@@ -957,62 +957,62 @@ core/proto/proto_mgmt.s: core/proto/proto_mgmt.c.s
 
 # target to generate assembly for a file
 core/proto/proto_mgmt.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/proto/proto_mgmt.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/proto/proto_mgmt.c.s
 .PHONY : core/proto/proto_mgmt.c.s
 
-core/ts/asguard_ts.o: core/ts/asguard_ts.c.o
+core/ts/asgard_ts.o: core/ts/asgard_ts.c.o
 
-.PHONY : core/ts/asguard_ts.o
-
-# target to build an object file
-core/ts/asguard_ts.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/ts/asguard_ts.c.o
-.PHONY : core/ts/asguard_ts.c.o
-
-core/ts/asguard_ts.i: core/ts/asguard_ts.c.i
-
-.PHONY : core/ts/asguard_ts.i
-
-# target to preprocess a source file
-core/ts/asguard_ts.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/ts/asguard_ts.c.i
-.PHONY : core/ts/asguard_ts.c.i
-
-core/ts/asguard_ts.s: core/ts/asguard_ts.c.s
-
-.PHONY : core/ts/asguard_ts.s
-
-# target to generate assembly for a file
-core/ts/asguard_ts.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/ts/asguard_ts.c.s
-.PHONY : core/ts/asguard_ts.c.s
-
-core/ts/asguard_ts_ctrl.o: core/ts/asguard_ts_ctrl.c.o
-
-.PHONY : core/ts/asguard_ts_ctrl.o
+.PHONY : core/ts/asgard_ts.o
 
 # target to build an object file
-core/ts/asguard_ts_ctrl.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/ts/asguard_ts_ctrl.c.o
-.PHONY : core/ts/asguard_ts_ctrl.c.o
+core/ts/asgard_ts.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/ts/asgard_ts.c.o
+.PHONY : core/ts/asgard_ts.c.o
 
-core/ts/asguard_ts_ctrl.i: core/ts/asguard_ts_ctrl.c.i
+core/ts/asgard_ts.i: core/ts/asgard_ts.c.i
 
-.PHONY : core/ts/asguard_ts_ctrl.i
+.PHONY : core/ts/asgard_ts.i
 
 # target to preprocess a source file
-core/ts/asguard_ts_ctrl.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/ts/asguard_ts_ctrl.c.i
-.PHONY : core/ts/asguard_ts_ctrl.c.i
+core/ts/asgard_ts.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/ts/asgard_ts.c.i
+.PHONY : core/ts/asgard_ts.c.i
 
-core/ts/asguard_ts_ctrl.s: core/ts/asguard_ts_ctrl.c.s
+core/ts/asgard_ts.s: core/ts/asgard_ts.c.s
 
-.PHONY : core/ts/asguard_ts_ctrl.s
+.PHONY : core/ts/asgard_ts.s
 
 # target to generate assembly for a file
-core/ts/asguard_ts_ctrl.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/ts/asguard_ts_ctrl.c.s
-.PHONY : core/ts/asguard_ts_ctrl.c.s
+core/ts/asgard_ts.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/ts/asgard_ts.c.s
+.PHONY : core/ts/asgard_ts.c.s
+
+core/ts/asgard_ts_ctrl.o: core/ts/asgard_ts_ctrl.c.o
+
+.PHONY : core/ts/asgard_ts_ctrl.o
+
+# target to build an object file
+core/ts/asgard_ts_ctrl.c.o:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/ts/asgard_ts_ctrl.c.o
+.PHONY : core/ts/asgard_ts_ctrl.c.o
+
+core/ts/asgard_ts_ctrl.i: core/ts/asgard_ts_ctrl.c.i
+
+.PHONY : core/ts/asgard_ts_ctrl.i
+
+# target to preprocess a source file
+core/ts/asgard_ts_ctrl.c.i:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/ts/asgard_ts_ctrl.c.i
+.PHONY : core/ts/asgard_ts_ctrl.c.i
+
+core/ts/asgard_ts_ctrl.s: core/ts/asgard_ts_ctrl.c.s
+
+.PHONY : core/ts/asgard_ts_ctrl.s
+
+# target to generate assembly for a file
+core/ts/asgard_ts_ctrl.c.s:
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/ts/asgard_ts_ctrl.c.s
+.PHONY : core/ts/asgard_ts_ctrl.c.s
 
 core/uface/apply_data.o: core/uface/apply_data.c.o
 
@@ -1020,7 +1020,7 @@ core/uface/apply_data.o: core/uface/apply_data.c.o
 
 # target to build an object file
 core/uface/apply_data.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/apply_data.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/apply_data.c.o
 .PHONY : core/uface/apply_data.c.o
 
 core/uface/apply_data.i: core/uface/apply_data.c.i
@@ -1029,7 +1029,7 @@ core/uface/apply_data.i: core/uface/apply_data.c.i
 
 # target to preprocess a source file
 core/uface/apply_data.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/apply_data.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/apply_data.c.i
 .PHONY : core/uface/apply_data.c.i
 
 core/uface/apply_data.s: core/uface/apply_data.c.s
@@ -1038,7 +1038,7 @@ core/uface/apply_data.s: core/uface/apply_data.c.s
 
 # target to generate assembly for a file
 core/uface/apply_data.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/apply_data.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/apply_data.c.s
 .PHONY : core/uface/apply_data.c.s
 
 core/uface/cluster_membership.o: core/uface/cluster_membership.c.o
@@ -1047,7 +1047,7 @@ core/uface/cluster_membership.o: core/uface/cluster_membership.c.o
 
 # target to build an object file
 core/uface/cluster_membership.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/cluster_membership.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/cluster_membership.c.o
 .PHONY : core/uface/cluster_membership.c.o
 
 core/uface/cluster_membership.i: core/uface/cluster_membership.c.i
@@ -1056,7 +1056,7 @@ core/uface/cluster_membership.i: core/uface/cluster_membership.c.i
 
 # target to preprocess a source file
 core/uface/cluster_membership.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/cluster_membership.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/cluster_membership.c.i
 .PHONY : core/uface/cluster_membership.c.i
 
 core/uface/cluster_membership.s: core/uface/cluster_membership.c.s
@@ -1065,7 +1065,7 @@ core/uface/cluster_membership.s: core/uface/cluster_membership.c.s
 
 # target to generate assembly for a file
 core/uface/cluster_membership.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/cluster_membership.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/cluster_membership.c.s
 .PHONY : core/uface/cluster_membership.c.s
 
 core/uface/consensus_request.o: core/uface/consensus_request.c.o
@@ -1074,7 +1074,7 @@ core/uface/consensus_request.o: core/uface/consensus_request.c.o
 
 # target to build an object file
 core/uface/consensus_request.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/consensus_request.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/consensus_request.c.o
 .PHONY : core/uface/consensus_request.c.o
 
 core/uface/consensus_request.i: core/uface/consensus_request.c.i
@@ -1083,7 +1083,7 @@ core/uface/consensus_request.i: core/uface/consensus_request.c.i
 
 # target to preprocess a source file
 core/uface/consensus_request.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/consensus_request.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/consensus_request.c.i
 .PHONY : core/uface/consensus_request.c.i
 
 core/uface/consensus_request.s: core/uface/consensus_request.c.s
@@ -1092,7 +1092,7 @@ core/uface/consensus_request.s: core/uface/consensus_request.c.s
 
 # target to generate assembly for a file
 core/uface/consensus_request.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/consensus_request.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/consensus_request.c.s
 .PHONY : core/uface/consensus_request.c.s
 
 core/uface/ringbuffer.o: core/uface/ringbuffer.c.o
@@ -1101,7 +1101,7 @@ core/uface/ringbuffer.o: core/uface/ringbuffer.c.o
 
 # target to build an object file
 core/uface/ringbuffer.c.o:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/ringbuffer.c.o
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/ringbuffer.c.o
 .PHONY : core/uface/ringbuffer.c.o
 
 core/uface/ringbuffer.i: core/uface/ringbuffer.c.i
@@ -1110,7 +1110,7 @@ core/uface/ringbuffer.i: core/uface/ringbuffer.c.i
 
 # target to preprocess a source file
 core/uface/ringbuffer.c.i:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/ringbuffer.c.i
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/ringbuffer.c.i
 .PHONY : core/uface/ringbuffer.c.i
 
 core/uface/ringbuffer.s: core/uface/ringbuffer.c.s
@@ -1119,7 +1119,7 @@ core/uface/ringbuffer.s: core/uface/ringbuffer.c.s
 
 # target to generate assembly for a file
 core/uface/ringbuffer.c.s:
-	$(MAKE) -f CMakeFiles/asguard.dir/build.make CMakeFiles/asguard.dir/core/uface/ringbuffer.c.s
+	$(MAKE) -f CMakeFiles/asgard.dir/build.make CMakeFiles/asgard.dir/core/uface/ringbuffer.c.s
 .PHONY : core/uface/ringbuffer.c.s
 
 # Help Target
@@ -1130,40 +1130,40 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... asguard"
+	@echo "... asgard"
 	@echo "... core/Synbuf/kernel-space/synbuf-chardev.o"
 	@echo "... core/Synbuf/kernel-space/synbuf-chardev.i"
 	@echo "... core/Synbuf/kernel-space/synbuf-chardev.s"
-	@echo "... core/asguard_core.o"
-	@echo "... core/asguard_core.i"
-	@echo "... core/asguard_core.s"
-	@echo "... core/asguard_core_ctrl.o"
-	@echo "... core/asguard_core_ctrl.i"
-	@echo "... core/asguard_core_ctrl.s"
-	@echo "... core/asguard_payload_helper.o"
-	@echo "... core/asguard_payload_helper.i"
-	@echo "... core/asguard_payload_helper.s"
+	@echo "... core/asgard_core.o"
+	@echo "... core/asgard_core.i"
+	@echo "... core/asgard_core.s"
+	@echo "... core/asgard_core_ctrl.o"
+	@echo "... core/asgard_core_ctrl.i"
+	@echo "... core/asgard_core_ctrl.s"
+	@echo "... core/asgard_payload_helper.o"
+	@echo "... core/asgard_payload_helper.i"
+	@echo "... core/asgard_payload_helper.s"
 	@echo "... core/event_logger/event_logger.o"
 	@echo "... core/event_logger/event_logger.i"
 	@echo "... core/event_logger/event_logger.s"
 	@echo "... core/event_logger/event_logger_ctrl.o"
 	@echo "... core/event_logger/event_logger_ctrl.i"
 	@echo "... core/event_logger/event_logger_ctrl.s"
-	@echo "... core/logic_layer/consensus/asguard_consensus.o"
-	@echo "... core/logic_layer/consensus/asguard_consensus.i"
-	@echo "... core/logic_layer/consensus/asguard_consensus.s"
-	@echo "... core/logic_layer/consensus/asguard_consensus_config_ctrl.o"
-	@echo "... core/logic_layer/consensus/asguard_consensus_config_ctrl.i"
-	@echo "... core/logic_layer/consensus/asguard_consensus_config_ctrl.s"
-	@echo "... core/logic_layer/consensus/asguard_consensus_eval_ctrl.o"
-	@echo "... core/logic_layer/consensus/asguard_consensus_eval_ctrl.i"
-	@echo "... core/logic_layer/consensus/asguard_consensus_eval_ctrl.s"
-	@echo "... core/logic_layer/consensus/asguard_consensus_ops.o"
-	@echo "... core/logic_layer/consensus/asguard_consensus_ops.i"
-	@echo "... core/logic_layer/consensus/asguard_consensus_ops.s"
-	@echo "... core/logic_layer/consensus/asguard_consensus_request_gen.o"
-	@echo "... core/logic_layer/consensus/asguard_consensus_request_gen.i"
-	@echo "... core/logic_layer/consensus/asguard_consensus_request_gen.s"
+	@echo "... core/logic_layer/consensus/asgard_consensus.o"
+	@echo "... core/logic_layer/consensus/asgard_consensus.i"
+	@echo "... core/logic_layer/consensus/asgard_consensus.s"
+	@echo "... core/logic_layer/consensus/asgard_consensus_config_ctrl.o"
+	@echo "... core/logic_layer/consensus/asgard_consensus_config_ctrl.i"
+	@echo "... core/logic_layer/consensus/asgard_consensus_config_ctrl.s"
+	@echo "... core/logic_layer/consensus/asgard_consensus_eval_ctrl.o"
+	@echo "... core/logic_layer/consensus/asgard_consensus_eval_ctrl.i"
+	@echo "... core/logic_layer/consensus/asgard_consensus_eval_ctrl.s"
+	@echo "... core/logic_layer/consensus/asgard_consensus_ops.o"
+	@echo "... core/logic_layer/consensus/asgard_consensus_ops.i"
+	@echo "... core/logic_layer/consensus/asgard_consensus_ops.s"
+	@echo "... core/logic_layer/consensus/asgard_consensus_request_gen.o"
+	@echo "... core/logic_layer/consensus/asgard_consensus_request_gen.i"
+	@echo "... core/logic_layer/consensus/asgard_consensus_request_gen.s"
 	@echo "... core/logic_layer/consensus/candidate.o"
 	@echo "... core/logic_layer/consensus/candidate.i"
 	@echo "... core/logic_layer/consensus/candidate.s"
@@ -1182,54 +1182,54 @@ help:
 	@echo "... core/logic_layer/echo/asgard_ping_ctrl.o"
 	@echo "... core/logic_layer/echo/asgard_ping_ctrl.i"
 	@echo "... core/logic_layer/echo/asgard_ping_ctrl.s"
-	@echo "... core/logic_layer/echo/asguard_app_echo.o"
-	@echo "... core/logic_layer/echo/asguard_app_echo.i"
-	@echo "... core/logic_layer/echo/asguard_app_echo.s"
-	@echo "... core/logic_layer/echo/asguard_echo.o"
-	@echo "... core/logic_layer/echo/asguard_echo.i"
-	@echo "... core/logic_layer/echo/asguard_echo.s"
-	@echo "... core/logic_layer/echo/asguard_echo_ops.o"
-	@echo "... core/logic_layer/echo/asguard_echo_ops.i"
-	@echo "... core/logic_layer/echo/asguard_echo_ops.s"
-	@echo "... core/logic_layer/fd/asguard_fd.o"
-	@echo "... core/logic_layer/fd/asguard_fd.i"
-	@echo "... core/logic_layer/fd/asguard_fd.s"
-	@echo "... core/logic_layer/fd/asguard_fd_ops.o"
-	@echo "... core/logic_layer/fd/asguard_fd_ops.i"
-	@echo "... core/logic_layer/fd/asguard_fd_ops.s"
-	@echo "... core/logic_layer/fd/asguard_fdtx.o"
-	@echo "... core/logic_layer/fd/asguard_fdtx.i"
-	@echo "... core/logic_layer/fd/asguard_fdtx.s"
-	@echo "... core/logic_layer/fd/tx/asguard_fd_tx_procfs.o"
-	@echo "... core/logic_layer/fd/tx/asguard_fd_tx_procfs.i"
-	@echo "... core/logic_layer/fd/tx/asguard_fd_tx_procfs.s"
-	@echo "... core/net/asguard_async_queue.o"
-	@echo "... core/net/asguard_async_queue.i"
-	@echo "... core/net/asguard_async_queue.s"
-	@echo "... core/net/asguard_net.o"
-	@echo "... core/net/asguard_net.i"
-	@echo "... core/net/asguard_net.s"
+	@echo "... core/logic_layer/echo/asgard_app_echo.o"
+	@echo "... core/logic_layer/echo/asgard_app_echo.i"
+	@echo "... core/logic_layer/echo/asgard_app_echo.s"
+	@echo "... core/logic_layer/echo/asgard_echo.o"
+	@echo "... core/logic_layer/echo/asgard_echo.i"
+	@echo "... core/logic_layer/echo/asgard_echo.s"
+	@echo "... core/logic_layer/echo/asgard_echo_ops.o"
+	@echo "... core/logic_layer/echo/asgard_echo_ops.i"
+	@echo "... core/logic_layer/echo/asgard_echo_ops.s"
+	@echo "... core/logic_layer/fd/asgard_fd.o"
+	@echo "... core/logic_layer/fd/asgard_fd.i"
+	@echo "... core/logic_layer/fd/asgard_fd.s"
+	@echo "... core/logic_layer/fd/asgard_fd_ops.o"
+	@echo "... core/logic_layer/fd/asgard_fd_ops.i"
+	@echo "... core/logic_layer/fd/asgard_fd_ops.s"
+	@echo "... core/logic_layer/fd/asgard_fdtx.o"
+	@echo "... core/logic_layer/fd/asgard_fdtx.i"
+	@echo "... core/logic_layer/fd/asgard_fdtx.s"
+	@echo "... core/logic_layer/fd/tx/asgard_fd_tx_procfs.o"
+	@echo "... core/logic_layer/fd/tx/asgard_fd_tx_procfs.i"
+	@echo "... core/logic_layer/fd/tx/asgard_fd_tx_procfs.s"
+	@echo "... core/net/asgard_async_queue.o"
+	@echo "... core/net/asgard_async_queue.i"
+	@echo "... core/net/asgard_async_queue.s"
+	@echo "... core/net/asgard_net.o"
+	@echo "... core/net/asgard_net.i"
+	@echo "... core/net/asgard_net.s"
 	@echo "... core/net/payload_helper.o"
 	@echo "... core/net/payload_helper.i"
 	@echo "... core/net/payload_helper.s"
-	@echo "... core/pm/asguard_pm.o"
-	@echo "... core/pm/asguard_pm.i"
-	@echo "... core/pm/asguard_pm.s"
-	@echo "... core/pm/asguard_pm_ctrl.o"
-	@echo "... core/pm/asguard_pm_ctrl.i"
-	@echo "... core/pm/asguard_pm_ctrl.s"
+	@echo "... core/pm/asgard_pm.o"
+	@echo "... core/pm/asgard_pm.i"
+	@echo "... core/pm/asgard_pm.s"
+	@echo "... core/pm/asgard_pm_ctrl.o"
+	@echo "... core/pm/asgard_pm_ctrl.i"
+	@echo "... core/pm/asgard_pm_ctrl.s"
 	@echo "... core/proto/proto_instance_ctrl.o"
 	@echo "... core/proto/proto_instance_ctrl.i"
 	@echo "... core/proto/proto_instance_ctrl.s"
 	@echo "... core/proto/proto_mgmt.o"
 	@echo "... core/proto/proto_mgmt.i"
 	@echo "... core/proto/proto_mgmt.s"
-	@echo "... core/ts/asguard_ts.o"
-	@echo "... core/ts/asguard_ts.i"
-	@echo "... core/ts/asguard_ts.s"
-	@echo "... core/ts/asguard_ts_ctrl.o"
-	@echo "... core/ts/asguard_ts_ctrl.i"
-	@echo "... core/ts/asguard_ts_ctrl.s"
+	@echo "... core/ts/asgard_ts.o"
+	@echo "... core/ts/asgard_ts.i"
+	@echo "... core/ts/asgard_ts.s"
+	@echo "... core/ts/asgard_ts_ctrl.o"
+	@echo "... core/ts/asgard_ts_ctrl.i"
+	@echo "... core/ts/asgard_ts_ctrl.s"
 	@echo "... core/uface/apply_data.o"
 	@echo "... core/uface/apply_data.i"
 	@echo "... core/uface/apply_data.s"

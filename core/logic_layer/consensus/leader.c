@@ -1,23 +1,23 @@
-#include <asguard/logger.h>
-#include <asguard/asguard.h>
-#include <asguard/payload_helper.h>
+#include <asgard/logger.h>
+#include <asgard/asgard.h>
+#include <asgard/payload_helper.h>
 #include <linux/slab.h>
 
 #include "include/consensus_helper.h"
 #include "include/leader.h"
-#include <asguard/consensus.h>
+#include <asgard/consensus.h>
 #include <linux/spinlock.h>
 #include <linux/list.h>
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[ASGUARD][LE][LEADER]"
+#define LOG_PREFIX "[ASGARD][LE][LEADER]"
 
 struct consensus_priv;
 
 void initialize_indices(struct consensus_priv *priv)
 {
 	int i;
-    struct asguard_payload *multicast_pkt_payload;
+    struct asgard_payload *multicast_pkt_payload;
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 
@@ -51,7 +51,7 @@ int _is_potential_commit_idx(struct consensus_priv *priv, int N)
 
 		if(!priv->sdev->pminfo.pm_targets[i].alive){
 			hits++; // If node is dead, count as hit
-			asguard_dbg("Did not consider dead node for consensus\n");
+			asgard_dbg("Did not consider dead node for consensus\n");
 			continue;
 		}
 
@@ -68,7 +68,7 @@ void update_commit_idx(struct consensus_priv *priv)
 	int prev_commit_idx,cur_buf_idx;
 
 	if (!priv) {
-		asguard_error("priv is NULL!\n");
+		asgard_error("priv is NULL!\n");
 		return;
 	}
 
@@ -88,7 +88,7 @@ void update_commit_idx(struct consensus_priv *priv)
 
 
 		if(current_N > priv->sm_log.last_idx){
-			asguard_dbg("BUG! current_N (%d) > priv->sm_log.last_idx(%d) \n",
+			asgard_dbg("BUG! current_N (%d) > priv->sm_log.last_idx(%d) \n",
 					current_N, priv->sm_log.last_idx );
 			return;
 		}
@@ -96,12 +96,12 @@ void update_commit_idx(struct consensus_priv *priv)
         buf_idx_current_N = consensus_idx_to_buffer_idx(&priv->sm_log, current_N);
 
         if(buf_idx_current_N < 0) {
-            asguard_dbg("Error converting consensus idx to buffer in %s", __FUNCTION__);
+            asgard_dbg("Error converting consensus idx to buffer in %s", __FUNCTION__);
             return;
         }
 
 		if(!priv->sm_log.entries[buf_idx_current_N]) {
-			asguard_dbg("BUG! log entry at %d is NULL\n",
+			asgard_dbg("BUG! log entry at %d is NULL\n",
                         buf_idx_current_N );
 			return;
 		}
@@ -155,7 +155,7 @@ void update_commit_idx(struct consensus_priv *priv)
 	    cur_buf_idx = consensus_idx_to_buffer_idx(&priv->sm_log, i);
 
 	    if(cur_buf_idx < 0) {
-	        asguard_error("Could not invalidate due to con2buf idx conversion error\n");
+	        asgard_error("Could not invalidate due to con2buf idx conversion error\n");
 	        return;
 	    }
         priv->sm_log.entries[cur_buf_idx]->valid = 0;
@@ -183,13 +183,13 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, s32 retra
 		kmalloc(sizeof(struct retrans_request), GFP_KERNEL);
 
 	if(!new_req) {
-		asguard_error("Could not allocate mem for new retransmission request list item\n");
+		asgard_error("Could not allocate mem for new retransmission request list item\n");
 		return;
 	}
 
 	new_req->request_idx = retrans_idx;
 
-	asguard_dbg(" Added request idx %d to list for target=%d \n", retrans_idx, remote_lid);
+	asgard_dbg(" Added request idx %d to list for target=%d \n", retrans_idx, remote_lid);
 
 	list_add_tail(&(new_req->retrans_req_head), &priv->sm_log.retrans_head[remote_lid]);
 	priv->sm_log.num_retransmissions[remote_lid]++;
@@ -203,7 +203,7 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
-	struct asguard_device *sdev = priv->sdev;
+	struct asgard_device *sdev = priv->sdev;
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
@@ -230,20 +230,20 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		if (param2 == 1) {
 			// append rpc success!
-			//asguard_dbg("Received Reply with State=success param3=%d\n",param3);
+			//asgard_dbg("Received Reply with State=success param3=%d\n",param3);
 			// update match Index for follower with <remote_lid>
 
-			// Asguard can potentially send multiple appendEntries RPCs, and after each RPC
+			// Asgard can potentially send multiple appendEntries RPCs, and after each RPC
 			// the next_index must be updated to indicate wich entries to send next..
 			// But the replies to the appendEntries RPC will indicate that only to certain index the
 			// follower log was updated. Thus, the follower must include the information to which
 			// index it has updated the follower log. As an alternative, the leader could remember a state
 			// including the index after emitting the udp packet..
 			//priv->sm_log.match_index[remote_lid] = priv->sm_log.next_index[remote_lid] - 1;
-			// asguard_dbg("Received Reply with State=success.. rcluster_id=%d, param4=%d\n", rcluster_id, param4);
+			// asgard_dbg("Received Reply with State=success.. rcluster_id=%d, param4=%d\n", rcluster_id, param4);
 
 			if(priv->sm_log.last_idx < param4) {
-				asguard_error("(1) match index (%d) is greater than local last idx (%d)!\n", param4, priv->sm_log.last_idx);
+				asgard_error("(1) match index (%d) is greater than local last idx (%d)!\n", param4, priv->sm_log.last_idx);
                 print_hex_dump(KERN_DEBUG, "response hexdump: ", DUMP_PREFIX_NONE, 32,1,
                                pkt, 32, 0);
 
@@ -256,15 +256,15 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 			// check for unstable logs at remote & init resubmission of missing part
 
 		} else if (param2 == 2){
-			// asguard_dbg("Received Reply with State=retransmission.. rcluster_id=%d, param3=%d, param4=%d\n",rcluster_id, param3, param4);
+			// asgard_dbg("Received Reply with State=retransmission.. rcluster_id=%d, param3=%d, param4=%d\n",rcluster_id, param3, param4);
 
 			if(priv->sm_log.last_idx < param4) {
-				asguard_error("(2) match index (%d) is greater than local last idx (%d)!\n", param4, priv->sm_log.last_idx);
+				asgard_error("(2) match index (%d) is greater than local last idx (%d)!\n", param4, priv->sm_log.last_idx);
 				break; // ignore this faulty packet
 			}
 
 			if(priv->sm_log.last_idx < param3) {
-				asguard_error("(2) follower requested log with invalid index (%d)\n", param3);
+				asgard_error("(2) follower requested log with invalid index (%d)\n", param3);
 				break; // ignore this faulty packet
 			}
 
@@ -279,10 +279,10 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 
 		} else if(param2 == 0) {
 			// append rpc failed!
-			// asguard_dbg("Received Reply with State=failed..rcluster_id=%d, param3=%d\n",rcluster_id, param3);
+			// asgard_dbg("Received Reply with State=failed..rcluster_id=%d, param3=%d\n",rcluster_id, param3);
 
 			if(priv->sm_log.last_idx < param3) {
-				asguard_error("(0) Received invalid next index from follower (%d)\n", param3);
+				asgard_error("(0) Received invalid next index from follower (%d)\n", param3);
 				break; // ignore this faulty packet
 			}
 
@@ -299,11 +299,11 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 		 */
 		if (param1 > priv->term) {
 			accept_leader(ins, remote_lid, rcluster_id, param1);
-			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
+			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGARD);
 
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
-				asguard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
+				asgard_dbg("Received message from new leader with higher or equal term=%u\n", param1);
 #endif
 		}
 
@@ -313,12 +313,12 @@ int leader_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_
 	case APPEND:
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
-				asguard_dbg("received APPEND but node is leader BUG\n");
+				asgard_dbg("received APPEND but node is leader BUG\n");
 #endif
 
 		break;
 	default:
-		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", remote_lid, opcode);
+		asgard_dbg("Unknown opcode received from host: %d - opcode: %d\n", remote_lid, opcode);
 
 	}
 
@@ -333,7 +333,7 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 		write_lock(&priv->sm_log.retrans_list_lock[i]);
-		asguard_dbg("deleting retransmission list for target %d\n", i);
+		asgard_dbg("deleting retransmission list for target %d\n", i);
 
 		if(list_empty(&priv->sm_log.retrans_head[i])) {
 			write_unlock(&priv->sm_log.retrans_list_lock[i]);
@@ -362,36 +362,36 @@ void print_leader_stats(struct consensus_priv *priv)
 	int i;
 	struct retrans_request *entry, *tmp_entry;
 
-    asguard_dbg("Bug Counter: %d", priv->sdev->bug_counter);
+    asgard_dbg("Bug Counter: %d", priv->sdev->bug_counter);
 
 	for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
-		asguard_dbg("Stats for target %d \n", i);
-		asguard_dbg("\t pkt TX counter: %d\n", priv->sdev->pminfo.pm_targets[i].pkt_tx_counter);
-		asguard_dbg("\t scheduled log reps: %d\n", priv->sdev->pminfo.pm_targets[i].scheduled_log_replications);
+		asgard_dbg("Stats for target %d \n", i);
+		asgard_dbg("\t pkt TX counter: %d\n", priv->sdev->pminfo.pm_targets[i].pkt_tx_counter);
+		asgard_dbg("\t scheduled log reps: %d\n", priv->sdev->pminfo.pm_targets[i].scheduled_log_replications);
 
-		asguard_dbg("\t number of retransmissions: %d\n", priv->sm_log.num_retransmissions[i] );
-		asguard_dbg("\t match index: %d \n", priv->sm_log.match_index[i] );
-		asguard_dbg("\t next index: %d \n", priv->sm_log.match_index[i] );
+		asgard_dbg("\t number of retransmissions: %d\n", priv->sm_log.num_retransmissions[i] );
+		asgard_dbg("\t match index: %d \n", priv->sm_log.match_index[i] );
+		asgard_dbg("\t next index: %d \n", priv->sm_log.match_index[i] );
 
-		asguard_dbg("\t pending retransmissions: \n" );
+		asgard_dbg("\t pending retransmissions: \n" );
 
 		read_lock(&priv->sm_log.retrans_list_lock[i]);
 		if(!list_empty(&priv->sdev->consensus_priv->sm_log.retrans_head[i])) {
 			list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[i], retrans_req_head)
 			{
-				asguard_dbg("\t\t %d \n", entry->request_idx);
+				asgard_dbg("\t\t %d \n", entry->request_idx);
 			}
 		} else
-			asguard_dbg("\t\t empty \n");
+			asgard_dbg("\t\t empty \n");
 
 		read_unlock(&priv->sm_log.retrans_list_lock[i]);
 
 	}
 
-	asguard_dbg("last_idx %d \n", priv->sm_log.last_idx );
-	asguard_dbg("stable_idx %d\n", priv->sm_log.stable_idx );
-	asguard_dbg("next_retrans_req_idx %d\n", priv->sm_log.next_retrans_req_idx );
-	asguard_dbg("max_entries %d\n", priv->sm_log.max_entries );
+	asgard_dbg("last_idx %d \n", priv->sm_log.last_idx );
+	asgard_dbg("stable_idx %d\n", priv->sm_log.stable_idx );
+	asgard_dbg("next_retrans_req_idx %d\n", priv->sm_log.next_retrans_req_idx );
+	asgard_dbg("max_entries %d\n", priv->sm_log.max_entries );
 
 }
 

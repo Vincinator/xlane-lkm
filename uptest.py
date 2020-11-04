@@ -32,14 +32,14 @@ priv_key_path = os.environ.get('SSH_PRIV_KEY_PATH')
 
 def compile(warnings):
     tasks = [
-        "cd asguard-test-src && git pull",
-        "export ASGUARD_KERNEL_SRC=~/asguard-kernel-src && cd asguard-test-src && make clean",
+        "cd asgard-test-src && git pull",
+        "export ASGARD_KERNEL_SRC=~/asgard-kernel-src && cd asgard-test-src && make clean",
     ]
 
     if warnings:
-        tasks.append("export ASGUARD_KERNEL_SRC=~/asguard-kernel-src && cd asguard-test-src && make")
+        tasks.append("export ASGARD_KERNEL_SRC=~/asgard-kernel-src && cd asgard-test-src && make")
     else:
-        tasks.append('export ASGUARD_KERNEL_SRC=~/asguard-kernel-src && cd asguard-test-src && make KBUILD_CFLAGS+="-w" -s')
+        tasks.append('export ASGARD_KERNEL_SRC=~/asgard-kernel-src && cd asgard-test-src && make KBUILD_CFLAGS+="-w" -s')
 
     for t in tasks:
         cur_task = build_host_task(build_host_ip, build_host_user, priv_key_path, t)
@@ -47,8 +47,8 @@ def compile(warnings):
 
 def test():
     tasks = [
-        "cd asguard-test-src && git pull",
-        "export ASGUARD_KERNEL_SRC=~/asguard-kernel-src && cd asguard-test-src/tests && cmake . && make && make check",
+        "cd asgard-test-src && git pull",
+        "export ASGARD_KERNEL_SRC=~/asgard-kernel-src && cd asgard-test-src/tests && cmake . && make && make check",
     ]
 
     for t in tasks:
@@ -60,7 +60,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--compile', choices=['errors', 'warnings'],
-                        help='Compile asguard on build server and print output')
+                        help='Compile asgard on build server and print output')
 
     parser.add_argument('--test', choices=['all', 'consensus'],
                         help='Runs UnitTests on remote build server')
@@ -99,6 +99,6 @@ if __name__ == '__main__':
 # git commit -m "$COMMIT_MSG"
 # git push
 
-# ssh dsp@dsp-build 'export ASGUARD_KERNEL_SRC=~/asguard-kernel-src && cd asguard-test-src && git pull && make CFLAGS="-w"'
+# ssh dsp@dsp-build 'export ASGARD_KERNEL_SRC=~/asgard-kernel-src && cd asgard-test-src && git pull && make CFLAGS="-w"'
 
 

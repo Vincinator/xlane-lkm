@@ -1,5 +1,5 @@
-#include <asguard/logger.h>
-#include <asguard/asguard.h>
+#include <asgard/logger.h>
+#include <asgard/asgard.h>
 
 #include <linux/skbuff.h>
 #include <linux/etherdevice.h>
@@ -7,15 +7,15 @@
 #include <net/ip.h>
 #include <linux/netdevice.h>
 
-#include <asguard/payload_helper.h>
+#include <asgard/payload_helper.h>
 
 #include "include/consensus_helper.h"
 #include "include/follower.h"
 #include "include/candidate.h"
-#include <asguard/consensus.h>
+#include <asgard/consensus.h>
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[ASGUARD][LE][CANDIDATE]"
+#define LOG_PREFIX "[ASGARD][LE][CANDIDATE]"
 
 #define CANDIDATURE_RETRY_LIMIT 100
 
@@ -57,13 +57,13 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 		(struct consensus_priv *)ins->proto_data;
 
 	priv->votes++;
-	write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, RDTSC_ASGUARD);
+	write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, RDTSC_ASGARD);
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
+		asgard_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
 					nstate_string(priv->nstate),
-					RDTSC_ASGUARD,
+					RDTSC_ASGARD,
 					priv->term,
 					priv->votes,
 					priv->sdev->pminfo.num_of_targets);
@@ -74,9 +74,9 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: got majority with %d from %d possible votes\n",
+		asgard_log_le("%s, %llu, %d: got majority with %d from %d possible votes\n",
 				nstate_string(priv->nstate),
-				RDTSC_ASGUARD,
+				RDTSC_ASGARD,
 				priv->term,
 				priv->votes,
 				priv->sdev->pminfo.num_of_targets);
@@ -88,7 +88,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 		priv->sdev->cur_leader_lid = -1;
 
 		if (err) {
-			asguard_error("Error occured during the transition to leader role\n");
+			asgard_error("Error occured during the transition to leader role\n");
 
 			return;
 		}
@@ -104,14 +104,14 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
-	struct asguard_device *sdev = priv->sdev;
+	struct asgard_device *sdev = priv->sdev;
 
 	u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4;
 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
 #if VERBOSE_DEBUG
-	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
+	log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGARD, priv->term, opcode, rcluster_id, param1);
 #endif
 	switch (opcode) {
     case ADVERTISE:
@@ -148,11 +148,11 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
-				asguard_dbg("Received message from new leader (%d) with higher or equal term=%u\n",
+				asgard_dbg("Received message from new leader (%d) with higher or equal term=%u\n",
 							rcluster_id,  param1);
 #endif
 			accept_leader(ins, remote_lid, rcluster_id, param1);
-			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
+			write_log(&ins->logger, CANDIDATE_ACCEPT_NEW_LEADER, RDTSC_ASGARD);
 
 		}
 
@@ -161,7 +161,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 	case APPEND:
 
 		if(priv->leader_id != rcluster_id) {
-			// asguard_error("received APPEND from a node that is not accepted as leader \n");
+			// asgard_error("received APPEND from a node that is not accepted as leader \n");
 			break;
 		}
 
@@ -170,7 +170,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		} else {
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
-				asguard_dbg("Received LEAD from leader (%d) with lower term=%u\n", rcluster_id, param1);
+				asgard_dbg("Received LEAD from leader (%d) with lower term=%u\n", rcluster_id, param1);
 #endif
 			// Ignore this LEAD message, continue to wait for votes
 
@@ -179,7 +179,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 		break;
 	default:
 
-		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", remote_lid, opcode);
+		asgard_dbg("Unknown opcode received from host: %d - opcode: %d\n", remote_lid, opcode);
 	}
 
 	return 0;
@@ -201,7 +201,7 @@ int start_candidate(struct proto_instance *ins)
 
 
 	if(priv->sdev->pminfo.num_of_targets < 2 && priv->sdev->warmup_state == WARMED_UP) {
-	    asguard_error("Not enough Cluster Members for a Leader Election!\n");
+	    asgard_error("Not enough Cluster Members for a Leader Election!\n");
 	    return -1;
 	}
 

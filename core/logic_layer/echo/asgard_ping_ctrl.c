@@ -6,11 +6,11 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 
-#include <asguard/asguard.h>
-#include <asguard/logger.h>
-#include <asguard/consensus.h>
+#include <asgard/asgard.h>
+#include <asgard/logger.h>
+#include <asgard/consensus.h>
 
-#include <asguard/asguard_echo.h>
+#include <asgard/asgard_echo.h>
 
 
 static int get_remote_lid(struct pminfo *spminfo, int cluster_id)
@@ -45,7 +45,7 @@ int read_user_input_int(const char *user_buffer, size_t count, const struct echo
     err = copy_from_user(kernel_buffer, user_buffer, count);
 
     if (err) {
-        asguard_error("Copy from user failed%s\n", __func__);
+        asgard_error("Copy from user failed%s\n", __func__);
         return -1;
     }
 
@@ -54,7 +54,7 @@ int read_user_input_int(const char *user_buffer, size_t count, const struct echo
     err = kstrtoint(kernel_buffer, 10, target_cluster_id);
 
     if (err) {
-        asguard_dbg("Error converting input buffer: %s, todevid: 0x%x\n",
+        asgard_dbg("Error converting input buffer: %s, todevid: 0x%x\n",
                     kernel_buffer, (*target_cluster_id));
         return -1;
     }
@@ -73,14 +73,14 @@ int read_pingpong_user_input(const char *user_buffer, size_t count, const struct
     err = read_user_input_int(user_buffer, count, priv, kernel_buffer, target_cluster_id);
 
     if(err){
-        asguard_error("Could no read user input\n");
+        asgard_error("Could no read user input\n");
         return -1;
     }
 
     /* TODO: trigger unicast ping to target. Add -1 case to ping all cluster nodes */
 
     if((*target_cluster_id) < 0 || (*target_cluster_id) > MAX_NODE_ID){
-        asguard_error("Invalid Cluster ID: %d", (*target_cluster_id));
+        asgard_error("Invalid Cluster ID: %d", (*target_cluster_id));
         return -1;
 
     }
@@ -91,8 +91,8 @@ int read_pingpong_user_input(const char *user_buffer, size_t count, const struct
         goto out;
 
     if((*remote_lid) == -1){
-        asguard_error("could not find local data for cluster node %d\n", (*target_cluster_id));
-        asguard_dbg("Have %d registered cluster nodes\n", priv->sdev->pminfo.num_of_targets);
+        asgard_error("could not find local data for cluster node %d\n", (*target_cluster_id));
+        asgard_dbg("Have %d registered cluster nodes\n", priv->sdev->pminfo.num_of_targets);
         return -1;
     }
 
@@ -102,13 +102,13 @@ out:
 
 
 
-static ssize_t asguard_pupu_ctrl_write(struct file *file,
+static ssize_t asgard_pupu_ctrl_write(struct file *file,
                                        const char __user *user_buffer, size_t count,
                                        loff_t *data)
 {
     struct echo_priv *priv =
             (struct echo_priv *)PDE_DATA(file_inode(file));
-    char kernel_buffer[ASGUARD_NUMBUF];
+    char kernel_buffer[ASGARD_NUMBUF];
     int target_cluster_id = -3;
     int err;
     int remote_lid;
@@ -121,19 +121,19 @@ static ssize_t asguard_pupu_ctrl_write(struct file *file,
 
     setup_echo_msg_uni(priv->ins, &priv->sdev->pminfo, remote_lid,
                        priv->sdev->pminfo.cluster_id, target_cluster_id,
-                       RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_UNI);
+                       RDTSC_ASGARD, 0, 0, ASGARD_PING_REQ_UNI);
 
     /* Use Echo Protocol Port for ping */
     priv->sdev->pminfo.pm_targets[remote_lid].pkt_data.port = 3321;
-    asguard_dbg("pupu triggered\n");
+    asgard_dbg("pupu triggered\n");
 
     return count;
 error:
-    asguard_error("Error during parsing of input.%s\n", __func__);
+    asgard_error("Error during parsing of input.%s\n", __func__);
     return count;
 }
 
-static int asguard_ping_ctrl_show(struct seq_file *m, void *v)
+static int asgard_ping_ctrl_show(struct seq_file *m, void *v)
 {
     struct echo_priv *priv =
             (struct echo_priv *)m->private;
@@ -146,13 +146,13 @@ static int asguard_ping_ctrl_show(struct seq_file *m, void *v)
     return 0;
 }
 
-static int asguard_pupu_ctrl_open(struct inode *inode, struct file *file)
+static int asgard_pupu_ctrl_open(struct inode *inode, struct file *file)
 {
-    return single_open(file, asguard_ping_ctrl_show,
+    return single_open(file, asgard_ping_ctrl_show,
                        PDE_DATA(file_inode(file)));
 }
 
-static ssize_t asguard_pmpm_ctrl_write(struct file *file,
+static ssize_t asgard_pmpm_ctrl_write(struct file *file,
                                        const char __user *user_buffer, size_t count,
                                        loff_t *data)
 {
@@ -162,15 +162,15 @@ static ssize_t asguard_pmpm_ctrl_write(struct file *file,
 
     setup_echo_msg_multi(priv->ins, &priv->sdev->pminfo,
                          priv->sdev->pminfo.cluster_id, 0,
-                         RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_MULTI);
+                         RDTSC_ASGARD, 0, 0, ASGARD_PING_REQ_MULTI);
     priv->fire_ping = 1;
     priv->sdev->pminfo.multicast_pkt_data_oos.port = 3321;
-    asguard_dbg("pmpm triggered\n");
+    asgard_dbg("pmpm triggered\n");
 
     return count;
 }
 
-static int asguard_pmpm_show(struct seq_file *m, void *v)
+static int asgard_pmpm_show(struct seq_file *m, void *v)
 {
     struct echo_priv *priv =
             (struct echo_priv *)m->private;
@@ -183,19 +183,19 @@ static int asguard_pmpm_show(struct seq_file *m, void *v)
     return 0;
 }
 
-static int asguard_pmpm_ctrl_open(struct inode *inode, struct file *file)
+static int asgard_pmpm_ctrl_open(struct inode *inode, struct file *file)
 {
-    return single_open(file, asguard_pmpm_show,
+    return single_open(file, asgard_pmpm_show,
                        PDE_DATA(file_inode(file)));
 }
 
-static ssize_t asguard_pmpu_ctrl_write(struct file *file,
+static ssize_t asgard_pmpu_ctrl_write(struct file *file,
                                        const char __user *user_buffer, size_t count,
                                        loff_t *data)
 {
     struct echo_priv *priv =
             (struct echo_priv *)PDE_DATA(file_inode(file));
-    char kernel_buffer[ASGUARD_NUMBUF];
+    char kernel_buffer[ASGARD_NUMBUF];
     int target_cluster_id = -3;
     int err;
     int remote_lid;
@@ -207,21 +207,21 @@ static ssize_t asguard_pmpu_ctrl_write(struct file *file,
 
     setup_echo_msg_multi(priv->ins, &priv->sdev->pminfo,
                        priv->sdev->pminfo.cluster_id, target_cluster_id,
-                       RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_UNI);
+                       RDTSC_ASGARD, 0, 0, ASGARD_PING_REQ_UNI);
 
     priv->fire_ping = 1;
     priv->sdev->pminfo.multicast_pkt_data_oos.port = 3321;
-    asguard_dbg("pmpu triggered\n");
+    asgard_dbg("pmpu triggered\n");
 
     return count;
 
 error:
-    asguard_error("Error during parsing of input.%s\n", __func__);
+    asgard_error("Error during parsing of input.%s\n", __func__);
     return count;
 
 }
 
-static int asguard_pmpu_show(struct seq_file *m, void *v)
+static int asgard_pmpu_show(struct seq_file *m, void *v)
 {
     struct echo_priv *priv =
             (struct echo_priv *)m->private;
@@ -234,19 +234,19 @@ static int asguard_pmpu_show(struct seq_file *m, void *v)
     return 0;
 }
 
-static int asguard_pmpu_ctrl_open(struct inode *inode, struct file *file)
+static int asgard_pmpu_ctrl_open(struct inode *inode, struct file *file)
 {
-    return single_open(file, asguard_pmpu_show,
+    return single_open(file, asgard_pmpu_show,
                        PDE_DATA(file_inode(file)));
 }
 
-static ssize_t asguard_pupm_ctrl_write(struct file *file,
+static ssize_t asgard_pupm_ctrl_write(struct file *file,
                                        const char __user *user_buffer, size_t count,
                                        loff_t *data)
 {
     struct echo_priv *priv =
             (struct echo_priv *)PDE_DATA(file_inode(file));
-    char kernel_buffer[ASGUARD_NUMBUF];
+    char kernel_buffer[ASGARD_NUMBUF];
     int target_cluster_id = -3;
     int err;
     int remote_lid;
@@ -258,20 +258,20 @@ static ssize_t asguard_pupm_ctrl_write(struct file *file,
 
     setup_echo_msg_uni(priv->ins, &priv->sdev->pminfo, remote_lid,
                          priv->sdev->pminfo.cluster_id, target_cluster_id,
-                         RDTSC_ASGUARD, 0, 0, ASGUARD_PING_REQ_MULTI);
+                         RDTSC_ASGARD, 0, 0, ASGARD_PING_REQ_MULTI);
 
     /* Use Echo Protocol Port for ping */
     priv->sdev->pminfo.pm_targets[remote_lid].pkt_data.port = 3321;
-    asguard_dbg("pupm triggered\n");
+    asgard_dbg("pupm triggered\n");
 
     return count;
 
 error:
-    asguard_error("Error during parsing of input.%s\n", __func__);
+    asgard_error("Error during parsing of input.%s\n", __func__);
     return count;
 }
 
-static int asguard_pupm_ctrl_show(struct seq_file *m, void *v)
+static int asgard_pupm_ctrl_show(struct seq_file *m, void *v)
 {
     struct echo_priv *priv =
             (struct echo_priv *)m->private;
@@ -283,20 +283,20 @@ static int asguard_pupm_ctrl_show(struct seq_file *m, void *v)
 
     return 0;
 }
-static int asguard_pupm_ctrl_open(struct inode *inode, struct file *file)
+static int asgard_pupm_ctrl_open(struct inode *inode, struct file *file)
 {
-    return single_open(file, asguard_pupm_ctrl_show,
+    return single_open(file, asgard_pupm_ctrl_show,
                        PDE_DATA(file_inode(file)));
 }
 
 
-static ssize_t asguard_ppwt_ctrl_write(struct file *file,
+static ssize_t asgard_ppwt_ctrl_write(struct file *file,
                                        const char __user *user_buffer, size_t count,
                                        loff_t *data)
 {
     struct echo_priv *priv =
             (struct echo_priv *)PDE_DATA(file_inode(file));
-    char kernel_buffer[ASGUARD_NUMBUF];
+    char kernel_buffer[ASGARD_NUMBUF];
     int target = -3;
     int err;
 
@@ -307,16 +307,16 @@ static ssize_t asguard_ppwt_ctrl_write(struct file *file,
 
     priv->pong_waiting_interval = target;
 
-    asguard_dbg("Set Png Reply Waiting Time to %d\n", target);
+    asgard_dbg("Set Png Reply Waiting Time to %d\n", target);
 
     return count;
 
     error:
-    asguard_error("Error during parsing of input.%s\n", __func__);
+    asgard_error("Error during parsing of input.%s\n", __func__);
     return err;
 }
 
-static int asguard_ppwt_show(struct seq_file *m, void *v)
+static int asgard_ppwt_show(struct seq_file *m, void *v)
 {
     struct echo_priv *priv =
             (struct echo_priv *)m->private;
@@ -329,52 +329,52 @@ static int asguard_ppwt_show(struct seq_file *m, void *v)
     return 0;
 }
 
-static int asguard_ppwt_ctrl_open(struct inode *inode, struct file *file)
+static int asgard_ppwt_ctrl_open(struct inode *inode, struct file *file)
 {
-    return single_open(file, asguard_ppwt_show,
+    return single_open(file, asgard_ppwt_show,
                        PDE_DATA(file_inode(file)));
 }
 
-static const struct file_operations asguard_pupm_ops = {
+static const struct file_operations asgard_pupm_ops = {
         .owner = THIS_MODULE,
-        .open = asguard_pupm_ctrl_open,
-        .write = asguard_pupm_ctrl_write,
+        .open = asgard_pupm_ctrl_open,
+        .write = asgard_pupm_ctrl_write,
         .read = seq_read,
         .llseek = seq_lseek,
         .release = single_release,
 };
 
-static const struct file_operations asguard_pupu_ops = {
+static const struct file_operations asgard_pupu_ops = {
         .owner = THIS_MODULE,
-        .open = asguard_pupu_ctrl_open,
-        .write = asguard_pupu_ctrl_write,
+        .open = asgard_pupu_ctrl_open,
+        .write = asgard_pupu_ctrl_write,
         .read = seq_read,
         .llseek = seq_lseek,
         .release = single_release,
 };
 
-static const struct file_operations asguard_pmpu_ops = {
+static const struct file_operations asgard_pmpu_ops = {
         .owner = THIS_MODULE,
-        .open = asguard_pmpu_ctrl_open,
-        .write = asguard_pmpu_ctrl_write,
+        .open = asgard_pmpu_ctrl_open,
+        .write = asgard_pmpu_ctrl_write,
         .read = seq_read,
         .llseek = seq_lseek,
         .release = single_release,
 };
 
-static const struct file_operations asguard_pmpm_ops = {
+static const struct file_operations asgard_pmpm_ops = {
         .owner = THIS_MODULE,
-        .open = asguard_pmpm_ctrl_open,
-        .write = asguard_pmpm_ctrl_write,
+        .open = asgard_pmpm_ctrl_open,
+        .write = asgard_pmpm_ctrl_write,
         .read = seq_read,
         .llseek = seq_lseek,
         .release = single_release,
 };
 
-static const struct file_operations asguard_ppwt_ops = {
+static const struct file_operations asgard_ppwt_ops = {
         .owner = THIS_MODULE,
-        .open = asguard_ppwt_ctrl_open,
-        .write = asguard_ppwt_ctrl_write,
+        .open = asgard_ppwt_ctrl_open,
+        .write = asgard_ppwt_ctrl_write,
         .read = seq_read,
         .llseek = seq_lseek,
         .release = single_release,
@@ -382,41 +382,41 @@ static const struct file_operations asguard_ppwt_ops = {
 
 void init_ping_ctrl_interfaces(struct echo_priv *priv)
 {
-    char name_buf[MAX_ASGUARD_PROC_NAME];
+    char name_buf[MAX_ASGARD_PROC_NAME];
 
 
     snprintf(name_buf, sizeof(name_buf),
-             "asguard/%d/proto_instances/%d/waiting_time",
+             "asgard/%d/proto_instances/%d/waiting_time",
              priv->sdev->ifindex, priv->ins->instance_id);
 
-    priv->echo_ppwt_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_ppwt_ops, priv);
+    priv->echo_ppwt_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asgard_ppwt_ops, priv);
 
 
 
     snprintf(name_buf, sizeof(name_buf),
-             "asguard/%d/proto_instances/%d/ping_unicast_pong_unicast",
+             "asgard/%d/proto_instances/%d/ping_unicast_pong_unicast",
              priv->sdev->ifindex, priv->ins->instance_id);
 
-    priv->echo_pupu_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_pupu_ops, priv);
+    priv->echo_pupu_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asgard_pupu_ops, priv);
 
     snprintf(name_buf, sizeof(name_buf),
-             "asguard/%d/proto_instances/%d/ping_unicast_pong_multicast",
+             "asgard/%d/proto_instances/%d/ping_unicast_pong_multicast",
              priv->sdev->ifindex, priv->ins->instance_id);
 
-    priv->echo_pupm_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_pupm_ops, priv);
+    priv->echo_pupm_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asgard_pupm_ops, priv);
 
     snprintf(name_buf, sizeof(name_buf),
-             "asguard/%d/proto_instances/%d/ping_multicast_pong_unicast",
+             "asgard/%d/proto_instances/%d/ping_multicast_pong_unicast",
              priv->sdev->ifindex, priv->ins->instance_id);
 
-    priv->echo_pmpu_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_pmpu_ops, priv);
+    priv->echo_pmpu_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asgard_pmpu_ops, priv);
 
 
     snprintf(name_buf, sizeof(name_buf),
-             "asguard/%d/proto_instances/%d/ping_multicast_pong_multicast",
+             "asgard/%d/proto_instances/%d/ping_multicast_pong_multicast",
              priv->sdev->ifindex, priv->ins->instance_id);
 
-    priv->echo_pmpm_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_pmpm_ops, priv);
+    priv->echo_pmpm_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asgard_pmpm_ops, priv);
 
 
 }
@@ -424,10 +424,10 @@ EXPORT_SYMBOL(init_ping_ctrl_interfaces);
 
 void remove_ping_ctrl_interfaces(struct echo_priv *priv)
 {
-    char name_buf[MAX_ASGUARD_PROC_NAME];
+    char name_buf[MAX_ASGARD_PROC_NAME];
 
     snprintf(name_buf, sizeof(name_buf),
-             "asguard/%d/proto_instances/%d/waiting_time",
+             "asgard/%d/proto_instances/%d/waiting_time",
              priv->sdev->ifindex, priv->ins->instance_id);
 
     if(priv->echo_ppwt_entry) {
@@ -436,7 +436,7 @@ void remove_ping_ctrl_interfaces(struct echo_priv *priv)
     }
 
     snprintf(name_buf, sizeof(name_buf),
-             "asguard/%d/proto_instances/%d/ping_unicast_pong_unicast",
+             "asgard/%d/proto_instances/%d/ping_unicast_pong_unicast",
              priv->sdev->ifindex, priv->ins->instance_id);
 
     if(priv->echo_pupu_entry) {
@@ -445,7 +445,7 @@ void remove_ping_ctrl_interfaces(struct echo_priv *priv)
     }
 
     snprintf(name_buf, sizeof(name_buf),
-             "asguard/%d/proto_instances/%d/ping_multicast_pong_unicast",
+             "asgard/%d/proto_instances/%d/ping_multicast_pong_unicast",
              priv->sdev->ifindex, priv->ins->instance_id);
 
     if(priv->echo_pmpu_entry) {
@@ -454,7 +454,7 @@ void remove_ping_ctrl_interfaces(struct echo_priv *priv)
     }
 
     snprintf(name_buf, sizeof(name_buf),
-             "asguard/%d/proto_instances/%d/ping_unicast_pong_multicast",
+             "asgard/%d/proto_instances/%d/ping_unicast_pong_multicast",
              priv->sdev->ifindex, priv->ins->instance_id);
 
     if(priv->echo_pupm_entry) {
@@ -463,7 +463,7 @@ void remove_ping_ctrl_interfaces(struct echo_priv *priv)
     }
 
     snprintf(name_buf, sizeof(name_buf),
-             "asguard/%d/proto_instances/%d/ping_multicast_pong_multicast",
+             "asgard/%d/proto_instances/%d/ping_multicast_pong_multicast",
              priv->sdev->ifindex, priv->ins->instance_id);
 
     if(priv->echo_pmpm_entry) {

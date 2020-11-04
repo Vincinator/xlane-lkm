@@ -6,7 +6,7 @@ import mmap
 counter = 0
 
 
-with open('/dev/asguard_fd_tx_mem6', 'r+') as f:
+with open('/dev/asgard_fd_tx_mem6', 'r+') as f:
     with mmap.mmap(f.fileno(), 0) as m:
         print('Before:\n{}'.format(m.rstrip()))
         m.seek(0)  # rewind

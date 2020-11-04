@@ -1,13 +1,13 @@
 #include <kunit/test.h>
 #include <linux/timer.h>
 
-#include <asguard/consensus.h>
-#include <asguard/asguard.h>
-#include <asguard/logger.h>
-#include <asguard/payload_helper.h>
+#include <asgard/consensus.h>
+#include <asgard/asgard.h>
+#include <asgard/logger.h>
+#include <asgard/payload_helper.h>
 
 /* Just a test to setup the test system.. nothing fancy tested here*/
-static void asguard_test_check_append_rpc(struct kunit *test)
+static void asgard_test_check_append_rpc(struct kunit *test)
 {
     //pkt_size, prev_log_term, prev_log_idx, max_entries_per_pkt
 
@@ -19,16 +19,16 @@ static void asguard_test_check_append_rpc(struct kunit *test)
 
     /* pkt size within limit */
     KUNIT_EXPECT_EQ(test, 0,
-    check_append_rpc(AE_ENTRY_SIZE * 100 + ASGUARD_PROTO_CON_AE_BASE_SZ, 1, 5, 100));
+    check_append_rpc(AE_ENTRY_SIZE * 100 + ASGARD_PROTO_CON_AE_BASE_SZ, 1, 5, 100));
 
     /* pkt size exceeds limit */
     KUNIT_EXPECT_EQ(test, 1,
-    check_append_rpc(AE_ENTRY_SIZE * 100 + ASGUARD_PROTO_CON_AE_BASE_SZ + 1, 1, 5, 100));
+    check_append_rpc(AE_ENTRY_SIZE * 100 + ASGARD_PROTO_CON_AE_BASE_SZ + 1, 1, 5, 100));
 
 }
 
 /* Just a test to setup the test system.. nothing fancy tested here*/
-static void asguard_test_get_rnd_timeout(struct kunit *test)
+static void asgard_test_get_rnd_timeout(struct kunit *test)
 {
     int i = 0;
     ktime_t val;
@@ -41,26 +41,26 @@ static void asguard_test_get_rnd_timeout(struct kunit *test)
 
 }
 
-static struct kunit_case asguard_raft_follower_test_cases[] = {
-    KUNIT_CASE(asguard_test_check_append_rpc),
-    KUNIT_CASE(asguard_test_get_rnd_timeout),
+static struct kunit_case asgard_raft_follower_test_cases[] = {
+    KUNIT_CASE(asgard_test_check_append_rpc),
+    KUNIT_CASE(asgard_test_get_rnd_timeout),
     {}
 };
 
-int asguard_raft_follower_init(struct kunit *test)
+int asgard_raft_follower_init(struct kunit *test)
 {
     return 0;
 }
 
-void asguard_raft_follower_exit(struct kunit *test)
+void asgard_raft_follower_exit(struct kunit *test)
 {
 
 }
 
-static struct kunit_suite asguard_raft_follower_test_suite = {
-    .name = "asguard_raft_follower",
-    .init = asguard_raft_follower_init,
-    .exit = asguard_raft_follower_exit,
-    .test_cases = asguard_raft_follower_test_cases,
+static struct kunit_suite asgard_raft_follower_test_suite = {
+    .name = "asgard_raft_follower",
+    .init = asgard_raft_follower_init,
+    .exit = asgard_raft_follower_exit,
+    .test_cases = asgard_raft_follower_test_cases,
 };
-kunit_test_suite(asguard_raft_follower_test_suite);
+kunit_test_suite(asgard_raft_follower_test_suite);

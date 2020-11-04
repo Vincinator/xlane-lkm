@@ -1,12 +1,12 @@
-#include <asguard/asgard_uface.h>
+#include <asgard/asgard_uface.h>
 #include <linux/slab.h>
-#include <asguard/logger.h>
-#include <asguard/asguard.h>
+#include <asgard/logger.h>
+#include <asgard/asgard.h>
 
 
 void update_self_state(struct cluster_info *ci, enum node_state state) {
 
-    asguard_dbg("Update cluster member info node state\n");
+    asgard_dbg("Update cluster member info node state\n");
 
     switch(state) {
         case FOLLOWER:
@@ -27,12 +27,12 @@ void update_self_state(struct cluster_info *ci, enum node_state state) {
 void add_cluster_member(struct cluster_info* ci, int cluster_id, int local_id, u8 init_state)
 {
     if(!ci) {
-        asguard_error("BUG detected. cluster info is NULL\n");
+        asgard_error("BUG detected. cluster info is NULL\n");
         return;
     }
 
     if(local_id > MAX_CLUSTER_MEMBER){
-        asguard_error("Local cluster ID (%d) is higher than hardcoded current cluster limit (%d)\n", local_id, MAX_CLUSTER_MEMBER);
+        asgard_error("Local cluster ID (%d) is higher than hardcoded current cluster limit (%d)\n", local_id, MAX_CLUSTER_MEMBER);
         return;
     }
 
@@ -47,12 +47,12 @@ void update_cluster_member(struct cluster_info* ci, int local_id, u8 state)
     u8 prev_state;
 
     if(!ci) {
-        asguard_error("BUG detected. cluster info is NULL\n");
+        asgard_error("BUG detected. cluster info is NULL\n");
         return;
     }
 
     if(local_id > MAX_CLUSTER_MEMBER){
-        asguard_error("Local Cluster ID (%d) is higher than hardcoded current cluster limit (%d)\n", local_id, MAX_CLUSTER_MEMBER);
+        asgard_error("Local Cluster ID (%d) is higher than hardcoded current cluster limit (%d)\n", local_id, MAX_CLUSTER_MEMBER);
         return;
     }
 
@@ -81,7 +81,7 @@ void update_cluster_member(struct cluster_info* ci, int local_id, u8 state)
         ci->member_info[local_id].state = state;
     }
 
-    ci->last_update_timestamp = RDTSC_ASGUARD;
+    ci->last_update_timestamp = RDTSC_ASGARD;
 
     /* TODO: Switch dual buffer ? Unocking? */
 

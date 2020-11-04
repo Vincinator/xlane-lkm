@@ -1,8 +1,8 @@
 #pragma once
 
-#include <asguard/asguard.h>
+#include <asgard/asgard.h>
 
-#include <asguard/consensus.h>
+#include <asgard/consensus.h>
 
 void testcase_stop_timer(struct consensus_priv *priv);
 void testcase_one_shot_big_log(struct consensus_priv *priv);

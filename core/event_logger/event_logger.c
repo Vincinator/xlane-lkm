@@ -2,8 +2,8 @@
 #include <linux/seq_file.h>
 #include <net/net_namespace.h>
 
-#include <asguard/asguard.h>
-#include <asguard/logger.h>
+#include <asgard/asgard.h>
+#include <asgard/logger.h>
 
 
 const char *logger_state_string(enum logger_state state)
@@ -23,14 +23,14 @@ const char *logger_state_string(enum logger_state state)
 }
 
 
-void logger_state_transition_to(struct asguard_logger *slog,
+void logger_state_transition_to(struct asgard_logger *slog,
 			    enum logger_state state)
 {
 	slog->state = state;
 }
 
 
-int write_log(struct asguard_logger *slog,
+int write_log(struct asgard_logger *slog,
 			  int type, uint64_t tcs)
 {
 
@@ -40,9 +40,9 @@ int write_log(struct asguard_logger *slog,
 
 	if (unlikely(slog->current_entries > LOGGER_EVENT_LIMIT)) {
 
-		asguard_dbg("Logs are full! Stopped event logging. %s\n", __func__);
+		asgard_dbg("Logs are full! Stopped event logging. %s\n", __func__);
 
-		asguard_log_stop(slog);
+		asgard_log_stop(slog);
 		logger_state_transition_to(slog, LOGGER_LOG_FULL);
 		return -ENOMEM;
 	}
@@ -56,18 +56,18 @@ int write_log(struct asguard_logger *slog,
 }
 EXPORT_SYMBOL(write_log);
 
-int asguard_log_stop(struct asguard_logger *slog)
+int asgard_log_stop(struct asgard_logger *slog)
 {
 	int err;
 
 	if (!slog) {
-		asguard_error("logger is not initialized\n");
+		asgard_error("logger is not initialized\n");
 		err = -EPERM;
 		goto error;
 	}
 
 	if (slog->state == LOGGER_UNINIT) {
-		asguard_error("logger is not in uninit state. %s\n", __func__);
+		asgard_error("logger is not in uninit state. %s\n", __func__);
 		err = -EPERM;
 		goto error;
 	}
@@ -76,22 +76,22 @@ int asguard_log_stop(struct asguard_logger *slog)
 	return 0;
 
 error:
-	asguard_error("can not stop logger\n");
+	asgard_error("can not stop logger\n");
 	return -EPERM;
 }
 
-int asguard_log_start(struct asguard_logger *slog)
+int asgard_log_start(struct asgard_logger *slog)
 {
 	int err;
 
 	if (!slog) {
-		asguard_error("logger is not initialized.\n");
+		asgard_error("logger is not initialized.\n");
 		err = -EPERM;
 		goto error;
 	}
 
 	if (slog->state != LOGGER_READY) {
-		asguard_error("logger is not in ready state. %s\n", __func__);
+		asgard_error("logger is not in ready state. %s\n", __func__);
 		goto error;
 	}
 
@@ -99,22 +99,22 @@ int asguard_log_start(struct asguard_logger *slog)
 	return 0;
 
 error:
-	asguard_error("can not start logger\n");
+	asgard_error("can not start logger\n");
 	return -EPERM;
 }
 
-int asguard_log_reset(struct asguard_logger *slog)
+int asgard_log_reset(struct asgard_logger *slog)
 {
 	int err;
 
 	if (!slog) {
-		asguard_error("logger is not initialized properly.\n");
+		asgard_error("logger is not initialized properly.\n");
 		err = -EPERM;
 		goto error;
 	}
 
 	if (slog->state == LOGGER_RUNNING) {
-		asguard_error(
+		asgard_error(
 			"can not clear logger when it is active.%s\n",
 			__func__);
 		err = -EPERM;
@@ -122,7 +122,7 @@ int asguard_log_reset(struct asguard_logger *slog)
 	}
 
 	if (slog->state != LOGGER_READY) {
-		asguard_error(
+		asgard_error(
 			"can not clear stats, logger is in an undefined state.%s\n",
 			__func__);
 		err = -EPERM;
@@ -133,35 +133,35 @@ int asguard_log_reset(struct asguard_logger *slog)
 
 	return 0;
 error:
-	asguard_error("Can not reset logs.\n");
-	asguard_error("error code: %d for %s\n", err, __func__);
+	asgard_error("Can not reset logs.\n");
+	asgard_error("error code: %d for %s\n", err, __func__);
 	return err;
 }
 
 
-static ssize_t asguard_log_write(struct file *file, const char __user *user_buffer,
+static ssize_t asgard_log_write(struct file *file, const char __user *user_buffer,
 				size_t count, loff_t *data)
 {
-    struct asguard_logger *slog =
-            (struct asguard_logger *)PDE_DATA(file_inode(file));
+    struct asgard_logger *slog =
+            (struct asgard_logger *)PDE_DATA(file_inode(file));
     int err = 0;
     char kernel_buffer[MAX_PROCFS_BUF];
     int in_type = 0;
 
     if(slog->accept_user_ts == 0){
-        asguard_error("User timestamps not enabled for logger %s!\n", slog->name);
+        asgard_error("User timestamps not enabled for logger %s!\n", slog->name);
         return count;
     }
 
     if (count == 0) {
-        asguard_error("asguard device is NULL.\n");
+        asgard_error("asgard device is NULL.\n");
         return -EINVAL;
     }
 
     err = copy_from_user(kernel_buffer, user_buffer, count);
 
     if (err) {
-        asguard_error("Copy from user failed%s\n", __func__);
+        asgard_error("Copy from user failed%s\n", __func__);
         return err;
     }
 
@@ -170,20 +170,20 @@ static ssize_t asguard_log_write(struct file *file, const char __user *user_buff
     err = kstrtoint(kernel_buffer, 0, &in_type);
 
     if (err) {
-        asguard_error("Can not convert input\n");
+        asgard_error("Can not convert input\n");
         return err;
     }
 
-    write_log(slog, in_type, RDTSC_ASGUARD);
+    write_log(slog, in_type, RDTSC_ASGARD);
 
 	return count;
 }
 
-static int asguard_log_show(struct seq_file *m, void *v)
+static int asgard_log_show(struct seq_file *m, void *v)
 {
 	int i;
-	struct asguard_logger *slog =
-		(struct asguard_logger *)m->private;
+	struct asgard_logger *slog =
+		(struct asgard_logger *)m->private;
 
 	//BUG_ON(!slog);
 
@@ -196,52 +196,52 @@ static int asguard_log_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-static int asguard_log_open(struct inode *inode, struct file *file)
+static int asgard_log_open(struct inode *inode, struct file *file)
 {
-	return single_open(file, asguard_log_show, PDE_DATA(inode));
+	return single_open(file, asgard_log_show, PDE_DATA(inode));
 }
 
-static const struct file_operations asguard_log_ops = {
+static const struct file_operations asgard_log_ops = {
 	.owner = THIS_MODULE,
-	.open = asguard_log_open,
-	.write = asguard_log_write,
+	.open = asgard_log_open,
+	.write = asgard_log_write,
 	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
 };
 
 
-static int init_logger_out(struct asguard_logger *slog)
+static int init_logger_out(struct asgard_logger *slog)
 {
 	int err;
-	char name_buf[MAX_ASGUARD_PROC_NAME];
+	char name_buf[MAX_ASGARD_PROC_NAME];
 
 
 	if (!slog) {
 		err = -ENOMEM;
-		asguard_error("Logs are not initialized!\n");
+		asgard_error("Logs are not initialized!\n");
 		goto error;
 	}
 
 
 	if(slog->log_logger_entry == NULL) {
         snprintf(name_buf, sizeof(name_buf),
-                 "asguard/%d/proto_instances/%d/log_%s",
+                 "asgard/%d/proto_instances/%d/log_%s",
                  slog->ifindex, slog->instance_id, slog->name);
 
-        slog->log_logger_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asguard_log_ops, slog);
+        slog->log_logger_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asgard_log_ops, slog);
 	} else {
-        asguard_error("Log Logger procfs entry already present!\n");
+        asgard_error("Log Logger procfs entry already present!\n");
     }
 
 
 	return 0;
 
 error:
-	asguard_error("error code: %d for %s\n", err, __func__);
+	asgard_error("error code: %d for %s\n", err, __func__);
 	return err;
 }
-int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char name[MAX_LOGGER_NAME], int accept_user_ts)
+int init_logger(struct asgard_logger *slog, u16 instance_id, int ifindex, char name[MAX_LOGGER_NAME], int accept_user_ts)
 {
 	int err;
 
@@ -249,7 +249,7 @@ int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char 
 
 	if (!slog) {
 		err = -EINVAL;
-		asguard_error("logger device is NULL %s\n", __func__);
+		asgard_error("logger device is NULL %s\n", __func__);
 		goto error;
 	}
 
@@ -259,7 +259,7 @@ int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char 
     slog->ctrl_logger_entry = NULL;
     slog->name = kmalloc(MAX_LOGGER_NAME, GFP_KERNEL);
     slog->accept_user_ts = accept_user_ts;
-    asguard_dbg("Accept User TS is: %d", slog->accept_user_ts );
+    asgard_dbg("Accept User TS is: %d", slog->accept_user_ts );
     strncpy(slog->name, name, MAX_LOGGER_NAME);
 
     // freed by clear_logger
@@ -267,7 +267,7 @@ int init_logger(struct asguard_logger *slog, u16 instance_id, int ifindex, char 
 
 	if (!slog->events) {
 		err = -ENOMEM;
-		asguard_error(
+		asgard_error(
 			"Could not allocate memory for leader election logs items\n");
 		goto error;
 	}
@@ -284,13 +284,13 @@ error:
 	return err;
 }
 
-void remove_logger_ifaces(struct asguard_logger *slog)
+void remove_logger_ifaces(struct asgard_logger *slog)
 {
-	char name_buf[MAX_ASGUARD_PROC_NAME];
+	char name_buf[MAX_ASGARD_PROC_NAME];
 
 	if(slog->log_logger_entry) {
         snprintf(name_buf, sizeof(name_buf),
-                 "asguard/%d/proto_instances/%d/log_%s",
+                 "asgard/%d/proto_instances/%d/log_%s",
                  slog->ifindex, slog->instance_id, slog->name);
 
         remove_proc_entry(name_buf, NULL);
@@ -299,7 +299,7 @@ void remove_logger_ifaces(struct asguard_logger *slog)
 
 	if(slog->ctrl_logger_entry) {
         snprintf(name_buf, sizeof(name_buf),
-                 "asguard/%d/proto_instances/%d/ctrl_%s",
+                 "asgard/%d/proto_instances/%d/ctrl_%s",
                  slog->ifindex, slog->instance_id, slog->name);
 
         remove_proc_entry(name_buf, NULL);

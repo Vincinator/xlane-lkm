@@ -3,30 +3,30 @@
 #include <linux/random.h>
 #include <linux/timer.h>
 
-#include <asguard/payload_helper.h>
-#include <asguard/consensus.h>
-#include <asguard/logger.h>
-#include <asguard/asguard.h>
+#include <asgard/payload_helper.h>
+#include <asgard/consensus.h>
+#include <asgard/logger.h>
+#include <asgard/asgard.h>
 
 #include "include/follower.h"
 #include "include/consensus_helper.h"
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[ASGUARD][LE][FOLLOWER]"
+#define LOG_PREFIX "[ASGARD][LE][FOLLOWER]"
 
 void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remote_lid, int rcluster_id, int param1, int append_success, u32 logged_idx)
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
 
-	struct asguard_payload *pkt_payload;
+	struct asgard_payload *pkt_payload;
 	char *pkt_payload_sub;
 
 #if 0
 	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n, CPU=%d",
+		asgard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n, CPU=%d",
 			nstate_string(priv->nstate),
-			RDTSC_ASGUARD,
+			RDTSC_ASGARD,
 			priv->term,
 			append_success,
 			param1,
@@ -41,11 +41,11 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
 		spminfo->pm_targets[remote_lid].pkt_data.payload;
 
 	pkt_payload_sub =
-		asguard_reserve_proto(ins->instance_id, pkt_payload, ASGUARD_PROTO_CON_PAYLOAD_SZ);
+		asgard_reserve_proto(ins->instance_id, pkt_payload, ASGARD_PROTO_CON_PAYLOAD_SZ);
 
 
 	if (!pkt_payload_sub) {
-		asguard_error("asgard packet full!\n");
+		asgard_error("asgard packet full!\n");
         spin_unlock(&spminfo->pm_targets[remote_lid].pkt_data.lock);
         return;
     }
@@ -55,9 +55,9 @@ void reply_append(struct proto_instance *ins,  struct pminfo *spminfo, int remot
     spin_unlock(&spminfo->pm_targets[remote_lid].pkt_data.lock);
 
 	if (append_success)
-		write_log(&ins->logger, REPLY_APPEND_SUCCESS, RDTSC_ASGUARD);
+		write_log(&ins->logger, REPLY_APPEND_SUCCESS, RDTSC_ASGARD);
 	else
-		write_log(&ins->logger, REPLY_APPEND_FAIL, RDTSC_ASGUARD);
+		write_log(&ins->logger, REPLY_APPEND_FAIL, RDTSC_ASGARD);
 
 }
 void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32 param1, s32 param2)
@@ -67,9 +67,9 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
-		asguard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
+		asgard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
 			nstate_string(priv->nstate),
-			RDTSC_ASGUARD,
+			RDTSC_ASGARD,
 			priv->term,
 			rcluster_id,
 			param1);
@@ -81,7 +81,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, s32
 	priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 
 
-	write_log(&ins->logger, VOTE_FOR_CANDIDATE, RDTSC_ASGUARD);
+	write_log(&ins->logger, VOTE_FOR_CANDIDATE, RDTSC_ASGARD);
 
 }
 
@@ -95,9 +95,9 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 	new_last = start_log_idx + num_entries - 1;
 
 	// check if entries would exceed pkt
-	if ((num_entries * AE_ENTRY_SIZE + ASGUARD_PROTO_CON_AE_BASE_SZ) > pkt_size) {
+	if ((num_entries * AE_ENTRY_SIZE + ASGARD_PROTO_CON_AE_BASE_SZ) > pkt_size) {
 		err = -EINVAL;
-		asguard_dbg("Claimed num of log entries (%d) would exceed packet size!\n", num_entries);
+		asgard_dbg("Claimed num of log entries (%d) would exceed packet size!\n", num_entries);
 		goto error;
 	}
 
@@ -119,7 +119,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 		update_stable_idx(priv);
 	}
 
-    /*asguard_dbg("Handled APPEND RPC\n"
+    /*asgard_dbg("Handled APPEND RPC\n"
                 "\t stable_idx = %d\n"
                 "\t commit_idx = %d\n"
                 "\t received entries [ %d - %d ]\n"
@@ -133,7 +133,7 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
 	return 0;
 
 error:
-	asguard_error("Failed to append commands to log\n");
+	asgard_error("Failed to append commands to log\n");
 	return err;
 }
 
@@ -146,38 +146,38 @@ u32 _check_prev_log_match(struct consensus_priv *priv, u32 prev_log_term, s32 pr
 
 	if (prev_log_idx == -1) {
 		if( prev_log_term < priv->term) {
-			asguard_error(" received append RPC with lower prev term");
+			asgard_error(" received append RPC with lower prev term");
 			// TODO: handle this case.
 		}
 		return 0;
 	}
 
 	if (prev_log_idx < -1) {
-		asguard_error("prev log idx is invalid! %d\n", prev_log_idx);
+		asgard_error("prev log idx is invalid! %d\n", prev_log_idx);
 		return 1;
 	}
 
     buf_prevlogidx = consensus_idx_to_buffer_idx(&priv->sm_log, prev_log_idx);
 
 	if(buf_prevlogidx < 0 ) {
-        asguard_dbg("Error converting consensus idx to buffer in %s", __FUNCTION__);
+        asgard_dbg("Error converting consensus idx to buffer in %s", __FUNCTION__);
         return -1;
 	}
 
 	if (prev_log_idx > priv->sm_log.last_idx) {
-		asguard_error("Entry at index %d does not exist. Expected stable append.\n", prev_log_idx);
+		asgard_error("Entry at index %d does not exist. Expected stable append.\n", prev_log_idx);
 		return 1;
 	}
 
 	entry = priv->sm_log.entries[buf_prevlogidx];
 
 	if (entry == NULL) {
-		asguard_dbg("Unstable commit at index %d was not detected previously! ", prev_log_idx);
+		asgard_dbg("Unstable commit at index %d was not detected previously! ", prev_log_idx);
 		return 1;
 	}
 
 	if (entry->term != prev_log_term) {
-		asguard_error("prev_log_term does not match %d != %d", entry->term, prev_log_term);
+		asgard_error("prev_log_term does not match %d != %d", entry->term, prev_log_term);
 
 		// Delete entries from prev_log_idx to last_idx
 		//remove_from_log_until_last(&priv->sm_log, prev_log_idx);
@@ -191,7 +191,7 @@ int check_append_rpc(u16 pkt_size, u32 prev_log_term, s32 prev_log_idx, int max_
 {
 
 
-	if (pkt_size < 0 || pkt_size > ASGUARD_PROTO_CON_AE_BASE_SZ + (max_entries_per_pkt * AE_ENTRY_SIZE))
+	if (pkt_size < 0 || pkt_size > ASGARD_PROTO_CON_AE_BASE_SZ + (max_entries_per_pkt * AE_ENTRY_SIZE))
 		return 1;
 
 	return 0;
@@ -245,14 +245,14 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 			unstable = 1;
 
 		} else {
-			asguard_dbg("Case unhandled!\n");
+			asgard_dbg("Case unhandled!\n");
 		}
 	}
 
 	start_idx = (*prev_log_idx) + 1;
 
 	if (_check_prev_log_match(priv, *prev_log_term, priv->sm_log.stable_idx)) {
-		asguard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
+		asgard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
 				*prev_log_term, *prev_log_idx);
 
 		print_log_state(&priv->sm_log);
@@ -261,7 +261,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
 	}
 
 	if (append_commands(priv, pkt, num_entries, pkt_size, start_idx, unstable)) {
-		asguard_dbg("append commands failed. start_idx=%d, unstable=%d\n", start_idx, unstable);
+		asgard_dbg("append commands failed. start_idx=%d, unstable=%d\n", start_idx, unstable);
 		goto reply_false_unlock;
 	}
 
@@ -290,7 +290,7 @@ reply_retransmission:
 	mutex_unlock(&priv->sm_log.mlock);
 
 	// TODO: wait until other pending workers are done, and check again if we need a retransmission!
-    asguard_dbg("suppressed retransmission\n");
+    asgard_dbg("suppressed retransmission\n");
 	//reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
 	//priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 	return;
@@ -306,14 +306,14 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 {
 	struct consensus_priv *priv =
 		(struct consensus_priv *)ins->proto_data;
-	struct asguard_device *sdev = priv->sdev;
+	struct asgard_device *sdev = priv->sdev;
 
     u8 opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
 	s32 param1, param2, param3, param4, *commit_idx;
 
 	param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
-	//log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGUARD, priv->term, opcode, rcluster_id, param1);
+	//log_le_rx(sdev->verbose, priv->nstate, RDTSC_ASGARD, priv->term, opcode, rcluster_id, param1);
 
 	switch (opcode) {
 		// param1 interpreted as term
@@ -344,11 +344,11 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		if (param1 > priv->term) {
 
             accept_leader(ins, remote_lid, rcluster_id, param1);
-			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
+			write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGARD);
 
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
-				asguard_dbg("Received ALIVE op from new leader with higher term=%d local term=%d\n", param1, priv->term);
+				asgard_dbg("Received ALIVE op from new leader with higher term=%d local term=%d\n", param1, priv->term);
 #endif
 		}
 
@@ -360,14 +360,14 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		break;
 	case APPEND:
 
-/*        asguard_dbg("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
+/*        asgard_dbg("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
                    rcluster_id,
                    *GET_CON_AE_PREV_LOG_IDX_PTR(pkt),
                    *GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt));*/
 
         if(priv->leader_id != rcluster_id) {
 
-            // asguard_error("received APPEND from a node that is not accepted as leader \n");
+            // asgard_error("received APPEND from a node that is not accepted as leader \n");
 			break;
 		}
 		/* Received a LEAD operation from a node with a higher term,
@@ -375,13 +375,13 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 		 */
 		if (param1 > priv->term) {
 			// accept_leader(ins, remote_lid, rcluster_id, param1);
-			// write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGUARD);
+			// write_log(&ins->logger, FOLLOWER_ACCEPT_NEW_LEADER, RDTSC_ASGARD);
 
 			_handle_append_rpc(ins, priv, pkt, remote_lid, rcluster_id);
 
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 2)
-				asguard_dbg("Received APPEND op from leader with higher term=%d local term=%d\n", param1, priv->term);
+				asgard_dbg("Received APPEND op from leader with higher term=%d local term=%d\n", param1, priv->term);
 #endif
 		}
 
@@ -404,7 +404,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 #if VERBOSE_DEBUG
 
                 if (sdev->verbose >= 1)
-					asguard_dbg("Received message from new leader (%d)! Leader changed but term did not update! term=%u\n",
+					asgard_dbg("Received message from new leader (%d)! Leader changed but term did not update! term=%u\n",
 					rcluster_id, param1);
 #endif
 				// Ignore this LEAD message, let the ftimer continue.. because: "this is not my leader!"
@@ -417,10 +417,10 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
 #if VERBOSE_DEBUG
 			if (sdev->verbose >= 5)
-				asguard_dbg("Received APPEND from leader (%d) with lower term=%u\n", rcluster_id, param1);
+				asgard_dbg("Received APPEND from leader (%d) with lower term=%u\n", rcluster_id, param1);
 #endif
 			if (priv->leader_id == rcluster_id) {
-				asguard_error("BUG! Current accepted LEADER (%d) has lower Term=%u\n", rcluster_id,  param1);
+				asgard_error("BUG! Current accepted LEADER (%d) has lower Term=%u\n", rcluster_id,  param1);
 			}
 
 			// Ignore this LEAD message, let the ftimer continue.
@@ -428,7 +428,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
         break;
 	default:
-		asguard_dbg("Unknown opcode received from host: %d - opcode: %d\n", rcluster_id, opcode);
+		asgard_dbg("Unknown opcode received from host: %d - opcode: %d\n", rcluster_id, opcode);
 
 	}
 
@@ -439,44 +439,44 @@ void validate_log(struct state_machine_cmd_log *log)
 {
     int i, err = 0;
 
-    asguard_dbg("Log Validation Results: \n");
+    asgard_dbg("Log Validation Results: \n");
 
     for(i = 0; i < log->max_entries; i++) {
 
         if(log->entries[i] == NULL) {
 
             if(log->stable_idx > i) {
-                asguard_error("\t Stable Index is incorrect.\n");
-                asguard_error("\t\t stable_idx=%d, but log entry %d is NULL\n", log->stable_idx, i);
+                asgard_error("\t Stable Index is incorrect.\n");
+                asgard_error("\t\t stable_idx=%d, but log entry %d is NULL\n", log->stable_idx, i);
                 err++;
             }
 
             if(log->commit_idx > i) {
-                asguard_error("\t Commit Index is incorrect. \n");
-                asguard_error("\t\t commit_idx=%d, but log entry %d is NULL\n", log->commit_idx, i);
+                asgard_error("\t Commit Index is incorrect. \n");
+                asgard_error("\t\t commit_idx=%d, but log entry %d is NULL\n", log->commit_idx, i);
                 err++;
             }
 
         } else {
             if(log->last_idx < i) {
-                asguard_error("\t No entries allowed after last index\n");
-                asguard_error("\t\t last index =%d, but log entry %d exists\n", log->last_idx, i);
+                asgard_error("\t No entries allowed after last index\n");
+                asgard_error("\t\t last index =%d, but log entry %d exists\n", log->last_idx, i);
                 err++;
             }
         }
     }
 
     if(log->stable_idx > log->commit_idx) {
-        asguard_error("\t Commit index did not keep up with Stable Index \n");
-        asguard_error("\t\t commit_idx=%d, stable_idx=%d\n", log->commit_idx, log->stable_idx);
+        asgard_error("\t Commit index did not keep up with Stable Index \n");
+        asgard_error("\t\t commit_idx=%d, stable_idx=%d\n", log->commit_idx, log->stable_idx);
     }
 
     if(log->stable_idx < log->commit_idx) {
-        asguard_error("\t Commit index points to an unstable log entry \n");
-        asguard_error("\t\t commit_idx=%d, stable_idx=%d\n", log->commit_idx, log->stable_idx);
+        asgard_error("\t Commit index points to an unstable log entry \n");
+        asgard_error("\t\t commit_idx=%d, stable_idx=%d\n", log->commit_idx, log->stable_idx);
     }
 
-    asguard_dbg("\t Detected %d Errors in Log \n", err);
+    asgard_dbg("\t Detected %d Errors in Log \n", err);
 
 }
 
@@ -485,17 +485,17 @@ void print_follower_stats(struct consensus_priv *priv)
 	int i;
 
 	for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++){
-		asguard_dbg("Target infos %d:", i);
-		asguard_dbg("\t pkt TX counter: %d\n",  priv->sdev->pminfo.pm_targets[i].pkt_tx_counter);
-		asguard_dbg("\t pkt RX counter: %d\n", priv->sdev->pminfo.pm_targets[i].pkt_rx_counter);
-		asguard_dbg("\t received log reps(all): %d\n", priv->sdev->pminfo.pm_targets[i].received_log_replications);
+		asgard_dbg("Target infos %d:", i);
+		asgard_dbg("\t pkt TX counter: %d\n",  priv->sdev->pminfo.pm_targets[i].pkt_tx_counter);
+		asgard_dbg("\t pkt RX counter: %d\n", priv->sdev->pminfo.pm_targets[i].pkt_rx_counter);
+		asgard_dbg("\t received log reps(all): %d\n", priv->sdev->pminfo.pm_targets[i].received_log_replications);
 	}
 
-	asguard_dbg("unstable commits %d\n", priv->sm_log.unstable_commits );
-	asguard_dbg("last_idx %d \n", priv->sm_log.last_idx );
-	asguard_dbg("stable_idx %d\n", priv->sm_log.stable_idx );
-	asguard_dbg("next_retrans_req_idx %d\n", priv->sm_log.next_retrans_req_idx );
-	asguard_dbg("max_entries %d\n", priv->sm_log.max_entries );
+	asgard_dbg("unstable commits %d\n", priv->sm_log.unstable_commits );
+	asgard_dbg("last_idx %d \n", priv->sm_log.last_idx );
+	asgard_dbg("stable_idx %d\n", priv->sm_log.stable_idx );
+	asgard_dbg("next_retrans_req_idx %d\n", priv->sm_log.next_retrans_req_idx );
+	asgard_dbg("max_entries %d\n", priv->sm_log.max_entries );
 
 	/* TODO: redo for ring buffer implementation */
 	//validate_log(&priv->sm_log);
@@ -539,13 +539,13 @@ int start_follower(struct proto_instance *ins)
 
 #if VERBOSE_DEBUG
 	if(priv->sdev->verbose)
-		asguard_dbg("Node became a follower\n");
+		asgard_dbg("Node became a follower\n");
 #endif
 
 	return 0;
 
 error:
-	asguard_error("Failed to start as follower\n");
+	asgard_error("Failed to start as follower\n");
 	return err;
 }
 EXPORT_SYMBOL(start_follower);

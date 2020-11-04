@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gdb asguard.ko -ex "directory /usr/src/linux-headers-$(eval uname -r)" -ex 'list *(start_follower)'
+gdb asgard.ko -ex "directory /usr/src/linux-headers-$(eval uname -r)" -ex 'list *(start_follower)'
 
 # test something here
 
