@@ -1,0 +1,9 @@
+cmake-build-debug
+.idea
+.gitignore
+authorized_keys
+id_ed25519
+id_ed25519.pub
+
+known_hosts
+build/

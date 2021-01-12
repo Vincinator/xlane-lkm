@@ -1,0 +1,55 @@
+version: '3'
+services:
+
+  tnode1.test:
+    hostname: tnode1.test
+    image: libasraft-tnode:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - .ssh:/home/dsp/.ssh
+      - .gdbinit:/home/dsp/.gdbinit
+      - ../:/home/dsp/src
+    ports:
+      - "2224:22"
+
+  tnode2.test:
+    hostname: tnode2.test
+    image: libasraft-tnode:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - .ssh:/home/dsp/.ssh
+      - .gdbinit:/home/dsp/.gdbinit
+      - ../:/home/dsp/src
+    ports:
+      - "2225:22"
+
+  tnode3.test:
+    hostname: tnode3.test
+    image: libasraft-tnode:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - .ssh:/home/dsp/.ssh
+      - .gdbinit:/home/dsp/.gdbinit
+      - ../:/home/dsp/src
+    ports:
+      - "2226:22"
+
+  workstation:
+    hostname: workstation.test
+    image: libasraft-tnode:latest
+    stdin_open: true
+    tty: true
+    volumes:
+      - ../:/home/dsp/src
+      - .ssh:/home/dsp/.ssh
+      - ../ansible:/home/dsp/ansible
+    ports:
+      - "2227:22"
+    extra_hosts:
+      asgard01: 10.68.235.140
+      asgard02: 10.68.235.142
+      asgard03: 10.68.235.150
+      asgard04: 10.68.235.141

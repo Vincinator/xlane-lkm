@@ -1,0 +1,36 @@
+---
+- hosts: workstation
+  tasks:
+    - name: Clean build folder
+      file:
+        state: absent
+        path: "/home/dsp/src/build"
+
+    - name: Create the temp build folder
+      file:
+        path: "/home/dsp/src/build"
+        state: directory
+        recurse: yes
+
+    - name: Ensure the bin folder exists
+      file:
+        path: "/home/dsp/bin"
+        state: directory
+        recurse: yes
+
+    - name: CMake libasraft for linux
+      command: chdir="/home/dsp/src/build" cmake ..
+      delegate_to: workstation
+
+    - name: Build libasraft for linux
+      command: chdir="/home/dsp/src/build" make
+      delegate_to: workstation
+
+
+    - name: Create a tar.gz archive of libasraft
+      community.general.archive:
+        path: "/home/dsp/src/build"
+        dest: "/home/dsp/bin/latest.tar.gz"
+        format: gz
+        force_archive: true
+

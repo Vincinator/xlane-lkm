@@ -1,0 +1,30 @@
+---
+- hosts: testnodes
+  tasks:
+    - name: Ensure the project folder exists
+      file:
+        path: "{{ eval_workdir }}/libasraft"
+        state: directory
+        recurse: yes
+
+    - name: install node config based on template
+      template:
+        src: ../templates/node.ini.j2
+        dest: "{{ eval_workdir }}/libasraft/node.ini"
+
+    - name: copy dependency archive to containers
+      copy:
+        src: "/home/dsp/bin/latest.tar.gz"
+        dest: "{{ eval_workdir }}/libasraft/latest.tar.gz"
+
+    - name: Unarchive latest libraft tar.gz
+      unarchive:
+        src: "{{ eval_workdir }}/libasraft/latest.tar.gz"
+        dest: "{{ eval_workdir }}/libasraft/"
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+
+    - name: Ansible delete archive
+      file:
+        path: "{{ eval_workdir }}/libasraft/latest.tar.gz"
+        state: absent
