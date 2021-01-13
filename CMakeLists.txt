@@ -7,9 +7,14 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 include_directories(.)
 
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
+
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 find_library(LibUUID_LIBRARY  NAMES uuid)
+find_package (dpdk REQUIRED)
+
+include_directories (${DPDK_INCLUDE_DIR})
 
 add_compile_options(-mssse3)
 set(CMAKE_BUILD_TYPE Debug)
@@ -21,6 +26,7 @@ add_library(libasraft libasraft.c libasraft.h logger.c logger.h consensus.c cons
 add_library(inih ini.c ini.h)
 add_executable(testrunner runner.c)
 
+target_link_libraries(libasraft PRIVATE ${dpdk_LIBRARIES})
 target_link_libraries(libasraft PRIVATE Threads::Threads)
 target_link_libraries(testrunner LINK_PUBLIC inih)
 target_link_libraries(testrunner LINK_PUBLIC libasraft)

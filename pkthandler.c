@@ -299,8 +299,8 @@ void post_payload(struct asgard_device *sdev, in_addr_t remote_ip, void *payload
 
 
     asgard_dbg("PKT START:");
-    print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
-                    payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
+    //(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
+    //                payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
