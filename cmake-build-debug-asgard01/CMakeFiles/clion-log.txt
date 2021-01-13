@@ -1,5 +1,0 @@
-/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /tmp/tmp.hBqTcIM0wy
--- Configuring done
--- Generating done
--- Build files have been written to: /tmp/tmp.hBqTcIM0wy
-Cannot read /Volumes/Workspace/asgard/libasraft/cmake-build-debug-asgard01/CMakeCache.txt

@@ -11,6 +11,7 @@ find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 find_library(LibUUID_LIBRARY  NAMES uuid)
 
+add_compile_options(-mssse3)
 set(CMAKE_BUILD_TYPE Debug)
 
 include_directories(${LIBUUID_INCLUDE_DIR})

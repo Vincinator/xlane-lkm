@@ -117,7 +117,7 @@ void add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
     asgard_dbg("registering mac for local id: %d\n", local_id);
     if (!pmtarget) {
         asgard_error("Pacemaker target is not initialized!\n");
-        return -1;
+        return;
     }
 
     asgard_dbg("registering mac for cluster id: %d\n", pmtarget->cluster_id);
@@ -126,7 +126,7 @@ void add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
 
     if(!pmtarget->mac_addr){
         asgard_dbg("failed to allocate memory for mac addr!\n");
-        return -ENOMEM;
+        return;
     }
     asgard_dbg("converting mac '%s' string to rte_ether_addr struct\n", mac);
 
