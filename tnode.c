@@ -170,7 +170,7 @@ tnode_t *init_node(tnode_t *tn) {
 
     tn->sdev = malloc(sizeof(struct asgard_device));
     tn->num_peers = 0;
-
+    tn->init_error = 1;
     init_asgard_device(tn->sdev);
     init_pacemaker(&tn->sdev->pminfo);
 

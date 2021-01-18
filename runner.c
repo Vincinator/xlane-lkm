@@ -227,6 +227,11 @@ int main(int argc, char *argv[]){
         printf("Can't load 'node.ini'\n");
         return 1;
     }
+    if(node.init_error) {
+        printf("Can't load 'node.ini'\n");
+        return 1;
+    }
+
     asgard_dbg("Loaded node.ini\n");
 
     asgard_dbg("Starting initialization of DPDK env\n");
