@@ -58,7 +58,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
     write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, ASGARD_TIMESTAMP);
 
 #if VERBOSE_DEBUG
-    asgard_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
+    asgard_log_le("%s, %lu, %d: received %d votes for this term. (%d possible total votes)\n",
                 nstate_string(priv->nstate),
                 ASGARD_TIMESTAMP,
                 priv->term,
@@ -70,7 +70,7 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
     if (priv->votes == priv->sdev->pminfo.num_of_targets ) {
 
 #if VERBOSE_DEBUG
-		asgard_log_le("%s, %llu, %d: got majority with %d from %d possible votes\n",
+		asgard_log_le("%s, %lu, %d: got majority with %d from %d possible votes\n",
 				nstate_string(priv->nstate),
 				ASGARD_TIMESTAMP,
 				priv->term,
@@ -107,7 +107,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
     param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
 #if VERBOSE_DEBUG
-    log_le_rx(sdev->verbose, priv->nstate, ASGARD_TIMESTAMP, priv->term, opcode, rcluster_id, param1);
+    log_le_rx(priv->nstate, ASGARD_TIMESTAMP, priv->term, opcode, rcluster_id, param1);
 #endif
     switch (opcode) {
         case ADVERTISE:
@@ -129,7 +129,7 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
             param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
             param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
 
-            if (check_handle_nomination(priv, param1, param2, param3, param4, rcluster_id, remote_lid)) {
+            if (check_handle_nomination(priv, param1, param3, param4, rcluster_id)) {
                 node_transition(ins, FOLLOWER);
                 reply_vote(ins, remote_lid, rcluster_id, param1, param2);
             }

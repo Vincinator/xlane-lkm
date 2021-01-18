@@ -17,4 +17,4 @@ struct pkt_work_data{
 };
 
 void post_payload(struct asgard_device *sdev, in_addr_t remote_ip,
-        void *payload_in, int payload_len, struct rte_mbuf *pkt);
+        void *payload_in, int payload_len);

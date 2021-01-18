@@ -24,7 +24,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 
     param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
-    log_le_rx(sdev->verbose, priv->nstate, ASGARD_TIMESTAMP, priv->term, opcode, rcluster_id, param1);
+    log_le_rx(priv->nstate, ASGARD_TIMESTAMP, priv->term, opcode, rcluster_id, param1);
 
     switch (opcode) {
         // param1 interpreted as term
@@ -39,7 +39,7 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
             param2 = GET_CON_PROTO_PARAM2_VAL(pkt);
             param3 = GET_CON_PROTO_PARAM3_VAL(pkt);
             param4 = GET_CON_PROTO_PARAM4_VAL(pkt);
-            if (check_handle_nomination(priv, param1, param2, param3, param4, rcluster_id, remote_lid)) {
+            if (check_handle_nomination(priv, param1, param3, param4, rcluster_id)) {
                 reply_vote(ins, remote_lid, rcluster_id, param1, param2);
             }
             break;

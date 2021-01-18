@@ -51,4 +51,4 @@ void trap(int signal);
 tnode_t *init_node(tnode_t *tn);
 int start_node(tnode_t *tn);
 int stop_node(tnode_t *tn);
-int server_listener(void *data);
+int dpdk_server_listener(void *data);

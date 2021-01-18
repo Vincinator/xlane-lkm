@@ -19,7 +19,6 @@
 #include "membership.h"
 
 
-
 void generate_asgard_eval_uuid(unsigned char uuid[16]) {
     //uuid_generate_random(uuid);
     asgard_dbg("===================== Start of Run ====================\n");
@@ -37,6 +36,7 @@ uint32_t asgard_ip_convert(const char *str)
 
     return -EINVAL;
 }
+
 
 /*
  * Converts an MAC address to hex char array
@@ -136,10 +136,9 @@ int register_protocol_instance(struct asgard_device *sdev, int instance_id, int 
 }
 
 
-struct asgard_device *init_asgard_device(struct asgard_device *sdev){
+void init_asgard_device(struct asgard_device *sdev){
 
     sdev->hold_fire = 0;
-    sdev->multicast.delay = 0;
     sdev->multicast.enable = 0;
     sdev->multicast.nextIdx = 0;
     sdev->tx_port = 4000;

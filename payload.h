@@ -71,4 +71,4 @@
 #define GET_PROTO_OFFSET_PTR(p) (uint16_t *)(((char *)p) + 2)
 int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spay, int instance_id, int target_id, int32_t next_index, int retrans);
 
-char *asgard_reserve_proto(uint16_t instance_id, struct asgard_payload *spay, uint16_t proto_size);
+unsigned char * asgard_reserve_proto(uint16_t instance_id, struct asgard_payload *spay, uint16_t proto_size);

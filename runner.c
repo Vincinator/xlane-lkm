@@ -9,17 +9,6 @@
 #include <signal.h>
 #include <errno.h>
 
-
-#include <rte_byteorder.h>
-#include <rte_log.h>
-#include <rte_common.h>
-#include <rte_config.h>
-#include <rte_errno.h>
-#include <rte_ethdev.h>
-#include <rte_ip.h>
-#include <rte_mbuf.h>
-#include <rte_malloc.h>
-
 #include "libasraft.h"
 #include "tnode.h"
 #include "ringbuffer.h"
@@ -27,12 +16,22 @@
 #include "kvstore.h"
 #include "pacemaker.h"
 
+#ifdef ASGARD_DPDK
+#include <rte_log.h>
+#include <rte_common.h>
+#include <rte_config.h>
+#include <rte_errno.h>
+#include <rte_ethdev.h>
+#include <rte_mbuf.h>
+#include <rte_malloc.h>
+#endif
 
 #define APP "libasraft"
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGARD][TRUNNER]"
 
+#ifdef ASGARD_DPDK
 uint32_t DPDK_LIBASRAFT_LOG_LEVEL = RTE_LOG_DEBUG;
 
 /*
@@ -45,13 +44,7 @@ static uint16_t nb_txd = RTE_TEST_TX_DESC_DEFAULT;
 
 static struct rte_eth_dev_tx_buffer *tx_buffer;
 
-
-
-
-
-
-#define MAX_PKT_BURST 32
-#define MEMPOOL_CACHE_SIZE 128
+int RTE_LOGTYPE_LIBASRAFT;
 
 static struct rte_eth_conf port_conf = {
         .rxmode = {
@@ -62,11 +55,20 @@ static struct rte_eth_conf port_conf = {
         },
 };
 
+
+#endif
+
+
+
+#define MAX_PKT_BURST 32
+#define MEMPOOL_CACHE_SIZE 128
+
+
+
 #define MAX_VALUE_SM_VALUE_SPACE 1024
 #define MAX_VALUE_SM_ID_SPACE 255
 
 
-int RTE_LOGTYPE_LIBASRAFT;
 
 
 /* Handler for inih config parser (see dependencies)*/
@@ -76,7 +78,7 @@ static int handler(void* user, const char* section, const char* name,
     tnode_t * node_config = (tnode_t*)user;
     char *tuples, *outer_end_token, *inner_end_token, *inner_token;
     char *cur_ip, *cur_id;
-    char *long_endptr, *str;
+    char *long_endptr, *str = NULL;
 
     char cur_mac_buffer[19];
 
@@ -106,7 +108,7 @@ static int handler(void* user, const char* section, const char* name,
             fprintf(stderr, "No digits were found\n");
             exit(EXIT_FAILURE);
         }
-        asgard_dbg("heart beat interval set to %lld nanoseconds\n", node_config->sdev->pminfo.hbi);
+        asgard_dbg("heart beat interval set to %lu nanoseconds\n", node_config->sdev->pminfo.hbi);
     } else if (MATCH("node", "peer_ip_id_tuple")) {
         tuples = strdup(value);
         char *tuple_token = strtok_r(tuples, ";", &outer_end_token);
@@ -190,16 +192,15 @@ void generate_load(tnode_t *tn){
 
 
 
+#ifdef ASGARD_DPDK
 int main(int argc, char *argv[]){
     tnode_t node;
     int i, ret;
-    unsigned int nb_lcores;
     unsigned int lcore_id;
     uint16_t nb_ports;
     unsigned int nb_mbufs;
     unsigned int stored_dpdk_portid;
     uint64_t dropped;
-
 
     // for DEBUG only
     for (i = 1; i < argc; i++) {
@@ -227,8 +228,6 @@ int main(int argc, char *argv[]){
 
     if (ret < 0)
         rte_exit(EXIT_FAILURE, "Invalid EAL arguments\n");
-    argc -= ret;
-    argv += ret;
 
     /* init log */
     RTE_LOGTYPE_LIBASRAFT = rte_log_register(APP);
@@ -332,7 +331,7 @@ int main(int argc, char *argv[]){
 
     start_node(&node);
 
-    rte_eal_remote_launch(server_listener, &node, lcore_id);
+    rte_eal_remote_launch(dpdk_server_listener, &node, lcore_id);
     asgard_dbg("\n!!! Run server listener on lcore id: %d\n", lcore_id);
 
     lcore_id = rte_get_next_lcore(lcore_id, true, false);
@@ -369,3 +368,53 @@ int main(int argc, char *argv[]){
     asgard_dbg("libasraft exited..\n");
     return 0;
 }
+
+#else
+int main(int argc, char *argv[]){
+    tnode_t node;
+
+
+    signal(SIGINT, &trap);
+
+    // TODO: we may want to load the mode via the config file
+    node.testmode = ONE_SHOT;
+
+    init_node(&node);
+
+    /* random numbers are used for load generation
+     * therefore, predictable random numbers should be OK. */
+    srand(time(NULL));
+
+    if (ini_parse("node.ini", handler, &node) < 0) {
+        printf("Can't load 'node.ini'\n");
+        return 1;
+    }
+
+    asgard_dbg("Loaded node.ini\n");
+
+    start_node(&node);
+
+    user_requested_stop = 0;
+    asgard_dbg("Node is running. Press ctrl+c to exit ...\n");
+    while(node.is_running ){
+
+        /* If this node is the leader, then generate the test load against this leader node.
+         * This way, we do not measure any overhead between leader and client.
+         *
+         * if(node.sdev->is_leader)
+         *   generate_load(&node);
+         *
+         */
+
+        if(user_requested_stop){
+            stop_node(&node);
+            asgard_dbg("Node stopped\n");
+        }
+    }
+    signal(SIGINT, SIG_DFL);
+
+    asgard_dbg("exiting..\n");
+    return 0;
+}
+
+#endif

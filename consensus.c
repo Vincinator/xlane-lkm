@@ -65,7 +65,7 @@ const char *opcode_string(enum le_opcode opcode)
     }
 }
 
-void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm)
+void log_le_rx(enum node_state nstate, uint64_t ts, int term, enum le_opcode opcode, int rcluster_id, int rterm)
 {
     if (opcode == NOOP)
         return;
@@ -76,7 +76,7 @@ void log_le_rx(int verbose, enum node_state nstate, uint64_t ts, int term, enum 
     if (opcode == ADVERTISE)
         return;
 
-    asgard_log_le("%s, %llu, %d: %s from %d with term %d\n",
+    asgard_log_le("%s, %lu, %d: %s from %d with term %d\n",
                   nstate_string(nstate),
                   ts,
                   term,
@@ -109,7 +109,7 @@ void set_le_opcode(unsigned char *pkt, enum le_opcode opco, int32_t p1, uint32_t
 int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opcode opcode,
                  int32_t target_id, int32_t param1, int32_t param2, int32_t param3, int32_t param4) {
     struct asgard_payload *pkt_payload;
-    char *pkt_payload_sub;
+    unsigned char *pkt_payload_sub;
 
     pthread_mutex_lock(&spminfo->pm_targets[target_id].pkt_data.mlock);
 
@@ -167,7 +167,7 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, i
     struct consensus_priv *priv =
             (struct consensus_priv *) ins->proto_data;
 #if VERBOSE_DEBUG
-    asgard_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
+    asgard_log_le("%s, %lu, %d: accept cluster node %d with term %u as new leader\n",
         nstate_string(priv->nstate),
         ASGARD_TIMESTAMP,
         priv->term,
@@ -188,7 +188,7 @@ void le_state_transition_to(struct consensus_priv *priv, enum le_state state) {
 }
 
 int node_transition(struct proto_instance *ins, node_state_t state) {
-    int err = 0;
+    int err;
     struct consensus_priv *priv =
             (struct consensus_priv *) ins->proto_data;
 
@@ -208,6 +208,12 @@ int node_transition(struct proto_instance *ins, node_state_t state) {
             asgard_error("Unknown node state %d\n - abort", state);
             err = -EINVAL;
     }
+
+    if(err){
+        asgard_dbg("Could not stop current node role\n");
+        goto error;
+    }
+
 
     switch (state) {
         case FOLLOWER:
@@ -234,7 +240,7 @@ int node_transition(struct proto_instance *ins, node_state_t state) {
     if (err)
         goto error;
 #if VERBOSE_DEBUG
-    asgard_log_le("%s, %llu, %d: transition to state %s\n",
+    asgard_log_le("%s, %lu, %d: transition to state %s\n",
                 nstate_string(priv->nstate),
                 ASGARD_TIMESTAMP,
                 priv->term,
@@ -255,8 +261,8 @@ int node_transition(struct proto_instance *ins, node_state_t state) {
 }
 
 
-int check_handle_nomination(struct consensus_priv *priv, uint32_t param1, uint32_t param2, uint32_t param3,
-                            uint32_t param4, int rcluster_id, int remote_lid) {
+int check_handle_nomination(struct consensus_priv *priv, uint32_t param1, uint32_t param3, uint32_t param4,
+                            int rcluster_id) {
     uint32_t buf_lastidx;
 
 
@@ -310,15 +316,15 @@ int check_handle_nomination(struct consensus_priv *priv, uint32_t param1, uint32
 }
 
 
-void reply_append(struct proto_instance *ins, struct pminfo *spminfo, int remote_lid, int rcluster_id,
-                  int param1, int append_success, uint32_t logged_idx) {
+void reply_append(struct proto_instance *ins, struct pminfo *spminfo, int remote_lid, int param1, int append_success,
+                  uint32_t logged_idx) {
     struct consensus_priv *priv =
             (struct consensus_priv *) ins->proto_data;
 
     struct asgard_payload *pkt_payload;
-    char *pkt_payload_sub;
+    unsigned char *pkt_payload_sub;
 
-    asgard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
+    asgard_log_le("%s, %lu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
             nstate_string(priv->nstate),
             ASGARD_TIMESTAMP,
             priv->term,
@@ -398,14 +404,6 @@ uint32_t check_prev_log_match(struct consensus_priv *priv, uint32_t prev_log_ter
 
     return 0;
 }
-
-int check_append_rpc(uint16_t pkt_size, uint32_t prev_log_term, uint32_t prev_log_idx, int max_entries_per_pkt) {
-    if (pkt_size < 0 || pkt_size > ASGARD_PROTO_CON_AE_BASE_SZ + (max_entries_per_pkt * AE_ENTRY_SIZE))
-        return 1;
-
-    return 0;
-}
-
 
 int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_entries, int pkt_size, int start_log_idx,
                     int unstable) {
@@ -546,7 +544,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
     if (priv->sdev->multicast.enable)
         return;
 
-    reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 1, priv->sm_log.stable_idx);
+    reply_append(ins, &priv->sdev->pminfo, remote_lid, priv->term, 1, priv->sm_log.stable_idx);
 
     priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
     return;
@@ -555,12 +553,12 @@ reply_retransmission:
     pthread_mutex_unlock(&priv->sm_log.mlock);
 
     // TODO: wait until other pending workers are done, and check again if we need a retransmission!
-    reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 2, priv->sm_log.next_retrans_req_idx);
+    reply_append(ins, &priv->sdev->pminfo, remote_lid, priv->term, 2, priv->sm_log.next_retrans_req_idx);
     priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
     return;
 reply_false_unlock:
     pthread_mutex_unlock(&priv->sm_log.mlock);
-    reply_append(ins, &priv->sdev->pminfo, remote_lid, rcluster_id, priv->term, 0, priv->sm_log.stable_idx);
+    reply_append(ins, &priv->sdev->pminfo, remote_lid, priv->term, 0, priv->sm_log.stable_idx);
     priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 }
 
@@ -570,7 +568,7 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
             (struct consensus_priv *) ins->proto_data;
 
 #if VERBOSE_DEBUG
-    asgard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
+    asgard_log_le("%s, %lu, %d: voting for cluster node %d with term %d\n",
         nstate_string(priv->nstate),
         ASGARD_TIMESTAMP,
         priv->term,
@@ -681,7 +679,7 @@ int consensus_stop(struct proto_instance *ins) {
 
     asgard_dbg("===================== End of Run: ====================\n" );
 
-    asgard_dbg("Transmitted Packets:%d\n", priv->sdev->tx_counter);
+    asgard_dbg("Transmitted Packets:%lu\n", priv->sdev->tx_counter);
 
     // Dump Logs to File
 
@@ -771,12 +769,6 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid,
 
     if (!consensus_is_alive(priv))
         return 0;
-
-    // safety check during debugging and development
-    if (!ins) {
-        asgard_dbg("proto instance is null!\n");
-        return 0;
-    }
 
     // safety check during debugging and development
     if (!priv) {
@@ -921,10 +913,7 @@ struct proto_instance *get_consensus_proto_instance(struct asgard_device *sdev)
     cpriv->throughput_logger.name = "consensus_throughput";
 
     cpriv->state = LE_UNINIT;
-    cpriv->ft_min = MIN_FTIMEOUT_NS;
-    cpriv->ft_max = MAX_FTIMEOUT_NS;
-    cpriv->ct_min = MIN_CTIMEOUT_NS;
-    cpriv->ct_max = MAX_CTIMEOUT_NS;
+
     cpriv->max_entries_per_pkt = MAX_AE_ENTRIES_PER_PKT;
     cpriv->sdev = sdev;
     cpriv->ins = ins;

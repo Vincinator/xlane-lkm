@@ -11,12 +11,13 @@
  *     - #ifdef __KERNE__ and its #endif
  *     - all #include line
  *     - prefetch() and rcu related functions
- * 3. add macro offsetof() and container_of
+ * 3. add macro asg_offsetof() and asg_container_of
  *
  * - kazutomo@mcs.anl.gov
  */
 #ifndef _LINUX_LIST_H
 #define _LINUX_LIST_H
+
 
 #define WRITE_ONCE(x, val) x = (val)
 
@@ -31,7 +32,7 @@
 /**
  * Get offset of a member
  */
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#define asg_offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
 /**
  * Casts a member of a structure out to the containing structure
@@ -40,9 +41,9 @@
  * @param member     the name of the member within the struct.
  *
  */
-#define container_of(ptr, type, member) ({                      \
+#define asg_container_of(ptr, type, member) ({                      \
         const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
-        (type *)( (char *)__mptr - offsetof(type,member) );})
+        (type *)( (char *)__mptr - asg_offsetof(type,member) );})
 /*@}*/
 
 
@@ -69,7 +70,7 @@ struct list_head {
 
 #define LIST_HEAD_INIT(name) { &(name), &(name) }
 
-#define LIST_HEAD(name) \
+#define ASG_LIST_HEAD(name) \
 	struct list_head name = LIST_HEAD_INIT(name)
 
 #define INIT_LIST_HEAD(ptr) do { \
@@ -237,7 +238,7 @@ static inline void list_splice_init(struct list_head *list,
  * @member:	the name of the list_struct within the struct.
  */
 #define list_entry(ptr, type, member) \
-	container_of(ptr, type, member)
+	asg_container_of(ptr, type, member)
 
 /**
   * list_first_entry - get the first element from a list
@@ -518,7 +519,7 @@ static inline void hlist_add_after(struct hlist_node *n,
 
 
 
-#define hlist_entry(ptr, type, member) container_of(ptr,type,member)
+#define hlist_entry(ptr, type, member) asg_container_of(ptr,type,member)
 
 #define hlist_for_each(pos, head) \
 	for (pos = (head)->first; pos && ({ prefetch(pos->next); 1; }); \

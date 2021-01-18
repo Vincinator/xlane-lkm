@@ -118,7 +118,7 @@ int setup_append_multicast_msg(struct asgard_device *sdev, struct asgard_payload
     int32_t prev_log_term, leader_commit_idx;
     int32_t num_entries = 0;
     int32_t next_index;
-    char *pkt_payload_sub;
+    unsigned char *pkt_payload_sub;
     int more = 0;
 
     // Check if entries must be appended
@@ -215,10 +215,10 @@ int setup_append_multicast_msg(struct asgard_device *sdev, struct asgard_payload
  *
  * returns a pointer to the start of that protocol payload memory area.
  */
-char *asgard_reserve_proto(uint16_t instance_id, struct asgard_payload *spay, uint16_t proto_size)
+unsigned char * asgard_reserve_proto(uint16_t instance_id, struct asgard_payload *spay, uint16_t proto_size)
 {
     int i;
-    char *cur_proto;
+    unsigned char *cur_proto;
     int proto_offset = 0;
     int cur_offset = 0;
 
@@ -267,7 +267,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spa
     int32_t local_last_idx;
     int32_t prev_log_term, leader_commit_idx;
     int32_t num_entries = 0;
-    char *pkt_payload_sub;
+    unsigned char *pkt_payload_sub;
     int more = 0;
 
     // Check if entries must be appended

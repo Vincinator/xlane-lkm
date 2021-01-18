@@ -79,7 +79,7 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
 }
 
 
-int extract_cluster_id_from_ad(char *payload) {
+int extract_cluster_id_from_ad(const char *payload) {
 
     uint32_t ad_cluster_id;
     enum le_opcode opcode;
@@ -95,7 +95,7 @@ int extract_cluster_id_from_ad(char *payload) {
     return ad_cluster_id;
 }
 
-uint32_t extract_cluster_ip_from_ad(char *payload) {
+uint32_t extract_cluster_ip_from_ad(const char *payload) {
 
     uint32_t ad_cluster_ip;
     enum le_opcode opcode;
@@ -111,95 +111,13 @@ uint32_t extract_cluster_ip_from_ad(char *payload) {
     return ad_cluster_ip;
 }
 
-char *extract_cluster_mac_from_ad(char *payload) {
-
-    char* ad_cluster_mac;
-    enum le_opcode opcode;
-
-    // check if opcode is ADVERTISE
-    opcode = GET_CON_PROTO_OPCODE_VAL(payload);
-
-    if(opcode != ADVERTISE) {
-        return NULL;
-    }
-
-    ad_cluster_mac = GET_CON_PROTO_PARAM3_MAC_PTR(payload);
-
-    if(!ad_cluster_mac)
-        return NULL;
-
-    return ad_cluster_mac;
-
-}
-
-
-void _handle_sub_payloads(struct asgard_device *sdev, int remote_lid,
-                          int cluster_id, char *payload, int instances,
-                          uint32_t bcnt)
-{
-    uint16_t cur_proto_id;
-    uint16_t cur_offset;
-    struct proto_instance *cur_ins;
-
-    /* bcnt <= 0:
-     *		no payload left to handle
-     *
-     * instances <= 0:
-     *		all included instances were handled
-     */
-    if (instances <= 0 || bcnt <= 0) {
-        // asgard_error("no payload left to handle and/or no instances left to handle\n");
-        return;
-    }
-
-    /* Protect this kernel from buggy packets.
-     * In the current state, more than 4 instances are not intentional.
-
-    if (instances > 4) {
-        asgard_error(
-                "BUG!? - Received packet that claimed to include %d instances\n",
-                instances);
-        return;
-    } */
-
-    // if (sdev->verbose >= 3)
-    //	asgard_dbg("recursion. instances %d bcnt %d", instances, bcnt);
-
-    cur_proto_id = GET_PROTO_TYPE_VAL(payload);
-
-    // if (sdev->verbose >= 3)
-    //	asgard_dbg("cur_proto_id %d", cur_proto_id);
-
-    cur_offset = GET_PROTO_OFFSET_VAL(payload);
-
-    // if (sdev->verbose >= 3)
-    //	asgard_dbg("cur_offset %d", cur_offset);
-
-    cur_ins = get_proto_instance(sdev, cur_proto_id);
-
-    // check if instance for the given protocol id exists
-    if (!cur_ins) {
-        asgard_dbg(
-                "No instance for protocol id %d were found. instances=%d",
-                cur_proto_id, instances);
-
-    } else {
-        cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id,
-                                       payload);
-    }
-    // handle next payload
-    _handle_sub_payloads(sdev, remote_lid, cluster_id, payload + cur_offset,
-                         instances - 1, bcnt - cur_offset);
-}
-
-
 
 void *pkt_process_handler(void *data)
 {
     struct pkt_work_data *wd = (struct pkt_work_data*) data;
     asgard_dbg("processing pkt\n");
 
-    _handle_sub_payloads(wd->sdev, wd->remote_lid, wd->rcluster_id,
+    handle_sub_payloads(wd->sdev, wd->remote_lid, wd->rcluster_id,
                          GET_PROTO_START_SUBS_PTR(wd->payload),
                          wd->received_proto_instances, wd->bcnt);
     free(wd->payload);
@@ -227,7 +145,7 @@ void get_cluster_ids(struct asgard_device *sdev, in_addr_t remote_ip, int *lid, 
 }
 
 
-void post_payload(struct asgard_device *sdev, in_addr_t remote_ip, void *payload_in, int payload_len, struct rte_mbuf *pkt)
+void post_payload(struct asgard_device *sdev, in_addr_t remote_ip, void *payload_in, int payload_len)
 {
     struct pminfo *spminfo = &sdev->pminfo;
     int remote_lid, rcluster_id, cluster_id_ad, i;
@@ -309,7 +227,7 @@ void post_payload(struct asgard_device *sdev, in_addr_t remote_ip, void *payload
 
 
     wd = malloc(sizeof(struct pkt_work_data));
-    wd->payload = payload;
+    wd->payload = (struct asgard_payload*) payload;
     wd->rcluster_id = rcluster_id;
     wd->sdev = sdev;
     wd->received_proto_instances  = received_proto_instances;

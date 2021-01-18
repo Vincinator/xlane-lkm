@@ -194,7 +194,7 @@ void dump_ingress_log(struct asgard_logger *slog, int node_id, uint64_t hb_ns) {
 
     for(i = 0; i < slog->current_entries; i++)
         if( slog->events[i].node_id != -1 && slog->events[i].type == INGRESS_PACKET)
-            fprintf(fp, "%d, %lld, %lld, %fms, var to exp hb of %f ms: %f ms\n",
+            fprintf(fp, "%d, %lu, %lu, %fms, var to exp hb of %f ms: %f ms\n",
                     slog->events[i].node_id,
                     slog->events[i].timestamp_tcs,
                     slog->events[i].delta,
@@ -206,7 +206,7 @@ void dump_ingress_log(struct asgard_logger *slog, int node_id, uint64_t hb_ns) {
 }
 
 
-int clear_ingress_logger(struct asgard_ingress_logger *ailog){
+void clear_ingress_logger(struct asgard_ingress_logger *ailog){
     int i;
 
     for(i = 0; i < ailog->num_of_nodes; i++)

@@ -10,27 +10,10 @@
 #include "tnode.h"
 
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
-
-#include <errno.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-
-#include <rte_byteorder.h>
-#include <rte_log.h>
-#include <rte_common.h>
-#include <rte_config.h>
-#include <rte_errno.h>
-#include <rte_ethdev.h>
-#include <rte_ip.h>
-#include <rte_mbuf.h>
-#include <rte_malloc.h>
 
 #include "pacemaker.h"
 #include "pkthandler.h"
@@ -38,12 +21,17 @@
 #include "ini.h"
 #include "logger.h"
 
+#ifdef ASGARD_DPDK
+#include <rte_byteorder.h>
+#include <rte_ethdev.h>
+#include <rte_ip.h>
+#include <rte_mbuf.h>
+#endif
+
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGARD][TNODE]"
 
-#define BUFSIZE 1024
 #define MAX_PKT_BURST 32
-
 
 
 void error(tnode_t *tn, char *msg) {
@@ -91,7 +79,7 @@ void trap(int signal){ user_requested_stop = 1; }
  * Also extracts the sender ip for asgard.
  * The sender can be identified via IP and not via MAC in this user space implementation.
  */
-int server_listener(void *data) {
+int dpdk_server_listener(void *data) {
     tnode_t *tn = (tnode_t *) data;
     struct rte_mbuf *rx_burst[MAX_PKT_BURST];
     struct rte_mbuf *pkt = NULL;
@@ -128,7 +116,7 @@ int server_listener(void *data) {
                         if(udp_hdr->dst_port == 4000){
                             udp_payload = (uint8_t *)(udp_hdr + 1);
                             // asg_print_ip(rte_be_to_cpu_32(ip_hdr->src_addr));
-                            post_payload(sdev, rte_be_to_cpu_32(ip_hdr->src_addr), udp_payload, udp_hdr->dgram_len, pkt);
+                            post_payload(sdev, rte_be_to_cpu_32(ip_hdr->src_addr), udp_payload, udp_hdr->dgram_len);
                         }
                     }
                 }
@@ -153,7 +141,7 @@ int start_node(tnode_t *tn) {
     // pthread_create(&tn->pm_thread, NULL, pacemaker, tn->sdev);
 
     /* Start Packet listener - NOT FOR DPDK VERSION */
-    // pthread_create(&tn->pl_thread, NULL, server_listener, tn);
+    // pthread_create(&tn->pl_thread, NULL, dpdk_server_listener, tn);
 
     return 0;
 }

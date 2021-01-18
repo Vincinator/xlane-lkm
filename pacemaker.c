@@ -16,15 +16,8 @@
 #include <arpa/inet.h>
 #include <signal.h>
 
-#include <rte_byteorder.h>
-#include <rte_log.h>
-#include <rte_common.h>
-#include <rte_config.h>
-#include <rte_errno.h>
-#include <rte_ethdev.h>
-#include <rte_ip.h>
-#include <rte_mbuf.h>
-#include <rte_malloc.h>
+
+
 
 #include "libasraft.h"
 #include "pacemaker.h"
@@ -34,6 +27,18 @@
 #include "membership.h"
 #include "pktqueue.h"
 #include "tnode.h"
+
+#ifdef ASGARD_DPDK
+#include <rte_byteorder.h>
+#include <rte_log.h>
+#include <rte_common.h>
+#include <rte_config.h>
+#include <rte_errno.h>
+#include <rte_ethdev.h>
+#include <rte_ip.h>
+#include <rte_mbuf.h>
+#include <rte_malloc.h>
+#endif
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGARD][PACEMAKER]"
@@ -67,7 +72,7 @@ void pm_state_transition_to(struct pminfo *spminfo, const enum pmstate state) {
 }
 
 void set_le_opcode_ad(unsigned char *pkt, enum le_opcode opco, int32_t cluster_id, int32_t self_ip,
-                      unsigned char *self_mac) {
+                      asg_mac_ptr_t self_mac) {
     uint16_t *opcode;
     uint32_t *param1;
     int32_t *param2;
@@ -88,8 +93,8 @@ void set_le_opcode_ad(unsigned char *pkt, enum le_opcode opco, int32_t cluster_i
 
 }
 
-int setup_cluster_join_advertisement(struct asgard_payload *spay, int advertise_id, uint32_t ip, unsigned char *mac) {
-    char *pkt_payload_sub;
+int setup_cluster_join_advertisement(struct asgard_payload *spay, int advertise_id, uint32_t ip, asg_mac_ptr_t mac) {
+    unsigned char *pkt_payload_sub;
 
     asgard_dbg("Cluster Join advertisement\n");
     pkt_payload_sub = asgard_reserve_proto(1, spay, ASGARD_PROTO_CON_PAYLOAD_SZ);
@@ -103,7 +108,7 @@ int setup_cluster_join_advertisement(struct asgard_payload *spay, int advertise_
 }
 
 int setup_alive_msg(struct consensus_priv *cur_priv, struct asgard_payload *spay, int instance_id) {
-    char *pkt_payload_sub;
+    unsigned char *pkt_payload_sub;
 
     pkt_payload_sub = asgard_reserve_proto(instance_id, spay, ASGARD_PROTO_CON_PAYLOAD_SZ);
 
@@ -324,11 +329,11 @@ static unsigned int get_packet_size_for_alloc(){
 
     return total_len;
 }
-
+#ifdef ASGARD_DPDK
 /* construct ping packet */
-static struct rte_mbuf *contruct_asg_packet(struct rte_mempool *pktmbuf_pool,
-        struct sockaddr_in recvaddr, uint32_t send_ip, struct asgard_payload *asgp,
-        unsigned char *recv_mac, unsigned char *sender_mac)
+static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_pool,
+                                                 struct sockaddr_in recvaddr, uint32_t send_ip, struct asgard_payload *asgp,
+                                                 asg_mac_ptr_t recv_mac, asg_mac_ptr_t sender_mac)
 {
     struct rte_mbuf *pkt;
     struct rte_ether_hdr *eth_hdr;
@@ -417,18 +422,18 @@ static struct rte_mbuf *contruct_asg_packet(struct rte_mempool *pktmbuf_pool,
         rte_memcpy(payload_ptr, asgp, sizeof(struct asgard_payload));
         asgard_dbg("Packet len after copy %d\n ", pkt->pkt_len);
     } else {
-        asgard_error("Could not append %d bytes to packet. \n", sizeof(struct asgard_payload));
+        asgard_error("Could not append %ld bytes to packet. \n", sizeof(struct asgard_payload));
     }
     return pkt;
 }
 
-unsigned int emit_packet(uint16_t portid, uint32_t self_ip, struct rte_mempool *pktmbuf_pool,
-        struct sockaddr_in recvaddr, struct asgard_payload *asg_payload,
-        unsigned char *recv_mac, unsigned char *sender_mac) {
+unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_mempool *pktmbuf_pool,
+                                  struct sockaddr_in recvaddr, struct asgard_payload *asg_payload,
+                                  asg_mac_ptr_t recv_mac, asg_mac_ptr_t sender_mac) {
     struct rte_mbuf *dpdk_pkt= NULL;
     unsigned int nb_tx;
 
-    dpdk_pkt = contruct_asg_packet(pktmbuf_pool, recvaddr, self_ip, asg_payload, recv_mac, sender_mac);
+    dpdk_pkt = contruct_dpdk_asg_packet(pktmbuf_pool, recvaddr, self_ip, asg_payload, recv_mac, sender_mac);
     if (!dpdk_pkt) {
         asgard_dbg("DPDK packet not created! dropping packet transmission\n");
         return -1;
@@ -437,12 +442,23 @@ unsigned int emit_packet(uint16_t portid, uint32_t self_ip, struct rte_mempool *
     /* queue id = 0, number of packets = 1 (due to "fire when ready" approach) */
     nb_tx = rte_eth_tx_burst(portid, 0, &dpdk_pkt, 1);
 
-
-
-
     return nb_tx;
-
 }
+#else
+int emit_packet(struct sockaddr_in recvaddr, struct asgard_payload *asg_payload) {
+
+    int sockfd;
+    // Creating socket file descriptor
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        perror("socket creation failed");
+        return -1;
+    }
+
+    sendto(sockfd, asg_payload, sizeof(struct asgard_payload), 0, (const struct sockaddr *) &recvaddr, sizeof(recvaddr));
+    close(sockfd);
+}
+#endif
+
 int emit_async_unicast_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
 {
     int i;
@@ -469,10 +485,15 @@ int emit_async_unicast_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
             prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(cur_apkt->pkt_data.payload->proto_data);
             asgard_dbg("Node: %d - Emitting %d entries, start_idx=%d\n", i, num_entries, *prev_log_idx);
 #endif
-            sdev->tx_counter += emit_packet(sdev->dpdk_portid, sdev->self_ip,
-                                            sdev->pktmbuf_pool,
-                                            cur_apkt->pkt_data.sockaddr, cur_apkt->pkt_data.payload,
-                                            spminfo->pm_targets[i].mac_addr, sdev->rte_self_mac);
+#if ASGARD_DPDK
+            sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
+                                                     sdev->pktmbuf_pool,
+                                                     cur_apkt->pkt_data.sockaddr, cur_apkt->pkt_data.payload,
+                                                     spminfo->pm_targets[i].mac_addr, sdev->self_mac);
+#else
+            emit_packet(cur_apkt->pkt_data.sockaddr, cur_apkt->pkt_data.payload);
+
+#endif
             spminfo->pm_targets[i].pkt_tx_counter++;
         }
     }
@@ -495,12 +516,17 @@ int emit_async_multicast_pkt(struct asgard_device *sdev, struct pminfo *spminfo)
             asgard_error("pkt is NULL! \n");
             return -1;
         }
-
+#ifdef ASGARD_DPDK
         // NOT IMPLEMENTED! Missing pm target ethernet address
-        // sdev->tx_counter += emit_packet(sdev->dpdk_portid, sdev->self_ip,
+        // sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
         //                                sdev->pktmbuf_pool, cur_apkt->pkt_data.sockaddr,
         //                                cur_apkt->pkt_data.payload,
         //                                NULL, sdev->rte_self_mac);
+
+#else
+        emit_packet(cur_apkt->pkt_data.sockaddr, cur_apkt->pkt_data.payload);
+#endif
+
     }
 
     return 0;
@@ -516,12 +542,16 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
 
     pkt_payload = &spminfo->multicast_pkt_data_oos;
 
+#ifdef ASGARD_DPDK
     // NOT IMPLEMENTED! Missing pm target ethernet address
-    //sdev->tx_counter += emit_packet(sdev->dpdk_portid, sdev->self_ip,
+    //sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
     //                                sdev->pktmbuf_pool, pkt_payload->sockaddr,
     //                               pkt_payload->payload,
     //                               spminfo->pm_targets[i].mac_addr, sdev->rte_self_mac);
 
+#else
+    emit_packet(pkt_payload->sockaddr, pkt_payload->payload);
+#endif
     memset(pkt_payload->payload, 0, sizeof(struct asgard_payload));
 
     spminfo->multicast_pkt_data_oos_fire = 0;
@@ -556,10 +586,14 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
         if (!target_fire[i])
             continue;
 
-        sdev->tx_counter += emit_packet(sdev->dpdk_portid, sdev->self_ip,
-                                        sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.sockaddr,
-                                        spminfo->pm_targets[i].pkt_data.payload,
-                                        spminfo->pm_targets[i].mac_addr, sdev->rte_self_mac);
+#ifdef ASGARD_DPDK
+        sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
+                                                 sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.sockaddr,
+                                                 spminfo->pm_targets[i].pkt_data.payload,
+                                                 spminfo->pm_targets[i].mac_addr, sdev->self_mac);
+#else
+        emit_packet(spminfo->pm_targets[i].pkt_data.sockaddr, spminfo->pm_targets[i].pkt_data.payload);
+#endif
         spminfo->pm_targets[i].pkt_tx_counter++;
     }
 
@@ -610,10 +644,14 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
 
         pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
 
-        sdev->tx_counter += emit_packet(sdev->dpdk_portid, sdev->self_ip,
-                                        sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.sockaddr,
-                                        pkt_payload,
-                                        spminfo->pm_targets[i].mac_addr, sdev->rte_self_mac);
+#ifdef ASGARD_DPDK
+        sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
+                                                 sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.sockaddr,
+                                                 pkt_payload,
+                                                 spminfo->pm_targets[i].mac_addr, sdev->self_mac);
+#else
+        emit_packet(spminfo->pm_targets[i].pkt_data.sockaddr, pkt_payload);
+#endif
 
         /* Protocols have been emitted, do not send them again ..
          * .. and free the reservations for new protocols */
@@ -679,12 +717,12 @@ int pacemaker(void *data) {
     signal(SIGINT, &trap);
 
     if(interval <= 0){
-        asgard_error("Invalid hbi of %lld set!\n", interval);
+        asgard_error("Invalid hbi of %lu set!\n", interval);
         pm_state_transition_to(spminfo, ASGARD_PM_FAILED);
         return -1;
     }
 
-    asgard_dbg("Starting Pacemaker with hbi: %lld\n", interval);
+    asgard_dbg("Starting Pacemaker with hbi: %lu\n", interval);
 
     /* Reset Errors from previous runs */
     spminfo->errors = 0;

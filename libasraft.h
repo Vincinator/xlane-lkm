@@ -1,7 +1,4 @@
-#ifndef LIBASRAFT_LIBASRAFT_H
-#define LIBASRAFT_LIBASRAFT_H
-
-
+#pragma once
 
 #include <stdint.h>
 #include <pthread.h>
@@ -16,20 +13,21 @@
 #include <rte_mbuf.h>
 #include <rte_malloc.h>
 
-
+#include "config.h"
 #include "logger.h"
 #include "list.h"
 #include "libasraft.h"
 
-#define HBI_OF_1MS 1000000
-#define HBI_OF_10MS 10000000
-#define HBI_OF_100MS 100000000
-#define HBI_OF_1S 1000000000
 
-#define CYCLES_PER_1MS 2400000
-#define CYCLES_PER_5MS 12000000
-#define CYCLES_PER_10MS 24000000
-#define CYCLES_PER_100MS 240000000
+
+
+
+#ifdef ASGARD_DPDK
+typedef struct rte_ether_addr * asg_mac_ptr_t;
+#else
+typedef char*  asg_mac_ptr_t;
+#endif
+
 
 
 #ifndef ASG_CHUNK_SIZE
@@ -42,7 +40,6 @@
 
 #define MAX_REMOTE_SOURCES 16
 #define MAX_PROTO_INSTANCES 8
-#define MAX_PROTOS_PER_PKT 2
 #define ASGARD_HEADER_BYTES 82
 #define MAX_ASGARD_PAYLOAD_BYTES (1500 - ASGARD_HEADER_BYTES) // asuming an ethernet mtu of ~1500 bytes
 
@@ -59,17 +56,12 @@ enum asgard_protocol_type {
 };
 
 
-
-struct node_addr {
-    int cluster_id;
-    uint32_t dst_ip;
-    unsigned char dst_mac[6];
-};
-
+struct proto_instance;
 
 struct asgard_protocol_ctrl_ops {
+#ifdef ASGARD_KERNEL
     int (*init_ctrl)(void);
-
+#endif
     /* Initializes data and user space interfaces */
     int (*init)(struct proto_instance *ins);
 
@@ -93,8 +85,6 @@ struct asgard_protocol_ctrl_ops {
     /* Write statistics to debug console  */
     int (*info)(struct proto_instance *ins);
 };
-
-
 struct proto_instance {
     uint16_t instance_id;
 
@@ -113,6 +103,9 @@ struct proto_instance {
     void *proto_data;
 };
 
+
+
+
 struct asgard_async_queue_priv {
 
     /* List head for asgard async pkt*/
@@ -124,10 +117,7 @@ struct asgard_async_queue_priv {
 };
 
 struct multicast {
-    /*Internal Usage*/
-    int delay;
     int enable;
-    /*Internal Usage*/
     struct asgard_logger logger;
     struct asgard_async_queue_priv *aapriv;
     int nextIdx;
@@ -287,15 +277,6 @@ struct consensus_priv {
 
     uint32_t started_log;
 
-    /* follower timeout */
-    int ft_max;
-    int ft_min;
-
-    /* candidate timeout */
-    int c_retries;
-
-    int ct_min;
-    int ct_max;
 
     int max_entries_per_pkt;
 
@@ -332,7 +313,7 @@ struct asgard_payload {
      * If protocol payload does not fit in the asgard payload,
      * then the protocol payload is queued to be stored in the next asgard payload.
      */
-    char proto_data[MAX_ASGARD_PAYLOAD_BYTES - 2];
+    unsigned char proto_data[MAX_ASGARD_PAYLOAD_BYTES - 2];
 };
 
 struct asgard_packet_data {
@@ -393,7 +374,7 @@ struct asgard_pm_target_info {
 
     int pkt_tx_errors;
 
-    struct rte_ether_addr *mac_addr;
+    asg_mac_ptr_t mac_addr;
 };
 
 
@@ -430,6 +411,9 @@ struct pminfo {
     struct asgard_packet_data multicast_pkt_data_oos;
     int multicast_pkt_data_oos_fire;
 };
+
+
+
 struct asgard_device {
     int ifindex; /* corresponds to ifindex of net_device */
     uint32_t hb_interval;
@@ -482,10 +466,8 @@ struct asgard_device {
     // unsigned char *multicast_mac;
 
     uint32_t self_ip;
-    unsigned char *self_mac;
 
-    struct rte_ether_addr *rte_self_mac;
-
+    asg_mac_ptr_t self_mac;
 
     /* Ensures that all targets are first checked before the */
     pthread_mutex_t logrep_schedule_lock;
@@ -494,6 +476,5 @@ struct asgard_device {
 
 unsigned char *asgard_convert_mac(const char *str);
 uint32_t asgard_ip_convert(const char *str);
-struct asgard_device *init_asgard_device(struct asgard_device *sdev);
+void init_asgard_device(struct asgard_device *sdev);
 struct proto_instance *generate_protocol_instance(struct asgard_device *sdev, int protocol_id);
-#endif //LIBASRAFT_LIBASRAFT_H

@@ -128,7 +128,7 @@ int write_ingress_log(struct asgard_ingress_logger *slog, int type, uint64_t tcs
 
 void logger_state_transition_to(struct asgard_logger *slog, enum logger_state state);
 
-int clear_ingress_logger(struct asgard_ingress_logger *ailog);
+void clear_ingress_logger(struct asgard_ingress_logger *ailog);
 int init_ingress_logger(struct asgard_ingress_logger *ailog, int instance_id);
 
 #endif //LIBASRAFT_LOGGER_H

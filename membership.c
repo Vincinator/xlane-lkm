@@ -20,17 +20,9 @@
 #include "pacemaker.h"
 #include "pktqueue.h"
 
-
-#include <rte_byteorder.h>
-#include <rte_log.h>
-#include <rte_common.h>
-#include <rte_config.h>
-#include <rte_errno.h>
-#include <rte_ethdev.h>
+#ifdef ASGARD_DPDK
 #include <rte_ether.h>
-#include <rte_ip.h>
-#include <rte_mbuf.h>
-#include <rte_malloc.h>
+#endif
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGARD][MEMBERSHIP]"
@@ -86,15 +78,19 @@ void add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
 
     if(id == sdev->pminfo.cluster_id){
         asgard_dbg("Adding Own Mac Address: %s!\n", mac);
-        //sdev->rte_self_mac = asgard_convert_mac(mac);
-        sdev->rte_self_mac = malloc(sizeof(struct rte_ether_addr));
-        rte_ether_unformat_addr(mac, sdev->rte_self_mac);
 
-        if(!rte_is_local_admin_ether_addr(sdev->rte_self_mac)){
+#ifdef ASGARD_DPDK
+        sdev->self_mac = malloc(sizeof(struct rte_ether_addr));
+        rte_ether_unformat_addr(mac, (struct rte_ether_addr*)sdev->self_mac);
+
+        if(!rte_is_local_admin_ether_addr(sdev->self_mac)){
             asgard_error("MAC Address specified is not assigned to DPDK Device!\n");
         } else {
             asgard_dbg("Successfully registered MAC address of DPDK enabled Device\n");
         }
+#else
+        sdev->self_mac = asgard_convert_mac(mac);
+#endif
 
         return;
     }
