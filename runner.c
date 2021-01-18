@@ -80,6 +80,8 @@ static int handler(void* user, const char* section, const char* name,
     char *cur_ip, *cur_id;
     char *long_endptr, *str = NULL;
 
+    int reg_macs = 0, reg_ips = 0;
+
     char cur_mac_buffer[19];
 
 #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
@@ -118,7 +120,7 @@ static int handler(void* user, const char* section, const char* name,
             cur_ip = strdup(inner_token);
             inner_token = strtok_r(NULL, ",", &inner_end_token);
             cur_id = strdup(inner_token);
-            register_peer_by_ip(node_config->sdev, asgard_ip_convert(cur_ip), atoi(cur_id));
+            reg_ips += register_peer_by_ip(node_config->sdev, asgard_ip_convert(cur_ip), atoi(cur_id));
             tuple_token = strtok_r(NULL, ";", &outer_end_token);
         }
     } else if (MATCH("node", "peer_mac_id_tuple")) {
@@ -130,12 +132,17 @@ static int handler(void* user, const char* section, const char* name,
             asgard_dbg("parser found mac %s", cur_mac_buffer);
             inner_token = strtok_r(NULL, ",", &inner_end_token);
             cur_id = strdup(inner_token);
-            add_mac_to_peer_id(node_config->sdev, cur_mac_buffer, atoi(cur_id));
+            reg_macs += add_mac_to_peer_id(node_config->sdev, cur_mac_buffer, atoi(cur_id));
             tuple_token = strtok_r(NULL, ";", &outer_end_token);
         }
     } else {
         asgard_error("Unmatched token.\n");
         return 0;
+    }
+
+    if(reg_ips != reg_macs) {
+        asgard_error("Amount of configured ips (%d) do not match amount of configured macs (%d)!\n", reg_ips, reg_macs);
+        return -1;
     }
 
     return 1;

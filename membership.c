@@ -69,12 +69,10 @@ int get_local_index_by_cluster_id(struct asgard_device *sdev, int cluster_id){
 }
 
 
-void add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
+int add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
 
     struct asgard_pm_target_info *pmtarget;
     int local_id;
-
-
 
     if(id == sdev->pminfo.cluster_id){
         asgard_dbg("Adding Own Mac Address: %s!\n", mac);
@@ -92,13 +90,13 @@ void add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
         sdev->self_mac = asgard_convert_mac(mac);
 #endif
 
-        return;
+        return 0;
     }
 
     if (id >= MAX_REMOTE_SOURCES) {
         asgard_error("Reached Limit of remote hosts.\n");
         asgard_error("Limit is=%d\n", MAX_REMOTE_SOURCES);
-        return;
+        return 1;
     }
     asgard_dbg("Looking for local index\n");
 
@@ -106,24 +104,25 @@ void add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
 
     if(local_id == -1){
         asgard_error("could not find cluster with cluster id %d\n", id);
-        return;
+        return 0;
     }
 
     pmtarget = &sdev->pminfo.pm_targets[local_id];
     asgard_dbg("registering mac for local id: %d\n", local_id);
     if (!pmtarget) {
         asgard_error("Pacemaker target is not initialized!\n");
-        return;
+        return 0;
     }
 
     asgard_dbg("registering mac for cluster id: %d\n", pmtarget->cluster_id);
-
+#ifdef ASGARD_DPDK
     pmtarget->mac_addr = malloc(sizeof(struct rte_ether_addr));
 
     if(!pmtarget->mac_addr){
         asgard_dbg("failed to allocate memory for mac addr!\n");
-        return;
+        return 0;
     }
+
     asgard_dbg("converting mac '%s' string to rte_ether_addr struct\n", mac);
 
     rte_ether_unformat_addr(mac, pmtarget->mac_addr);
@@ -134,13 +133,19 @@ void add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
         asgard_dbg("Successfully registered mac address: %s for local id: %d global id: %d\n", mac, local_id, id);
         //asg_print_mac(pmtarget->mac_addr);
     }
+#else
 
-
+    return 0;
+#endif
+    return 1;
 
 }
 
 
-
+/*
+ * Returns 1 if ip has been successfully registered
+ * Returns 0 otherwise
+ */
 int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
 
     struct asgard_pm_target_info *pmtarget;
@@ -154,14 +159,14 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
     if (sdev->pminfo.num_of_targets >= MAX_REMOTE_SOURCES) {
         asgard_error("Reached Limit of remote hosts.\n");
         asgard_error("Limit is=%d\n", MAX_REMOTE_SOURCES);
-        return -1;
+        return 0;
     }
 
     pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
 
     if (!pmtarget) {
         asgard_error("Pacemaker target is NULL\n");
-        return -1;
+        return 0;
     }
 
     pmtarget->alive = 0;
@@ -193,10 +198,7 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
 
     sdev->pminfo.num_of_targets++;
 
-
-
-
-    return 0;
+    return 1;
 }
 
 int register_peer_by_name(struct asgard_device *sdev, const char *cur_name, int id){
