@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
-project(libasraft C)
+project(libasraft2 C)
 
 set(CMAKE_C_STANDARD 99)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -12,11 +12,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 find_library(LibUUID_LIBRARY  NAMES uuid)
-find_package (dpdk REQUIRED)
+find_package (DPDK REQUIRED)
 
 include_directories (${DPDK_INCLUDE_DIR})
 
 add_compile_options(-mssse3)
+
 set(CMAKE_BUILD_TYPE Debug)
 
 include_directories(${LIBUUID_INCLUDE_DIR})
@@ -26,7 +27,7 @@ add_library(libasraft libasraft.c libasraft.h logger.c logger.h consensus.c cons
 add_library(inih ini.c ini.h)
 add_executable(testrunner runner.c)
 
-target_link_libraries(libasraft PRIVATE ${dpdk_LIBRARIES})
+target_link_libraries(libasraft PRIVATE ${dpdk_LIBRARIES} )
 target_link_libraries(libasraft PRIVATE Threads::Threads)
 target_link_libraries(testrunner LINK_PUBLIC inih)
 target_link_libraries(testrunner LINK_PUBLIC libasraft)
