@@ -43,6 +43,9 @@ typedef struct {
     pthread_t pl_thread;
 
     int oneshot_num_entries;
+
+    // Not 0 if an init_error occured during initialization
+    int init_error;
 } tnode_t;
 
 extern int user_requested_stop;

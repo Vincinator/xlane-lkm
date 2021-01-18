@@ -185,8 +185,8 @@ int ini_parse_stream(ini_reader reader, void* stream, ini_handler handler,
                 strncpy0(section, start + 1, sizeof(section));
                 *prev_name = '\0';
 #if INI_CALL_HANDLER_ON_NEW_SECTION
-                if (!HANDLER(user, section, NULL, NULL) && !error)
-                    error = lineno;
+                if (!HANDLER(user, section, NULL, NULL) && !init_error)
+                    init_error = lineno;
 #endif
             }
             else if (!error) {
@@ -219,8 +219,8 @@ int ini_parse_stream(ini_reader reader, void* stream, ini_handler handler,
 #if INI_ALLOW_NO_VALUE
                 *end = '\0';
                 name = rstrip(start);
-                if (!HANDLER(user, section, name, NULL) && !error)
-                    error = lineno;
+                if (!HANDLER(user, section, name, NULL) && !init_error)
+                    init_error = lineno;
 #else
                 error = lineno;
 #endif
@@ -228,7 +228,7 @@ int ini_parse_stream(ini_reader reader, void* stream, ini_handler handler,
         }
 
 #if INI_STOP_ON_FIRST_ERROR
-        if (error)
+        if (init_error)
             break;
 #endif
     }

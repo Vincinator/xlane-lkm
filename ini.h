@@ -46,11 +46,11 @@ typedef char* (*ini_reader)(char* str, int num, void* stream);
 
    For each name=value pair parsed, call handler function with given user
    pointer as well as section, name, and value (data only valid for duration
-   of handler call). Handler should return nonzero on success, zero on error.
+   of handler call). Handler should return nonzero on success, zero on init_error.
 
-   Returns 0 on success, line number of first error on parse error (doesn't
-   stop on first error), -1 on file open error, or -2 on memory allocation
-   error (only when INI_USE_STACK is zero).
+   Returns 0 on success, line number of first init_error on parse init_error (doesn't
+   stop on first init_error), -1 on file open init_error, or -2 on memory allocation
+   init_error (only when INI_USE_STACK is zero).
 */
 int ini_parse(const char* filename, ini_handler handler, void* user);
 
@@ -122,7 +122,7 @@ int ini_parse_string(const char* string, ini_handler handler, void* user);
 #define INI_INITIAL_ALLOC 200
 #endif
 
-/* Stop parsing on first error (default is to keep parsing). */
+/* Stop parsing on first init_error (default is to keep parsing). */
 #ifndef INI_STOP_ON_FIRST_ERROR
 #define INI_STOP_ON_FIRST_ERROR 0
 #endif
@@ -136,7 +136,7 @@ int ini_parse_string(const char* string, ini_handler handler, void* user);
 
 /* Nonzero to allow a name without a value (no '=' or ':' on the line) and
    call the handler with value NULL in this case. Default is to treat
-   no-value lines as an error. */
+   no-value lines as an init_error. */
 #ifndef INI_ALLOW_NO_VALUE
 #define INI_ALLOW_NO_VALUE 0
 #endif

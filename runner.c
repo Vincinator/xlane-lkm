@@ -70,7 +70,6 @@ static struct rte_eth_conf port_conf = {
 
 
 
-
 /* Handler for inih config parser (see dependencies)*/
 static int handler(void* user, const char* section, const char* name,
                    const char* value)
@@ -142,6 +141,7 @@ static int handler(void* user, const char* section, const char* name,
 
     if(reg_ips != reg_macs) {
         asgard_error("Amount of configured ips (%d) do not match amount of configured macs (%d)!\n", reg_ips, reg_macs);
+        node_config->init_error = 1;
         return -1;
     }
 
@@ -181,7 +181,7 @@ void testcase_one_shot_big_log(struct consensus_priv *priv, int num_entries)
 
     return;
 error:
-    asgard_error("Evaluation Crashed error code=%d\n", err);
+    asgard_error("Evaluation Crashed init_error code=%d\n", err);
 }
 
 int one_shot = 0;
@@ -320,7 +320,7 @@ int main(int argc, char *argv[]){
                                              &dropped);
     if (ret < 0)
         rte_exit(EXIT_FAILURE,
-                 "Cannot set error callback for tx buffer on port %u\n",
+                 "Cannot set init_error callback for tx buffer on port %u\n",
                  node.sdev->dpdk_portid);
 
     /* Start device */

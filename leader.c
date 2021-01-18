@@ -158,7 +158,7 @@ void update_commit_idx(struct consensus_priv *priv)
         cur_buf_idx = consensus_idx_to_buffer_idx(&priv->sm_log, i);
 
         if(cur_buf_idx < 0) {
-            asgard_error("Could not invalidate due to con2buf idx conversion error\n");
+            asgard_error("Could not invalidate due to con2buf idx conversion init_error\n");
             return;
         }
         priv->sm_log.entries[cur_buf_idx]->valid = 0;
