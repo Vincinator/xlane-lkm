@@ -211,7 +211,7 @@ int main(int argc, char *argv[]){
     node.testmode = ONE_SHOT;
 
     init_node(&node);
-
+    node.sdev->dpdk_portid = 0;
     /* random numbers are used for load generation
      * therefore, predictable random numbers should be OK. */
     srand(time(NULL));
