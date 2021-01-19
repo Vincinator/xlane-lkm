@@ -405,13 +405,9 @@ int main(int argc, char *argv[]){
     asgard_dbg("Node is running. Press ctrl+c to exit ...\n");
     while(node.is_running ){
 
-        /* If this node is the leader, then generate the test load against this leader node.
-         * This way, we do not measure any overhead between leader and client.
-         *
-         * if(node.sdev->is_leader)
-         *   generate_load(&node);
-         *
-         */
+        if(node.sdev->is_leader)
+           generate_load(&node);
+
 
         if(user_requested_stop){
             stop_node(&node);

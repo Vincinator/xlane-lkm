@@ -136,13 +136,14 @@ int start_node(tnode_t *tn) {
     asgard_dbg("Starting Node with node id: %d\n", tn->sdev->pminfo.cluster_id);
 
     tn->is_running = 1;
-
+#if ASGARD_DPDK
+#else
     /* Start Pacemaker - NOT FOR DPDK VERSION  */
-    // pthread_create(&tn->pm_thread, NULL, pacemaker, tn->sdev);
+    pthread_create(&tn->pm_thread, NULL, pacemaker, tn->sdev);
 
     /* Start Packet listener - NOT FOR DPDK VERSION */
-    // pthread_create(&tn->pl_thread, NULL, dpdk_server_listener, tn);
-
+    pthread_create(&tn->pl_thread, NULL, dpdk_server_listener, tn);
+#endif
     return 0;
 }
 
@@ -153,15 +154,18 @@ int stop_node(tnode_t *tn) {
 
     tn->is_running = 0;
 
-    //if (pthread_join(tn->pm_thread, NULL)) {
-    //    printf("Failed to join pacemaker thread\n");
-    //}
+#if ASGARD_DPDK
+#else
+    if (pthread_join(tn->pm_thread, NULL)) {
+        printf("Failed to join pacemaker thread\n");
+    }
 
     /* Only stops if tn->is_running is set to 0*/
-    //if (pthread_cancel(tn->pl_thread)) {
-    //    printf("Failed to cancel server listener thread\n");
-    //}
+    if (pthread_cancel(tn->pl_thread)) {
+        printf("Failed to cancel server listener thread\n");
+    }
 
+#endif
     return 0;
 }
 
