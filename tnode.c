@@ -151,7 +151,7 @@ void *server_listener(void *data) {
     struct sockaddr_in clientaddr;
     char *hostaddrp;
 
-    asgard_dbg("Starting Packet listener on port %d\n", tn->port);
+    asgard_dbg("Starting Packet listener on port %d\n", tn->sdev->tx_port);
 
     /* 1. Create the Socket */
     if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
@@ -161,7 +161,7 @@ void *server_listener(void *data) {
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family = AF_INET; // IPv4
     servaddr.sin_addr.s_addr = INADDR_ANY;
-    servaddr.sin_port = htons(tn->port);
+    servaddr.sin_port = htons(tn->sdev->tx_port);
 
     /* 2. Bind the socket to the specified server address */
     if (bind(sockfd, (const struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {

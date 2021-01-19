@@ -450,7 +450,7 @@ int emit_packet(struct sockaddr_in recvaddr, struct asgard_payload *asg_payload)
     }
     asgard_dbg("Emit Packet:");
     asg_print_ip(recvaddr.sin_addr.s_addr);
-    asgard_dbg("port: %d\n", recvaddr.sin_port);
+    asgard_dbg("port: %d\n", ntohs(recvaddr.sin_port));
 
     sendto(sockfd, asg_payload, sizeof(struct asgard_payload), 0, (const struct sockaddr *) &recvaddr, sizeof(recvaddr));
     close(sockfd);
