@@ -31,7 +31,10 @@ if (NOT ${DPDK_FOUND})
     message( SEND_ERROR "You can't do that" )
 endif ()
 
-target_link_libraries(libasraft PRIVATE ${DPDK_LIBRARIES} )
+
+# target_link_libraries(libasraft PRIVATE ${DPDK_LIBRARIES} )
+
+
 target_link_libraries(libasraft PRIVATE Threads::Threads)
 target_link_libraries(testrunner LINK_PUBLIC inih)
 target_link_libraries(testrunner LINK_PUBLIC libasraft)
