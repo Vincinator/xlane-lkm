@@ -117,6 +117,7 @@ static int handler(void* user, const char* section, const char* name,
             cur_ip = strdup(inner_token);
             inner_token = strtok_r(NULL, ",", &inner_end_token);
             cur_id = strdup(inner_token);
+            asgard_dbg("parser found ip %s\n", cur_id);
             node_config->reg_ips += register_peer_by_ip(node_config->sdev, asgard_ip_convert(cur_ip), atoi(cur_id));
             tuple_token = strtok_r(NULL, ";", &outer_end_token);
         }
@@ -126,7 +127,7 @@ static int handler(void* user, const char* section, const char* name,
         while(tuple_token != NULL) {
             inner_token = strtok_r(tuple_token, ",", &inner_end_token);
             sprintf(cur_mac_buffer, "%s\0", inner_token);
-            asgard_dbg("parser found mac %s", cur_mac_buffer);
+            asgard_dbg("parser found mac %s\n", cur_mac_buffer);
             inner_token = strtok_r(NULL, ",", &inner_end_token);
             cur_id = strdup(inner_token);
             node_config->reg_macs += add_mac_to_peer_id(node_config->sdev, cur_mac_buffer, atoi(cur_id));
