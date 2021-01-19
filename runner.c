@@ -117,7 +117,7 @@ static int handler(void* user, const char* section, const char* name,
             cur_ip = strdup(inner_token);
             inner_token = strtok_r(NULL, ",", &inner_end_token);
             cur_id = strdup(inner_token);
-            asgard_dbg("parser found ip %s\n", cur_id);
+            asgard_dbg("parser found ip %s for node id %s\n", cur_ip, cur_id);
             node_config->reg_ips += register_peer_by_ip(node_config->sdev, asgard_ip_convert(cur_ip), atoi(cur_id));
             tuple_token = strtok_r(NULL, ";", &outer_end_token);
         }
