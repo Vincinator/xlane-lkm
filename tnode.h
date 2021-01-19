@@ -44,8 +44,8 @@ typedef struct {
 
     int oneshot_num_entries;
 
-    // Not 0 if an init_error occured during initialization
-    int init_error;
+    int reg_macs;
+    int reg_ips;
 } tnode_t;
 
 extern int user_requested_stop;

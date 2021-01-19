@@ -79,8 +79,6 @@ static int handler(void* user, const char* section, const char* name,
     char *cur_ip, *cur_id;
     char *long_endptr, *str = NULL;
 
-    int reg_macs = 0, reg_ips = 0;
-
     char cur_mac_buffer[19];
 
 #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
@@ -119,7 +117,7 @@ static int handler(void* user, const char* section, const char* name,
             cur_ip = strdup(inner_token);
             inner_token = strtok_r(NULL, ",", &inner_end_token);
             cur_id = strdup(inner_token);
-            reg_ips += register_peer_by_ip(node_config->sdev, asgard_ip_convert(cur_ip), atoi(cur_id));
+            node_config->reg_ips += register_peer_by_ip(node_config->sdev, asgard_ip_convert(cur_ip), atoi(cur_id));
             tuple_token = strtok_r(NULL, ";", &outer_end_token);
         }
     } else if (MATCH("node", "peer_mac_id_tuple")) {
@@ -131,7 +129,7 @@ static int handler(void* user, const char* section, const char* name,
             asgard_dbg("parser found mac %s", cur_mac_buffer);
             inner_token = strtok_r(NULL, ",", &inner_end_token);
             cur_id = strdup(inner_token);
-            reg_macs += add_mac_to_peer_id(node_config->sdev, cur_mac_buffer, atoi(cur_id));
+            node_config->reg_macs += add_mac_to_peer_id(node_config->sdev, cur_mac_buffer, atoi(cur_id));
             tuple_token = strtok_r(NULL, ";", &outer_end_token);
         }
     } else {
@@ -139,11 +137,7 @@ static int handler(void* user, const char* section, const char* name,
         return 0;
     }
 
-    if(reg_ips != reg_macs) {
-        asgard_error("Amount of configured ips (%d) do not match amount of configured macs (%d)!\n", reg_ips, reg_macs);
-        node_config->init_error = 1;
-        return -1;
-    }
+
 
     return 1;
 }
@@ -224,11 +218,12 @@ int main(int argc, char *argv[]){
     srand(time(NULL));
 
     if (ini_parse("node.ini", handler, &node) < 0) {
-        printf("Can't load 'node.ini'\n");
+        asgard_error("Can't load 'node.ini'\n");
         return 1;
     }
-    if(node.init_error) {
-        printf("Can't load 'node.ini'\n");
+    if(node.reg_ips != node.reg_macs) {
+        asgard_error("Number of registered Ips do not match number of registered mac addresses. \n");
+        asgard_error("\t Each node must be configured with a valid ip and a valid mac address: \n");
         return 1;
     }
 
