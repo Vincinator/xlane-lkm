@@ -20,7 +20,7 @@
 #include "pacemaker.h"
 #include "pktqueue.h"
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
 #include <rte_ether.h>
 #endif
 
@@ -77,7 +77,7 @@ int add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
     if(id == sdev->pminfo.cluster_id){
         asgard_dbg("Adding Own Mac Address: %s!\n", mac);
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
         sdev->self_mac = malloc(sizeof(struct rte_ether_addr));
         rte_ether_unformat_addr(mac, (struct rte_ether_addr*)sdev->self_mac);
 
@@ -115,7 +115,7 @@ int add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
     }
 
     asgard_dbg("registering mac for cluster id: %d\n", pmtarget->cluster_id);
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
     pmtarget->mac_addr = malloc(sizeof(struct rte_ether_addr));
 
     if(!pmtarget->mac_addr){

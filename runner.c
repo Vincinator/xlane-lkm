@@ -16,7 +16,7 @@
 #include "kvstore.h"
 #include "pacemaker.h"
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
 #include <rte_log.h>
 #include <rte_common.h>
 #include <rte_config.h>
@@ -31,7 +31,7 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGARD][TRUNNER]"
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
 uint32_t DPDK_LIBASRAFT_LOG_LEVEL = RTE_LOG_DEBUG;
 
 /*
@@ -193,7 +193,7 @@ void generate_load(tnode_t *tn){
 
 
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
 int main(int argc, char *argv[]){
     tnode_t node;
     int i, ret;

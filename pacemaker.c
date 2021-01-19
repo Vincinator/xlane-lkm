@@ -28,7 +28,7 @@
 #include "pktqueue.h"
 #include "tnode.h"
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
 #include <rte_byteorder.h>
 #include <rte_log.h>
 #include <rte_common.h>
@@ -327,7 +327,7 @@ static unsigned int get_packet_size_for_alloc(){
 
     return total_len;
 }
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
 /* construct ping packet */
 static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_pool,
                                                  struct sockaddr_in recvaddr, uint32_t send_ip, struct asgard_payload *asgp,
@@ -451,6 +451,7 @@ int emit_packet(struct sockaddr_in recvaddr, struct asgard_payload *asg_payload)
 
     sendto(sockfd, asg_payload, sizeof(struct asgard_payload), 0, (const struct sockaddr *) &recvaddr, sizeof(recvaddr));
     close(sockfd);
+    return 0;
 }
 #endif
 
@@ -511,7 +512,7 @@ int emit_async_multicast_pkt(struct asgard_device *sdev, struct pminfo *spminfo)
             asgard_error("pkt is NULL! \n");
             return -1;
         }
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
         // NOT IMPLEMENTED! Missing pm target ethernet address
         // sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
         //                                sdev->pktmbuf_pool, cur_apkt->pkt_data.sockaddr,
@@ -537,7 +538,7 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
 
     pkt_payload = &spminfo->multicast_pkt_data_oos;
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
     // NOT IMPLEMENTED! Missing pm target ethernet address
     //sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
     //                                sdev->pktmbuf_pool, pkt_payload->sockaddr,
@@ -581,7 +582,7 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
         if (!target_fire[i])
             continue;
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
         sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
                                                  sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.sockaddr,
                                                  spminfo->pm_targets[i].pkt_data.payload,
@@ -639,7 +640,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
 
         pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
         sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
                                                  sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.sockaddr,
                                                  pkt_payload,

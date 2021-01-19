@@ -22,7 +22,7 @@
 
 
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
 typedef struct rte_ether_addr * asg_mac_ptr_t;
 #else
 typedef char*  asg_mac_ptr_t;

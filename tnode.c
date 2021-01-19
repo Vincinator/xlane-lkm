@@ -21,7 +21,7 @@
 #include "ini.h"
 #include "logger.h"
 
-#ifdef ASGARD_DPDK
+#if ASGARD_DPDK
 #include <rte_byteorder.h>
 #include <rte_ethdev.h>
 #include <rte_ip.h>
