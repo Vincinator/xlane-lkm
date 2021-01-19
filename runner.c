@@ -94,7 +94,7 @@ static int handler(void* user, const char* section, const char* name,
     } else if (MATCH("node", "port")) {
         node_config->sdev->tx_port = atoi(value);
         node_config->port = atoi(value);
-        asgard_dbg("port set to %s\n", value);
+        asgard_dbg("port set to %d\n", node_config->sdev->tx_port);
     }else if (MATCH("node", "hbi")) {
         node_config->sdev->pminfo.hbi = strtol(value, &long_endptr, 10);
         if ((errno == ERANGE && (node_config->sdev->pminfo.hbi == LONG_MAX || node_config->sdev->pminfo.hbi == LONG_MIN))
