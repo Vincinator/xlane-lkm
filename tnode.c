@@ -26,6 +26,9 @@
 #include <rte_ethdev.h>
 #include <rte_ip.h>
 #include <rte_mbuf.h>
+
+#else
+#define BUFSIZE 1024
 #endif
 
 #undef LOG_PREFIX
@@ -74,6 +77,7 @@ int    user_requested_stop = 0;
 void trap(int signal){ user_requested_stop = 1; }
 
 
+#if ASGARD_DPDK
 /*
  * Keeps listening for new packets, and forwards the packet payload to the asgard handlers.
  * Also extracts the sender ip for asgard.
@@ -130,7 +134,72 @@ int dpdk_server_listener(void *data) {
     asgard_dbg("Exited Packet listener\n");
     return 0;
 }
+#else
+/*
+ * Keeps listening for new packets, and forwards the packet payload to the asgard handlers.
+ * Also extracts the sender ip for asgard.
+ * The sender can be identified via IP and not via MAC in this user space implementation.
+ */
+void *server_listener(void *data) {
+    tnode_t *tn = (tnode_t *) data;
+    int sockfd;
+    char sender_addr_buf[INET_ADDRSTRLEN];
+    char *buf;        /* message buf */
+    int n;
+    socklen_t clientlen;
+    struct sockaddr_in servaddr;
+    struct sockaddr_in clientaddr;
+    char *hostaddrp;
 
+    asgard_dbg("Starting Packet listener on port %d\n", tn->port);
+
+    /* 1. Create the Socket */
+    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+        error(tn, "socket creation failed");
+    }
+
+    memset(&servaddr, 0, sizeof(servaddr));
+    servaddr.sin_family = AF_INET; // IPv4
+    servaddr.sin_addr.s_addr = INADDR_ANY;
+    servaddr.sin_port = htons(tn->port);
+
+    /* 2. Bind the socket to the specified server address */
+    if (bind(sockfd, (const struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
+        error(tn, "bind failed");
+    }
+
+    /* 3. Receive data from peers and post it */
+    buf = malloc(BUFSIZE);
+    clientlen = sizeof(clientaddr);
+    while (tn->is_running) {
+
+        n = recvfrom(sockfd, buf, BUFSIZE, 0, (struct sockaddr *) &clientaddr, &clientlen);
+
+        if (n < 0)
+            error(tn, "ERROR in recv call");
+
+        hostaddrp = inet_ntoa(clientaddr.sin_addr);
+
+        if (hostaddrp == NULL)
+            error(tn, "ERROR in inet_ntoa\n");
+
+        /* DEBUG: Print the Buffer*/
+        inet_ntop(AF_INET, &clientaddr.sin_addr, sender_addr_buf, sizeof(sender_addr_buf));
+        //asgard_dbg("Received packet from %s\n", sender_addr_buf);
+        //asgard_dbg("Packet Data: \n");
+        // hex_dump(buf, BUFSIZE);
+        //asgard_dbg("---------");
+
+        post_payload(tn->sdev, clientaddr.sin_addr.s_addr, buf, BUFSIZE);
+
+    }
+
+    close(sockfd);
+    free(buf);
+    asgard_dbg("Exited Packet listener\n");
+    return 0;
+}
+#endif
 
 int start_node(tnode_t *tn) {
     asgard_dbg("Starting Node with node id: %d\n", tn->sdev->pminfo.cluster_id);
@@ -142,7 +211,7 @@ int start_node(tnode_t *tn) {
     pthread_create(&tn->pm_thread, NULL, pacemaker, tn->sdev);
 
     /* Start Packet listener - NOT FOR DPDK VERSION */
-    pthread_create(&tn->pl_thread, NULL, dpdk_server_listener, tn);
+    pthread_create(&tn->pl_thread, NULL, server_listener, tn);
 #endif
     return 0;
 }

@@ -701,7 +701,8 @@ static void postwork_pm_loop(struct asgard_device *sdev) {
     pm_state_transition_to(&sdev->pminfo, ASGARD_PM_READY);
 }
 
-int pacemaker(void *data) {
+
+int do_pacemaker(void *data) {
 
     uint64_t prev_time, cur_time;
     struct asgard_device *sdev = (struct asgard_device *) data;
@@ -801,6 +802,17 @@ int pacemaker(void *data) {
     postwork_pm_loop(sdev);
     return 0;
 }
+
+
+#if ASGARD_DPDK
+int pacemaker(void *data){
+    return do_pacemaker(data);
+}
+#else
+void *pacemaker(void *data) {
+    do_pacemaker(data);
+}
+#endif
 
 
 void init_pacemaker(struct pminfo *spminfo){
