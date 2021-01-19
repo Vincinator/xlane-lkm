@@ -172,7 +172,7 @@ void *server_listener(void *data) {
     buf = malloc(BUFSIZE);
     clientlen = sizeof(clientaddr);
     while (tn->is_running) {
-
+        asgard_dbg("running listener../n.");
         n = recvfrom(sockfd, buf, BUFSIZE, 0, (struct sockaddr *) &clientaddr, &clientlen);
 
         if (n < 0)
