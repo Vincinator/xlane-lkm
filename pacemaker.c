@@ -96,7 +96,6 @@ void set_le_opcode_ad(unsigned char *pkt, enum le_opcode opco, int32_t cluster_i
 int setup_cluster_join_advertisement(struct asgard_payload *spay, int advertise_id, uint32_t ip, asg_mac_ptr_t mac) {
     unsigned char *pkt_payload_sub;
 
-    asgard_dbg("Cluster Join advertisement\n");
     pkt_payload_sub = asgard_reserve_proto(1, spay, ASGARD_PROTO_CON_PAYLOAD_SZ);
 
     if (!pkt_payload_sub)
@@ -128,7 +127,6 @@ void update_alive_msg(struct asgard_device *sdev, struct asgard_payload *pkt_pay
     /* Not a member of a cluster yet - thus, append advertising messages */
     if (sdev->warmup_state == WARMING_UP) {
         if (sdev->self_mac) {
-            asgard_dbg("trying to send cluster join advertisements\n");
             setup_cluster_join_advertisement(pkt_payload, sdev->pminfo.cluster_id, sdev->self_ip, sdev->self_mac);
         }
     }
@@ -414,13 +412,10 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
      * 1. Get Pointer after pkt with (currently) only headers
      * 2. memcpy asgard payload to pkt
      * */
-    asgard_dbg("Packet len before append %d\n ", pkt->pkt_len);
     payload_ptr = rte_pktmbuf_append(pkt, sizeof(struct asgard_payload));
-    asgard_dbg("Packet len after append %d\n ", pkt->pkt_len);
 
     if (payload_ptr != NULL) {
         rte_memcpy(payload_ptr, asgp, sizeof(struct asgard_payload));
-        asgard_dbg("Packet len after copy %d\n ", pkt->pkt_len);
     } else {
         asgard_error("Could not append %ld bytes to packet. \n", sizeof(struct asgard_payload));
     }
