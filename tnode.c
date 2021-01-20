@@ -172,7 +172,6 @@ void *server_listener(void *data) {
     buf = malloc(BUFSIZE);
     clientlen = sizeof(clientaddr);
     while (tn->is_running) {
-        asgard_dbg("running listener..\n.");
         n = recvfrom(sockfd, buf, BUFSIZE, 0, (struct sockaddr *) &clientaddr, &clientlen);
 
         if (n < 0)
@@ -185,11 +184,6 @@ void *server_listener(void *data) {
 
         /* DEBUG: Print the Buffer*/
         inet_ntop(AF_INET, &clientaddr.sin_addr, sender_addr_buf, sizeof(sender_addr_buf));
-        asgard_dbg("Received packet from %s\n", sender_addr_buf);
-        asgard_dbg("Packet Data: \n");
-        hex_dump(buf, BUFSIZE);
-        asgard_dbg("---------");
-
         post_payload(tn->sdev, clientaddr.sin_addr.s_addr, buf, BUFSIZE);
 
     }
