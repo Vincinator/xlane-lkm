@@ -3,7 +3,7 @@
 
 
 
-#define ASGARD_DPDK 0
+//#define ASGARD_DPDK 0
 
 
 
