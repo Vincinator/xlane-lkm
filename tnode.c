@@ -173,7 +173,7 @@ void *server_listener(void *data) {
     clientlen = sizeof(clientaddr);
     while (tn->is_running) {
         asgard_dbg("running listener..\n.");
-        n = recvfrom(sockfd, buf, BUFSIZE, 0, (struct sockaddr *) &clientaddr, &clientlen);
+        n = recvfrom(sockfd, buf, BUFSIZE, 0, NULL, 0);
 
         if (n < 0)
             error(tn, "ERROR in recv call");

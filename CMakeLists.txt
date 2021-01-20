@@ -3,7 +3,7 @@ project(libasraft2 C)
 
 # -------------------------------------------
 
-set(ASGARD_WITH_DPDK 1)
+#set(ASGARD_WITH_DPDK 1)
 
 # -------------------------------------------
 set(CMAKE_C_STANDARD 99)
