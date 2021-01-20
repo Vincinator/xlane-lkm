@@ -7,7 +7,9 @@
 #include "replication.h"
 #include "kvstore.h"
 
+#if ASGARD_KERNEL_MODULE == 0
 #include "list.h"
+#endif
 
 
 #undef LOG_PREFIX
@@ -184,7 +186,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, int32_t r
     }
 
     // freed by clean_request_transmission_lists
-    new_req = (struct retrans_request *) malloc(sizeof(struct retrans_request));
+    new_req = (struct retrans_request *)AMALLOC(sizeof(struct retrans_request), GFP_KERNEL);
 
     if(!new_req) {
         asgard_error("Could not allocate mem for new retransmission request list item\n");
@@ -347,7 +349,7 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
         {
             if(entry) {
                 list_del(&entry->retrans_req_head);
-                free(entry);
+                AFREE(entry);
             }
             priv->sm_log.retrans_entries[i]--;
 

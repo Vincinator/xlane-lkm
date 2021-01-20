@@ -1,8 +1,24 @@
 #pragma once
 
-#include <stdint.h>
+
+
+#if ASGARD_KERNEL_MODULE == 0
 #include <pthread.h>
 #include <netinet/in.h>
+#endif
+
+#include "types.h"
+#include "config.h"
+#include "types.h"
+#include "logger.h"
+
+
+#if ASGARD_KERNEL_MODULE == 0
+#include "list.h"
+#endif
+#include "libasraft.h"
+
+#if ASGARD_DPDK
 #include <rte_byteorder.h>
 #include <rte_log.h>
 #include <rte_common.h>
@@ -12,23 +28,7 @@
 #include <rte_ip.h>
 #include <rte_mbuf.h>
 #include <rte_malloc.h>
-
-#include "config.h"
-#include "logger.h"
-#include "list.h"
-#include "libasraft.h"
-
-
-
-
-
-#if ASGARD_DPDK
-typedef struct rte_ether_addr * asg_mac_ptr_t;
-#else
-typedef char*  asg_mac_ptr_t;
 #endif
-
-
 
 #ifndef ASG_CHUNK_SIZE
 /* Use 64 Bits (8 Bytes) as default chunk size for asgard
@@ -113,7 +113,7 @@ struct asgard_async_queue_priv {
 
     int doorbell;
 
-    pthread_rwlock_t queue_rwlock;
+    asg_rwlock_t queue_rwlock;
 };
 
 struct multicast {
@@ -202,7 +202,7 @@ struct state_machine_cmd_log {
 
     struct list_head retrans_head[MAX_NODE_ID];
 
-    pthread_rwlock_t retrans_list_lock[MAX_NODE_ID];
+    asg_rwlock_t retrans_list_lock[MAX_NODE_ID];
 
     int retrans_entries[MAX_NODE_ID];
 
@@ -232,12 +232,12 @@ struct state_machine_cmd_log {
      */
     int lock;
 
-    pthread_mutex_t slock;
+    asg_spinlock_t slock;
 
-    pthread_mutex_t mlock;
+    asg_mutex_t mlock;
 
     /* Lock to prevent creation of multiple append entries for the same next_index */
-    pthread_mutex_t next_lock;
+    asg_mutex_t next_lock;
 
     struct sm_log_entry **entries;
 
@@ -282,7 +282,7 @@ struct consensus_priv {
 
     // number of followers voted for this node
     int votes;
-    pthread_mutex_t accept_vote_lock;
+    asg_mutex_t accept_vote_lock;
 
     struct state_machine_cmd_log sm_log;
     struct asgard_logger throughput_logger;
@@ -305,9 +305,9 @@ struct asgard_payload {
 
     /* Pointer to the first protocol payload.
      *
-     * TODO: The first value of the protocol payload must be a protocol id of type u8.
+     * TODO: The first value of the protocol payload must be a protocol id of type uint8_t.
      * TODO: Protocols with a variable payload size (e.g. consensus lead)
-     * must include the offset to the next protocol payload as u16 directly after the first value.
+     * must include the offset to the next protocol payload as uint16_t directly after the first value.
      *
      * TODO: Check on creation if protocol fits in the payload (MAX_ASGARD_PAYLOAD_BYTES).
      * If protocol payload does not fit in the asgard payload,
@@ -324,7 +324,7 @@ struct asgard_packet_data {
 
     int fire;
 
-    pthread_mutex_t mlock;
+    asg_mutex_t mlock;
 };
 
 struct asgard_pm_target_info {

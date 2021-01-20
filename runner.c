@@ -157,7 +157,7 @@ void testcase_one_shot_big_log(struct consensus_priv *priv, int num_entries)
         rand_id =  rand()%((MAX_VALUE_SM_ID_SPACE+1)-0) + 0;
 
         // freed by consensus_clean
-        cur_cmd = malloc(sizeof(struct data_chunk));
+        cur_cmd =AMALLOC(sizeof(struct data_chunk));
 
         if (!cur_cmd) {
             err = -1;

@@ -97,7 +97,7 @@ void set_ae_data(unsigned char *pkt,
 
         memcpy(cur_ptr, entries[buf_idx]->dataChunk->data, sizeof(struct data_chunk));
 
-        // TODO: u32bit ptr increased twice to land at next data_chunk..
+        // TODO: uint32_tbit ptr increased twice to land at next data_chunk..
         //         ... however, we need a stable method if we change the data_chunk size!!
         cur_ptr++;
         cur_ptr++;

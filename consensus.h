@@ -1,13 +1,19 @@
 #ifndef LIBASRAFT_CONSENSUS_H
 #define LIBASRAFT_CONSENSUS_H
 
-#include <stdint.h>
-#include <pthread.h>
 
+
+#if ASGARD_KERNEL_MODULE == 0
+#include <pthread.h>
+#endif
+
+#include "types.h"
 #include "libasraft.h"
 
 #include "logger.h"
+#if ASGARD_KERNEL_MODULE == 0
 #include "list.h"
+#endif
 
 
 #define MAX_CONSENSUS_LOG 400000

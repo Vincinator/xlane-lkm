@@ -3,9 +3,13 @@
  */
 
 
+
+#if ASGARD_KERNEL_MODULE == 0
 #include <stdio.h>
 #include <stdlib.h>
+#endif
 
+#include <linux/slab.h>
 #include <errno.h>
 
 #include "consensus.h"
@@ -17,6 +21,8 @@
 #include "candidate.h"
 #include "consensus.h"
 #include "membership.h"
+
+#include "logger.h"
 
 
 void generate_asgard_eval_uuid(unsigned char uuid[16]) {
@@ -45,7 +51,7 @@ unsigned char *asgard_convert_mac(const char *str)
 {
     unsigned int tmp_data[6];
     // must be freed by caller
-    unsigned char *bytestring_mac = malloc(sizeof(unsigned char) * 6);
+    unsigned char *bytestring_mac =AMALLOC(sizeof(unsigned char) * 6, 1);
     int i;
 
     if (sscanf(str, "%2x:%2x:%2x:%2x:%2x:%2x", &tmp_data[0], &tmp_data[1],
@@ -150,7 +156,7 @@ void init_asgard_device(struct asgard_device *sdev){
     sdev->num_of_proto_instances = 0;
 
     // Allocate pointer for proto instance placeholders
-    sdev->protos = malloc(MAX_PROTO_INSTANCES * sizeof(struct proto_instance *));
+    sdev->protos = AMALLOC(MAX_PROTO_INSTANCES * sizeof(struct proto_instance *), GFP_KERNEL);
 
     // Only use consensus protocol for this evaluation.
     //sdev->protos[0] = generate_protocol_instance(sdev, ASGARD_PROTO_CONSENSUS);

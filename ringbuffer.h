@@ -1,7 +1,10 @@
 #pragma once
 
+#if ASGARD_KERNEL_MODULE == 0
 #include <stdlib.h>
-#include <stdint.h>
+#endif
+
+#include "types.h"
 
 #ifndef ASG_CHUNK_SIZE
 /* Use 64 Bits (8 Bytes) as default chunk size for asgard

@@ -3,7 +3,9 @@
 #include <pthread.h>
 
 #include "libasraft.h"
+#if ASGARD_KERNEL_MODULE == 0
 #include "list.h"
+#endif
 #include "consensus.h"
 
 

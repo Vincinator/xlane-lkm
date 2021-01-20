@@ -2,7 +2,9 @@
 
 #include <pthread.h>
 #include <stdlib.h>
+#if ASGARD_KERNEL_MODULE == 0
 #include "list.h"
+#endif
 #include "replication.h"
 
 

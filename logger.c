@@ -8,7 +8,7 @@
 
 #define SEC2NANOSEC 1000000000L
 
-uint64_t __asgts(){
+uint64_t asgts(){
 
     struct timespec now;
 
@@ -67,12 +67,12 @@ int init_logger(struct asgard_logger *slog, uint16_t instance_id, int ifindex, c
     slog->instance_id = instance_id;
     slog->ifindex = ifindex;
 
-    slog->name = malloc(MAX_LOGGER_NAME);
+    slog->name = AMALLOC(MAX_LOGGER_NAME, 1);
     slog->accept_user_ts = accept_user_ts;
     strncpy(slog->name, name, MAX_LOGGER_NAME);
 
     // freed by clear_logger
-    slog->events = malloc(LOGGER_EVENT_LIMIT * sizeof(struct logger_event));
+    slog->events =AMALLOC(LOGGER_EVENT_LIMIT * sizeof(struct logger_event), GFP_KERNEL);
 
     if (!slog->events) {
         err = -ENOMEM;
@@ -95,7 +95,7 @@ error:
 void clear_logger(struct asgard_logger *slog)
 {
     if(slog->events)
-        free(slog->events);
+        AFREE(slog->events);
 }
 
 int write_log(struct asgard_logger *slog, int type, uint64_t tcs)
@@ -213,7 +213,7 @@ void clear_ingress_logger(struct asgard_ingress_logger *ailog){
         clear_logger(&ailog->per_node_logger[i]);
 
 
-    free(ailog->per_node_logger);
+    AFREE(ailog->per_node_logger);
 
 }
 
@@ -227,7 +227,7 @@ int init_ingress_logger(struct asgard_ingress_logger *ailog, int instance_id)
         return -EINVAL;
     }
 
-    ailog->per_node_logger = malloc(sizeof(struct asgard_logger) * MAX_NODE_ID);
+    ailog->per_node_logger = AMALLOC(sizeof(struct asgard_logger) * MAX_NODE_ID, GFP_KERNEL);
 
     if (!ailog->per_node_logger) {
         asgard_error("Could not allocate memory for logs\n");

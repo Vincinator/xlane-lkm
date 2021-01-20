@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdint.h>
 
+#include "types.h"
 #include "consensus.h"
 #include "libasraft.h"
 #include "payload.h"

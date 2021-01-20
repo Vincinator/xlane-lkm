@@ -1,59 +1,58 @@
 #pragma once
 
-#include <stdint.h>
-
+#include "types.h"
 #include "libasraft.h"
 
 
-// protoid(u16) + offset(u16)
+// protoid(uint16_t) + offset(uint16_t)
 #define GET_CON_AE_OPCODE_PTR(p) (uint16_t *)((char *) p + 2 + 2)
 
-// protoid(u16) + offset(u16) + opcode(u16)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t)
 #define GET_CON_AE_TERM_PTR(p) (uint32_t *)((char *) p + 4 + 2)
 
-// protoid(u16) + offset(u16) + opcode(u16) + term(u32)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t) + term(uint32_t)
 #define GET_CON_AE_LEADER_ID_PTR(p) (uint32_t *)((char *) p + 6 + 4)
 
-// protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t) + term(uint32_t) + leader_id(uint32_t)
 #define GET_CON_AE_PREV_LOG_IDX_PTR(p) (int32_t *)((char *) p + 10 + 4)
 
-// protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32) + prev_log_idx(u32)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t) + term(uint32_t) + leader_id(uint32_t) + prev_log_idx(uint32_t)
 #define GET_CON_AE_PREV_LOG_TERM_PTR(p) (uint32_t *)((char *) p + 14 + 4)
 
-// protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32) + prev_log_idx(u32) + prev_term(u32)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t) + term(uint32_t) + leader_id(uint32_t) + prev_log_idx(uint32_t) + prev_term(uint32_t)
 #define GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(p) (int32_t *)((char *) p + 18 + 4)
 
-// protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32) + prev_log_idx(u32) + prev_term(u32)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t) + term(uint32_t) + leader_id(uint32_t) + prev_log_idx(uint32_t) + prev_term(uint32_t)
 // .... + leader_commit_idx(32)
 #define GET_CON_AE_NUM_ENTRIES_PTR(p) (uint32_t *)((char *) p + 22 + 4)
 #define GET_CON_AE_NUM_ENTRIES_VAL(p) (*(uint32_t *)((char *) p + 22 + 4))
 
-// protoid(u16) + offset(u16) + opcode(u16) + term(u32) + leader_id(u32) + prev_log_idx(u32) + prev_term(u32)
-// .... + leader_commit_idx(32) + num_entries(u32)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t) + term(uint32_t) + leader_id(uint32_t) + prev_log_idx(uint32_t) + prev_term(uint32_t)
+// .... + leader_commit_idx(32) + num_entries(uint32_t)
 #define GET_CON_PROTO_ENTRIES_START_PTR(p) (uint32_t *)((char *) p + 26 + 4)
 
 
-// protoid(u16) + offset(u16)
+// protoid(uint16_t) + offset(uint16_t)
 #define GET_CON_PROTO_OPCODE_VAL(p) (*(uint16_t *)((char *) p + 2 + 2))
 #define GET_CON_PROTO_OPCODE_PTR(p) (uint16_t *)((char *) p + 2 + 2)
 
-// protoid(u16) + offset(u16) + opcode(u16)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t)
 #define GET_CON_PROTO_PARAM1_VAL(p) (*(uint32_t *)((char *) p + 2 + 2 + 2))
 #define GET_CON_PROTO_PARAM1_PTR(p) (uint32_t *)((char *) p + 2 + 2 + 2)
 
-// protoid(u16) + offset(u16) + opcode(u16) + param1(u32)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t) + param1(uint32_t)
 #define GET_CON_PROTO_PARAM2_VAL(p) (*(int32_t *)((char *) p + 2 + 2 + 2 + 4))
 #define GET_CON_PROTO_PARAM2_PTR(p) (int32_t *)((char *) p + 2 + 2 + 2 + 4)
 
-// protoid(u16) + offset(u16) + opcode(u16) + param1(u32) + param2(u32)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t) + param1(uint32_t) + param2(uint32_t)
 #define GET_CON_PROTO_PARAM3_VAL(p) (*(int32_t *)((char *) p + 2 + 2 + 2 + 4 + 4))
 #define GET_CON_PROTO_PARAM3_PTR(p) (int32_t *)((char *) p + 2 + 2 + 2 + 4 + 4)
 
-// protoid(u16) + offset(u16) + opcode(u16) + param1(u32) + param2(u32)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t) + param1(uint32_t) + param2(uint32_t)
 //#define GET_CON_PROTO_PARAM3_MAC_VAL(p) (*(char *)((char *) p + 2 + 2 + 2 + 4 + 4))
 #define GET_CON_PROTO_PARAM3_MAC_PTR(p) (char *)((char *) p + 2 + 2 + 2 + 4 + 4)
 
-// protoid(u16) + offset(u16) + opcode(u16) + param1(u32) + param2(u32)  + param3(u32)
+// protoid(uint16_t) + offset(uint16_t) + opcode(uint16_t) + param1(uint32_t) + param2(uint32_t)  + param3(uint32_t)
 #define GET_CON_PROTO_PARAM4_VAL(p) (*(int32_t *)((char *) p + 2 + 2 + 2 + 4 + 4 + 4))
 #define GET_CON_PROTO_PARAM4_PTR(p) (int32_t *)((char *) p + 2 + 2 + 2 + 4 + 4 + 4)
 

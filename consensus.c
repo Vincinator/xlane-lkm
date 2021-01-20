@@ -735,19 +735,19 @@ int consensus_clean(struct proto_instance *ins) {
     for (i = 0; i < priv->sm_log.max_entries; i++) {
         if (priv->sm_log.entries[i] != NULL) {
             if (priv->sm_log.entries[i]->dataChunk != NULL) {
-                free(priv->sm_log.entries[i]->dataChunk);
+                AFREE(priv->sm_log.entries[i]->dataChunk);
             }
-            free(priv->sm_log.entries[i]);
+            AFREE(priv->sm_log.entries[i]);
         }
     }
 
     /* Clean Follower (RX) Synbuf */
     // synbuf_chardev_exit(priv->synbuf_rx);
-    free(priv->txbuf);
+    AFREE(priv->txbuf);
 
     /* Clean Leader (TX) Synbuf  */
     // synbuf_chardev_exit(priv->synbuf_tx);
-    free(priv->rxbuf);
+    AFREE(priv->rxbuf);
 
     return 0;
 }
@@ -813,7 +813,7 @@ int consensus_init(struct proto_instance *ins) {
     priv->sm_log.lock = 0;
     priv->sdev->consensus_priv = priv; /* reference for pacemaker */
     priv->sdev->cur_leader_lid = -1;
-    priv->sm_log.entries = malloc(MAX_CONSENSUS_LOG * sizeof(struct sm_log_entry *));
+    priv->sm_log.entries = AMALLOC(MAX_CONSENSUS_LOG * sizeof(struct sm_log_entry *), GFP_KERNEL);
 
     if (!priv->sm_log.entries){
         asgard_dbg("Failed to allocate memory for log entries\n");
@@ -823,8 +823,8 @@ int consensus_init(struct proto_instance *ins) {
     /* Pre Allocate Buffer Entries */
     for (i = 0; i < MAX_CONSENSUS_LOG; i++) {
         // Both freed on consensus clean
-        priv->sm_log.entries[i] = malloc(sizeof(struct sm_log_entry));
-        priv->sm_log.entries[i]->dataChunk = malloc(sizeof(struct data_chunk));
+        priv->sm_log.entries[i] = AMALLOC(sizeof(struct sm_log_entry), GFP_KERNEL);
+        priv->sm_log.entries[i]->dataChunk = AMALLOC(sizeof(struct data_chunk), GFP_KERNEL);
         priv->sm_log.entries[i]->valid = 0;
     }
 
@@ -852,8 +852,8 @@ int consensus_init(struct proto_instance *ins) {
     priv->throughput_logger.last_ts = 0;
 
     // No need for synbuf in user space only version -> use memory
-    priv->rxbuf = malloc(250 * 20 * psize);
-    priv->txbuf = malloc(250 * 20 * psize);
+    priv->rxbuf = AMALLOC(250 * 20 * psize, GFP_KERNEL);
+    priv->txbuf = AMALLOC(250 * 20 * psize, GFP_KERNEL);
 
     /* Initialize RingBuffer */
     setup_asg_ring_buf((struct asg_ring_buf *)priv->txbuf, 1000000);
@@ -901,7 +901,7 @@ struct proto_instance *get_consensus_proto_instance(struct asgard_device *sdev)
     ins->logger.instance_id = ins->instance_id;
     ins->logger.ifindex = sdev->ifindex;
 
-    ins->proto_data = malloc(sizeof(struct consensus_priv));
+    ins->proto_data = AMALLOC(sizeof(struct consensus_priv), GFP_KERNEL);
 
     cpriv = (struct consensus_priv *)ins->proto_data;
 

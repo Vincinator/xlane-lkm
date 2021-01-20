@@ -67,7 +67,7 @@ int consensus_idx_to_buffer_idx(struct state_machine_cmd_log *log, uint32_t divi
     uint32_t divisor = log->max_entries;
     uint32_t remainder = dividend % divisor;
 
-    //div_u64_rem(dividend, divisor, &remainder);
+    //div_uint64_t_rem(dividend, divisor, &remainder);
 
     if(remainder < 0 || remainder > log->max_entries){
         asgard_error("init_error converting consensus idx to buf_log idx\n");

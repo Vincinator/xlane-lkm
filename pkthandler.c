@@ -120,8 +120,8 @@ void *pkt_process_handler(void *data)
     handle_sub_payloads(wd->sdev, wd->remote_lid, wd->rcluster_id,
                          GET_PROTO_START_SUBS_PTR(wd->payload),
                          wd->received_proto_instances, wd->bcnt);
-    free(wd->payload);
-    free(wd);
+    AFREE(wd->payload);
+    AFREE(wd);
 
     return NULL;
 }
@@ -158,7 +158,7 @@ void post_payload(struct asgard_device *sdev, in_addr_t remote_ip, void *payload
     char *cluster_mac_ad;
     pthread_t pkt_handler_thread;
 
-    payload = malloc(payload_len);
+    payload =AMALLOC(payload_len, GFP_KERNEL);
     memcpy(payload, payload_in, payload_len);
     // asgard_write_timestamp(sdev, 1, RDTSC_ASGARD, asgard_id);
 
@@ -169,7 +169,7 @@ void post_payload(struct asgard_device *sdev, in_addr_t remote_ip, void *payload
 
     if (sdev->pminfo.state != ASGARD_PM_EMITTING) {
         asgard_error("pacemaker is not emitting!\n");
-        free(payload);
+        AFREE(payload);
         return;
     }
 
@@ -194,7 +194,7 @@ void post_payload(struct asgard_device *sdev, in_addr_t remote_ip, void *payload
 
             if (cluster_id_ad < 0 || cluster_ip_ad == 0 || !cluster_mac_ad) {
                 asgard_error("included ip, id or mac is wrong \n");
-                free(payload);
+                AFREE(payload);
                 return;
             }
 
@@ -211,7 +211,7 @@ void post_payload(struct asgard_device *sdev, in_addr_t remote_ip, void *payload
     write_ingress_log(&sdev->protos[0]->ingress_logger, INGRESS_PACKET, ASGARD_TIMESTAMP, rcluster_id);
 
     if(check_warmup_state(sdev, spminfo)) {
-        free(payload);
+        AFREE(payload);
         return;
     }
 
@@ -226,7 +226,7 @@ void post_payload(struct asgard_device *sdev, in_addr_t remote_ip, void *payload
 
 
 
-    wd = malloc(sizeof(struct pkt_work_data));
+    wd =AMALLOC(sizeof(struct pkt_work_data), GFP_KERNEL);
     wd->payload = (struct asgard_payload*) payload;
     wd->rcluster_id = rcluster_id;
     wd->sdev = sdev;

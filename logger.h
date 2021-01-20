@@ -1,22 +1,53 @@
 #ifndef LIBASRAFT_LOGGER_H
 #define LIBASRAFT_LOGGER_H
 
-#include <stdint.h>
+#if ASGARD_KERNEL_MODULE == 0
 #include <stdio.h>
+#endif
 
-#define ASGARD_TIMESTAMP __asgts()
+#include "types.h"
+
+#define ASGARD_TIMESTAMP asgts()
 
 
 #define VERBOSE_DEBUG 1
 #define ASGARD_DEBUG 1
 #define MAX_LOGGER_NAME 32
 #define LOGGER_EVENT_LIMIT 100000000
+#define MAX_NIC_DEVICES 8
+
 
 #ifndef LOG_PREFIX
 #define LOG_PREFIX "[ASGARD][UNKNOWN MODULE]"
 #endif
 #define LOG_LE_PREFIX "[LEADER ELECTION][LOG]"
 
+
+#if ASGARD_KERNEL_MODULE
+#if ASGARD_DEBUG
+#define asgard_dbg(format, arg...)                        \
+    ({                                                        \
+        if (1)                                                \
+            printk(KERN_INFO LOG_PREFIX format, ##arg);    \
+    })
+#else
+#define asgard_dbg(format, arg...)
+#endif
+
+#define asgard_error(format, arg...)                        \
+({                                                        \
+    if (1)                                                \
+        printk(KERN_ERR LOG_PREFIX format, ##arg);    \
+})
+
+#define asgard_log_le(format, arg...)                        \
+({                                                        \
+    if (1)                                                \
+        printk(KERN_INFO LOG_LE_PREFIX format, ##arg);    \
+})
+
+
+#else
 #if ASGARD_DEBUG
 #define asgard_dbg(format, arg...)                        \
     ({                                                        \
@@ -39,6 +70,8 @@
         printf(LOG_LE_PREFIX format, ##arg);    \
 })
 
+
+#endif
 void asg_print_mac(unsigned char *sa_data);
 void asg_print_ip(unsigned int ip);
 
@@ -115,8 +148,7 @@ struct asgard_ingress_logger {
     int num_of_nodes;
 };
 
-
-uint64_t __asgts();
+uint64_t asgts(void);
 
 int init_logger(struct asgard_logger *slog, uint16_t instance_id, int ifindex, char name[MAX_LOGGER_NAME],
                 int accept_user_ts);

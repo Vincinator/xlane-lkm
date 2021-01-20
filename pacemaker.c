@@ -4,19 +4,10 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
-#include "ini.h"
 #include <errno.h>
-#include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
-#include <netdb.h>
-#include <arpa/inet.h>
 #include <signal.h>
-
-
 
 
 #include "libasraft.h"
@@ -30,14 +21,11 @@
 
 #if ASGARD_DPDK
 #include <rte_byteorder.h>
-#include <rte_log.h>
 #include <rte_common.h>
-#include <rte_config.h>
 #include <rte_errno.h>
 #include <rte_ethdev.h>
 #include <rte_ip.h>
 #include <rte_mbuf.h>
-#include <rte_malloc.h>
 #endif
 
 #undef LOG_PREFIX
@@ -299,6 +287,18 @@ static inline int out_of_schedule_multi_tx(struct asgard_device *sdev) {
 
 /* --------- Emitter Functions --------- */
 
+static unsigned int get_packet_size_for_alloc(){
+    unsigned int ip_len, udp_len, asgard_len, total_len;
+
+    udp_len = UDP_HLEN;
+    ip_len = udp_len + IP_HLEN;
+    total_len = ip_len + ETH_HLEN;
+
+    return total_len;
+}
+#if ASGARD_DPDK
+
+
 static inline uint16_t
 ip_sum(const unaligned_uint16_t *hdr, int hdr_len)
 {
@@ -318,16 +318,6 @@ ip_sum(const unaligned_uint16_t *hdr, int hdr_len)
     return ~sum;
 }
 
-static unsigned int get_packet_size_for_alloc(){
-    unsigned int ip_len, udp_len, asgard_len, total_len;
-
-    udp_len = UDP_HLEN;
-    ip_len = udp_len + IP_HLEN;
-    total_len = ip_len + ETH_HLEN;
-
-    return total_len;
-}
-#if ASGARD_DPDK
 /* construct ping packet */
 static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_pool,
                                                  struct sockaddr_in recvaddr, uint32_t send_ip, struct asgard_payload *asgp,

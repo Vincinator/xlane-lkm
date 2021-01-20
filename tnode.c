@@ -169,7 +169,7 @@ void *server_listener(void *data) {
     }
 
     /* 3. Receive data from peers and post it */
-    buf = malloc(BUFSIZE);
+    buf =AMALLOC(BUFSIZE, GFP_KERNEL);
     clientlen = sizeof(clientaddr);
     while (tn->is_running) {
         n = recvfrom(sockfd, buf, BUFSIZE, 0, (struct sockaddr *) &clientaddr, &clientlen);
@@ -189,7 +189,7 @@ void *server_listener(void *data) {
     }
 
     close(sockfd);
-    free(buf);
+    AFREE(buf);
     asgard_dbg("Exited Packet listener\n");
     return 0;
 }
@@ -235,7 +235,7 @@ int stop_node(tnode_t *tn) {
 
 tnode_t *init_node(tnode_t *tn) {
 
-    tn->sdev = malloc(sizeof(struct asgard_device));
+    tn->sdev =AMALLOC(sizeof(struct asgard_device), GFP_KERNEL);
     tn->num_peers = 0;
     tn->reg_macs = 0;
     tn->reg_ips = 0;

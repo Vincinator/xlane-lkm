@@ -1,0 +1,2 @@
+obj-m := asgard.o
+asgard-objs := $(patsubst %.c,%.o, $(filter %.c, @module_sources_string@))

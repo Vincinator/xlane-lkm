@@ -8,7 +8,9 @@
 #include "replication.h"
 
 #include "leader.h"
+#if ASGARD_KERNEL_MODULE == 0
 #include "list.h"
+#endif
 #include "pktqueue.h"
 
 #include "payload.h"
@@ -93,7 +95,7 @@ void async_clear_queue( struct asgard_async_queue_priv *queue)
     {
         if(entry) {
             list_del(&(entry->async_pkts_head));
-            free(entry);
+            AFREE(entry);
             asgard_dbg("freed apkt entry\n");
         }
     }
@@ -122,7 +124,7 @@ int do_prepare_log_replication_multicast(struct asgard_device *sdev){
     // handle errors
     if(ret < 0) {
         //kfree(apkt->payload);
-        free(apkt);
+        AFREE(apkt);
         return ret;
     }
 
@@ -182,7 +184,7 @@ int do_prepare_log_replication(struct asgard_device *sdev, int target_id, int32_
             if(ret < 0) {
                 //kfree(apkt->payload);
                 // asgard_error("Something went wrong in the setup append msg function!\n");
-                free(apkt);
+                AFREE(apkt);
                 continue;
             }
 
@@ -220,7 +222,7 @@ void *prepare_log_replication_handler(void *data)
     }
 
 cleanup:
-    free(aw);
+    AFREE(aw);
     return NULL;
 }
 
@@ -253,7 +255,7 @@ void schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index,
         //prepare_log_replication_multicast_handler(sdev);
     else{
         // freed by prepare_log_replication_handler
-        work = malloc(sizeof(struct asgard_leader_pkt_work_data));
+        work =AMALLOC(sizeof(struct asgard_leader_pkt_work_data), GFP_KERNEL);
         work->sdev = sdev;
         work->next_index = next_index;
         work->retrans = retrans;
@@ -270,7 +272,7 @@ void schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index,
             asgard_dbg("Work item not put in queue ..");
             sdev->bug_counter++;
             if(work)
-                free(work); //right?
+                AFREE(work); //right?
             return;
         } */
 
@@ -341,7 +343,7 @@ int32_t get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, 
 
         next_index = cur_rereq->request_idx;
         list_del(&cur_rereq->retrans_req_head);
-        free(cur_rereq);
+        AFREE(cur_rereq);
         *retrans = 1;
     } else {
         next_index = get_next_idx(cur_priv, target_id);
