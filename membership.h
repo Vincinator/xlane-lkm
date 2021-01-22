@@ -1,6 +1,12 @@
 #pragma once
 
+
+#ifndef ASGARD_KERNEL_MODULE
 #include <stdlib.h>
+#endif
+
+
+
 #include "consensus.h"
 
 
@@ -73,3 +79,4 @@ int peer_is_registered(struct pminfo *spminfo , int cid);
 void update_cluster_member(struct cluster_info* ci, int local_id, uint8_t state);
 void update_self_state(struct cluster_info *ci, node_state_t state);
 int hostname_to_ip(const char *hostname);
+void add_cluster_member(struct cluster_info* ci, int cluster_id, int local_id, uint8_t init_state);

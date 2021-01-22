@@ -170,9 +170,9 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
     }
 
     pmtarget->alive = 0;
-    pmtarget->pkt_data.sockaddr.sin_family = AF_INET; // IPv4
-    pmtarget->pkt_data.sockaddr.sin_addr.s_addr = htonl(ip);
-    pmtarget->pkt_data.sockaddr.sin_port = htons(sdev->tx_port);
+    //pmtarget->pkt_data.sockaddr.sin_family = AF_INET; // IPv4
+    pmtarget->pkt_data.naddr.dst_ip = htonl(ip);
+    pmtarget->pkt_data.naddr.port = htons(sdev->tx_port);
 
     pmtarget->cluster_id = id;
     pmtarget->lhb_ts = 0;

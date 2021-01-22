@@ -2,9 +2,10 @@
 
 
 
-#if ASGARD_KERNEL_MODULE == 0
+#ifndef ASGARD_KERNEL_MODULE
 #include <pthread.h>
 #include <netinet/in.h>
+#include "list.h"
 #endif
 
 #include "types.h"
@@ -13,12 +14,7 @@
 #include "logger.h"
 
 
-#if ASGARD_KERNEL_MODULE == 0
-#include "list.h"
-#endif
-#include "libasraft.h"
-
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 #include <rte_byteorder.h>
 #include <rte_log.h>
 #include <rte_common.h>
@@ -42,6 +38,9 @@
 #define MAX_PROTO_INSTANCES 8
 #define ASGARD_HEADER_BYTES 82
 #define MAX_ASGARD_PAYLOAD_BYTES (1500 - ASGARD_HEADER_BYTES) // asuming an ethernet mtu of ~1500 bytes
+
+#define ASGARD_PAYLOAD_BYTES MAX_ASGARD_PAYLOAD_BYTES
+#define ASGARD_PKT_BYTES (ASGARD_PAYLOAD_BYTES + ASGARD_HEADER_BYTES)
 
 #define MAX_PROTOCOLS 4
 
@@ -232,7 +231,9 @@ struct state_machine_cmd_log {
      */
     int lock;
 
+#ifdef ASGARD_KERNEL_MODULE
     asg_spinlock_t slock;
+#endif
 
     asg_mutex_t mlock;
 
@@ -316,15 +317,27 @@ struct asgard_payload {
     unsigned char proto_data[MAX_ASGARD_PAYLOAD_BYTES - 2];
 };
 
+struct node_addr {
+    int cluster_id;
+    uint32_t dst_ip;
+    uint32_t port;
+    unsigned char dst_mac[6];
+};
+
+
 struct asgard_packet_data {
 
-    struct sockaddr_in sockaddr;
+    struct node_addr naddr;
 
     struct asgard_payload *payload;
 
     int fire;
 
     asg_mutex_t mlock;
+#ifdef ASGARD_KERNEL_MODULE
+    asg_spinlock_t slock;
+    struct sk_buff *skb;
+#endif
 };
 
 struct asgard_pm_target_info {
@@ -416,6 +429,11 @@ struct pminfo {
 
 struct asgard_device {
     int ifindex; /* corresponds to ifindex of net_device */
+
+
+#ifdef ASGARD_KERNEL_MODULE
+    struct net_device *ndev;
+#endif
     uint32_t hb_interval;
 
     uint64_t tx_counter;
@@ -459,9 +477,22 @@ struct asgard_device {
     struct synbuf_device* synbuf_clustermem;
     struct workqueue_struct *asgard_ringbuf_reader_wq;
 
+#ifdef ASGARD_KERNEL_MODULE
+    struct proc_dir_entry *rx_ctrl_entry;
+    struct proc_dir_entry *debug_entry;
+    struct proc_dir_entry *proto_instances_ctrl_entry;
+    struct proc_dir_entry *pacemaker_cpu_entry;
+    struct proc_dir_entry *pacemaker_targets_entry;
+    struct proc_dir_entry *pacemaker_waiting_window_entry;
+    struct proc_dir_entry *pacemaker_hbi_entry;
+    struct proc_dir_entry *pacemaker_ctrl_entry;
+    struct proc_dir_entry *pacemaker_payload_entry;
+    struct proc_dir_entry *pacemaker_cluster_id_entry;
+    struct proc_dir_entry *multicast_delay_entry;
+    struct proc_dir_entry *multicast_enable_entry;
+#endif
     struct multicast multicast;
 
-    struct sockaddr_in multicast_addr;
     // uint32_t multicast_ip;
     // unsigned char *multicast_mac;
 
@@ -470,7 +501,7 @@ struct asgard_device {
     asg_mac_ptr_t self_mac;
 
     /* Ensures that all targets are first checked before the */
-    pthread_mutex_t logrep_schedule_lock;
+    asg_mutex_t logrep_schedule_lock;
 };
 
 

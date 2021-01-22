@@ -5,7 +5,7 @@ project(libasraft C)
 
 set(ASGARD_DPDK 0)
 set(ASGARD_KERNEL_MODULE 1)
-message("version: 2")
+message("version: 1")
 
 
 if(${ASGARD_KERNEL_MODULE} AND ${ASGARD_DPDK})
@@ -57,10 +57,17 @@ add_library(libasraft STATIC libasraft.c libasraft.h logger.c logger.h consensus
         ringbuffer.c ringbuffer.h membership.c membership.h leader.c leader.h follower.c
         follower.h candidate.c candidate.h replication.c replication.h pktqueue.c pktqueue.h
         tnode.c tnode.h pkthandler.c pkthandler.h proto.c proto.h multicast.c multicast.h
-        eval_helper.c eval_helper.h ini.c ini.h)
+        eval_helper.c eval_helper.h ini.c ini.h echo.c echo.h)
 
 if(${ASGARD_KERNEL_MODULE})
     get_target_property(module_sources libasraft SOURCES)
+    file(GLOB lkmfiles "lkm/*")
+    foreach(src ${lkmfiles})
+        get_filename_component(SRC_NAME ${src} NAME)
+        list(PREPEND module_sources lkm/${SRC_NAME})
+        # message("Adding source ${SRC_NAME}")
+    endforeach()
+
     list(PREPEND module_sources module.h)
     list(PREPEND module_sources module.c)
 

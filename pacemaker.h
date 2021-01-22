@@ -14,7 +14,7 @@
 
 int asgard_pm_stop(struct pminfo *spminfo);
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 int pacemaker(void *data);
 #else
 void *pacemaker(void *data);
@@ -24,3 +24,9 @@ void pm_state_transition_to(struct pminfo *spminfo, const enum pmstate state);
 void update_alive_msg(struct asgard_device *sdev, struct asgard_payload *pkt_payload);
 void init_pacemaker(struct pminfo *spminfo);
 void update_leader(struct asgard_device *sdev, struct pminfo *spminfo);
+int asgard_pm_reset(struct pminfo *spminfo);
+
+#ifdef ASGARD_KERNEL_MODULE
+int asgard_pm_start_loop(void *data);
+#endif
+

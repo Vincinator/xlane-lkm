@@ -136,7 +136,7 @@ void get_cluster_ids(struct asgard_device *sdev, in_addr_t remote_ip, int *lid, 
     *cid = -1;
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
-        if (spminfo->pm_targets[i].pkt_data.sockaddr.sin_addr.s_addr == remote_ip) {
+        if (spminfo->pm_targets[i].pkt_data.naddr.dst_ip == remote_ip) {
             *cid = spminfo->pm_targets[i].cluster_id;
             *lid = i;
             return;

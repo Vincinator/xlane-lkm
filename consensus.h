@@ -3,7 +3,7 @@
 
 
 
-#if ASGARD_KERNEL_MODULE == 0
+#ifndef ASGARD_KERNEL_MODULE
 #include <pthread.h>
 #endif
 
@@ -11,7 +11,7 @@
 #include "libasraft.h"
 
 #include "logger.h"
-#if ASGARD_KERNEL_MODULE == 0
+#ifdef ASGARD_KERNEL_MODULE
 #include "list.h"
 #endif
 

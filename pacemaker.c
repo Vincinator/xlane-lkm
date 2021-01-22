@@ -28,6 +28,32 @@
 #include <rte_mbuf.h>
 #endif
 
+#ifdef ASGARD_KERNEL_MODULE
+#include <linux/proc_fs.h>
+#include <linux/seq_file.h>
+#include <linux/kthread.h>
+#include <linux/sched.h>
+
+#include <linux/kernel.h>
+
+#include <linux/netdevice.h>
+#include <linux/skbuff.h>
+#include <linux/udp.h>
+#include <linux/etherdevice.h>
+#include <linux/ip.h>
+#include <net/ip.h>
+#include <linux/slab.h>
+#include <linux/inetdevice.h>
+
+#include <linux/hrtimer.h>
+#include <linux/ktime.h>
+#include <linux/time.h>
+
+
+static struct task_struct *heartbeat_task;
+#endif
+
+
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGARD][PACEMAKER]"
 
@@ -296,7 +322,7 @@ static unsigned int get_packet_size_for_alloc(){
 
     return total_len;
 }
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 
 
 static inline uint16_t
@@ -429,8 +455,11 @@ unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_
 
     return nb_tx;
 }
+#elif ASGARD_KERNEL_MODULE
+
 #else
-int emit_packet(struct sockaddr_in recvaddr, struct asgard_payload *asg_payload) {
+
+int emit_packet(struct node_addr recv_nodeaddr, struct asgard_payload *asg_payload) {
 
     int sockfd;
     // Creating socket file descriptor
@@ -438,8 +467,13 @@ int emit_packet(struct sockaddr_in recvaddr, struct asgard_payload *asg_payload)
         perror("socket creation failed");
         return -1;
     }
+    struct sockaddr_in recv_sock_addr;
 
-    sendto(sockfd, asg_payload, sizeof(struct asgard_payload), 0, (const struct sockaddr *) &recvaddr, sizeof(recvaddr));
+    recv_sock_addr.sin_port = recv_nodeaddr.port;
+    recv_sock_addr.sin_family = AF_INET;
+    recv_sock_addr.sin_addr.s_addr = recv_nodeaddr.dst_ip;
+
+    sendto(sockfd, asg_payload, sizeof(struct asgard_payload), 0, (const struct sockaddr *) &recv_sock_addr, sizeof(recv_sock_addr));
     close(sockfd);
     return 0;
 }
@@ -471,13 +505,13 @@ int emit_async_unicast_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
             prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(cur_apkt->pkt_data.payload->proto_data);
             asgard_dbg("Node: %d - Emitting %d entries, start_idx=%d\n", i, num_entries, *prev_log_idx);
 #endif
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
             sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
                                                      sdev->pktmbuf_pool,
                                                      cur_apkt->pkt_data.sockaddr, cur_apkt->pkt_data.payload,
                                                      spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 #else
-            emit_packet(cur_apkt->pkt_data.sockaddr, cur_apkt->pkt_data.payload);
+            emit_packet(cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload);
 
 #endif
             spminfo->pm_targets[i].pkt_tx_counter++;
@@ -510,7 +544,7 @@ int emit_async_multicast_pkt(struct asgard_device *sdev, struct pminfo *spminfo)
         //                                NULL, sdev->rte_self_mac);
 
 #else
-        emit_packet(cur_apkt->pkt_data.sockaddr, cur_apkt->pkt_data.payload);
+        emit_packet(cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload);
 #endif
 
     }
@@ -536,7 +570,7 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
     //                               spminfo->pm_targets[i].mac_addr, sdev->rte_self_mac);
 
 #else
-    emit_packet(pkt_payload->sockaddr, pkt_payload->payload);
+    emit_packet(pkt_payload->naddr, pkt_payload->payload);
 #endif
     memset(pkt_payload->payload, 0, sizeof(struct asgard_payload));
 
@@ -557,7 +591,7 @@ int emit_async_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
         return emit_async_unicast_pkts(sdev, spminfo);
 }
 
-
+#ifndef ASGARD_KERNEL_MODULE
 static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
         struct pminfo *spminfo, const int *target_fire)
 {
@@ -571,19 +605,19 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
     for (i = 0; i < spminfo->num_of_targets; i++) {
         if (!target_fire[i])
             continue;
-
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
         sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
                                                  sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.sockaddr,
                                                  spminfo->pm_targets[i].pkt_data.payload,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 #else
-        emit_packet(spminfo->pm_targets[i].pkt_data.sockaddr, spminfo->pm_targets[i].pkt_data.payload);
+        emit_packet(spminfo->pm_targets[i].pkt_data.naddr, spminfo->pm_targets[i].pkt_data.payload);
 #endif
         spminfo->pm_targets[i].pkt_tx_counter++;
     }
-
 }
+#endif
+
 
 static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
                                            struct pminfo *spminfo)
@@ -636,7 +670,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
                                                  pkt_payload,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 #else
-        emit_packet(spminfo->pm_targets[i].pkt_data.sockaddr, pkt_payload);
+        emit_packet(spminfo->pm_targets[i].pkt_data.naddr, pkt_payload);
 #endif
 
         /* Protocols have been emitted, do not send them again ..
@@ -660,6 +694,12 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
 
 static int prepare_pm_loop(struct asgard_device *sdev, struct pminfo *spminfo) {
 
+#ifdef ASGARD_KERNEL_MODULE
+    if (asgard_setup_hb_skbs(sdev))
+		return -1;
+#endif
+
+
     pm_state_transition_to(spminfo, ASGARD_PM_EMITTING);
 
     sdev->warmup_state = WARMING_UP;
@@ -673,6 +713,11 @@ static int prepare_pm_loop(struct asgard_device *sdev, struct pminfo *spminfo) {
         asgard_error("multicast pkt payload is not initialized\n");
         return 1;
     }
+
+#ifdef ASGARD_KERNEL_MODULE
+    get_cpu(); // disable preemption
+#endif
+
 
     return 0;
 }
@@ -701,7 +746,9 @@ int do_pacemaker(void *data) {
     uint64_t interval = spminfo->hbi;
     int err = 0;
 
+#ifndef ASGARD_KERNEL_MODULE
     signal(SIGINT, &trap);
+#endif
 
     if(interval <= 0){
         asgard_error("Invalid hbi of %lu set!\n", interval);
@@ -822,3 +869,84 @@ void init_pacemaker(struct pminfo *spminfo){
 }
 
 
+
+#ifdef ASGARD_KERNEL_MODULE
+
+int asgard_pm_start_loop(void *data)
+{
+    struct pminfo *spminfo = (struct pminfo *)data;
+    struct asgard_device *sdev =
+            container_of(spminfo, struct asgard_device, pminfo);
+    struct cpumask mask;
+    int err;
+
+    asgard_dbg("asgard_pm_start_loop\n");
+
+    err = _validate_pm(sdev, spminfo);
+
+    if (err)
+        return err;
+
+    cpumask_clear(&mask);
+
+    heartbeat_task =
+            kthread_create(&asgard_pm_loop, sdev, "asgard pm loop");
+
+    kthread_bind(heartbeat_task, spminfo->active_cpu);
+
+    if (IS_ERR(heartbeat_task)) {
+        asgard_error("Task Error. %s\n", __func__);
+        return -EINVAL;
+    }
+
+    wake_up_process(heartbeat_task);
+
+    return 0;
+}
+
+#endif
+
+#ifdef ASGARD_KERNEL_MODULE
+void asgard_reset_remote_host_counter(int asgard_id)
+{
+    int i;
+    struct asgard_device *sdev = get_sdev(asgard_id);
+    struct asgard_pm_target_info *pmtarget;
+
+    for (i = 0; i < MAX_REMOTE_SOURCES; i++) {
+        pmtarget = &sdev->pminfo.pm_targets[i];
+        //kfree(pmtarget->pkt_data.payload);
+        AFREE(pmtarget->pkt_data.payload);
+    }
+
+    sdev->pminfo.num_of_targets = 0;
+
+    asgard_dbg("reset number of targets to 0\n");
+}
+EXPORT_SYMBOL(asgard_reset_remote_host_counter);
+
+
+int asgard_pm_reset(struct pminfo *spminfo)
+{
+    struct asgard_device *sdev;
+
+    asgard_dbg("Reset Pacemaker Configuration\n");
+
+    if (!spminfo) {
+        asgard_error("No Device. %s\n", __func__);
+        return -ENODEV;
+    }
+
+    if (spminfo->state == ASGARD_PM_EMITTING) {
+        asgard_error(
+                "Can not reset targets when pacemaker is running\n");
+        return -EPERM;
+    }
+
+    sdev = container_of(spminfo, struct asgard_device, pminfo);
+
+    asgard_reset_remote_host_counter(sdev->asgard_id);
+    return 0;
+}
+
+#endif

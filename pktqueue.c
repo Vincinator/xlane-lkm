@@ -2,8 +2,11 @@
 
 #include <pthread.h>
 #include <stdlib.h>
+
 #if ASGARD_KERNEL_MODULE == 0
 #include "list.h"
+#else
+#include <linux/slab.h>
 #endif
 #include "replication.h"
 
@@ -59,17 +62,25 @@ struct asgard_async_pkt *dequeue_async_pkt(struct asgard_async_queue_priv *aqueu
 
 
 
-struct asgard_async_pkt *create_async_pkt(struct sockaddr_in target_addr)
+struct asgard_async_pkt *create_async_pkt(struct node_addr target_addr)
 {
+#ifndef ASGARD_KERNEL_MODULE
     struct asgard_async_pkt *apkt = NULL;
 
     apkt = calloc(1, sizeof(struct asgard_async_pkt));
     apkt->pkt_data.payload = calloc(1, sizeof(struct asgard_payload));
 
-    apkt->pkt_data.sockaddr.sin_port = target_addr.sin_port;
-    apkt->pkt_data.sockaddr.sin_family = target_addr.sin_family;
-    apkt->pkt_data.sockaddr.sin_addr = target_addr.sin_addr;
+    apkt->pkt_data.naddr.port = target_addr.port;
+    apkt->pkt_data.naddr.dst_ip = target_addr.dst_ip;
 
+#else
+    struct asgard_async_pkt *apkt = NULL;
+    // freed by _emit_async_pkts
+    apkt = kzalloc(sizeof(struct asgard_async_pkt), GFP_KERNEL);
+
+    apkt->skb = asgard_reserve_skb(ndev, dst_ip, dst_mac, NULL);
+
+#endif
     return apkt;
 }
 

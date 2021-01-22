@@ -1,8 +1,11 @@
 #pragma once
 
-#if ASGARD_KERNEL_MODULE == 0
+#ifndef ASGARD_KERNEL_MODULE
 
-    #include <stdin>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <stdint.h>
+    #include <pthread.h>
     #define GFP_KERNEL 0
     #define GFP_ATOMIC 0
     #define GFP_KERNEL 0
@@ -21,7 +24,7 @@
 #endif
 
 
-#if ASGARD_KERNEL_MODULE
+#ifdef ASGARD_KERNEL_MODULE
 
     #define AFREE(ptr)                              \
     ({                                              \
@@ -49,7 +52,7 @@
 #endif
 
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 
     typedef struct rte_ether_addr * asg_mac_ptr_t;
 
@@ -60,7 +63,7 @@
 #endif
 
 
-#if ASGARD_KERNEL_MODULE
+#ifdef ASGARD_KERNEL_MODULE
 #include <linux/mutex.h>
 
 typedef rwlock_t asg_rwlock_t;
@@ -68,6 +71,6 @@ typedef spinlock_t asg_spinlock_t;
 typedef struct mutex asg_mutex_t;
 #else
 typedef pthread_rwlock_t asg_rwlock_t;
-typedef pthread_mutex_t asg_mutex;
+typedef pthread_mutex_t asg_mutex_t;
 
 #endif

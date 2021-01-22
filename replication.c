@@ -164,7 +164,7 @@ int do_prepare_log_replication(struct asgard_device *sdev, int target_id, int32_
                 continue;
 
             // asgard_dbg("enqueuing pkt for target %d - num_of_proto_instances  %d\n", target_id,sdev->num_of_proto_instances);
-            apkt = create_async_pkt(spminfo->pm_targets[target_id].pkt_data.sockaddr);
+            apkt = create_async_pkt(spminfo->pm_targets[target_id].pkt_data.naddr);
 
             if(!apkt) {
                 asgard_error("Could not allocate async pkt!\n");

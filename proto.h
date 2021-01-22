@@ -1,7 +1,5 @@
 #pragma once
 
-#include <errno.h>
-
 #include "libasraft.h"
 
 

@@ -1,5 +1,7 @@
 #include "logger.h"
 #include "libasraft.h"
+#include "types.h"
+
 
 #include <errno.h>
 #include <stdlib.h>
@@ -17,17 +19,25 @@ uint64_t asgts(){
     return SEC2NANOSEC * now.tv_sec + now.tv_nsec;
 }
 
+
+void asgard_hex_to_ip(char *retval, uint32_t dst_ip)
+{
+    sprintf(retval, "%d.%d.%d.%d", ((dst_ip & 0xff000000) >> 24),
+            ((dst_ip & 0x00ff0000) >> 16), ((dst_ip & 0x0000ff00) >> 8),
+            ((dst_ip & 0x000000ff)));
+}
+
 void asg_print_ip(unsigned int ip) {
     unsigned char bytes[4];
     bytes[0] = ip & 0xFF;
     bytes[1] = (ip >> 8) & 0xFF;
     bytes[2] = (ip >> 16) & 0xFF;
     bytes[3] = (ip >> 24) & 0xFF;
-    printf("%d.%d.%d.%d\n", bytes[3], bytes[2], bytes[1], bytes[0]);
+    asgard_dbg("%d.%d.%d.%d\n", bytes[3], bytes[2], bytes[1], bytes[0]);
 }
 
 void asg_print_mac(unsigned char *sa_data){
-    printf("MAC Address : %02x:%02x:%02x:%02x:%02x:%02x\n",
+    asgard_dbg("MAC Address : %02x:%02x:%02x:%02x:%02x:%02x\n",
            (unsigned char) sa_data[0],
            (unsigned char) sa_data[1],
            (unsigned char) sa_data[2],
