@@ -20,8 +20,15 @@
 #else
 
     #include <linux/types.h>
-
+    #include <linux/slab.h>
 #endif
+
+typedef enum {
+    ASG_RW_READ = 0,
+    ASG_RW_WRITE = 1,
+
+} asg_rw_locktype_t;
+
 
 
 #ifdef ASGARD_KERNEL_MODULE
@@ -29,11 +36,16 @@
     #define AFREE(ptr)                              \
     ({                                              \
         if (1)                                      \
-            kfree(ptr);                              \
+            kfree(ptr);                             \
     })
     #define AMALLOC(size, flags)                    \
     ({                                              \
             kmalloc(size, flags);                   \
+    })
+
+    #define ACMALLOC(num, size, flags)              \
+    ({                                              \
+            kcalloc(num, size, flags);              \
     })
 
 #else
@@ -47,6 +59,11 @@
     #define AMALLOC(size, flags)                    \
     ({                                              \
             malloc(size);                           \
+    })
+
+    #define ACMALLOC(num, size, flags)             \
+    ({                                             \
+            calloc(num, size);                     \
     })
 
 #endif
@@ -69,8 +86,18 @@
 typedef rwlock_t asg_rwlock_t;
 typedef spinlock_t asg_spinlock_t;
 typedef struct mutex asg_mutex_t;
+
 #else
 typedef pthread_rwlock_t asg_rwlock_t;
 typedef pthread_mutex_t asg_mutex_t;
 
 #endif
+
+
+void asg_rwlock_lock(asg_rwlock_t *lock, asg_rw_locktype_t type);
+void asg_rwlock_unlock(asg_rwlock_t *lock, asg_rw_locktype_t type);
+void asg_rwlock_init(asg_rwlock_t *lock);
+
+void asg_mutex_init(asg_mutex_t *lock);
+int asg_mutex_unlock(asg_mutex_t *mutex);
+int asg_mutex_lock(asg_mutex_t *mutex);

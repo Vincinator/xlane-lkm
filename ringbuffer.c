@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "logger.h"
+
 #include "ringbuffer.h"
 
 const char validation_key[] = { 0x39, 0x3e, 0x52, 0x00, 0x00, 0x00, 0x00 };

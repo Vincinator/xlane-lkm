@@ -1,5 +1,15 @@
 #pragma once
 
+
+
+
+#ifdef ASGARD_KERNEL_MODULE
+
+
+
+
+#else
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,6 +21,15 @@
 #include "libasraft.h"
 
 #include "ini.h"
+
+#endif
+
+#include "../pacemaker.h"
+#include "../pkthandler.h"
+#include "../libasraft.h"
+#include "../logger.h"
+
+
 
 #define MAX_PEERS 100
 
@@ -39,9 +58,11 @@ typedef struct {
 
     peer_t *peers[MAX_PEERS];
 
+#ifdef ASGARD_KERNEL_MODULE
+#else
     pthread_t pm_thread;
     pthread_t pl_thread;
-
+#endif
     int oneshot_num_entries;
 
     int reg_macs;
@@ -49,7 +70,10 @@ typedef struct {
 } tnode_t;
 
 extern int user_requested_stop;
+
+#ifndef ASGARD_KERNEL_MODULE
 void trap(int signal);
+#endif
 
 tnode_t *init_node(tnode_t *tn);
 int start_node(tnode_t *tn);

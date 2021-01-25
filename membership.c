@@ -2,25 +2,13 @@
 // Created by Riesop, Vincent on 09.12.20.
 //
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include "ini.h"
-#include <errno.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <netdb.h>
-#include <arpa/inet.h>
 
-#include "libasraft.h"
-#include "logger.h"
+
+
 #include "membership.h"
-#include "pacemaker.h"
-#include "pktqueue.h"
 
-#if ASGARD_DPDK
+
+#ifdef ASGARD_DPDK
 #include <rte_ether.h>
 #endif
 
@@ -29,13 +17,15 @@
 
 int peer_is_registered(struct pminfo *spminfo , int cid)
 {
-    for (int i = 0; i < spminfo->num_of_targets; i++)
+    int i;
+
+    for (i = 0; i < spminfo->num_of_targets; i++)
         if (spminfo->pm_targets[i].cluster_id == cid)
             return 1;
     return 0;
 }
 
-
+#ifndef ASGARD_KERNEL_MODULE
 int hostname_to_ip(const char *hostname)
 {
     struct hostent *hp;
@@ -55,7 +45,7 @@ int hostname_to_ip(const char *hostname)
     asgard_error("Did not find IP address for host %s", hostname);
     return -1;
 }
-
+#endif
 
 
 int get_local_index_by_cluster_id(struct asgard_device *sdev, int cluster_id){
@@ -188,12 +178,12 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
     pmtarget->received_log_replications = 0;
 
     // payload buffer
-    pmtarget->pkt_data.payload = calloc(1, sizeof(struct asgard_payload));
+    pmtarget->pkt_data.payload = ACMALLOC(1, sizeof(struct asgard_payload), GFP_KERNEL);
 
     pmtarget->pkt_data.payload->protocols_included = 0;
     /* off-by one - so at index num_peers is nothing registered yet */
 
-    pmtarget->aapriv = calloc(1, sizeof(struct asgard_async_queue_priv));
+    pmtarget->aapriv = ACMALLOC(1, sizeof(struct asgard_async_queue_priv), GFP_KERNEL);
     init_asgard_async_queue(pmtarget->aapriv);
 
     sdev->pminfo.num_of_targets++;
@@ -201,6 +191,7 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
     return 1;
 }
 
+#ifndef ASGARD_KERNEL_MODULE
 int register_peer_by_name(struct asgard_device *sdev, const char *cur_name, int id){
     int ret = register_peer_by_ip(sdev, hostname_to_ip(cur_name), id);
 
@@ -210,7 +201,7 @@ int register_peer_by_name(struct asgard_device *sdev, const char *cur_name, int 
     asgard_dbg("Registered peer with: name = %s, port=%d, id = %d\n", cur_name, sdev->tx_port, id);
     return 0;
 }
-
+#endif
 
 /*Checks if at least 3 Nodes have joined the cluster yet  */
 int check_warmup_state(struct asgard_device *sdev, struct pminfo *spminfo)

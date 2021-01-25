@@ -1,13 +1,9 @@
 
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
+
+
 
 #include "kvstore.h"
-#include "logger.h"
-#include "consensus.h"
-#include "ringbuffer.h"
-#include "replication.h"
+
 
 int32_t get_last_idx_safe(struct consensus_priv *priv)
 {
@@ -241,7 +237,7 @@ int commit_log(struct consensus_priv *priv, int32_t commit_idx)
     int err = 0;
     struct state_machine_cmd_log *log = &priv->sm_log;
 
-    pthread_mutex_lock(&priv->sm_log.mlock);
+    asg_mutex_lock(&priv->sm_log.mlock);
 
     // Check if commit index must be updated
     if (commit_idx > priv->sm_log.commit_idx) {
@@ -258,7 +254,7 @@ int commit_log(struct consensus_priv *priv, int32_t commit_idx)
         }
     }
 
-    pthread_mutex_unlock(&priv->sm_log.mlock);
+    asg_mutex_unlock(&priv->sm_log.mlock);
 
     if(err)
         asgard_dbg("Could not apply logs. Commit Index %d\n", log->commit_idx);

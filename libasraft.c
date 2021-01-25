@@ -6,8 +6,10 @@
 
 #ifdef ASGARD_KERNEL_MODULE
 #include <linux/slab.h>
+#include "module.h"
+#endif
 
-#else
+#ifndef ASGARD_KERNEL_MODULE
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -29,6 +31,7 @@
 #include "membership.h"
 
 #include "logger.h"
+#include "proto.h"
 
 
 void generate_asgard_eval_uuid(unsigned char uuid[16]) {
@@ -100,6 +103,7 @@ struct proto_instance *generate_protocol_instance(struct asgard_device *sdev, in
 
 
 void init_asgard_device(struct asgard_device *sdev){
+    int i;
 
     sdev->hold_fire = 0;
     sdev->multicast.enable = 0;
@@ -107,7 +111,12 @@ void init_asgard_device(struct asgard_device *sdev){
     sdev->tx_port = 4000;
     sdev->tx_counter = 0;
 
-    for(int i = 0; i < MAX_PROTO_INSTANCES; i++)
+#ifdef ASGARD_KERNEL_MODULE
+    asg_init_workqueues(sdev);
+#endif
+
+
+    for(i = 0; i < MAX_PROTO_INSTANCES; i++)
         sdev->instance_id_mapping[i] = -1;
 
     sdev->num_of_proto_instances = 0;
@@ -118,5 +127,5 @@ void init_asgard_device(struct asgard_device *sdev){
     // Only use consensus protocol for this evaluation.
     //sdev->protos[0] = generate_protocol_instance(sdev, ASGARD_PROTO_CONSENSUS);
     register_protocol_instance(sdev, 1, ASGARD_PROTO_CONSENSUS);
-    sdev->ci = calloc(1, sizeof(struct cluster_info));
+    sdev->ci = ACMALLOC(1, sizeof(struct cluster_info), GFP_KERNEL);
 }

@@ -1,12 +1,6 @@
 
-#include <pthread.h>
-#include <errno.h>
 
 #include "follower.h"
-#include "consensus.h"
-#include "logger.h"
-#include "payload.h"
-#include "kvstore.h"
 
 
 #undef LOG_PREFIX
@@ -237,9 +231,9 @@ int start_follower(struct proto_instance *ins)
     priv->sm_log.unstable_commits = 0;
     priv->sm_log.turn = 0;
 
-    pthread_mutex_init(&priv->sm_log.mlock, NULL);
-    pthread_mutex_init(&priv->sm_log.next_lock, NULL);
-    pthread_mutex_init(&priv->accept_vote_lock, NULL);
+    asg_mutex_init(&priv->sm_log.mlock);
+    asg_mutex_init(&priv->sm_log.next_lock);
+    asg_mutex_init(&priv->accept_vote_lock);
 
     priv->votes = 0;
     priv->nstate = FOLLOWER;

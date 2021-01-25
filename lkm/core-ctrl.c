@@ -2,7 +2,6 @@
 // Created by vincent on 1/22/21.
 //
 
-#include "core-ctrl.h"
 
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -14,8 +13,9 @@
 #include <linux/kernel.h>
 #include <linux/types.h>
 
-
+#include "../module.h"
 #include "../logger.h"
+#include "core-ctrl.h"
 
 static ssize_t asgard_rx_ctrl_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
 {

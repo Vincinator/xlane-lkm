@@ -1,8 +1,13 @@
 #pragma once
 
-#if ASGARD_KERNEL_MODULE == 0
+#ifdef ASGARD_KERNEL_MODULE
+
+#else
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #endif
+#include "logger.h"
 
 #include "types.h"
 

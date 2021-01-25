@@ -9,17 +9,6 @@
 
 #include "tnode.h"
 
-#include <stdio.h>
-#include <netinet/in.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "pacemaker.h"
-#include "pkthandler.h"
-#include "libasraft.h"
-#include "ini.h"
-#include "logger.h"
 
 #if ASGARD_DPDK
 #include <rte_byteorder.h>

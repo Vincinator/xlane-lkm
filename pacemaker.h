@@ -1,16 +1,59 @@
 #pragma once
 
 
+#ifdef ASGARD_KERNEL_MODULE
+
+    #include <linux/proc_fs.h>
+    #include <linux/seq_file.h>
+    #include <linux/kthread.h>
+    #include <linux/sched.h>
+
+    #include <linux/kernel.h>
+
+    #include <linux/netdevice.h>
+    #include <linux/skbuff.h>
+    #include <linux/udp.h>
+    #include <linux/etherdevice.h>
+    #include <linux/ip.h>
+    #include <net/ip.h>
+    #include <linux/slab.h>
+    #include <linux/inetdevice.h>
+
+    #include <linux/hrtimer.h>
+    #include <linux/ktime.h>
+    #include <linux/time.h>
+
+    #include "module.h"
+    #include "lkm/asgard-net.h"
+
+#else
+
+    #include <string.h>
+    #include <stdio.h>
+    #include <netinet/in.h>
+    #include <errno.h>
+    #include <stdlib.h>
+    #include <signal.h>
+
+    #include "userspace/tnode.h"
+
+
+#endif
+
 #include "types.h"
 #include "consensus.h"
 #include "libasraft.h"
 #include "payload.h"
 #include "logger.h"
 #include "config.h"
+#include "membership.h"
+#include "pktqueue.h"
+
 
 #define ETH_HLEN	14
 #define UDP_HLEN    8
 #define IP_HLEN     60
+
 
 int asgard_pm_stop(struct pminfo *spminfo);
 

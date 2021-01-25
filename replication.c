@@ -2,19 +2,28 @@
 // Created by Riesop, Vincent on 10.12.20.
 //
 
-#include <stdlib.h>
-#include <string.h>
 
 #include "replication.h"
 
-#include "leader.h"
-#if ASGARD_KERNEL_MODULE == 0
-#include "list.h"
-#endif
-#include "pktqueue.h"
 
+#ifndef ASGARD_KERNEL_MODULE
+#include "list.h"
+#include <stdlib.h>
+#include <string.h>
+#else
+
+#include "module.h"
+
+#endif
+
+#include "pktqueue.h"
 #include "payload.h"
 #include "kvstore.h"
+#include "leader.h"
+#include "pkthandler.h"
+
+
+
 
 
 void update_next_retransmission_request_idx(struct consensus_priv *priv)
@@ -86,7 +95,7 @@ void async_clear_queue( struct asgard_async_queue_priv *queue)
     if(queue->doorbell <= 0)
         return;
 
-    pthread_rwlock_wrlock(&(queue->queue_rwlock));
+    asg_rwlock_lock(&(queue->queue_rwlock), ASG_RW_WRITE);
 
     if(list_empty(&(queue->head_of_async_pkt_queue)))
         goto unlock;
@@ -102,7 +111,7 @@ void async_clear_queue( struct asgard_async_queue_priv *queue)
 
 
     unlock:
-    pthread_rwlock_unlock(&(queue->queue_rwlock));
+    asg_rwlock_unlock(&(queue->queue_rwlock), ASG_RW_WRITE);
 }
 
 
@@ -205,6 +214,43 @@ int do_prepare_log_replication(struct asgard_device *sdev, int target_id, int32_
 
 }
 
+
+#ifdef ASGARD_KERNEL_MODULE
+
+// Note: this function will not explicitly run on the same isolated cpu
+//		.. for consecutive packets (even from the same host)
+//   ... Timestamping may be
+void pkt_process_handler(struct work_struct *w)
+{
+    struct asgard_pkt_work_data *aw = NULL;
+    char *user_data;
+
+    aw = container_of(w, struct asgard_pkt_work_data, work);
+
+    if (aw->sdev->asgard_wq_lock) {
+        asgard_dbg("drop handling of received packet - asgard is shutting down \n");
+        goto exit;
+    }
+
+    user_data = ((char *)aw->payload) + aw->headroom + ETH_HLEN +
+                sizeof(struct iphdr) + sizeof(struct udphdr);
+
+    handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id,
+                         GET_PROTO_START_SUBS_PTR(user_data),
+                         aw->received_proto_instances, aw->cqe_bcnt);
+
+    exit:
+
+    kfree(aw->payload);
+
+    if (aw)
+        kfree(aw);
+}
+
+
+#endif
+
+
 void *prepare_log_replication_handler(void *data)
 {
     struct asgard_leader_pkt_work_data *aw = data;
@@ -230,7 +276,11 @@ cleanup:
 void schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index, int32_t retrans, int multicast_enabled)
 {
     struct asgard_leader_pkt_work_data *work = NULL;
+
+#ifndef ASGARD_KERNEL_MODULE
     pthread_t pt_logrep;
+#endif
+
     int more = 0;
 
     // if leadership has been dropped, do not schedule leader work
@@ -263,10 +313,8 @@ void schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index,
         work->target_id = target_id;
         //asgard_dbg("scheduling prep handler for target node %d\n", target_id);
 
-        pthread_create(&pt_logrep, NULL, prepare_log_replication_handler, work);
-
-        // TODO: schedule pthread worker to process log rep
-        /*INIT_WORK(&work->work, prepare_log_replication_handler);
+#ifdef ASGARD_KERNEL_MODULE
+        INIT_WORK(&work->work, pkt_process_handler);
 
         if(!queue_work(sdev->asgard_leader_wq, &work->work)) {
             asgard_dbg("Work item not put in queue ..");
@@ -274,7 +322,12 @@ void schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index,
             if(work)
                 AFREE(work); //right?
             return;
-        } */
+        }
+#else
+        pthread_create(&pt_logrep, NULL, prepare_log_replication_handler, work);
+#endif
+
+
 
     }
 }
@@ -328,7 +381,7 @@ int32_t get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, 
     struct retrans_request *cur_rereq = NULL;
 
 
-    pthread_rwlock_wrlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
+    asg_rwlock_lock(&cur_priv->sm_log.retrans_list_lock[target_id], ASG_RW_WRITE);
 
     if(cur_priv->sm_log.retrans_entries[target_id] > 0) {
 
@@ -351,7 +404,7 @@ int32_t get_next_idx_for_target(struct consensus_priv *cur_priv, int target_id, 
     }
 
 unlock:
-    pthread_rwlock_unlock(&cur_priv->sm_log.retrans_list_lock[target_id]);
+    asg_rwlock_unlock(&cur_priv->sm_log.retrans_list_lock[target_id], ASG_RW_WRITE);
     return next_index;
 }
 

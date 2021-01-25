@@ -3,6 +3,10 @@
 
 #ifdef ASGARD_KERNEL_MODULE
 
+
+#include <linux/ip.h>
+#include <linux/udp.h>
+
 #else
 #include <sys/queue.h>
 #endif

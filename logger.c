@@ -3,13 +3,23 @@
 #include "types.h"
 
 
+#ifndef ASGARD_KERNEL_MODULE
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#endif
 
 #define SEC2NANOSEC 1000000000L
 
+
+#ifdef ASGARD_KERNEL_MODULE
+#include <linux/kernel.h>
+uint64_t asgts(){
+
+    return rdtsc();
+}
+#else
 uint64_t asgts(){
 
     struct timespec now;
@@ -18,6 +28,7 @@ uint64_t asgts(){
 
     return SEC2NANOSEC * now.tv_sec + now.tv_nsec;
 }
+#endif
 
 
 void asgard_hex_to_ip(char *retval, uint32_t dst_ip)
@@ -178,7 +189,7 @@ void calculate_deltas(struct asgard_logger *slog) {
         prev = slog->events[i].timestamp_tcs;
     }
 }
-
+#ifndef ASGARD_KERNEL_MODULE
 void dump_ingress_log(struct asgard_logger *slog, int node_id, uint64_t hb_ns) {
     FILE *fp;
     int i;
@@ -214,14 +225,13 @@ void dump_ingress_log(struct asgard_logger *slog, int node_id, uint64_t hb_ns) {
 
     fclose(fp);
 }
-
+#endif
 
 void clear_ingress_logger(struct asgard_ingress_logger *ailog){
     int i;
 
     for(i = 0; i < ailog->num_of_nodes; i++)
         clear_logger(&ailog->per_node_logger[i]);
-
 
     AFREE(ailog->per_node_logger);
 

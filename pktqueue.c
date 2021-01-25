@@ -1,12 +1,17 @@
 
 
+
+
+#ifndef ASGARD_KERNEL_MODULE
+#include "list.h"
 #include <pthread.h>
 #include <stdlib.h>
-
-#if ASGARD_KERNEL_MODULE == 0
-#include "list.h"
 #else
 #include <linux/slab.h>
+
+#include "lkm/asgard-net.h"
+
+
 #endif
 #include "replication.h"
 
@@ -21,9 +26,9 @@ int enqueue_async_pkt(struct asgard_async_queue_priv *aqueue, struct asgard_asyn
     if(!apkt || !aqueue)
         return -1;
 
-    pthread_rwlock_wrlock(&aqueue->queue_rwlock);
+    asg_rwlock_lock(&aqueue->queue_rwlock, ASG_RW_WRITE);
     list_add_tail(&apkt->async_pkts_head, &aqueue->head_of_async_pkt_queue);
-    pthread_rwlock_unlock(&aqueue->queue_rwlock);
+    asg_rwlock_unlock(&aqueue->queue_rwlock, ASG_RW_WRITE);
 
     return 0;
 }
@@ -32,9 +37,9 @@ int enqueue_async_pkt(struct asgard_async_queue_priv *aqueue, struct asgard_asyn
 /* Adds the pkt to the front of the queue */
 int push_front_async_pkt(struct asgard_async_queue_priv *aqueue, struct asgard_async_pkt *apkt)
 {
-    pthread_rwlock_wrlock(&aqueue->queue_rwlock);
+    asg_rwlock_lock(&aqueue->queue_rwlock, ASG_RW_WRITE);
     list_add(&apkt->async_pkts_head, &aqueue->head_of_async_pkt_queue);
-    pthread_rwlock_unlock(&aqueue->queue_rwlock);
+    asg_rwlock_unlock(&aqueue->queue_rwlock, ASG_RW_WRITE);
 
     return 0;
 }
@@ -45,7 +50,7 @@ struct asgard_async_pkt *dequeue_async_pkt(struct asgard_async_queue_priv *aqueu
 {
     struct asgard_async_pkt *queued_apkt;
 
-    pthread_rwlock_wrlock(&aqueue->queue_rwlock);
+    asg_rwlock_lock(&aqueue->queue_rwlock, ASG_RW_WRITE);
 
     queued_apkt = list_first_entry_or_null(&aqueue->head_of_async_pkt_queue, struct asgard_async_pkt, async_pkts_head);
 
@@ -55,14 +60,14 @@ struct asgard_async_pkt *dequeue_async_pkt(struct asgard_async_queue_priv *aqueu
         asgard_dbg("apkt is NULL. \n");
     }
 
-    pthread_rwlock_unlock(&aqueue->queue_rwlock);
+    asg_rwlock_unlock(&aqueue->queue_rwlock, ASG_RW_WRITE);
 
     return queued_apkt;
 }
 
 
 
-struct asgard_async_pkt *create_async_pkt(struct node_addr target_addr)
+struct asgard_async_pkt *create_async_pkt(struct asgard_device *sdev, struct node_addr target_addr)
 {
 #ifndef ASGARD_KERNEL_MODULE
     struct asgard_async_pkt *apkt = NULL;
@@ -78,7 +83,7 @@ struct asgard_async_pkt *create_async_pkt(struct node_addr target_addr)
     // freed by _emit_async_pkts
     apkt = kzalloc(sizeof(struct asgard_async_pkt), GFP_KERNEL);
 
-    apkt->skb = asgard_reserve_skb(ndev, dst_ip, dst_mac, NULL);
+    apkt->skb = asgard_reserve_skb(sdev->ndev, target_addr.dst_ip, target_addr.dst_mac, NULL);
 
 #endif
     return apkt;
@@ -96,7 +101,7 @@ int init_asgard_async_queue(struct asgard_async_queue_priv *new_queue)
 
     new_queue->doorbell = 0;
 
-    pthread_rwlock_init(&(new_queue->queue_rwlock), NULL);
+    asg_rwlock_init(&(new_queue->queue_rwlock));
 
     INIT_LIST_HEAD(&(new_queue->head_of_async_pkt_queue));
 

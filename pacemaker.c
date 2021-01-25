@@ -1,23 +1,7 @@
 /*
  * Logic
  */
-
-#include <string.h>
-#include <stdio.h>
-#include <netinet/in.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <signal.h>
-
-
-#include "libasraft.h"
 #include "pacemaker.h"
-#include "payload.h"
-#include "logger.h"
-#include "consensus.h"
-#include "membership.h"
-#include "pktqueue.h"
-#include "tnode.h"
 
 #if ASGARD_DPDK
 #include <rte_byteorder.h>
@@ -29,25 +13,7 @@
 #endif
 
 #ifdef ASGARD_KERNEL_MODULE
-#include <linux/proc_fs.h>
-#include <linux/seq_file.h>
-#include <linux/kthread.h>
-#include <linux/sched.h>
 
-#include <linux/kernel.h>
-
-#include <linux/netdevice.h>
-#include <linux/skbuff.h>
-#include <linux/udp.h>
-#include <linux/etherdevice.h>
-#include <linux/ip.h>
-#include <net/ip.h>
-#include <linux/slab.h>
-#include <linux/inetdevice.h>
-
-#include <linux/hrtimer.h>
-#include <linux/ktime.h>
-#include <linux/time.h>
 
 
 static struct task_struct *heartbeat_task;
@@ -313,7 +279,7 @@ static inline int out_of_schedule_multi_tx(struct asgard_device *sdev) {
 
 /* --------- Emitter Functions --------- */
 
-static unsigned int get_packet_size_for_alloc(){
+static unsigned int get_packet_size_for_alloc(void){
     unsigned int ip_len, udp_len, asgard_len, total_len;
 
     udp_len = UDP_HLEN;
@@ -346,7 +312,7 @@ ip_sum(const unaligned_uint16_t *hdr, int hdr_len)
 
 /* construct ping packet */
 static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_pool,
-                                                 struct sockaddr_in recvaddr, uint32_t send_ip, struct asgard_payload *asgp,
+                                                 struct node_addr recvaddr, uint32_t send_ip, struct asgard_payload *asgp,
                                                  asg_mac_ptr_t recv_mac, asg_mac_ptr_t sender_mac)
 {
     struct rte_mbuf *pkt;
@@ -397,7 +363,7 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
      *  - in_addr_t is a typedef to __uint32_t.
      * */
     ip_hdr->src_addr = rte_cpu_to_be_32(send_ip);
-    ip_hdr->dst_addr = rte_cpu_to_be_32((uint32_t) recvaddr.sin_addr.s_addr);
+    ip_hdr->dst_addr = rte_cpu_to_be_32((uint32_t) recvaddr.dst_ip);
 
     ip_hdr->total_length = rte_cpu_to_be_16(pkt_size -
                                             sizeof(*eth_hdr));
@@ -410,8 +376,8 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
     /* Just use the port of the socket data struct.
      * - in_port_t is a typedef to __uint16_t
      * */
-    udp_hdr->src_port = rte_cpu_to_be_16((uint16_t)recvaddr.sin_port + 1);
-    udp_hdr->dst_port = rte_cpu_to_be_16((uint16_t)recvaddr.sin_port);
+    udp_hdr->src_port = rte_cpu_to_be_16((uint16_t)recvaddr.port + 1);
+    udp_hdr->dst_port = rte_cpu_to_be_16((uint16_t)recvaddr.port);
 
     udp_hdr->dgram_cksum = 0; /* No UDP checksum. */
     udp_hdr->dgram_len = rte_cpu_to_be_16(pkt_size -
@@ -439,7 +405,7 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
 }
 
 unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_mempool *pktmbuf_pool,
-                                  struct sockaddr_in recvaddr, struct asgard_payload *asg_payload,
+                                  struct node_addr recvaddr, struct asgard_payload *asg_payload,
                                   asg_mac_ptr_t recv_mac, asg_mac_ptr_t sender_mac) {
     struct rte_mbuf *dpdk_pkt= NULL;
     unsigned int nb_tx;
@@ -508,8 +474,10 @@ int emit_async_unicast_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
 #ifdef ASGARD_DPDK
             sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
                                                      sdev->pktmbuf_pool,
-                                                     cur_apkt->pkt_data.sockaddr, cur_apkt->pkt_data.payload,
+                                                     cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload,
                                                      spminfo->pm_targets[i].mac_addr, sdev->self_mac);
+#elif ASGARD_KERNEL_MODULE
+
 #else
             emit_packet(cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload);
 
@@ -536,12 +504,13 @@ int emit_async_multicast_pkt(struct asgard_device *sdev, struct pminfo *spminfo)
             asgard_error("pkt is NULL! \n");
             return -1;
         }
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
         // NOT IMPLEMENTED! Missing pm target ethernet address
         // sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
         //                                sdev->pktmbuf_pool, cur_apkt->pkt_data.sockaddr,
         //                                cur_apkt->pkt_data.payload,
         //                                NULL, sdev->rte_self_mac);
+#elif ASGARD_KERNEL_MODULE
 
 #else
         emit_packet(cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload);
@@ -558,25 +527,27 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
 {
     struct asgard_packet_data *pkt_payload = NULL;
 
-    pthread_mutex_lock(&spminfo->multicast_pkt_data_oos.mlock);
+    asg_mutex_lock(&spminfo->multicast_pkt_data_oos.mlock);
 
     pkt_payload = &spminfo->multicast_pkt_data_oos;
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
     // NOT IMPLEMENTED! Missing pm target ethernet address
     //sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
     //                                sdev->pktmbuf_pool, pkt_payload->sockaddr,
     //                               pkt_payload->payload,
     //                               spminfo->pm_targets[i].mac_addr, sdev->rte_self_mac);
+#elif ASGARD_KERNEL_MODULE
 
 #else
     emit_packet(pkt_payload->naddr, pkt_payload->payload);
 #endif
+
     memset(pkt_payload->payload, 0, sizeof(struct asgard_payload));
 
     spminfo->multicast_pkt_data_oos_fire = 0;
 
-    pthread_mutex_unlock(&spminfo->multicast_pkt_data_oos.mlock);
+    asg_mutex_unlock(&spminfo->multicast_pkt_data_oos.mlock);
 
     return 0;
 }
@@ -591,7 +562,6 @@ int emit_async_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
         return emit_async_unicast_pkts(sdev, spminfo);
 }
 
-#ifndef ASGARD_KERNEL_MODULE
 static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
         struct pminfo *spminfo, const int *target_fire)
 {
@@ -607,16 +577,17 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
             continue;
 #ifdef ASGARD_DPDK
         sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
-                                                 sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.sockaddr,
+                                                 sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.naddr,
                                                  spminfo->pm_targets[i].pkt_data.payload,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
+#elif ASGARD_KERNEL_MODULE
+
 #else
         emit_packet(spminfo->pm_targets[i].pkt_data.naddr, spminfo->pm_targets[i].pkt_data.payload);
 #endif
         spminfo->pm_targets[i].pkt_tx_counter++;
     }
 }
-#endif
 
 
 static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
@@ -628,7 +599,7 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
         target_fire[i] = spminfo->pm_targets[i].fire;
-        pthread_mutex_lock(&spminfo->pm_targets[i].pkt_data.mlock);
+        asg_mutex_lock(&spminfo->pm_targets[i].pkt_data.mlock);
     }
 
     asgard_send_oos_pkts(sdev, spminfo, target_fire);
@@ -647,7 +618,7 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
     }
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
-        pthread_mutex_unlock(&spminfo->pm_targets[i].pkt_data.mlock);
+        asg_mutex_unlock(&spminfo->pm_targets[i].pkt_data.mlock);
     }
 
     return 0;
@@ -664,11 +635,13 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
 
         pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
         sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
-                                                 sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.sockaddr,
+                                                 sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.naddr,
                                                  pkt_payload,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
+#elif ASGARD_KERNEL_MODULE
+
 #else
         emit_packet(spminfo->pm_targets[i].pkt_data.naddr, pkt_payload);
 #endif
@@ -688,8 +661,47 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
     return 0;
 }
 
+#ifdef ASGARD_KERNEL_MODULE
+static inline int asgard_setup_hb_skbs(struct asgard_device  *sdev)
+{
+    struct pminfo *spminfo = &sdev->pminfo;
 
-/* ------------------------------------- */
+    asgard_dbg("setup hb skbs. \n");
+
+    if (!spminfo) {
+        asgard_error("spminfo is NULL \n");
+        //BUG();
+        return -1;
+    }
+
+    // BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
+
+    /* Setup Multicast SKB */
+    if (!sdev->multicast_mac) {
+        asgard_error("Multicast MAC is NULL");
+        return -1;
+    }
+
+    asgard_dbg("broadcast ip: %x  mac: %pM", sdev->multicast_ip,
+               sdev->multicast_mac);
+
+    spminfo->multicast_pkt_data_oos.skb = asgard_reserve_skb(
+            sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
+    skb_set_queue_mapping(
+            spminfo->multicast_pkt_data_oos.skb,
+            smp_processor_id()); // Queue mapping same for each target i
+    spminfo->multicast_pkt_data_oos.naddr.port = 3321; /* TODO */
+
+    spminfo->multicast_skb = asgard_reserve_skb(
+            sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
+    skb_set_queue_mapping(
+            spminfo->multicast_skb,
+            smp_processor_id()); // Queue mapping same for each target i
+
+    return 0;
+}
+
+#endif
 
 
 static int prepare_pm_loop(struct asgard_device *sdev, struct pminfo *spminfo) {
@@ -860,8 +872,8 @@ void init_pacemaker(struct pminfo *spminfo){
     spminfo->cluster_id = -1;
 
     /* Init packet Buffers */
-    spminfo->multicast_pkt_data.payload = calloc(1, sizeof(struct asgard_payload));
-    spminfo->multicast_pkt_data_oos.payload = calloc(1, sizeof(struct asgard_payload));
+    spminfo->multicast_pkt_data.payload = ACMALLOC(1, sizeof(struct asgard_payload), GFP_KERNEL);
+    spminfo->multicast_pkt_data_oos.payload = ACMALLOC(1, sizeof(struct asgard_payload), GFP_KERNEL);
     spminfo->multicast_pkt_data.payload->protocols_included = 0;
     spminfo->multicast_pkt_data_oos.payload->protocols_included = 0;
 
@@ -871,6 +883,42 @@ void init_pacemaker(struct pminfo *spminfo){
 
 
 #ifdef ASGARD_KERNEL_MODULE
+
+static int validate_pm(struct asgard_device *sdev, struct pminfo *spminfo)
+{
+    if (!spminfo) {
+        asgard_error("No Device. %s\n", __func__);
+        return -ENODEV;
+    }
+
+    if (spminfo->state != ASGARD_PM_READY) {
+        asgard_error("Pacemaker is not in ready state!\n");
+        return -EPERM;
+    }
+
+    if (!sdev) {
+        asgard_error("No sdev\n");
+        return -ENODEV;
+    }
+
+    if (!sdev->ndev) {
+        asgard_error("netdevice is NULL\n");
+        return -EINVAL;
+    }
+
+    if (!sdev->self_mac) {
+        asgard_error("self mac is NULL\n");
+        return -EINVAL;
+    }
+
+    if (!sdev->multicast_mac) {
+        asgard_error("multicast mac is NULL\n");
+        return -EINVAL;
+    }
+
+    return 0;
+}
+
 
 int asgard_pm_start_loop(void *data)
 {
@@ -882,7 +930,7 @@ int asgard_pm_start_loop(void *data)
 
     asgard_dbg("asgard_pm_start_loop\n");
 
-    err = _validate_pm(sdev, spminfo);
+    err = validate_pm(sdev, spminfo);
 
     if (err)
         return err;
@@ -890,7 +938,7 @@ int asgard_pm_start_loop(void *data)
     cpumask_clear(&mask);
 
     heartbeat_task =
-            kthread_create(&asgard_pm_loop, sdev, "asgard pm loop");
+            kthread_create(&do_pacemaker, sdev, "asgard pm loop");
 
     kthread_bind(heartbeat_task, spminfo->active_cpu);
 

@@ -10,7 +10,7 @@
 #include <errno.h>
 
 #include "libasraft.h"
-#include "tnode.h"
+#include "userspace/tnode.h"
 #include "ringbuffer.h"
 #include "membership.h"
 #include "kvstore.h"

@@ -1,5 +1,16 @@
-#include <errno.h>
-#include <unistd.h>
+
+
+#ifndef ASGARD_KERNEL_MODULE
+
+    #include <errno.h>
+    #include <unistd.h>
+
+#else
+
+    #include "lkm/consensus-config-ctrl.h"
+    #include "lkm/consensus-eval-ctrl.h"
+
+#endif
 
 #include "consensus.h"
 #include "membership.h"
@@ -111,7 +122,7 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
     struct asgard_payload *pkt_payload;
     unsigned char *pkt_payload_sub;
 
-    pthread_mutex_lock(&spminfo->pm_targets[target_id].pkt_data.mlock);
+    asg_mutex_lock(&spminfo->pm_targets[target_id].pkt_data.mlock);
 
     pkt_payload =
             spminfo->pm_targets[target_id].pkt_data.payload;
@@ -127,7 +138,7 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
     set_le_opcode((unsigned char *) pkt_payload_sub, opcode, param1, param2, param3, param4);
 
 unlock:
-    pthread_mutex_unlock(&spminfo->pm_targets[target_id].pkt_data.mlock);
+    asg_mutex_unlock(&spminfo->pm_targets[target_id].pkt_data.mlock);
     return 0;
 }
 
@@ -333,7 +344,7 @@ void reply_append(struct proto_instance *ins, struct pminfo *spminfo, int remote
             logged_idx,
             priv->sm_log.stable_idx);
 
-    pthread_mutex_lock(&spminfo->pm_targets[remote_lid].pkt_data.mlock);
+    asg_mutex_lock(&spminfo->pm_targets[remote_lid].pkt_data.mlock);
 
     pkt_payload =
             spminfo->pm_targets[remote_lid].pkt_data.payload;
@@ -344,7 +355,7 @@ void reply_append(struct proto_instance *ins, struct pminfo *spminfo, int remote
 
     if (!pkt_payload_sub) {
         asgard_error("asgard packet full!\n");
-        pthread_mutex_unlock(&spminfo->pm_targets[remote_lid].pkt_data.mlock);
+        asg_mutex_unlock(&spminfo->pm_targets[remote_lid].pkt_data.mlock);
         return;
     }
 
@@ -352,7 +363,7 @@ void reply_append(struct proto_instance *ins, struct pminfo *spminfo, int remote
     set_le_opcode((unsigned char *) pkt_payload_sub, APPEND_REPLY, param1, append_success, logged_idx,
                   priv->sm_log.stable_idx);
 
-    pthread_mutex_unlock(&spminfo->pm_targets[remote_lid].pkt_data.mlock);
+    asg_mutex_unlock(&spminfo->pm_targets[remote_lid].pkt_data.mlock);
 
     if (append_success)
         write_log(&ins->logger, REPLY_APPEND_SUCCESS, ASGARD_TIMESTAMP);
@@ -484,12 +495,12 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
      * A stable index points to the last entry in the the log, where
      * all previous entries exist (stable is not necessarily commited!).
      */
-    pthread_mutex_lock(&priv->sm_log.mlock);
+    asg_mutex_lock(&priv->sm_log.mlock);
     //mutex_lock(&priv->sm_log.mlock);
     if (*prev_log_idx < priv->sm_log.stable_idx) {
         //mutex_unlock(&priv->sm_log.mlock);
         asgard_error("prev log idx is smaller than stable index!\n");
-        pthread_mutex_unlock(&priv->sm_log.mlock);
+        asg_mutex_unlock(&priv->sm_log.mlock);
         return;
     }
 
@@ -539,7 +550,7 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
         goto reply_retransmission;
 
 // default: reply success
-    pthread_mutex_unlock(&priv->sm_log.mlock);
+    asg_mutex_unlock(&priv->sm_log.mlock);
 
     if (priv->sdev->multicast.enable)
         return;
@@ -550,14 +561,14 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
     return;
 
 reply_retransmission:
-    pthread_mutex_unlock(&priv->sm_log.mlock);
+    asg_mutex_unlock(&priv->sm_log.mlock);
 
     // TODO: wait until other pending workers are done, and check again if we need a retransmission!
     reply_append(ins, &priv->sdev->pminfo, remote_lid, priv->term, 2, priv->sm_log.next_retrans_req_idx);
     priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
     return;
 reply_false_unlock:
-    pthread_mutex_unlock(&priv->sm_log.mlock);
+    asg_mutex_unlock(&priv->sm_log.mlock);
     reply_append(ins, &priv->sdev->pminfo, remote_lid, priv->term, 0, priv->sm_log.stable_idx);
     priv->sdev->pminfo.pm_targets[remote_lid].fire = 1;
 }
@@ -798,7 +809,6 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid,
 int consensus_init(struct proto_instance *ins) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
     int i;
-    size_t psize = getpagesize();
 
     priv->voted = -1;
     priv->term = 0;
@@ -828,13 +838,14 @@ int consensus_init(struct proto_instance *ins) {
         priv->sm_log.entries[i]->valid = 0;
     }
 
+#ifdef ASGARD_KERNEL_MODULE
+    // requires "proto_instances/%d"
+    init_le_config_ctrl_interfaces(priv);
 
     // requires "proto_instances/%d"
-    //init_le_config_ctrl_interfaces(priv);
+    init_eval_ctrl_interfaces(priv);
 
-    // requires "proto_instances/%d"
-    //init_eval_ctrl_interfaces(priv);
-
+#endif
     // requires "proto_instances/%d"
     init_logger(&ins->logger, ins->instance_id, priv->sdev->ifindex,"consensus_le", 0);
 
@@ -851,15 +862,41 @@ int consensus_init(struct proto_instance *ins) {
     priv->throughput_logger.applied = 0;
     priv->throughput_logger.last_ts = 0;
 
+
+
+#ifdef ASGARD_KERNEL_MODULE
+
+    /* Initialize synbuf for Follower (RX) Buffer */
+    priv->synbuf_rx = create_synbuf("rx", 250 * 20);
+
+    if(!priv->synbuf_rx) {
+        asgard_error("could not initialize synbuf for rx buffer\n");
+        return -1;
+    }
+
+    /* Initialize synbuf for Leader (TX) Buffer */
+    priv->synbuf_tx = create_synbuf("tx", 250 * 20);
+
+    if(!priv->synbuf_tx) {
+        asgard_error("could not initialize synbuf for tx buffer\n");
+        return -1;
+    }
+    /* Initialize RingBuffer */
+    setup_asg_ring_buf((struct asg_ring_buf *)priv->synbuf_tx->ubuf, 1000000);
+    /* Initialize RingBuffer */
+    setup_asg_ring_buf((struct asg_ring_buf *)priv->synbuf_rx->ubuf, 1000000);
+
+#else
+    int psize = getpagesize();
     // No need for synbuf in user space only version -> use memory
     priv->rxbuf = AMALLOC(250 * 20 * psize, GFP_KERNEL);
     priv->txbuf = AMALLOC(250 * 20 * psize, GFP_KERNEL);
-
+    /* Initialize RingBuffer */
+    setup_asg_ring_buf((struct asg_ring_buf *)priv->rxbuf, 1000000);
     /* Initialize RingBuffer */
     setup_asg_ring_buf((struct asg_ring_buf *)priv->txbuf, 1000000);
 
-    /* Initialize RingBuffer */
-    setup_asg_ring_buf((struct asg_ring_buf *)priv->rxbuf, 1000000);
+#endif
 
     return 0;
 }
@@ -889,7 +926,7 @@ struct proto_instance *get_consensus_proto_instance(struct asgard_device *sdev)
     struct proto_instance *ins;
 
     // freed by get_echo_proto_instance
-    ins = malloc (sizeof(struct proto_instance));
+    ins = AMALLOC(sizeof(struct proto_instance), GFP_KERNEL);
 
     if (!ins)
         goto error;

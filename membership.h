@@ -3,10 +3,24 @@
 
 #ifndef ASGARD_KERNEL_MODULE
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include "ini.h"
+#include <errno.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#else
 #endif
 
-
-
+#include "pacemaker.h"
+#include "pktqueue.h"
+#include "libasraft.h"
+#include "logger.h"
 #include "consensus.h"
 
 

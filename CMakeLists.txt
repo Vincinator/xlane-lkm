@@ -3,8 +3,8 @@ project(libasraft C)
 
 # -------------------------------------------
 
-set(ASGARD_DPDK 0)
-set(ASGARD_KERNEL_MODULE 1)
+set(ASGARD_DPDK 1)
+set(ASGARD_KERNEL_MODULE 0)
 message("version: 1")
 
 
@@ -34,6 +34,7 @@ if(${ASGARD_DPDK})
     add_compile_options(-mssse3)
 
 elseif(${ASGARD_KERNEL_MODULE})
+
     message("Selected Option: kernel module")
     set(kerneldir "" CACHE STRING "Path to the kernel build directory")
     if("${kerneldir}" STREQUAL "")
@@ -52,12 +53,13 @@ elseif(${ASGARD_KERNEL_MODULE})
 endif()
 
 
-add_library(libasraft STATIC libasraft.c libasraft.h logger.c logger.h consensus.c
+add_library(libasraft STATIC libasraft.c libasraft.h types.h types.c logger.c logger.h consensus.c
         consensus.h kvstore.c kvstore.h pacemaker.c pacemaker.h payload.c payload.h
         ringbuffer.c ringbuffer.h membership.c membership.h leader.c leader.h follower.c
         follower.h candidate.c candidate.h replication.c replication.h pktqueue.c pktqueue.h
-        tnode.c tnode.h pkthandler.c pkthandler.h proto.c proto.h multicast.c multicast.h
-        eval_helper.c eval_helper.h ini.c ini.h echo.c echo.h)
+         pkthandler.c pkthandler.h proto.c proto.h multicast.c multicast.h
+        eval_helper.c eval_helper.h  echo.c echo.h)
+
 
 if(${ASGARD_KERNEL_MODULE})
     get_target_property(module_sources libasraft SOURCES)
@@ -81,7 +83,7 @@ if(${ASGARD_KERNEL_MODULE})
         configure_file(${src} ${src} COPYONLY)
     endforeach()
 
-    set(module_cmd ${CMAKE_MAKE_PROGRAM} -C ${kerneldir} M=${CMAKE_CURRENT_BINARY_DIR})
+    set(module_cmd ${CMAKE_MAKE_PROGRAM} -C ${kerneldir} M=${CMAKE_CURRENT_BINARY_DIR}  ccflags-y="-DASGARD_KERNEL_MODULE=1")
     add_custom_command(OUTPUT asgard.ko
             COMMAND ${module_cmd} modules
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -93,6 +95,14 @@ if(${ASGARD_KERNEL_MODULE})
     add_custom_target(module-clean COMMAND ${module_cmd} clean)
 
 else()
+    get_target_property(module_sources libasraft SOURCES)
+    file(GLOB lkmfiles "userspace/*")
+    foreach(src ${lkmfiles})
+        get_filename_component(SRC_NAME ${src} NAME)
+        list(PREPEND module_sources lkm/${SRC_NAME})
+        # message("Adding source ${SRC_NAME}")
+    endforeach()
+
     add_executable(testrunner runner.c)
 endif()
 

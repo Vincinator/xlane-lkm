@@ -1,12 +1,22 @@
 #pragma once
 
-#include <pthread.h>
+#ifdef ASGARD_KERNEL_MODULE
+
+
+#else
+    #include <pthread.h>
+    #include <errno.h>
+    #include <stdio.h>
+    #include <string.h>
+    #include "list.h"
+
+#endif
 
 #include "libasraft.h"
-#if ASGARD_KERNEL_MODULE == 0
-#include "list.h"
-#endif
+#include "logger.h"
 #include "consensus.h"
+#include "ringbuffer.h"
+#include "replication.h"
 
 
 int consensus_idx_to_buffer_idx(struct state_machine_cmd_log *log, uint32_t dividend);

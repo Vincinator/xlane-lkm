@@ -1,12 +1,7 @@
-//
-// Created by vincent on 1/22/21.
-//
 
+#include "../module.h"
 #include "multicast-ctrl.h"
 
-//
-// Created by Jahnke, Patrick on 14.05.20.
-//
 
 #include <linux/kernel.h>
 #include <linux/slab.h>

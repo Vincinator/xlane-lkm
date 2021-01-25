@@ -2,11 +2,16 @@
 
 
 
-#ifndef ASGARD_KERNEL_MODULE
-#include <pthread.h>
-#include <netinet/in.h>
-#include "list.h"
+#ifdef ASGARD_KERNEL_MODULE
+    #include "lkm/synbuf-chardev.h"
+    #include <linux/uuid.h>
+
+#else
+    #include <pthread.h>
+    #include <netinet/in.h>
+    #include "list.h"
 #endif
+
 
 #include "types.h"
 #include "config.h"
@@ -33,6 +38,8 @@
  */
 #define ASG_CHUNK_SIZE 8
 #endif
+
+#define MAX_PROCESSES_PER_HOST 16
 
 #define MAX_REMOTE_SOURCES 16
 #define MAX_PROTO_INSTANCES 8
@@ -117,9 +124,17 @@ struct asgard_async_queue_priv {
 
 struct multicast {
     int enable;
+
+    int delay;
+
     struct asgard_logger logger;
     struct asgard_async_queue_priv *aapriv;
     int nextIdx;
+};
+
+enum asgard_pacemaker_test_state {
+    ASGARD_PM_TEST_UNINIT = 0,
+    ASGARD_PM_TEST_INIT = 1,
 };
 
 enum pmstate {
@@ -245,6 +260,19 @@ struct state_machine_cmd_log {
     int turn;
 };
 
+#ifdef ASGARD_KERNEL_MODULE
+
+struct consensus_priv;
+
+struct consensus_test_container {
+    struct consensus_priv *priv;
+    struct hrtimer timer;
+    int running;
+    int x;
+};
+
+#endif
+
 struct consensus_priv {
 
     struct asgard_device *sdev;
@@ -294,6 +322,20 @@ struct consensus_priv {
     struct asg_ring_buf *txbuf;
     struct asg_ring_buf *rxbuf;
 
+#ifdef ASGARD_KERNEL_MODULE
+
+    struct consensus_test_container test_data;
+
+    struct synbuf_device *synbuf_tx;
+    struct synbuf_device *synbuf_rx;
+    struct proc_dir_entry *le_config_entry;
+    struct proc_dir_entry *uuid_entry;
+    struct proc_dir_entry *consensus_eval_ctrl_entry;
+
+    /* Used to correlate dmesg log output with evaluation results*/
+    uuid_t uuid;
+#endif
+
 };
 
 struct asgard_payload {
@@ -323,6 +365,13 @@ struct node_addr {
     uint32_t port;
     unsigned char dst_mac[6];
 };
+
+#ifdef ASGARD_KERNEL_MODULE
+struct asgard_process_info {
+    uint8_t pid; /* Process ID on remote host */
+    uint8_t ps; /* Status of remote process */
+};
+#endif
 
 
 struct asgard_packet_data {
@@ -390,6 +439,14 @@ struct asgard_pm_target_info {
     asg_mac_ptr_t mac_addr;
 };
 
+#ifdef ASGARD_KERNEL_MODULE
+struct asgard_pacemaker_test_data {
+    enum asgard_pacemaker_test_state state;
+    int active_processes; /* Number of active processes */
+    struct asgard_process_info pinfos[MAX_PROCESSES_PER_HOST];
+};
+
+#endif
 
 struct pminfo {
     enum pmstate state;
@@ -419,6 +476,13 @@ struct pminfo {
 
     // For Heartbeats
     struct asgard_packet_data multicast_pkt_data;
+
+#ifdef ASGARD_KERNEL_MODULE
+
+    /* Test Data */
+    struct asgard_pacemaker_test_data tdata;
+
+#endif
 
     // For out of schedule multicast
     struct asgard_packet_data multicast_pkt_data_oos;
@@ -490,11 +554,15 @@ struct asgard_device {
     struct proc_dir_entry *pacemaker_cluster_id_entry;
     struct proc_dir_entry *multicast_delay_entry;
     struct proc_dir_entry *multicast_enable_entry;
-#endif
-    struct multicast multicast;
 
-    // uint32_t multicast_ip;
-    // unsigned char *multicast_mac;
+    struct workqueue_struct *asgard_wq;
+    int asgard_wq_lock;
+#endif
+
+    struct multicast multicast;
+    uint32_t multicast_ip;
+    unsigned char *multicast_mac;
+
 
     uint32_t self_ip;
 

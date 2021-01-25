@@ -1,17 +1,6 @@
-//
-// Created by Riesop, Vincent on 09.12.20.
-//
 
-#include <stdlib.h>
-#include <string.h>
 
 #include "payload.h"
-#include "logger.h"
-#include "libasraft.h"
-#include "consensus.h"
-#include "ringbuffer.h"
-#include "kvstore.h"
-#include "replication.h"
 
 void set_ae_data(unsigned char *pkt,
                  int32_t in_term,
@@ -137,7 +126,7 @@ int setup_append_multicast_msg(struct asgard_device *sdev, struct asgard_payload
         return -1;
     }
 
-    pthread_mutex_lock(&sdev->consensus_priv->sm_log.next_lock);
+    asg_mutex_lock(&sdev->consensus_priv->sm_log.next_lock);
     next_index = sdev->multicast.nextIdx;
 
     if (local_last_idx >= next_index) {
@@ -158,12 +147,12 @@ int setup_append_multicast_msg(struct asgard_device *sdev, struct asgard_payload
 
         if(num_entries <= 0) {
             asgard_dbg("No entries to replicate\n");
-            pthread_mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
+            asg_mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
             return -1;
         }
 
     } else {
-        pthread_mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
+        asg_mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
         return -2;
     }
 
@@ -182,7 +171,7 @@ int setup_append_multicast_msg(struct asgard_device *sdev, struct asgard_payload
                                  ASGARD_PROTO_CON_AE_BASE_SZ + (num_entries * AE_ENTRY_SIZE));
 
     if (!pkt_payload_sub) {
-        pthread_mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
+        asg_mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
         return -1;
     }
 
@@ -201,7 +190,7 @@ int setup_append_multicast_msg(struct asgard_device *sdev, struct asgard_payload
 
     sdev->multicast.nextIdx += num_entries;
     sdev->consensus_priv->sm_log.commit_idx += num_entries - 1;
-    pthread_mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
+    asg_mutex_unlock(&sdev->consensus_priv->sm_log.next_lock);
 
     return more;
 }
@@ -275,11 +264,11 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spa
 
     /* Update next_index inside next_lock critical section */
     if(!retrans){
-        pthread_mutex_lock(&cur_priv->sm_log.next_lock);
+        asg_mutex_lock(&cur_priv->sm_log.next_lock);
         next_index = get_next_idx(cur_priv, target_id);
 
         if(next_index == -2) {
-            pthread_mutex_unlock(&cur_priv->sm_log.next_lock);
+            asg_mutex_unlock(&cur_priv->sm_log.next_lock);
             return -2;
         }
 
@@ -289,7 +278,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spa
     if (next_index == -1) {
         asgard_dbg("Invalid target id resulted in invalid next_index!\n");
         if(!retrans)
-            pthread_mutex_unlock(&cur_priv->sm_log.next_lock);
+            asg_mutex_unlock(&cur_priv->sm_log.next_lock);
         return -1;
     }
 
@@ -299,7 +288,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spa
     if (prev_log_term < 0) {
         asgard_error("BUG! - prev_log_term is invalid. next_index=%d, retrans=%d, target_id=%d\n", next_index, retrans, target_id );
         if(!retrans)
-            pthread_mutex_unlock(&cur_priv->sm_log.next_lock);
+            asg_mutex_unlock(&cur_priv->sm_log.next_lock);
         return -1;
     }
 
@@ -324,7 +313,7 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spa
         if(num_entries <= 0) {
             asgard_dbg("No entries to replicate\n");
             if(!retrans)
-                pthread_mutex_unlock(&cur_priv->sm_log.next_lock);
+                asg_mutex_unlock(&cur_priv->sm_log.next_lock);
             return -1;
         }
 
@@ -344,12 +333,12 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spa
 
     } else {
         if(!retrans)
-            pthread_mutex_unlock(&cur_priv->sm_log.next_lock);
+            asg_mutex_unlock(&cur_priv->sm_log.next_lock);
         return -2;
     }
 
     if(!retrans)
-        pthread_mutex_unlock(&cur_priv->sm_log.next_lock);
+        asg_mutex_unlock(&cur_priv->sm_log.next_lock);
 
     /* asgard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
                  retrans,

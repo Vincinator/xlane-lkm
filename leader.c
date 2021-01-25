@@ -29,7 +29,7 @@ void initialize_indices(struct consensus_priv *priv)
         priv->sm_log.match_index[i] = -1;
         priv->sm_log.num_retransmissions[i] = 0;
 
-        pthread_rwlock_init(&priv->sm_log.retrans_list_lock[i], NULL);
+        asg_rwlock_init(&priv->sm_log.retrans_list_lock[i]);
 
         INIT_LIST_HEAD(&priv->sm_log.retrans_head[i]);
 
@@ -174,13 +174,15 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, int32_t r
 
     asgard_dbg("%s\n", __FUNCTION__ );
 
-    //rmb();
-    pthread_rwlock_wrlock(&priv->sm_log.retrans_list_lock[remote_lid]);
+#ifdef ASGARD_KERNEL_MODULE
+    rmb();
+#endif
+    asg_rwlock_lock(&priv->sm_log.retrans_list_lock[remote_lid], ASG_RW_WRITE);
 
     list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[remote_lid], retrans_req_head)
     {
         if(entry->request_idx == retrans_idx){
-            pthread_rwlock_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
+            asg_rwlock_unlock(&priv->sm_log.retrans_list_lock[remote_lid], ASG_RW_WRITE);
             return;
         }
     }
@@ -201,7 +203,7 @@ void queue_retransmission(struct consensus_priv *priv, int remote_lid, int32_t r
 
     priv->sm_log.num_retransmissions[remote_lid]++;
     priv->sm_log.retrans_entries[remote_lid]++;
-    pthread_rwlock_unlock(&priv->sm_log.retrans_list_lock[remote_lid]);
+    asg_rwlock_unlock(&priv->sm_log.retrans_list_lock[remote_lid], ASG_RW_WRITE);
 
 }
 
@@ -337,11 +339,11 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
     int i;
 
     for(i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
-        pthread_rwlock_wrlock(&priv->sm_log.retrans_list_lock[i]);
+        asg_rwlock_lock(&priv->sm_log.retrans_list_lock[i], ASG_RW_WRITE);
         asgard_dbg("deleting retransmission list for target %d\n", i);
 
         if(list_empty(&priv->sm_log.retrans_head[i])) {
-            pthread_rwlock_unlock(&priv->sm_log.retrans_list_lock[i]);
+            asg_rwlock_unlock(&priv->sm_log.retrans_list_lock[i], ASG_RW_WRITE);
             continue;
         }
 
@@ -355,7 +357,7 @@ void clean_request_transmission_lists(struct consensus_priv *priv)
 
 
         }
-        pthread_rwlock_unlock(&priv->sm_log.retrans_list_lock[i]);
+        asg_rwlock_unlock(&priv->sm_log.retrans_list_lock[i], ASG_RW_WRITE);
 
     }
 
@@ -379,7 +381,7 @@ void print_leader_stats(struct consensus_priv *priv)
 
         asgard_dbg("\t pending retransmissions: \n" );
 
-        pthread_rwlock_rdlock(&priv->sm_log.retrans_list_lock[i]);
+        asg_rwlock_lock(&priv->sm_log.retrans_list_lock[i], ASG_RW_READ);
         if(!list_empty(&priv->sdev->consensus_priv->sm_log.retrans_head[i])) {
             list_for_each_entry_safe(entry, tmp_entry, &priv->sm_log.retrans_head[i], retrans_req_head)
             {
@@ -388,7 +390,7 @@ void print_leader_stats(struct consensus_priv *priv)
         } else
             asgard_dbg("\t\t empty \n");
 
-        pthread_rwlock_unlock(&priv->sm_log.retrans_list_lock[i]);
+        asg_rwlock_unlock(&priv->sm_log.retrans_list_lock[i], ASG_RW_READ);
 
     }
 

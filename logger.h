@@ -9,6 +9,7 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/printk.h>
 #endif
 
 #include "types.h"
@@ -30,9 +31,8 @@
 
 
 #ifdef ASGARD_KERNEL_MODULE
-#if ASGARD_DEBUG
 
-#include <linux/kernel.h>
+#if ASGARD_DEBUG
 
 #define asgard_dbg(format, arg...)                        \
     ({                                                        \

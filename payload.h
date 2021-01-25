@@ -1,7 +1,21 @@
 #pragma once
 
-#include "types.h"
+
+#ifdef ASGARD_KERNEL_MODULE
+
+#else
+#include <stdlib.h>
+#include <string.h>
+#endif
+
+
+#include "logger.h"
 #include "libasraft.h"
+#include "consensus.h"
+#include "ringbuffer.h"
+#include "kvstore.h"
+#include "replication.h"
+#include "types.h"
 
 
 // protoid(uint16_t) + offset(uint16_t)

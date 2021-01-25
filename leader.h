@@ -1,12 +1,18 @@
 #pragma once
 
+#ifndef ASGARD_KERNEL_MODULE
 #include <stdlib.h>
+#endif
 
 #include "libasraft.h"
 #include "consensus.h"
 
 struct asgard_leader_pkt_work_data {
-    // struct work_struct work;
+
+#ifdef ASGARD_KERNEL_MODULE
+    struct work_struct work;
+#endif
+
     struct asgard_device *sdev;
 
     int target_id;
