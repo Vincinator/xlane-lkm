@@ -9,7 +9,7 @@
 #else
 #include <linux/slab.h>
 
-#include "lkm/asgard-net.h"
+#include "../lkm/asgard-net.h"
 
 
 #endif

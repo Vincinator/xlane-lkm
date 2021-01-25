@@ -1,7 +1,7 @@
 //
 // Created by vincent on 1/22/21.
 //
-#include "../module.h"
+#include "../core/module.h"
 
 #include "proto-instance-ctrl.h"
 
@@ -23,10 +23,10 @@
 #include <linux/err.h>
 
 
-#include "../libasraft.h"
-#include "../types.h"
-#include "../logger.h"
-#include "../proto.h"
+#include "../core/libasraft.h"
+#include "../core/types.h"
+#include "../core/logger.h"
+#include "../core/proto.h"
 
 #define ASGARD_TARGETS_BUF 512
 

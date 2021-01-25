@@ -10,12 +10,12 @@
 
 #include <linux/kernel.h>
 
-#include "../module.h"
-#include "../libasraft.h"
-#include "../types.h"
-#include "../logger.h"
-#include "../pacemaker.h"
-#include "../membership.h"
+#include "../core/module.h"
+#include "../core/libasraft.h"
+#include "../core/types.h"
+#include "../core/logger.h"
+#include "../core/pacemaker.h"
+#include "../core/membership.h"
 
 
 static ssize_t asgard_hb_ctrl_proc_write(struct file *file, const char __user *buffer, size_t count, loff_t *data)

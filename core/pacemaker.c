@@ -3,7 +3,7 @@
  */
 #include "pacemaker.h"
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 #include <rte_byteorder.h>
 #include <rte_common.h>
 #include <rte_errno.h>
@@ -779,7 +779,7 @@ int do_pacemaker(void *data) {
     }
 
     prev_time = ASGARD_TIMESTAMP;
-    while (pacemaker_is_alive(spminfo) && user_requested_stop != 1) {
+    while (pacemaker_is_alive(spminfo)) {
         cur_time = ASGARD_TIMESTAMP;
 
         out_of_sched_hb = 0;
@@ -853,7 +853,7 @@ int do_pacemaker(void *data) {
 }
 
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 int pacemaker(void *data){
     return do_pacemaker(data);
 }

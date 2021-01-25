@@ -7,8 +7,8 @@
 
 #else
 
-    #include "lkm/consensus-config-ctrl.h"
-    #include "lkm/consensus-eval-ctrl.h"
+    #include "../lkm/consensus-config-ctrl.h"
+    #include "../lkm/consensus-eval-ctrl.h"
 
 #endif
 

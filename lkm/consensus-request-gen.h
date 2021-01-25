@@ -5,16 +5,16 @@
 #include <linux/random.h>
 #include <linux/timer.h>
 
-#include "../libasraft.h"
+#include "../core/libasraft.h"
 
-#include "../ringbuffer.h"
-#include "../candidate.h"
-#include "../follower.h"
-#include "../leader.h"
-#include "../consensus.h"
-#include "../module.h"
-#include "../kvstore.h"
-#include "../replication.h"
+#include "../core/ringbuffer.h"
+#include "../core/candidate.h"
+#include "../core/follower.h"
+#include "../core/leader.h"
+#include "../core/consensus.h"
+#include "../core/module.h"
+#include "../core/kvstore.h"
+#include "../core/replication.h"
 
 
 void testcase_X_requests_per_sec(struct consensus_priv *priv, int x);

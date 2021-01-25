@@ -2,7 +2,14 @@
 // Created by Riesop, Vincent on 10.12.20.
 //
 
+
+#ifdef ASGARD_KERNEL_MODULE
+
+#else
 #include <string.h>
+#endif
+
+
 #include "pkthandler.h"
 #include "membership.h"
 
@@ -112,19 +119,7 @@ uint32_t extract_cluster_ip_from_ad(const char *payload) {
 }
 
 
-void *pkt_process_handler(void *data)
-{
-    struct pkt_work_data *wd = (struct pkt_work_data*) data;
-    asgard_dbg("processing pkt\n");
 
-    handle_sub_payloads(wd->sdev, wd->remote_lid, wd->rcluster_id,
-                         GET_PROTO_START_SUBS_PTR(wd->payload),
-                         wd->received_proto_instances, wd->bcnt);
-    AFREE(wd->payload);
-    AFREE(wd);
-
-    return NULL;
-}
 
 int compare_mac(unsigned char *m1, unsigned char *m2)
 {
@@ -171,6 +166,53 @@ void get_cluster_ids_by_mac(struct asgard_device *sdev, unsigned char *remote_ma
         }
     }
 }
+
+
+#ifdef ASGARD_KERNEL_MODULE
+// Note: this function will not explicitly run on the same isolated cpu
+//		.. for consecutive packets (even from the same host)
+void pkt_process_handler(struct work_struct *w)
+{
+    struct asgard_pkt_work_data *aw = NULL;
+    char *user_data;
+
+    aw = container_of(w, struct asgard_pkt_work_data, work);
+
+    if (aw->sdev->asgard_wq_lock) {
+        asgard_dbg("drop handling of received packet - asgard is shutting down \n");
+        goto exit;
+    }
+
+    user_data = ((char *)aw->payload) + aw->headroom + ETH_HLEN +
+                sizeof(struct iphdr) + sizeof(struct udphdr);
+
+    handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id,
+                        GET_PROTO_START_SUBS_PTR(user_data),
+                        aw->received_proto_instances, aw->cqe_bcnt);
+
+    exit:
+
+    kfree(aw->payload);
+
+    if (aw)
+        kfree(aw);
+}
+#else
+void *pkt_process_handler(void *data)
+{
+    struct pkt_work_data *wd = (struct pkt_work_data*) data;
+    asgard_dbg("processing pkt\n");
+
+    handle_sub_payloads(wd->sdev, wd->remote_lid, wd->rcluster_id,
+                         GET_PROTO_START_SUBS_PTR(wd->payload),
+                         wd->received_proto_instances, wd->bcnt);
+    AFREE(wd->payload);
+    AFREE(wd);
+
+    return NULL;
+}
+
+#endif
 
 void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id, char *payload, uint32_t cqe_bcnt) {
     struct pminfo *spminfo = &sdev->pminfo;
@@ -235,7 +277,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     wd->bcnt = cqe_bcnt;
 
 #ifdef ASGARD_KERNEL_MODULE
-    if (asgard_wq_lock) {
+    if (sdev->asgard_wq_lock) {
         asgard_dbg("Asgard is shutting down, ignoring packet\n");
         kfree(wd);
         return;
@@ -243,7 +285,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
 
     INIT_WORK(&wd->work, pkt_process_handler);
 
-    if (!queue_work(asgard_wq, &wd->work)) {
+    if (!queue_work(sdev->asgard_wq, &wd->work)) {
         asgard_dbg("Work item not put in query..");
 
         if (payload)

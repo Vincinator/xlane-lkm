@@ -24,10 +24,10 @@
 
 #endif
 
-#include "../pacemaker.h"
-#include "../pkthandler.h"
-#include "../libasraft.h"
-#include "../logger.h"
+#include "../core/pacemaker.h"
+#include "../core/pkthandler.h"
+#include "../core/libasraft.h"
+#include "../core/logger.h"
 
 
 

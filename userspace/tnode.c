@@ -10,7 +10,7 @@
 #include "tnode.h"
 
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 #include <rte_byteorder.h>
 #include <rte_ethdev.h>
 #include <rte_ip.h>
@@ -66,7 +66,7 @@ int    user_requested_stop = 0;
 void trap(int signal){ user_requested_stop = 1; }
 
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 /*
  * Keeps listening for new packets, and forwards the packet payload to the asgard handlers.
  * Also extracts the sender ip for asgard.
@@ -188,7 +188,7 @@ int start_node(tnode_t *tn) {
     asgard_dbg("Starting Node with node id: %d\n", tn->sdev->pminfo.cluster_id);
 
     tn->is_running = 1;
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 #else
     /* Start Pacemaker - NOT FOR DPDK VERSION  */
     pthread_create(&tn->pm_thread, NULL, pacemaker, tn->sdev);
@@ -206,7 +206,7 @@ int stop_node(tnode_t *tn) {
 
     tn->is_running = 0;
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 #else
     if (pthread_join(tn->pm_thread, NULL)) {
         printf("Failed to join pacemaker thread\n");

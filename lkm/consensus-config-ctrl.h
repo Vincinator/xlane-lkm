@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../module.h"
-#include "../logger.h"
-#include "../consensus.h"
+#include "../core/module.h"
+#include "../core/logger.h"
+#include "../core/consensus.h"
 
 
 #define ASGARD_UUID_BUF 42

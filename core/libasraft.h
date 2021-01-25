@@ -3,7 +3,7 @@
 
 
 #ifdef ASGARD_KERNEL_MODULE
-    #include "lkm/synbuf-chardev.h"
+    #include "../lkm/synbuf-chardev.h"
     #include <linux/uuid.h>
 
 #else
@@ -13,10 +13,10 @@
 #endif
 
 
-#include "types.h"
-#include "config.h"
-#include "types.h"
-#include "logger.h"
+#include "../core/types.h"
+#include "../core/config.h"
+#include "../core/types.h"
+#include "../core/logger.h"
 
 
 #ifdef ASGARD_DPDK

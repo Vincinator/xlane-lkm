@@ -1,5 +1,5 @@
 
-#include "../module.h"
+#include "../core/module.h"
 #include "multicast-ctrl.h"
 
 
@@ -14,9 +14,9 @@
 
 #include <linux/err.h>
 
-#include "../libasraft.h"
-#include "../types.h"
-#include "../logger.h"
+#include "../core/libasraft.h"
+#include "../core/types.h"
+#include "../core/logger.h"
 
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGARD][MULTICAST INSTANCE CTRL]"

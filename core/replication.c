@@ -215,40 +215,6 @@ int do_prepare_log_replication(struct asgard_device *sdev, int target_id, int32_
 }
 
 
-#ifdef ASGARD_KERNEL_MODULE
-
-// Note: this function will not explicitly run on the same isolated cpu
-//		.. for consecutive packets (even from the same host)
-//   ... Timestamping may be
-void pkt_process_handler(struct work_struct *w)
-{
-    struct asgard_pkt_work_data *aw = NULL;
-    char *user_data;
-
-    aw = container_of(w, struct asgard_pkt_work_data, work);
-
-    if (aw->sdev->asgard_wq_lock) {
-        asgard_dbg("drop handling of received packet - asgard is shutting down \n");
-        goto exit;
-    }
-
-    user_data = ((char *)aw->payload) + aw->headroom + ETH_HLEN +
-                sizeof(struct iphdr) + sizeof(struct udphdr);
-
-    handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id,
-                         GET_PROTO_START_SUBS_PTR(user_data),
-                         aw->received_proto_instances, aw->cqe_bcnt);
-
-    exit:
-
-    kfree(aw->payload);
-
-    if (aw)
-        kfree(aw);
-}
-
-
-#endif
 
 
 void *prepare_log_replication_handler(void *data)
@@ -314,7 +280,7 @@ void schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index,
         //asgard_dbg("scheduling prep handler for target node %d\n", target_id);
 
 #ifdef ASGARD_KERNEL_MODULE
-        INIT_WORK(&work->work, pkt_process_handler);
+        INIT_WORK(&work->work, prepare_log_replication_handler);
 
         if(!queue_work(sdev->asgard_leader_wq, &work->work)) {
             asgard_dbg("Work item not put in queue ..");
@@ -327,10 +293,12 @@ void schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index,
         pthread_create(&pt_logrep, NULL, prepare_log_replication_handler, work);
 #endif
 
-
-
     }
 }
+
+
+
+
 
 
 int check_target_id(struct consensus_priv *priv, int target_id)

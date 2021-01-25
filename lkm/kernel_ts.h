@@ -1,6 +1,6 @@
 
-#include "../libasraft.h"
-#include "../types.h"
+#include "../core/libasraft.h"
+#include "../core/types.h"
 
 
 

@@ -265,3 +265,64 @@ EXPORT_SYMBOL(send_pkt);
 #endif
 
 
+
+void check_pending_log_rep_for_multicast(struct asgard_device *sdev)
+{
+    s32 next_index;
+    int retrans;
+
+    if(sdev->is_leader == 0)
+        return;
+
+    if(sdev->pminfo.state != ASGARD_PM_EMITTING)
+        return;
+
+    next_index = sdev->multicast.nextIdx;
+
+    if(next_index < 0)
+        return;
+
+    _schedule_log_rep(sdev, 0, next_index, retrans, 1);
+}
+EXPORT_SYMBOL(check_pending_log_rep_for_multicast);
+
+void prepare_log_replication_multicast_handler(struct asgard_device *sdev)
+{
+    int more = 0;
+
+    more = _do_prepare_log_replication_multicast(sdev, sdev->multicast_ip, sdev->multicast_mac);
+
+    /* not ready to prepare log replication */
+    if(more < 0)
+        return;
+
+    if(more)
+        check_pending_log_rep_for_multicast(sdev);
+}
+
+void prepare_log_replication_handler(struct work_struct *w)
+{
+    struct asgard_leader_pkt_work_data *aw = NULL;
+    int more = 0;
+
+    aw = container_of(w, struct asgard_leader_pkt_work_data, work);
+
+    more = _do_prepare_log_replication(aw->sdev, aw->target_id, aw->next_index, aw->retrans);
+
+    /* not ready to prepare log replication */
+    if(more < 0){
+        goto cleanup;
+    }
+
+    if(!list_empty(&aw->sdev->consensus_priv->sm_log.retrans_head[aw->target_id]) || more) {
+        check_pending_log_rep_for_target(aw->sdev, aw->target_id);
+    }
+
+    cleanup:
+    if(aw)
+        kfree(aw);
+}
+
+
+
+

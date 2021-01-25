@@ -1,22 +1,22 @@
 
-#include <linux/module.h>
-#include <linux/slab.h>
-#include <linux/proc_fs.h>
-#include <linux/etherdevice.h>
-#include <linux/ip.h>
-#include <net/ip.h>
-#include <linux/netdevice.h>
+#include "../../asgard-kernel/include/linux/module.h"
+#include "../../asgard-kernel/include/linux/slab.h"
+#include "../../asgard-kernel/include/linux/proc_fs.h"
+#include "../../asgard-kernel/include/linux/etherdevice.h"
+#include "../../asgard-kernel/include/linux/ip.h"
+#include "../../asgard-kernel/include/net/ip.h"
+#include "../../asgard-kernel/include/linux/netdevice.h"
 #include <asm/checksum.h>
-#include <linux/skbuff.h>
-#include <linux/notifier.h>
-#include <linux/hrtimer.h>
-#include <linux/ktime.h>
-#include <linux/slab.h>
-#include <linux/inetdevice.h>
+#include "../../asgard-kernel/include/linux/skbuff.h"
+#include "../../asgard-kernel/include/linux/notifier.h"
+#include "../../asgard-kernel/include/linux/hrtimer.h"
+#include "../../asgard-kernel/include/linux/ktime.h"
+#include "../../asgard-kernel/include/linux/slab.h"
+#include "../../asgard-kernel/include/linux/inetdevice.h"
 
-#include <linux/kernel.h>
+#include "../../asgard-kernel/include/linux/kernel.h"
 
-#include <linux/compiler.h>
+#include "../../asgard-kernel/include/linux/compiler.h"
 
 
 
@@ -25,12 +25,12 @@
 
 #include "logger.h"
 #include "echo.h"
-#include "lkm/synbuf-chardev.h"
-#include "lkm/pm-ctrl.h"
-#include "lkm/kernel_ts.h"
-#include "lkm/core-ctrl.h"
-#include "lkm/proto-instance-ctrl.h"
-#include "lkm/multicast-ctrl.h"
+#include "../lkm/synbuf-chardev.h"
+#include "../lkm/pm-ctrl.h"
+#include "../lkm/kernel_ts.h"
+#include "../lkm/core-ctrl.h"
+#include "../lkm/proto-instance-ctrl.h"
+#include "../lkm/multicast-ctrl.h"
 
 #include "replication.h"
 #include "membership.h"

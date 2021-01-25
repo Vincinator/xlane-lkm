@@ -17,8 +17,8 @@
 
 #include <linux/compiler.h>
 
-#include "../replication.h"
-#include "../module.h"
+#include "../core/replication.h"
+#include "../core/module.h"
 
 
 struct sk_buff *asgard_reserve_skb(struct net_device *dev,
@@ -27,3 +27,6 @@ struct sk_buff *asgard_reserve_skb(struct net_device *dev,
 int compare_mac(unsigned char *m1, unsigned char *m2);
 
 void get_cluster_ids(struct asgard_device *sdev, unsigned char *remote_mac, int *lid, int *cid);
+
+void prepare_log_replication_handler(struct work_struct *w);
+void prepare_log_replication_multicast_handler(struct asgard_device *sdev);

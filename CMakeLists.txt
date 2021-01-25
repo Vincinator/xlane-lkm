@@ -3,8 +3,8 @@ project(libasraft C)
 
 # -------------------------------------------
 
-set(ASGARD_DPDK 1)
-set(ASGARD_KERNEL_MODULE 0)
+set(ASGARD_DPDK 0)
+set(ASGARD_KERNEL_MODULE 1)
 message("version: 1")
 
 
@@ -53,12 +53,12 @@ elseif(${ASGARD_KERNEL_MODULE})
 endif()
 
 
-add_library(libasraft STATIC libasraft.c libasraft.h types.h types.c logger.c logger.h consensus.c
-        consensus.h kvstore.c kvstore.h pacemaker.c pacemaker.h payload.c payload.h
-        ringbuffer.c ringbuffer.h membership.c membership.h leader.c leader.h follower.c
-        follower.h candidate.c candidate.h replication.c replication.h pktqueue.c pktqueue.h
-         pkthandler.c pkthandler.h proto.c proto.h multicast.c multicast.h
-        eval_helper.c eval_helper.h  echo.c echo.h)
+add_library(libasraft STATIC core/libasraft.c core/libasraft.h core/types.h core/types.c core/logger.c core/logger.h core/consensus.c
+        core/consensus.h core/kvstore.c core/kvstore.h core/pacemaker.c core/pacemaker.h core/payload.c core/payload.h
+        core/ringbuffer.c core/ringbuffer.h core/membership.c core/membership.h core/leader.c core/leader.h core/follower.c
+        core/follower.h core/candidate.c core/candidate.h core/replication.c core/replication.h core/pktqueue.c core/pktqueue.h
+        core/pkthandler.c core/pkthandler.h core/proto.c core/proto.h core/multicast.c core/multicast.h
+        core/eval_helper.c core/eval_helper.h core/echo.c core/echo.h)
 
 
 if(${ASGARD_KERNEL_MODULE})
@@ -70,8 +70,8 @@ if(${ASGARD_KERNEL_MODULE})
         # message("Adding source ${SRC_NAME}")
     endforeach()
 
-    list(PREPEND module_sources module.h)
-    list(PREPEND module_sources module.c)
+    list(PREPEND module_sources core/module.h)
+    list(PREPEND module_sources core/module.c)
 
     set(ASGARD_KERNEL_MODULE 1)
 
@@ -103,7 +103,7 @@ else()
         # message("Adding source ${SRC_NAME}")
     endforeach()
 
-    add_executable(testrunner runner.c)
+    add_executable(testrunner core/runner.c)
 endif()
 
 

@@ -3,20 +3,20 @@
  * the node.ini residing in the same folder as the executable.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <limits.h>
-#include <signal.h>
-#include <errno.h>
+#include "../../../../../usr/include/stdlib.h"
+#include "../../../../../usr/include/stdio.h"
+#include "../../../../../usr/lib/llvm-10/lib/clang/10.0.0/include/limits.h"
+#include "../../../../../usr/include/signal.h"
+#include "../../../../../usr/include/errno.h"
 
 #include "libasraft.h"
-#include "userspace/tnode.h"
+#include "../userspace/tnode.h"
 #include "ringbuffer.h"
 #include "membership.h"
 #include "kvstore.h"
 #include "pacemaker.h"
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 #include <rte_log.h>
 #include <rte_common.h>
 #include <rte_config.h>
@@ -31,7 +31,7 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGARD][TRUNNER]"
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 uint32_t DPDK_LIBASRAFT_LOG_LEVEL = RTE_LOG_DEBUG;
 
 /*
@@ -194,7 +194,7 @@ void generate_load(tnode_t *tn){
 
 
 
-#if ASGARD_DPDK
+#ifdef ASGARD_DPDK
 int main(int argc, char *argv[]){
     tnode_t node;
     int i, ret;

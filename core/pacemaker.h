@@ -24,7 +24,7 @@
     #include <linux/time.h>
 
     #include "module.h"
-    #include "lkm/asgard-net.h"
+    #include "../lkm/asgard-net.h"
 
 #else
 
@@ -35,7 +35,7 @@
     #include <stdlib.h>
     #include <signal.h>
 
-    #include "userspace/tnode.h"
+    #include "../userspace/tnode.h"
 
 
 #endif
