@@ -5,7 +5,7 @@ project(asgard C)
 
 set(ASGARD_DPDK 0)
 set(ASGARD_KERNEL_MODULE 0)
-message("version: 2Z")
+message("version: 2Z2")
 
 
 if(${ASGARD_KERNEL_MODULE} AND ${ASGARD_DPDK})
