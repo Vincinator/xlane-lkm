@@ -51,6 +51,9 @@ uint32_t asgard_ip_convert(const char *str)
 
     return -EINVAL;
 }
+#ifdef ASGARD_KERNEL_MODULE
+EXPORT_SYMBOL(asgard_ip_convert);
+#endif
 
 
 /*
@@ -73,6 +76,9 @@ unsigned char *asgard_convert_mac(const char *str)
 
     return NULL;
 }
+#ifdef ASGARD_KERNEL_MODULE
+EXPORT_SYMBOL(asgard_convert_mac);
+#endif
 
 
 

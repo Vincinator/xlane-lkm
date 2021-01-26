@@ -3,18 +3,18 @@
  * the node.ini residing in the same folder as the executable.
  */
 
-#include "../../../../../usr/include/stdlib.h"
-#include "../../../../../usr/include/stdio.h"
-#include "../../../../../usr/lib/llvm-10/lib/clang/10.0.0/include/limits.h"
-#include "../../../../../usr/include/signal.h"
-#include "../../../../../usr/include/errno.h"
+#include "stdlib.h"
+#include "stdio.h"
+#include "limits.h"
+#include "signal.h"
+#include "errno.h"
 
-#include "libasraft.h"
-#include "../userspace/tnode.h"
-#include "ringbuffer.h"
-#include "membership.h"
-#include "kvstore.h"
-#include "pacemaker.h"
+#include "../core/libasraft.h"
+#include "tnode.h"
+#include "../core/ringbuffer.h"
+#include "../core/membership.h"
+#include "../core/kvstore.h"
+#include "../core/pacemaker.h"
 
 #ifdef ASGARD_DPDK
 #include <rte_log.h>
@@ -157,7 +157,7 @@ void testcase_one_shot_big_log(struct consensus_priv *priv, int num_entries)
         rand_id =  rand()%((MAX_VALUE_SM_ID_SPACE+1)-0) + 0;
 
         // freed by consensus_clean
-        cur_cmd =AMALLOC(sizeof(struct data_chunk));
+        cur_cmd = AMALLOC(sizeof(struct data_chunk), GFP_KERNEL);
 
         if (!cur_cmd) {
             err = -1;

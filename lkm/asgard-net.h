@@ -19,13 +19,13 @@
 
 #include "../core/replication.h"
 #include "../core/module.h"
-
+#include "../core/replication.h"
 
 struct sk_buff *asgard_reserve_skb(struct net_device *dev,
         u32 dst_ip, unsigned char *dst_mac, struct asgard_payload *payload);
 
 int compare_mac(unsigned char *m1, unsigned char *m2);
-
+void asgard_hex_to_ip(char *retval, u32 dst_ip);
 void get_cluster_ids(struct asgard_device *sdev, unsigned char *remote_mac, int *lid, int *cid);
 
 void prepare_log_replication_handler(struct work_struct *w);

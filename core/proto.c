@@ -3,7 +3,7 @@
 //
 
 #include "proto.h"
-#include "core/logger.h"
+#include "logger.h"
 
 #ifndef ASGARD_KERNEL_MODULE
 #include <errno.h>

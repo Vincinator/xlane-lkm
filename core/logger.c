@@ -30,14 +30,6 @@ uint64_t asgts(){
 }
 #endif
 
-
-void asgard_hex_to_ip(char *retval, uint32_t dst_ip)
-{
-    sprintf(retval, "%d.%d.%d.%d", ((dst_ip & 0xff000000) >> 24),
-            ((dst_ip & 0x00ff0000) >> 16), ((dst_ip & 0x0000ff00) >> 8),
-            ((dst_ip & 0x000000ff)));
-}
-
 void asg_print_ip(unsigned int ip) {
     unsigned char bytes[4];
     bytes[0] = ip & 0xFF;

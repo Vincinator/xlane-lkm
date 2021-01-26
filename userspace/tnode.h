@@ -18,8 +18,10 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include "libasraft.h"
 
+
+#include "../core/libasraft.h"
+#include "../core/pkthandler.h"
 #include "ini.h"
 
 #endif

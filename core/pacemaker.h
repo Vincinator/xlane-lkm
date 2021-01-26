@@ -34,9 +34,7 @@
     #include <errno.h>
     #include <stdlib.h>
     #include <signal.h>
-
     #include "../userspace/tnode.h"
-
 
 #endif
 

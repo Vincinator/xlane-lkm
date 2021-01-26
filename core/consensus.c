@@ -614,6 +614,9 @@ void check_pending_log_rep_for_multicast(struct asgard_device *sdev)
     asgard_dbg("multicast schedule called\n");
     schedule_log_rep(sdev, 0, next_index, retrans, 1);
 }
+#ifdef ASGARD_KERNEL_MODULE
+EXPORT_SYMBOL(check_pending_log_rep_for_multicast);
+#endif
 
 
 

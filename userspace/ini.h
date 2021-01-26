@@ -19,7 +19,7 @@ https://github.com/benhoyt/inih
 extern "C" {
 #endif
 
-#include "../../../../../usr/include/stdio.h"
+#include "stdio.h"
 
 /* Nonzero if ini_handler callback should accept lineno parameter. */
 #ifndef INI_HANDLER_LINENO

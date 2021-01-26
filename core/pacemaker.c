@@ -3,6 +3,9 @@
  */
 #include "pacemaker.h"
 
+
+
+
 #ifdef ASGARD_DPDK
 #include <rte_byteorder.h>
 #include <rte_common.h>
@@ -13,11 +16,9 @@
 #endif
 
 #ifdef ASGARD_KERNEL_MODULE
-
-
-
 static struct task_struct *heartbeat_task;
 #endif
+
 
 
 #undef LOG_PREFIX

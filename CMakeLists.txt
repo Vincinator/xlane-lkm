@@ -4,8 +4,8 @@ project(libasraft C)
 # -------------------------------------------
 
 set(ASGARD_DPDK 0)
-set(ASGARD_KERNEL_MODULE 1)
-message("version: 1")
+set(ASGARD_KERNEL_MODULE 0)
+message("version: 2")
 
 
 if(${ASGARD_KERNEL_MODULE} AND ${ASGARD_DPDK})
@@ -53,12 +53,21 @@ elseif(${ASGARD_KERNEL_MODULE})
 endif()
 
 
-add_library(libasraft STATIC core/libasraft.c core/libasraft.h core/types.h core/types.c core/logger.c core/logger.h core/consensus.c
+list(APPEND library_sources core/libasraft.c core/libasraft.h core/types.h core/types.c core/logger.c core/logger.h core/consensus.c
         core/consensus.h core/kvstore.c core/kvstore.h core/pacemaker.c core/pacemaker.h core/payload.c core/payload.h
         core/ringbuffer.c core/ringbuffer.h core/membership.c core/membership.h core/leader.c core/leader.h core/follower.c
         core/follower.h core/candidate.c core/candidate.h core/replication.c core/replication.h core/pktqueue.c core/pktqueue.h
         core/pkthandler.c core/pkthandler.h core/proto.c core/proto.h core/multicast.c core/multicast.h
         core/eval_helper.c core/eval_helper.h core/echo.c core/echo.h)
+
+if(NOT ${ASGARD_KERNEL_MODULE})
+    list(PREPEND library_sources userspace/tnode.c userspace/tnode.h userspace/ini.c)
+endif()
+
+
+
+
+add_library(libasraft STATIC ${library_sources})
 
 
 if(${ASGARD_KERNEL_MODULE})
@@ -95,18 +104,11 @@ if(${ASGARD_KERNEL_MODULE})
     add_custom_target(module-clean COMMAND ${module_cmd} clean)
 
 else()
-    get_target_property(module_sources libasraft SOURCES)
-    file(GLOB lkmfiles "userspace/*")
-    foreach(src ${lkmfiles})
-        get_filename_component(SRC_NAME ${src} NAME)
-        list(PREPEND module_sources lkm/${SRC_NAME})
-        # message("Adding source ${SRC_NAME}")
-    endforeach()
 
-    add_executable(testrunner core/runner.c)
+    add_executable(testrunner userspace/runner.c)
+    target_link_libraries(testrunner LINK_PUBLIC libasraft)
+
 endif()
-
-
 
 
 if(${ASGARD_DPDK})
@@ -121,6 +123,3 @@ endif ()
 
 target_link_libraries(libasraft PRIVATE Threads::Threads)
 
-if(NOT ${ASGARD_KERNEL_MODULE})
-    target_link_libraries(testrunner LINK_PUBLIC libasraft)
-endif()

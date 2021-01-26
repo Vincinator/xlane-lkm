@@ -171,5 +171,4 @@ void logger_state_transition_to(struct asgard_logger *slog, enum logger_state st
 
 void clear_ingress_logger(struct asgard_ingress_logger *ailog);
 int init_ingress_logger(struct asgard_ingress_logger *ailog, int instance_id);
-void asgard_hex_to_ip(char *retval, uint32_t dst_ip);
 #endif //LIBASRAFT_LOGGER_H

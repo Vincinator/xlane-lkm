@@ -3,7 +3,7 @@
 //
 
 #include "multicast.h"
-#include "core/libasraft.h"
+#include "libasraft.h"
 
 
 void initialize_multicast(struct asgard_device *sdev){

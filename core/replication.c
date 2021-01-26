@@ -4,6 +4,7 @@
 
 
 #include "replication.h"
+#include "pktqueue.h"
 
 
 #ifndef ASGARD_KERNEL_MODULE
@@ -16,11 +17,6 @@
 
 #endif
 
-#include "pktqueue.h"
-#include "payload.h"
-#include "kvstore.h"
-#include "leader.h"
-#include "pkthandler.h"
 
 
 
@@ -214,13 +210,10 @@ int do_prepare_log_replication(struct asgard_device *sdev, int target_id, int32_
 
 }
 
+#ifdef ASGARD_KERNEL_MODULE
 
-
-
-void *prepare_log_replication_handler(void *data)
-{
-    struct asgard_leader_pkt_work_data *aw = data;
-    int more = 0;
+void prepare_log_replication(struct asgard_leader_pkt_work_data *aw) {
+    int more;
 
     more = do_prepare_log_replication(aw->sdev, aw->target_id, aw->next_index, aw->retrans);
 
@@ -234,10 +227,27 @@ void *prepare_log_replication_handler(void *data)
     }
 
 cleanup:
-    AFREE(aw);
-    return NULL;
+    kfree(aw);
+
 }
 
+void prepare_log_replication_handler(struct work_struct *w)
+{
+    struct asgard_leader_pkt_work_data *aw = NULL;
+    aw = container_of(w, struct asgard_leader_pkt_work_data, work);
+    prepare_log_replication(aw);
+
+}
+#else
+
+void *prepare_log_replication_handler(void *data)
+{
+    struct asgard_leader_pkt_work_data *aw = data;
+
+    prepare_log_replication(aw);
+
+}
+#endif
 
 void schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index, int32_t retrans, int multicast_enabled)
 {
