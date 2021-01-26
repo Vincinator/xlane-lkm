@@ -210,7 +210,6 @@ int do_prepare_log_replication(struct asgard_device *sdev, int target_id, int32_
 
 }
 
-#ifdef ASGARD_KERNEL_MODULE
 
 void prepare_log_replication(struct asgard_leader_pkt_work_data *aw) {
     int more;
@@ -227,9 +226,10 @@ void prepare_log_replication(struct asgard_leader_pkt_work_data *aw) {
     }
 
 cleanup:
-    kfree(aw);
+    AFREE(aw);
 
 }
+#ifdef ASGARD_KERNEL_MODULE
 
 void prepare_log_replication_handler(struct work_struct *w)
 {

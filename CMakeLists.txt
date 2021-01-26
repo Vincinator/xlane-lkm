@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 3.13)
-project(libasraft C)
+project(asgard C)
 
 # -------------------------------------------
 
 set(ASGARD_DPDK 0)
 set(ASGARD_KERNEL_MODULE 0)
-message("version: 2")
+message("version: 2Z")
 
 
 if(${ASGARD_KERNEL_MODULE} AND ${ASGARD_DPDK})
-    message( SEND_ERROR "Kernel Module and DPDK are mutual exclusive options. Select only one!" )
+    message(SEND_ERROR "Kernel Module and DPDK are mutual exclusive options. Select only one!" )
 endif()
 
 # -------------------------------------------
@@ -25,6 +25,20 @@ find_library(LibUUID_LIBRARY  NAMES uuid)
 
 include_directories(.)
 include_directories(${LIBUUID_INCLUDE_DIR})
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+
+FUNCTION(PREPEND var prefix)
+    SET(listVar "")
+    FOREACH(f ${ARGN})
+        LIST(APPEND listVar "${prefix}/${f}")
+    ENDFOREACH(f)
+    SET(${var} "${listVar}" PARENT_SCOPE)
+ENDFUNCTION(PREPEND)
+
 
 if(${ASGARD_DPDK})
     message("Selected Option: DPDK")
@@ -65,13 +79,11 @@ if(NOT ${ASGARD_KERNEL_MODULE})
 endif()
 
 
-
-
-add_library(libasraft STATIC ${library_sources})
+add_library(asgard STATIC ${library_sources})
 
 
 if(${ASGARD_KERNEL_MODULE})
-    get_target_property(module_sources libasraft SOURCES)
+    get_target_property(module_sources asgard SOURCES)
     file(GLOB lkmfiles "lkm/*")
     foreach(src ${lkmfiles})
         get_filename_component(SRC_NAME ${src} NAME)
@@ -79,34 +91,49 @@ if(${ASGARD_KERNEL_MODULE})
         # message("Adding source ${SRC_NAME}")
     endforeach()
 
+
     list(PREPEND module_sources core/module.h)
     list(PREPEND module_sources core/module.c)
 
+    foreach(src ${module_sources})
+        list(APPEND module_sources_lkm ../../${src})
+    endforeach()
+
+
     set(ASGARD_KERNEL_MODULE 1)
 
+    file(COPY ${CMAKE_CURRENT_BINARY_DIR}/Kbuild.in
+            DESTINATION  ${CMAKE_CURRENT_BINARY_DIR}/bin/lkm)
 
-    string(REPLACE ";" " " module_sources_string "${module_sources}")
-    configure_file(Kbuild.in Kbuild @ONLY)
+    string(REPLACE ";" " " module_sources_string "${module_sources_lkm}")
+    configure_file(bin/lkm/Kbuild.in bin/lkm/Kbuild @ONLY)
+
 
     foreach(src ${module_sources})
         configure_file(${src} ${src} COPYONLY)
     endforeach()
 
-    set(module_cmd ${CMAKE_MAKE_PROGRAM} -C ${kerneldir} M=${CMAKE_CURRENT_BINARY_DIR}  ccflags-y="-DASGARD_KERNEL_MODULE=1")
+    set(module_cmd ${CMAKE_MAKE_PROGRAM} -C ../../${kerneldir} M=${CMAKE_CURRENT_BINARY_DIR}/bin/lkm  ccflags-y="-DASGARD_KERNEL_MODULE=1")
     add_custom_command(OUTPUT asgard.ko
             COMMAND ${module_cmd} modules
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-            DEPENDS ${module_sources} ${CMAKE_CURRENT_BINARY_DIR}/Kbuild
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/lkm
+            DEPENDS ${module_sources} ${CMAKE_CURRENT_BINARY_DIR}/bin/lkm/
             VERBATIM)
     add_compile_definitions(ASGARD_KERNEL_MODULE)
-    message("using ${kerneldir}")
+    message("using  ${kerneldir}")
+
     add_custom_target(module DEPENDS asgard.ko )
-    add_custom_target(module-clean COMMAND ${module_cmd} clean)
+
+    add_custom_target(module-clean COMMAND ${module_cmd} clean
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/lkm)
 
 else()
+    target_link_libraries(asgard PRIVATE Threads::Threads)
 
+
+    message("Adding Testrunner to targets")
     add_executable(testrunner userspace/runner.c)
-    target_link_libraries(testrunner LINK_PUBLIC libasraft)
+    target_link_libraries(testrunner LINK_PUBLIC asgard)
 
 endif()
 
@@ -116,10 +143,14 @@ if(${ASGARD_DPDK})
     if (NOT ${DPDK_FOUND})
         message( SEND_ERROR "DPDK installation not found on system" )
     endif ()
+
     add_compile_definitions(ASGARD_DPDK=${ASGARD_DPDK})
-    target_link_libraries(libasraft PRIVATE ${DPDK_LIBRARIES} )
+    target_link_libraries(asgard PRIVATE ${DPDK_LIBRARIES} )
 endif ()
 
 
-target_link_libraries(libasraft PRIVATE Threads::Threads)
+# Clean all .o and .cmd files
+set(clean_cmd find . -name "*.cmd" -type f -delete && find . -name "*.o" -type f -delete )
+add_custom_target(clean-all COMMAND ${clean_cmd})
+
 
