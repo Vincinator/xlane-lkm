@@ -14,3 +14,8 @@ CMakeFiles/
 Testing/
 cmake_install.cmake
 libasraft.cbp
+packages/
+bin/
+*.cmd
+*.o
+*cbp
