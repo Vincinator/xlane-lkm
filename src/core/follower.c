@@ -11,7 +11,6 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
 {
     struct consensus_priv *priv =
             (struct consensus_priv *)ins->proto_data;
-    struct asgard_device *sdev = priv->sdev;
 
     uint8_t opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
     int32_t param1, param2, param3, param4, *commit_idx;

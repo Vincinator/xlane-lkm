@@ -58,9 +58,9 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
     write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, ASGARD_TIMESTAMP);
 
 #if VERBOSE_DEBUG
-    asgard_log_le("%s, %lu, %d: received %d votes for this term. (%d possible total votes)\n",
+    asgard_log_le("%s, %llu, %d: received %d votes for this term. (%d possible total votes)\n",
                 nstate_string(priv->nstate),
-                ASGARD_TIMESTAMP,
+                (unsigned long long) ASGARD_TIMESTAMP,
                 priv->term,
                 priv->votes,
                 priv->sdev->pminfo.num_of_targets);
@@ -70,9 +70,9 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
     if (priv->votes == priv->sdev->pminfo.num_of_targets ) {
 
 #if VERBOSE_DEBUG
-		asgard_log_le("%s, %lu, %d: got majority with %d from %d possible votes\n",
+		asgard_log_le("%s, %d, %d: got majority with %d from %d possible votes\n",
 				nstate_string(priv->nstate),
-				ASGARD_TIMESTAMP,
+				get_global_hb_count(priv->sdev),
 				priv->term,
 				priv->votes,
 				priv->sdev->pminfo.num_of_targets);
@@ -100,7 +100,6 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
 {
     struct consensus_priv *priv =
             (struct consensus_priv *)ins->proto_data;
-    struct asgard_device *sdev = priv->sdev;
 
     uint8_t opcode = GET_CON_PROTO_OPCODE_VAL(pkt);
     int32_t param1, param2, param3, param4;

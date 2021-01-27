@@ -4,11 +4,11 @@
     - name: Clean build folder
       file:
         state: absent
-        path: "/home/dsp/src/build"
+        path: "/home/dsp/build"
 
     - name: Create the temp build folder
       file:
-        path: "/home/dsp/src/build"
+        path: "/home/dsp/build"
         state: directory
         recurse: yes
 
@@ -18,13 +18,13 @@
         state: directory
         recurse: yes
 
-    - name: CMake libasraft for linux
-      command: chdir="/home/dsp/src/build" cmake ..
-      delegate_to: workstation
+#    - name: CMake libasraft for linux
+#      command: chdir="/home/dsp/src/build" cmake ..
+#      delegate_to: workstation
 
-    - name: Build libasraft for linux
-      command: chdir="/home/dsp/src/build" make
-      delegate_to: workstation
+#    - name: Build libasraft for linux
+#      command: chdir="/home/dsp/src/build" make
+#      delegate_to: workstation
 
 
     - name: Create a tar.gz archive of libasraft

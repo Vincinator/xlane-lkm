@@ -119,9 +119,7 @@ uint32_t extract_cluster_ip_from_ad(const char *payload) {
 }
 
 
-
-
-int compare_mac(unsigned char *m1, unsigned char *m2)
+int compare_mac(const unsigned  char *m1, const unsigned char *m2)
 {
     int i;
 
@@ -307,14 +305,11 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
 
 void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uint32_t cqe_bcnt){
     struct asgard_device *sdev = get_sdev(asgard_id);
-    int remote_lid, rcluster_id, cluster_id_ad, i;
-    struct asgard_pkt_work_data *work;
+    int remote_lid, rcluster_id;
     //uint64_t ts2, ts3;
     char *payload;
     char *remote_mac;
     char *user_data;
-    u32 *dst_ip;
-    u32 cluster_ip_ad;
 
 
     // freed by pkt_process_handler

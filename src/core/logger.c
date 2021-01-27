@@ -165,7 +165,7 @@ int write_ingress_log(struct asgard_ingress_logger *ailog, int type, uint64_t tc
 
 
 void calculate_deltas(struct asgard_logger *slog) {
-    int i, id ;
+    int i;
     uint64_t prev;
 
     // init deltas to 0

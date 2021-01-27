@@ -3,19 +3,27 @@ project(asgard C)
 
 # -------------------------------------------
 
-set(ASGARD_DPDK 0)
-set(ASGARD_KERNEL_MODULE 1)
+set(ASGARD_DPDK 1)
+set(ASGARD_KERNEL_MODULE 0)
+
+
 set(kerneldir "/home/vincent/workspace/asgard-kernel")
 set(bindir "${CMAKE_SOURCE_DIR}/../bin")
 
-message("version: 28l")
+# -------------------------------------------
+if(${ASGARD_DPDK})
+    set(testrunner_target testrunner-dpdk)
+else()
+    set(testrunner_target testrunner)
+endif()
+
+message("version: v12")
 
 
 if(${ASGARD_KERNEL_MODULE} AND ${ASGARD_DPDK})
     message(SEND_ERROR "Kernel Module and DPDK are mutual exclusive options. Select only one!" )
 endif()
 
-# -------------------------------------------
 set(CMAKE_C_STANDARD 99)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CMAKE_BUILD_TYPE Debug)
@@ -28,6 +36,9 @@ find_library(LibUUID_LIBRARY  NAMES uuid)
 
 include_directories(..)
 include_directories(${LIBUUID_INCLUDE_DIR})
+
+file(MAKE_DIRECTORY ${bindir})
+file(MAKE_DIRECTORY ${bindir}/lib)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${bindir}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${bindir}/lib)
@@ -52,19 +63,16 @@ if(${ASGARD_DPDK})
 
 elseif(${ASGARD_KERNEL_MODULE})
 
-
-
-
     message("Selected Option: kernel module")
     message("kerneldir is set to ${kerneldir}")
-    set(kerneldir "" CACHE STRING "Path to the kernel build directory")
+    #set(kerneldir "" CACHE STRING "Path to the kernel build directory")
     if("${kerneldir}" STREQUAL "")
         message("Searching for local kernel installation. CAUTION: you may want to use the asgard sources!")
         execute_process(COMMAND uname -r OUTPUT_VARIABLE uname_r
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
         set(kerneldir "/lib/modules/${uname_r}/build")
     endif()
-    find_file(kernel_makefile NAMES ../Makefile
+    find_file(kernel_makefile NAMES Makefile
             PATHS ${kerneldir} NO_DEFAULT_PATH)
     include_directories(${kerneldir}/include)
 
@@ -79,18 +87,19 @@ list(APPEND library_sources core/libasraft.c core/libasraft.h core/types.h core/
         core/ringbuffer.c core/ringbuffer.h core/membership.c core/membership.h core/leader.c core/leader.h core/follower.c
         core/follower.h core/candidate.c core/candidate.h core/replication.c core/replication.h core/pktqueue.c core/pktqueue.h
         core/pkthandler.c core/pkthandler.h core/proto.c core/proto.h core/multicast.c core/multicast.h
-        core/eval_helper.c core/eval_helper.h core/echo.c core/echo.h core/config.h)
+        core/eval_helper.c core/eval_helper.h core/echo.c core/echo.h core/config.h core/timekeeping.h core/timekeeping.c )
 
 if(NOT ${ASGARD_KERNEL_MODULE})
     list(PREPEND library_sources userspace/tnode.c userspace/tnode.h userspace/ini.c)
 endif()
 
 
+
 add_library(asgard STATIC ${library_sources})
 
 
 if(${ASGARD_KERNEL_MODULE})
-
+    message("config kernel module")
 
     get_target_property(module_sources asgard SOURCES)
     file(GLOB lkmfiles "lkm/*")
@@ -105,7 +114,7 @@ if(${ASGARD_KERNEL_MODULE})
 
     foreach(src ${module_sources})
         list(APPEND module_sources_lkm ../src/${src})
-        message("configuring source path  ../src/${src}")
+        #message("configuring source path  ../src/${src}")
     endforeach()
 
 
@@ -118,11 +127,12 @@ if(${ASGARD_KERNEL_MODULE})
     configure_file(${bindir}/Kbuild.in ${bindir}/Kbuild @ONLY)
 
     foreach(src ${module_sources_lkm})
-        message("configuring ${src}")
+       # message("configuring ${src}")
         configure_file(${src} ${src} COPYONLY)
     endforeach()
+    set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir}  ccflags-y="-DASGARD_KERNEL_MODULE=1")
+    message("using module cmd: ${module_cmd}")
 
-    set(module_cmd ${CMAKE_MAKE_PROGRAM} -C ${kerneldir} M=${bindir}  ccflags-y="-DASGARD_KERNEL_MODULE=1")
     add_custom_command(OUTPUT asgard.ko
             COMMAND ${module_cmd} modules
             WORKING_DIRECTORY ${bindir}
@@ -132,18 +142,18 @@ if(${ASGARD_KERNEL_MODULE})
     message("using  ${kerneldir}")
 
     add_custom_target(module DEPENDS asgard.ko )
+    add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir})
+    add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir}/lib)
     include_directories("${bindir}")
 
-    add_custom_target(module-clean COMMAND ${module_cmd} clean
-            WORKING_DIRECTORY ${bindir})
+    # add_custom_target(module-clean COMMAND ${module_cmd} clean
+    #        WORKING_DIRECTORY ${bindir})
 
 else()
     target_link_libraries(asgard PRIVATE Threads::Threads)
-
-
-    message("Adding Testrunner to targets")
-    add_executable(testrunner userspace/runner.c)
-    target_link_libraries(testrunner LINK_PUBLIC asgard)
+    message("Adding ${testrunner_target} to targets")
+    add_executable(${testrunner_target} userspace/runner.c)
+    target_link_libraries(${testrunner_target} LINK_PUBLIC asgard)
 
 endif()
 
@@ -160,7 +170,7 @@ endif ()
 
 
 # Clean all .o and .cmd files
-set(clean_cmd find .. -name "*.cmd" -type f -delete && find .. -name "*.o" -type f -delete && rm -R ${bindir})
+set(clean_cmd find .. -name "*.cmd" -type f -delete && find .. -name "*.o" -type f -delete)
 add_custom_target(clean-all COMMAND ${clean_cmd})
 
 

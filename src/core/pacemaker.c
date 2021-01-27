@@ -280,15 +280,7 @@ static inline int out_of_schedule_multi_tx(struct asgard_device *sdev) {
 
 /* --------- Emitter Functions --------- */
 
-static unsigned int get_packet_size_for_alloc(void){
-    unsigned int ip_len, udp_len, asgard_len, total_len;
 
-    udp_len = UDP_HLEN;
-    ip_len = udp_len + IP_HLEN;
-    total_len = ip_len + ETH_HLEN;
-
-    return total_len;
-}
 #ifdef ASGARD_DPDK
 
 
@@ -309,6 +301,16 @@ ip_sum(const unaligned_uint16_t *hdr, int hdr_len)
         sum = (sum & 0xFFFF) + (sum >> 16);
 
     return ~sum;
+}
+
+static unsigned int get_packet_size_for_alloc(void){
+    unsigned int ip_len, udp_len, asgard_len, total_len;
+
+    udp_len = UDP_HLEN;
+    ip_len = udp_len + IP_HLEN;
+    total_len = ip_len + ETH_HLEN;
+
+    return total_len;
 }
 
 /* construct ping packet */
@@ -450,9 +452,6 @@ int emit_async_unicast_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
 {
     int i;
     struct asgard_async_pkt *cur_apkt;
-    int ret;
-    int32_t num_entries = 0, *prev_log_idx;
-
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
         if (spminfo->pm_targets[i].aapriv->doorbell > 0) {
@@ -465,13 +464,14 @@ int emit_async_unicast_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
                 asgard_error("pkt or skb is NULL! \n");
                 continue;
             }
-
 #if 0
             // DEBUG: print emitted pkts
+            int32_t num_entries = 0, *prev_log_idx;
             num_entries = GET_CON_AE_NUM_ENTRIES_VAL( cur_apkt->pkt_data.payload->proto_data);
             prev_log_idx = GET_CON_AE_PREV_LOG_IDX_PTR(cur_apkt->pkt_data.payload->proto_data);
             asgard_dbg("Node: %d - Emitting %d entries, start_idx=%d\n", i, num_entries, *prev_log_idx);
 #endif
+
 #ifdef ASGARD_DPDK
             sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
                                                      sdev->pktmbuf_pool,
@@ -493,7 +493,6 @@ int emit_async_unicast_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
 int emit_async_multicast_pkt(struct asgard_device *sdev, struct pminfo *spminfo)
 {
     struct asgard_async_pkt *cur_apkt;
-    int ret;
 
     if (sdev->multicast.aapriv->doorbell > 0) {
         cur_apkt = dequeue_async_pkt(sdev->multicast.aapriv);
@@ -764,12 +763,12 @@ int do_pacemaker(void *data) {
 #endif
 
     if(interval <= 0){
-        asgard_error("Invalid hbi of %lu set!\n", interval);
+        asgard_error("Invalid hbi of %llu set!\n",(unsigned long long) interval);
         pm_state_transition_to(spminfo, ASGARD_PM_FAILED);
         return -1;
     }
 
-    asgard_dbg("Starting Pacemaker with hbi: %lu\n", interval);
+    asgard_dbg("Starting Pacemaker with hbi: %llu\n", (unsigned long long) interval);
 
     /* Reset Errors from previous runs */
     spminfo->errors = 0;
@@ -861,6 +860,7 @@ int pacemaker(void *data){
 #else
 void *pacemaker(void *data) {
     do_pacemaker(data);
+    return NULL;
 }
 #endif
 
@@ -926,7 +926,7 @@ int asgard_pm_start_loop(void *data)
     struct pminfo *spminfo = (struct pminfo *)data;
     struct asgard_device *sdev =
             container_of(spminfo, struct asgard_device, pminfo);
-    struct cpumask mask;
+    struct cpumask *mask = AMALLOC(sizeof(struct cpumask), GFP_KERNEL);
     int err;
 
     asgard_dbg("asgard_pm_start_loop\n");
@@ -935,8 +935,7 @@ int asgard_pm_start_loop(void *data)
 
     if (err)
         return err;
-
-    cpumask_clear(&mask);
+    cpumask_clear(mask);
 
     heartbeat_task =
             kthread_create(&do_pacemaker, sdev, "asgard pm loop");

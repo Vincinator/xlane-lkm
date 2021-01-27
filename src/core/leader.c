@@ -20,7 +20,6 @@ struct consensus_priv;
 void initialize_indices(struct consensus_priv *priv)
 {
     int i;
-    struct asgard_payload *multicast_pkt_payload;
 
     for (i = 0; i < priv->sdev->pminfo.num_of_targets; i++) {
 
@@ -405,7 +404,6 @@ void print_leader_stats(struct consensus_priv *priv)
 int stop_leader(struct proto_instance *ins)
 {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
-    int i;
 
     priv->sdev->is_leader = 0;
 

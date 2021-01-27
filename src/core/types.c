@@ -6,10 +6,11 @@
 
 #ifdef ASGARD_KERNEL_MODULE
 
-int asg_mutex_lock(asg_mutex_t *mutex){
+void asg_mutex_lock(asg_mutex_t *mutex){
     mutex_lock(mutex);
+
 }
-int asg_mutex_unlock(asg_mutex_t *mutex){
+void asg_mutex_unlock(asg_mutex_t *mutex){
     mutex_unlock(mutex);
 }
 
@@ -45,10 +46,10 @@ void asg_mutex_init(asg_mutex_t *lock){
 
 #else
 #include <pthread.h>
-int asg_mutex_lock(asg_mutex_t *mutex){
+void asg_mutex_lock(asg_mutex_t *mutex){
     pthread_mutex_lock(mutex);
 }
-int asg_mutex_unlock(asg_mutex_t *mutex){
+void asg_mutex_unlock(asg_mutex_t *mutex){
     pthread_mutex_unlock(mutex);
 }
 

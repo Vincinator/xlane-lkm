@@ -17,7 +17,7 @@
 #include "config.h"
 #include "types.h"
 #include "logger.h"
-
+#include "timekeeping.h"
 
 #ifdef ASGARD_DPDK
 #include <rte_byteorder.h>
@@ -573,7 +573,7 @@ struct asgard_device {
 };
 
 
-unsigned char *asgard_convert_mac(const char *str);
+char * asgard_convert_mac(const char *str);
 uint32_t asgard_ip_convert(const char *str);
 void init_asgard_device(struct asgard_device *sdev);
 struct proto_instance *generate_protocol_instance(struct asgard_device *sdev, int protocol_id);

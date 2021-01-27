@@ -59,18 +59,18 @@ EXPORT_SYMBOL(asgard_ip_convert);
 /*
  * Converts an MAC address to hex char array
  */
-unsigned char *asgard_convert_mac(const char *str)
+char * asgard_convert_mac(const char *str)
 {
     unsigned int tmp_data[6];
     // must be freed by caller
-    unsigned char *bytestring_mac =AMALLOC(sizeof(unsigned char) * 6, 1);
+    char *bytestring_mac =AMALLOC(sizeof(unsigned char) * 6, 1);
     int i;
 
     if (sscanf(str, "%2x:%2x:%2x:%2x:%2x:%2x", &tmp_data[0], &tmp_data[1],
                &tmp_data[2], &tmp_data[3], &tmp_data[4],
                &tmp_data[5]) == 6) {
         for (i = 0; i < 6; i++)
-            bytestring_mac[i] = (unsigned char)tmp_data[i];
+            bytestring_mac[i] = (char)tmp_data[i];
         return bytestring_mac;
     }
 

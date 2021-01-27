@@ -99,5 +99,5 @@ void asg_rwlock_unlock(asg_rwlock_t *lock, asg_rw_locktype_t type);
 void asg_rwlock_init(asg_rwlock_t *lock);
 
 void asg_mutex_init(asg_mutex_t *lock);
-int asg_mutex_unlock(asg_mutex_t *mutex);
-int asg_mutex_lock(asg_mutex_t *mutex);
+void asg_mutex_unlock(asg_mutex_t *mutex);
+void asg_mutex_lock(asg_mutex_t *mutex);

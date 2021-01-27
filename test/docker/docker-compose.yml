@@ -9,7 +9,7 @@ services:
     volumes:
       - .ssh:/home/dsp/.ssh
       - .gdbinit:/home/dsp/.gdbinit
-      - ../src:/home/dsp/src
+      - ../../src:/home/dsp/src
     ports:
       - "2224:22"
 
@@ -21,7 +21,7 @@ services:
     volumes:
       - .ssh:/home/dsp/.ssh
       - .gdbinit:/home/dsp/.gdbinit
-      - ../src:/home/dsp/src
+      - ../../src:/home/dsp/src
     ports:
       - "2225:22"
 
@@ -33,7 +33,7 @@ services:
     volumes:
       - .ssh:/home/dsp/.ssh
       - .gdbinit:/home/dsp/.gdbinit
-      - ../src:/home/dsp/src
+      - ../../src:/home/dsp/src
     ports:
       - "2226:22"
 
@@ -43,9 +43,11 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ../src:/home/dsp/src
+      - ../../src:/home/dsp/src
       - .ssh:/home/dsp/.ssh
       - ../ansible:/home/dsp/ansible
+      - ../../bin:/home/dsp/bin
+
     ports:
       - "2227:22"
     extra_hosts:

@@ -87,9 +87,9 @@ void log_le_rx(enum node_state nstate, uint64_t ts, int term, enum le_opcode opc
     if (opcode == ADVERTISE)
         return;
 
-    asgard_log_le("%s, %lu, %d: %s from %d with term %d\n",
+    asgard_log_le("%s, %llu, %d: %s from %d with term %d\n",
                   nstate_string(nstate),
-                  ts,
+                  (unsigned long long) ts,
                   term,
                   opcode_string(opcode),
                   rcluster_id,
@@ -178,9 +178,9 @@ void accept_leader(struct proto_instance *ins, int remote_lid, int cluster_id, i
     struct consensus_priv *priv =
             (struct consensus_priv *) ins->proto_data;
 #if VERBOSE_DEBUG
-    asgard_log_le("%s, %lu, %d: accept cluster node %d with term %u as new leader\n",
+    asgard_log_le("%s, %llu, %d: accept cluster node %d with term %u as new leader\n",
         nstate_string(priv->nstate),
-        ASGARD_TIMESTAMP,
+        (unsigned long long) ASGARD_TIMESTAMP,
         priv->term,
         cluster_id,
         term);
@@ -251,9 +251,9 @@ int node_transition(struct proto_instance *ins, node_state_t state) {
     if (err)
         goto error;
 #if VERBOSE_DEBUG
-    asgard_log_le("%s, %lu, %d: transition to state %s\n",
+    asgard_log_le("%s, %llu, %d: transition to state %s\n",
                 nstate_string(priv->nstate),
-                ASGARD_TIMESTAMP,
+                (unsigned long long) ASGARD_TIMESTAMP,
                 priv->term,
                 nstate_string(state));
 #endif
@@ -335,9 +335,9 @@ void reply_append(struct proto_instance *ins, struct pminfo *spminfo, int remote
     struct asgard_payload *pkt_payload;
     unsigned char *pkt_payload_sub;
 
-    asgard_log_le("%s, %lu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
+    asgard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
             nstate_string(priv->nstate),
-            ASGARD_TIMESTAMP,
+            (unsigned long long) ASGARD_TIMESTAMP,
             priv->term,
             append_success,
             param1,
@@ -579,9 +579,9 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
             (struct consensus_priv *) ins->proto_data;
 
 #if VERBOSE_DEBUG
-    asgard_log_le("%s, %lu, %d: voting for cluster node %d with term %d\n",
+    asgard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
         nstate_string(priv->nstate),
-        ASGARD_TIMESTAMP,
+        (unsigned long long) ASGARD_TIMESTAMP,
         priv->term,
         rcluster_id,
         param1);
@@ -693,7 +693,7 @@ int consensus_stop(struct proto_instance *ins) {
 
     asgard_dbg("===================== End of Run: ====================\n" );
 
-    asgard_dbg("Transmitted Packets:%lu\n", priv->sdev->tx_counter);
+    asgard_dbg("Transmitted Packets:%llu\n", (unsigned long long) priv->sdev->tx_counter);
 
     // Dump Logs to File
 

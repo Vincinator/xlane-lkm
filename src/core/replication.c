@@ -245,7 +245,7 @@ void *prepare_log_replication_handler(void *data)
     struct asgard_leader_pkt_work_data *aw = data;
 
     prepare_log_replication(aw);
-
+    return NULL;
 }
 #endif
 
