@@ -13,10 +13,10 @@
 #endif
 
 
-#include "../core/types.h"
-#include "../core/config.h"
-#include "../core/types.h"
-#include "../core/logger.h"
+#include "types.h"
+#include "config.h"
+#include "types.h"
+#include "logger.h"
 
 
 #ifdef ASGARD_DPDK

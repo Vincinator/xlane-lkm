@@ -4,8 +4,11 @@ project(asgard C)
 # -------------------------------------------
 
 set(ASGARD_DPDK 0)
-set(ASGARD_KERNEL_MODULE 0)
-message("version: 2Z2")
+set(ASGARD_KERNEL_MODULE 1)
+set(kerneldir "/home/vincent/workspace/asgard-kernel")
+set(bindir "${CMAKE_SOURCE_DIR}/../bin")
+
+message("version: 28l")
 
 
 if(${ASGARD_KERNEL_MODULE} AND ${ASGARD_DPDK})
@@ -23,12 +26,12 @@ find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 find_library(LibUUID_LIBRARY  NAMES uuid)
 
-include_directories(.)
+include_directories(..)
 include_directories(${LIBUUID_INCLUDE_DIR})
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${bindir}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${bindir}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${bindir})
 
 
 FUNCTION(PREPEND var prefix)
@@ -49,7 +52,11 @@ if(${ASGARD_DPDK})
 
 elseif(${ASGARD_KERNEL_MODULE})
 
+
+
+
     message("Selected Option: kernel module")
+    message("kerneldir is set to ${kerneldir}")
     set(kerneldir "" CACHE STRING "Path to the kernel build directory")
     if("${kerneldir}" STREQUAL "")
         message("Searching for local kernel installation. CAUTION: you may want to use the asgard sources!")
@@ -57,7 +64,7 @@ elseif(${ASGARD_KERNEL_MODULE})
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
         set(kerneldir "/lib/modules/${uname_r}/build")
     endif()
-    find_file(kernel_makefile NAMES Makefile
+    find_file(kernel_makefile NAMES ../Makefile
             PATHS ${kerneldir} NO_DEFAULT_PATH)
     include_directories(${kerneldir}/include)
 
@@ -72,7 +79,7 @@ list(APPEND library_sources core/libasraft.c core/libasraft.h core/types.h core/
         core/ringbuffer.c core/ringbuffer.h core/membership.c core/membership.h core/leader.c core/leader.h core/follower.c
         core/follower.h core/candidate.c core/candidate.h core/replication.c core/replication.h core/pktqueue.c core/pktqueue.h
         core/pkthandler.c core/pkthandler.h core/proto.c core/proto.h core/multicast.c core/multicast.h
-        core/eval_helper.c core/eval_helper.h core/echo.c core/echo.h)
+        core/eval_helper.c core/eval_helper.h core/echo.c core/echo.h core/config.h)
 
 if(NOT ${ASGARD_KERNEL_MODULE})
     list(PREPEND library_sources userspace/tnode.c userspace/tnode.h userspace/ini.c)
@@ -83,49 +90,52 @@ add_library(asgard STATIC ${library_sources})
 
 
 if(${ASGARD_KERNEL_MODULE})
+
+
     get_target_property(module_sources asgard SOURCES)
     file(GLOB lkmfiles "lkm/*")
     foreach(src ${lkmfiles})
         get_filename_component(SRC_NAME ${src} NAME)
         list(PREPEND module_sources lkm/${SRC_NAME})
-        # message("Adding source ${SRC_NAME}")
+        message("Adding source lkm/${SRC_NAME}")
     endforeach()
-
 
     list(PREPEND module_sources core/module.h)
     list(PREPEND module_sources core/module.c)
 
     foreach(src ${module_sources})
-        list(APPEND module_sources_lkm ../../${src})
+        list(APPEND module_sources_lkm ../src/${src})
+        message("configuring source path  ../src/${src}")
     endforeach()
 
 
     set(ASGARD_KERNEL_MODULE 1)
 
     file(COPY ${CMAKE_CURRENT_BINARY_DIR}/Kbuild.in
-            DESTINATION  ${CMAKE_CURRENT_BINARY_DIR}/bin/lkm)
+            DESTINATION  ${bindir})
 
     string(REPLACE ";" " " module_sources_string "${module_sources_lkm}")
-    configure_file(bin/lkm/Kbuild.in bin/lkm/Kbuild @ONLY)
+    configure_file(${bindir}/Kbuild.in ${bindir}/Kbuild @ONLY)
 
-
-    foreach(src ${module_sources})
+    foreach(src ${module_sources_lkm})
+        message("configuring ${src}")
         configure_file(${src} ${src} COPYONLY)
     endforeach()
 
-    set(module_cmd ${CMAKE_MAKE_PROGRAM} -C ../../${kerneldir} M=${CMAKE_CURRENT_BINARY_DIR}/bin/lkm  ccflags-y="-DASGARD_KERNEL_MODULE=1")
+    set(module_cmd ${CMAKE_MAKE_PROGRAM} -C ${kerneldir} M=${bindir}  ccflags-y="-DASGARD_KERNEL_MODULE=1")
     add_custom_command(OUTPUT asgard.ko
             COMMAND ${module_cmd} modules
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/lkm
-            DEPENDS ${module_sources} ${CMAKE_CURRENT_BINARY_DIR}/bin/lkm/
+            WORKING_DIRECTORY ${bindir}
+            DEPENDS ${module_sources_lkm} ${bindir}
             VERBATIM)
     add_compile_definitions(ASGARD_KERNEL_MODULE)
     message("using  ${kerneldir}")
 
     add_custom_target(module DEPENDS asgard.ko )
+    include_directories("${bindir}")
 
     add_custom_target(module-clean COMMAND ${module_cmd} clean
-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/lkm)
+            WORKING_DIRECTORY ${bindir})
 
 else()
     target_link_libraries(asgard PRIVATE Threads::Threads)
@@ -150,7 +160,7 @@ endif ()
 
 
 # Clean all .o and .cmd files
-set(clean_cmd find . -name "*.cmd" -type f -delete && find . -name "*.o" -type f -delete )
+set(clean_cmd find .. -name "*.cmd" -type f -delete && find .. -name "*.o" -type f -delete && rm -R ${bindir})
 add_custom_target(clean-all COMMAND ${clean_cmd})
 
 

@@ -1,9 +1,7 @@
 FROM ubuntu:20.04
 
-RUN apt-get update
-RUN apt-get install sudo vim python3 iputils-ping openssh-server openssh-client software-properties-common gdb -y
-RUN apt-get update
-RUN apt-get install cmake cmake-data build-essential uuid-dev pkg-config curl python3-pip -y
+RUN apt-get update && apt-get install sudo vim python3 iputils-ping openssh-server openssh-client software-properties-common gdb -y
+RUN apt-get update && apt-get install cmake cmake-data build-essential uuid-dev pkg-config curl python3-pip -y
 
 
 # install pip and ansible
