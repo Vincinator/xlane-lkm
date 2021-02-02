@@ -35,7 +35,7 @@ else()
 endif()
 
 
-set(kerneldir "/home/vincent/workspace/asgard-kernel")
+# set(kerneldir "/home/vincent/workspace/asgard-kernel")
 set(bindir "${CMAKE_SOURCE_DIR}/../bin")
 
 # -------------------------------------------

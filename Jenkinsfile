@@ -14,7 +14,7 @@ pipeline {
 
    stages {
       
-      stage('Dependencies not Found'){
+      stage('Stop build if kernel source can not be found.'){
          when { expression { KERNEL_SRC_EXIST == 'false' } }
          steps {
            echo "$ASGARD_KERNEL_SRC"
