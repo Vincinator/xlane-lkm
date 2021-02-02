@@ -2,9 +2,37 @@ cmake_minimum_required(VERSION 3.13)
 project(asgard C)
 
 # -------------------------------------------
+message("Checking build parameters: ")
 
-set(ASGARD_DPDK 1)
-set(ASGARD_KERNEL_MODULE 0)
+
+if(DEFINED ENV{ASGARD_DPDK})
+    set(ASGARD_DPDK $ENV{ASGARD_DPDK})
+else()
+    message("[CMAKE] ASGARD_DPDK environment variable is not defined.")
+    message("[CMAKE] Define it and export it before invoking cmake")
+endif()
+
+if(DEFINED ENV{ASGARD_KERNEL_MODULE})
+    set(ASGARD_KERNEL_MODULE $ENV{ASGARD_KERNEL_MODULE})
+
+else()
+    message("[CMAKE] ASGARD_KERNEL_MODULE environment variable is not defined.")
+    message("[CMAKE] Define it and export it before invoking cmake")
+endif()
+
+if(NOT DEFINED ASGARD_DPDK)
+    set(ASGARD_DPDK 0)
+    message("-- ASGARD_DPDK was not set explicitly, disabling DPDK per default")
+else()
+    message("-- ASGARD_DPDK was set explicitly to ${ASGARD_DPDK} ")
+
+endif()
+if(NOT DEFINED ASGARD_KERNEL_MODULE)
+    set(ASGARD_KERNEL_MODULE 0)
+    message("-- ASGARD_KERNEL_MODULE was not set explicitly, disabling LKM per default")
+else()
+    message("-- ASGARD_KERNEL_MODULE was set explicitly to ${ASGARD_KERNEL_MODULE} ")
+endif()
 
 
 set(kerneldir "/home/vincent/workspace/asgard-kernel")
@@ -16,8 +44,6 @@ if(${ASGARD_DPDK})
 else()
     set(testrunner_target testrunner)
 endif()
-
-message("version: v12")
 
 
 if(${ASGARD_KERNEL_MODULE} AND ${ASGARD_DPDK})
@@ -106,7 +132,7 @@ if(${ASGARD_KERNEL_MODULE})
     foreach(src ${lkmfiles})
         get_filename_component(SRC_NAME ${src} NAME)
         list(PREPEND module_sources lkm/${SRC_NAME})
-        message("Adding source lkm/${SRC_NAME}")
+        #message("Adding source lkm/${SRC_NAME}")
     endforeach()
 
     list(PREPEND module_sources core/module.h)
@@ -132,6 +158,7 @@ if(${ASGARD_KERNEL_MODULE})
     endforeach()
     set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir}  ccflags-y="-DASGARD_KERNEL_MODULE=1")
     message("using module cmd: ${module_cmd}")
+
 
     add_custom_command(OUTPUT asgard.ko
             COMMAND ${module_cmd} modules
