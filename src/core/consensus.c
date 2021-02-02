@@ -696,10 +696,11 @@ int consensus_stop(struct proto_instance *ins) {
     asgard_dbg("Transmitted Packets:%llu\n", (unsigned long long) priv->sdev->tx_counter);
 
     // Dump Logs to File
-
+#ifndef ASGARD_KERNEL_MODULE
     for(i = 1; i <= priv->sdev->pminfo.num_of_targets + 1; i++){
         dump_ingress_log(&ins->ingress_logger.per_node_logger[i],  i, priv->sdev->pminfo.hbi);
     }
+#endif
 
     switch (priv->nstate) {
         case FOLLOWER:
