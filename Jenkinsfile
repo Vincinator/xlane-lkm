@@ -38,7 +38,7 @@ pipeline {
         steps {
           echo "$ASGARD_KERNEL_SRC"
           sh 'export kerneldir=$ASGARD_KERNEL_SRC && ./build.sh --lkm && ls && ls src'
-          archiveArtifacts 'sch_qjump.ko'
+          archiveArtifacts 'bin/asgard.ko'
           office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
         }
         post
@@ -56,7 +56,7 @@ pipeline {
             }
         }
         steps {
-          nexusArtifactUploader artifacts: [[artifactId: 'asgard-lkm', classifier: 'ko', file: 'asgard.ko', type: 'ko']], credentialsId: 'nexus-user-credentials', groupId: 'lab.cerebro.asgard', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'asgard', version: '1'
+          nexusArtifactUploader artifacts: [[artifactId: 'asgard-lkm', classifier: 'ko', file: 'bin/asgard.ko', type: 'ko']], credentialsId: 'nexus-user-credentials', groupId: 'lab.cerebro.asgard', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'asgard', version: '1'
         }
     }
 
