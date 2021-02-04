@@ -43,18 +43,18 @@ build_dpdk() {
   export ASGARD_DPDK=1
   export ASGARD_KERNEL_MODULE=0
   cmake . -G "Unix Makefiles"
-  cmake --build .  --target asgard
+  cmake --build .  --target runner-dpdk
 }
 
 build_plain() {
-  echo "[ASGARD BUILD] Starting Build for loadable linux kernel asgard version"
+  echo "[ASGARD BUILD] Starting Build for plain asgard version"
 
   cd $SRC_DIR || (echo "Directory $SRC_DIR not found" && exit)
 
   export ASGARD_DPDK=0
   export ASGARD_KERNEL_MODULE=0
   cmake . -G "Unix Makefiles"
-  cmake --build .  --target asgard
+  cmake --build .  --target runner-plain
 }
 
 

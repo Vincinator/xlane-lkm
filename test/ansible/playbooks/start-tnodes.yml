@@ -2,4 +2,4 @@
 - hosts: testnodes
   tasks:
     - name: Ensure the project folder exists
-      shell: ".{{ eval_workdir }}/libasraft/testrunner"
+      shell: ".{{ eval_workdir }}/libasraft/runner"

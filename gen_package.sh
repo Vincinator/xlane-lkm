@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 ASGARD_LKM_REL_PATH=bin/asgard.ko
-ASGARD_DPDK_REL_PATH=bin/testrunner-dpdk
-ASGARD_USERSPACE_REL_PATH=bin/testrunner
+ASGARD_DPDK_REL_PATH=bin/runner-dpdk
+ASGARD_USERSPACE_REL_PATH=bin/runner
 
 FOUND_KERNEL_MODULE=false
 FOUND_DPDK_APP=false

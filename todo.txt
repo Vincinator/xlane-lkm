@@ -1,0 +1,19 @@
+
+
+Environment:
+
+- "one-step" build script for keeping complexity from build pipelines
+
+Quality:
+- Test DPDK version
+- Test App version
+- Test LKM version
+
+
+Features:
+
+- latency test
+- RDMA
+- Rework kernel module configuration
+
+

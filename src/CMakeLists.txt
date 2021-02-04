@@ -40,9 +40,9 @@ set(bindir "${CMAKE_SOURCE_DIR}/../bin")
 
 # -------------------------------------------
 if(${ASGARD_DPDK})
-    set(testrunner_target testrunner-dpdk)
+    set(runner_target runner-dpdk)
 else()
-    set(testrunner_target testrunner)
+    set(runner_target runner-plain)
 endif()
 
 
@@ -178,9 +178,9 @@ if(${ASGARD_KERNEL_MODULE})
 
 else()
     target_link_libraries(asgard PRIVATE Threads::Threads)
-    message("Adding ${testrunner_target} to targets")
-    add_executable(${testrunner_target} userspace/runner.c)
-    target_link_libraries(${testrunner_target} LINK_PUBLIC asgard)
+    message("Adding ${runner_target} to targets")
+    add_executable(${runner_target} userspace/runner.c)
+    target_link_libraries(${runner_target} LINK_PUBLIC asgard)
 
 endif()
 
