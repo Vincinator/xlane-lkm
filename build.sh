@@ -21,7 +21,6 @@ if [ -z ${kerneldir} ] && [ ${lkm} -eq 1 ]; then
   echo "[ASGARD build.sh] the kerneldir path variable is not set"
 fi
 
-# export kerneldir=/home/vincent/workspace/asgard-kernel
 
 build_lkm() {
   echo "[ASGARD build.sh] Starting Build for loadable linux kernel asgard version"

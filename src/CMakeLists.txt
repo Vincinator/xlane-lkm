@@ -5,6 +5,13 @@ project(asgard C)
 message("Checking build parameters: ")
 
 
+if(DEFINED ENV{kerneldir})
+    set(kerneldir $ENV{kerneldir})
+else()
+    message("[CMAKE] kerneldir environment variable is not defined.")
+    message("[CMAKE] Define it and export it before invoking cmake")
+endif()
+
 if(DEFINED ENV{ASGARD_DPDK})
     set(ASGARD_DPDK $ENV{ASGARD_DPDK})
 else()
@@ -14,7 +21,6 @@ endif()
 
 if(DEFINED ENV{ASGARD_KERNEL_MODULE})
     set(ASGARD_KERNEL_MODULE $ENV{ASGARD_KERNEL_MODULE})
-
 else()
     message("[CMAKE] ASGARD_KERNEL_MODULE environment variable is not defined.")
     message("[CMAKE] Define it and export it before invoking cmake")
@@ -35,7 +41,7 @@ else()
 endif()
 
 
-set(kerneldir "/home/vincent/workspace/asgard-kernel")
+# set(kerneldir "/home/vincent/workspace/asgard-kernel")
 set(bindir "${CMAKE_SOURCE_DIR}/../bin")
 
 # -------------------------------------------

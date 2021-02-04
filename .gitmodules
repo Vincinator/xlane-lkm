@@ -1,3 +1,0 @@
-[submodule "deps/inih"]
-	path = deps/inih
-	url = git@github.com:benhoyt/inih.git
