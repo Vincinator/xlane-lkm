@@ -71,7 +71,6 @@ pipeline {
             sh './build.sh --dpdk'
             archiveArtifacts 'bin/runner-dpdk'
             office365ConnectorSend message: "ASGARD DPDK version build successfully", webhookUrl: WEBHOOK
-            sh "exit 1" // test
           }
         }
         post
