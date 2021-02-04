@@ -38,10 +38,13 @@ pipeline {
     stage('Build Asgard Module'){
         when { expression { KERNEL_SRC_EXIST == 'true' } }
         steps {
-          echo "$ASGARD_KERNEL_SRC"
-          sh 'export kerneldir=$ASGARD_KERNEL_SRC && ./build.sh --lkm'
-          archiveArtifacts 'bin/asgard.ko'
-          office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
+          catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+            echo "$ASGARD_KERNEL_SRC"
+            sh 'export kerneldir=$ASGARD_KERNEL_SRC && ./build.sh --lkm'
+            archiveArtifacts 'bin/asgard.ko'
+            office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
+          }
         }
         post
         {
@@ -64,9 +67,11 @@ pipeline {
 
     stage('Build Asgard DPDK'){
         steps {
-          sh './build.sh --dpdk'
-          archiveArtifacts 'bin/runner-dpdk'
-          office365ConnectorSend message: "ASGARD DPDK version build successfully", webhookUrl: WEBHOOK
+          catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            sh './build.sh --dpdk'
+            archiveArtifacts 'bin/runner-dpdk'
+            office365ConnectorSend message: "ASGARD DPDK version build successfully", webhookUrl: WEBHOOK
+          }
         }
         post
         {
@@ -89,9 +94,11 @@ pipeline {
 
     stage('Build Asgard Plain'){
         steps {
-          sh './build.sh --plain'
-          archiveArtifacts 'bin/runner-plain'
-          office365ConnectorSend message: "ASGARD plain version build successfully", webhookUrl: WEBHOOK
+          catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            sh './build.sh --plain'
+            archiveArtifacts 'bin/runner-plain'
+            office365ConnectorSend message: "ASGARD plain version build successfully", webhookUrl: WEBHOOK
+          }
         }
         post
         {
@@ -111,8 +118,6 @@ pipeline {
           nexusArtifactUploader artifacts: [[artifactId: 'asgard-plain', classifier: 'binary', file: 'bin/runner-plain', type: 'binary']], credentialsId: 'nexus-user-credentials', groupId: 'lab.cerebro.asgard', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'asgard', version: '1'
         }
     }
-
-
 
   }
 
