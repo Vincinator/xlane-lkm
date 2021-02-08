@@ -61,7 +61,7 @@ pipeline {
             }
         }
         steps {
-          nexusArtifactUploader artifacts: [[artifactId: 'asgard-lkm', classifier: 'ko', file: 'bin/asgard.ko', type: 'ko']], credentialsId: 'nexus-user-credentials', groupId: 'lab.cerebro.asgard', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'asgard', version: '1'
+          nexusArtifactUploader artifacts: [[artifactId: 'asgard-lkm', classifier: '', file: 'bin/asgard.ko', type: 'ko']], credentialsId: 'nexus-user-credentials', groupId: 'lab.asgard', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: '1'
         }
     }
 
@@ -88,7 +88,7 @@ pipeline {
             }
         }
         steps {
-          nexusArtifactUploader artifacts: [[artifactId: 'asgard-dpdk', classifier: 'binary', file: 'bin/runner-dpdk', type: 'binary']], credentialsId: 'nexus-user-credentials', groupId: 'lab.cerebro.asgard', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'asgard', version: '1'
+          nexusArtifactUploader artifacts: [[artifactId: 'asgard-dpdk', classifier: '', file: 'bin/runner-dpdk', type: 'bin']], credentialsId: 'nexus-user-credentials', groupId: 'lab.asgard', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: '1'
         }
     }
 
@@ -115,7 +115,7 @@ pipeline {
             }
         }
         steps {
-          nexusArtifactUploader artifacts: [[artifactId: 'asgard-plain', classifier: 'binary', file: 'bin/runner-plain', type: 'binary']], credentialsId: 'nexus-user-credentials', groupId: 'lab.cerebro.asgard', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'asgard', version: '1'
+          nexusArtifactUploader artifacts: [[artifactId: 'asgard-plain', classifier: '', file: 'bin/runner-plain', type: 'bin']], credentialsId: 'nexus-user-credentials', groupId: 'lab.asgard', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: '1'
         }
     }
 
