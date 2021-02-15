@@ -104,8 +104,8 @@ pipeline {
         {
           success { script { BUILD_SUCCESS_PLAIN='true' } }
           failure { script { BUILD_SUCCESS_PLAIN='false' } }
-        }
     }
+        }
 
     stage('Publish Asgard Plain version to Nexus Repository'){
         when {
