@@ -33,7 +33,7 @@ struct pkt_work_data{
 #ifdef ASGARD_KERNEL_MODULE
 void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uint32_t cqe_bcnt);
 #else
-void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *payload_in, int payload_len);
+void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *payload_in, uint32_t payload_len);
 
 #endif
 

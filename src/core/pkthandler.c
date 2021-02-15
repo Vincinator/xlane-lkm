@@ -260,9 +260,9 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
         return;
     }
 
-    //asgard_dbg("PKT START:");
-    //(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
-    //                payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
+    asgard_dbg("PKT START:");
+    (KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
+                    payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
@@ -341,7 +341,7 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
 #else
 
 
-void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *payload_in, int payload_len)
+void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *payload_in, uint32_t payload_len)
 {
     struct pminfo *spminfo = &sdev->pminfo;
     int remote_lid, rcluster_id, cluster_id_ad, i;
@@ -371,6 +371,10 @@ void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *p
     // TODO!!!
     get_cluster_ids_by_ip(sdev, remote_ip, &remote_lid, &rcluster_id);
     spminfo->pm_targets[remote_lid].pkt_rx_counter++;
+
+
+    do_post_payload(sdev, remote_lid, rcluster_id, payload, payload_len);
+
 
 
 }
