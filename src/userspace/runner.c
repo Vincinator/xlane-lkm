@@ -204,7 +204,7 @@ int main(int argc, char *argv[]){
     unsigned int stored_dpdk_portid;
     uint64_t dropped;
 
-    printf("DPDK version of asgard");
+    printf("DPDK version of asgard\n");
     
     // TODO: we may want to load the mode via the config file
     node.testmode = ONE_SHOT;
@@ -377,7 +377,7 @@ int main(int argc, char *argv[]){
 #else
 int main(int argc, char *argv[]){
     tnode_t node;
-    printf("Userspace plain version of asgard");
+    printf("Userspace plain version of asgard\n");
 
 
     signal(SIGINT, &trap);
