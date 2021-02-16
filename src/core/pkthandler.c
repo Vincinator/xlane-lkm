@@ -260,10 +260,6 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
         return;
     }
 
-    asgard_dbg("PKT START:");
-    (KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
-                    payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
-
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
     wd = AMALLOC(sizeof(struct pkt_work_data), GFP_KERNEL);
