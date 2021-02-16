@@ -145,6 +145,8 @@ void get_cluster_ids_by_ip(struct asgard_device *sdev, uint32_t remote_ip, int *
             return;
         }
     }
+    asgard_error("Did not find ids for remote_ip");
+    asg_print_ip(remote_ip);
 }
 
 
@@ -220,6 +222,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     struct pkt_work_data *wd;
     uint16_t received_proto_instances;
     asgard_dbg("[DEBUG] %s\n", __FUNCTION__ );
+    asgard_dbg("\t remote_lid: %d, rcluster_id: %d \n", remote_lid, rcluster_id);
 
 
     /* Remote IP is not registered as peer yet! */
@@ -367,6 +370,13 @@ void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *p
 
     // TODO!!!
     get_cluster_ids_by_ip(sdev, remote_ip, &remote_lid, &rcluster_id);
+
+    if(remote_lid == -1){
+        asgard_error("Could not find local id\n");
+    }
+
+
+
     spminfo->pm_targets[remote_lid].pkt_rx_counter++;
 
 
