@@ -276,6 +276,7 @@ int check_handle_nomination(struct consensus_priv *priv, uint32_t param1, uint32
                             int rcluster_id) {
     uint32_t buf_lastidx;
 
+    asgard_dbg("Handle received nomination\n");
 
     /* Learn new Term if self id is lower but incoming nomination request has higher term */
     if(priv->sdev->pminfo.cluster_id < rcluster_id)

@@ -217,7 +217,6 @@ void update_aliveness_states(struct asgard_device *sdev, struct pminfo *spminfo,
 
     // may be redundant - since we already update aliveness on reception of pkt
     //spminfo->pm_targets[i].alive = 1; // Todo: remove this?
-
     //update_cluster_member(sdev->ci, i, 1);
 
     spminfo->pm_targets[i].lhb_ts = spminfo->pm_targets[i].chb_ts;
