@@ -26,7 +26,7 @@ int setup_nomination(struct proto_instance *ins)
             (struct consensus_priv *)ins->proto_data;
     int i;
 
-    //asgard_dbg("setting up nominaton\n");
+    asgard_dbg("setting up nominaton\n");
 
     priv->term++;
     //priv->votes = 1; // start with selfvote
