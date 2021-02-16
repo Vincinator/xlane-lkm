@@ -140,8 +140,6 @@ void get_cluster_ids_by_ip(struct asgard_device *sdev, uint32_t remote_ip, int *
 
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
-        asgard_dbg("Checking %d == %d \n", spminfo->pm_targets[i].pkt_data.naddr.dst_ip, remote_ip);
-
         if (spminfo->pm_targets[i].pkt_data.naddr.dst_ip == remote_ip) {
             *cid = spminfo->pm_targets[i].pkt_data.naddr.cluster_id;
             *lid = i;
@@ -224,9 +222,6 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     char *cluster_mac_ad;
     struct pkt_work_data *wd;
     uint16_t received_proto_instances;
-    asgard_dbg("[DEBUG] %s\n", __FUNCTION__ );
-    asgard_dbg("\t remote_lid: %d, rcluster_id: %d \n", remote_lid, rcluster_id);
-
 
     /* Remote IP is not registered as peer yet! */
     if (remote_lid == -1) {
