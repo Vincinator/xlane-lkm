@@ -219,6 +219,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     char *cluster_mac_ad;
     struct pkt_work_data *wd;
     uint16_t received_proto_instances;
+    asgard_dbg("[DEBUG] %s\n", __FUNCTION__ );
 
 
     /* Remote IP is not registered as peer yet! */

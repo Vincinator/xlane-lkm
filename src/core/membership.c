@@ -140,6 +140,8 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
 
     struct asgard_pm_target_info *pmtarget;
 
+    asgard_dbg("[DEBUG] %s\n", __FUNCTION__ );
+
     if(id == sdev->pminfo.cluster_id){
         sdev->self_ip = ip;
 
@@ -284,6 +286,7 @@ void add_cluster_member(struct cluster_info* ci, int cluster_id, int local_id, u
 void update_cluster_member(struct cluster_info* ci, int local_id, uint8_t state)
 {
     uint8_t prev_state;
+    asgard_dbg("[DEBUG] %s\n", __FUNCTION__ );
 
     if(!ci) {
         asgard_error("BUG detected. cluster info is NULL\n");
@@ -292,6 +295,11 @@ void update_cluster_member(struct cluster_info* ci, int local_id, uint8_t state)
 
     if(local_id > MAX_CLUSTER_MEMBER){
         asgard_error("Local Cluster ID (%d) is higher than hardcoded current cluster limit (%d)\n", local_id, MAX_CLUSTER_MEMBER);
+        return;
+    }
+
+    if(local_id < 0) {
+        asgard_error("Local Cluster ID (%d) is invalid\n", local_id);
         return;
     }
 
