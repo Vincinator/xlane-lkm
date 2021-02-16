@@ -108,7 +108,7 @@ int dpdk_server_listener(void *data) {
                     if(ip_hdr->next_proto_id == IPPROTO_UDP) {
                         if(udp_hdr->dst_port == 4000){
                             udp_payload = (uint8_t *)(udp_hdr + 1);
-                            asg_print_ip(rte_be_to_cpu_32(ip_hdr->src_addr));
+                            //asg_print_ip(rte_be_to_cpu_32(ip_hdr->src_addr));
                             asgard_post_payload(sdev, rte_be_to_cpu_32(ip_hdr->src_addr), udp_payload, udp_hdr->dgram_len);
                         }
                     }

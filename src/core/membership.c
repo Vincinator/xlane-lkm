@@ -286,7 +286,6 @@ void add_cluster_member(struct cluster_info* ci, int cluster_id, int local_id, u
 void update_cluster_member(struct cluster_info* ci, int local_id, uint8_t state)
 {
     uint8_t prev_state;
-    asgard_dbg("[DEBUG] %s\n", __FUNCTION__ );
 
     if(!ci) {
         asgard_error("BUG detected. cluster info is NULL\n");
