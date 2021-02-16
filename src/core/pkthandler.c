@@ -138,8 +138,10 @@ void get_cluster_ids_by_ip(struct asgard_device *sdev, uint32_t remote_ip, int *
     *lid = -1;
     *cid = -1;
 
+    asgard_dbg("htonl(%d) = %d\n", remote_ip, htonl(remote_ip));
+
     for (i = 0; i < spminfo->num_of_targets; i++) {
-        asgard_dbg("Checking %d == %d\n", spminfo->pm_targets[i].pkt_data.naddr.dst_ip, remote_ip);
+        asgard_dbg("Checking %d == %d \n", spminfo->pm_targets[i].pkt_data.naddr.dst_ip, remote_ip);
 
         if (spminfo->pm_targets[i].pkt_data.naddr.dst_ip == remote_ip) {
             *cid = spminfo->pm_targets[i].pkt_data.naddr.cluster_id;
