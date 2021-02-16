@@ -138,7 +138,6 @@ void get_cluster_ids_by_ip(struct asgard_device *sdev, uint32_t remote_ip, int *
     *lid = -1;
     *cid = -1;
 
-    asgard_dbg("htonl(%d) = %d\n", remote_ip, htonl(remote_ip));
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
         asgard_dbg("Checking %d == %d \n", spminfo->pm_targets[i].pkt_data.naddr.dst_ip, remote_ip);
@@ -373,7 +372,7 @@ void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *p
 
 
     // TODO!!!
-    get_cluster_ids_by_ip(sdev, remote_ip, &remote_lid, &rcluster_id);
+    get_cluster_ids_by_ip(sdev, htonl(remote_ip), &remote_lid, &rcluster_id);
 
     if(remote_lid == -1){
         asgard_error("Could not find local id\n");
