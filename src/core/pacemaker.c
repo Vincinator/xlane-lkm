@@ -580,6 +580,7 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
                                                  sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.naddr,
                                                  spminfo->pm_targets[i].pkt_data.payload,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
+        asgard_dbg("Emitting oos dpdk pkt \n");
 #elif ASGARD_KERNEL_MODULE
 
 #else
@@ -608,7 +609,6 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
     for (i = 0; i < spminfo->num_of_targets; i++) {
         if (!target_fire[i])
             continue;
-
         pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
 
         memset(pkt_payload, 0, sizeof(struct asgard_payload));
