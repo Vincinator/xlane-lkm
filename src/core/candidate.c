@@ -198,7 +198,7 @@ int start_candidate(struct proto_instance *ins)
         return -1;
     }
 
-    //asgard_dbg("started candidate\n");
+    asgard_dbg("started candidate\n");
 
     priv->votes = 0;
     priv->nstate = CANDIDATE;
