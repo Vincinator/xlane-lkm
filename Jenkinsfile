@@ -127,7 +127,9 @@ pipeline {
               expression { BUILD_SUCCESS_LKM == 'true' }
             }
         }
-      build '../Deploy - ASGARD/master'
+        steps {
+            build '../Deploy - ASGARD/master'
+        }
     }
 
 
