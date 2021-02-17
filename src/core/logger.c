@@ -252,8 +252,11 @@ int init_ingress_logger(struct asgard_ingress_logger *ailog, int instance_id)
     }
 
     // Just init all loggers for all possible nodes.. TODO
-    for(i = 0; i < MAX_NODE_ID; i++)
+    for(i = 0; i < MAX_NODE_ID; i++){
         init_logger(&ailog->per_node_logger[i], instance_id, -1, "nodelogger", -1);
+        logger_state_transition_to(&ailog->per_node_logger[i], LOGGER_RUNNING);
+    }
+
 
     return 0;
 }
