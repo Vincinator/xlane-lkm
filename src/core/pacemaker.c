@@ -381,8 +381,6 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
     udp_hdr->dst_port = rte_cpu_to_be_16((uint16_t)recvaddr.port);
 
     udp_hdr->dgram_cksum = 0; /* No UDP checksum. */
-    udp_hdr->dgram_len = rte_cpu_to_be_16((pkt_size +sizeof(struct asgard_payload) ) - sizeof(*eth_hdr) - sizeof(*ip_hdr));
-    asgard_dbg("udp_hdr->dgram_len: %d\n", udp_hdr->dgram_len);
 
     pkt->nb_segs = 1;
     pkt->pkt_len = pkt_size;
@@ -402,7 +400,14 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
         rte_memcpy(payload_ptr, asgp, sizeof(struct asgard_payload));
     } else {
         asgard_error("Could not append %ld bytes to packet. \n", sizeof(struct asgard_payload));
+        return NULL;
     }
+
+    udp_hdr->dgram_len = rte_cpu_to_be_16(pkt->pkt_len - (sizeof(*eth_hdr) + sizeof(*ip_hdr)));
+    asgard_dbg("udp_hdr->dgram_len: %d\n", rte_be_to_cpu_16(udp_hdr->dgram_len));
+
+
+
     return pkt;
 }
 
