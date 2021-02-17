@@ -206,11 +206,11 @@ void dump_ingress_logs_to_file(struct asgard_device *sdev)
     sprintf(foldername, "logs/%s", timestring);
 
     if (stat("logs", &st) == -1) {
-        mkdir("logs", 0700);
+        mkdir("logs", 0777);
     }
 
     if (stat(foldername, &st) == -1) {
-        mkdir(foldername, 0700);
+        mkdir(foldername, 0777);
     }
 
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
