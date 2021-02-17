@@ -243,7 +243,6 @@ void prepare_log_replication_handler(struct work_struct *w)
 void *prepare_log_replication_handler(void *data)
 {
     struct asgard_leader_pkt_work_data *aw = data;
-    asgard_dbg("[DEBUGD] %s", __FUNCTION__ );
     prepare_log_replication(aw);
     return NULL;
 }
@@ -252,7 +251,6 @@ void *prepare_log_replication_handler(void *data)
 void schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index, int32_t retrans, int multicast_enabled)
 {
     struct asgard_leader_pkt_work_data *work = NULL;
-    asgard_dbg("[DEBUGD] %s", __FUNCTION__ );
 
 #ifndef ASGARD_KERNEL_MODULE
     pthread_t pt_logrep;
@@ -395,7 +393,7 @@ void check_pending_log_rep_for_target(struct asgard_device *sdev, int target_id)
     int retrans;
     struct consensus_priv *cur_priv = NULL;
     int j;
-    asgard_dbg("[DEBUGD] %s", __FUNCTION__ );
+
 
     // TODO: utilise all protocol instances, currently only support for one consensus proto instance - the first
     for (j = 0; j < sdev->num_of_proto_instances; j++) {
