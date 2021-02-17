@@ -119,7 +119,23 @@ pipeline {
         }
     }
 
+    stage ('Starting Deployment job') {
+      when {
+            allOf {
+              expression { BUILD_SUCCESS_DPDK == 'true' }
+              expression { BUILD_SUCCESS_PLAIN == 'true' }
+              expression { BUILD_SUCCESS_LKM == 'true' }
+            }
+        }
+      build '../Deploy - ASGARD/master'
+    }
+
+
+
+
   }
 
 
 }
+
+
