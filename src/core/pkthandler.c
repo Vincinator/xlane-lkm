@@ -302,7 +302,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     spminfo->pm_targets[remote_lid].chb_ts = ASGARD_TIMESTAMP;
     spminfo->pm_targets[remote_lid].alive = 1;
     update_cluster_member(sdev->ci, remote_lid, 1);
-    write_ingress_log(&sdev->protos[0]->ingress_logger, INGRESS_PACKET, ASGARD_TIMESTAMP, rcluster_id);
+    write_ingress_log(&sdev->ingress_logger, INGRESS_PACKET, ASGARD_TIMESTAMP, rcluster_id);
 
     if (check_warmup_state(sdev, spminfo)) {
         AFREE(payload);

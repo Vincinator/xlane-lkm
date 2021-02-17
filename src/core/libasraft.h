@@ -96,7 +96,6 @@ struct proto_instance {
 
     enum asgard_protocol_type proto_type;
 
-    struct asgard_ingress_logger ingress_logger;
 
     struct asgard_logger logger;
     struct asgard_logger user_a;
@@ -570,6 +569,12 @@ struct asgard_device {
 
     /* Ensures that all targets are first checked before the */
     asg_mutex_t logrep_schedule_lock;
+
+
+    struct asgard_ingress_logger ingress_logger;
+
+
+
 };
 
 

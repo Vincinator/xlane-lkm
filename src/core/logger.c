@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #endif
 
 #define SEC2NANOSEC 1000000000L
@@ -129,40 +133,19 @@ int write_log(struct asgard_logger *slog, int type, uint64_t tcs)
     slog->events[slog->current_entries].node_id = -1; // invalidate node_id
 
     slog->current_entries += 1;
-
     return 0;
 }
 
-
 int write_ingress_log(struct asgard_ingress_logger *ailog, int type, uint64_t tcs, int node_id)
 {
-
-    struct asgard_logger *slog;
-
     if(node_id < 0 || node_id > MAX_NODE_ID){
         asgard_dbg("invalid/uninitialized logger for node %d\n", node_id);
         return -EINVAL;
     }
 
-    slog = &ailog->per_node_logger[node_id];
-
-    if (slog->current_entries > LOGGER_EVENT_LIMIT) {
-
-        asgard_dbg("Logs are full! Stopped event logging. %s\n", __func__);
-        // asgard_log_stop(slog);
-        logger_state_transition_to(slog, LOGGER_LOG_FULL);
-        return -ENOMEM;
-    }
-
-    slog->events[slog->current_entries].timestamp_tcs = tcs;
-    slog->events[slog->current_entries].type = type;
-    slog->events[slog->current_entries].node_id = node_id;
-
-    slog->current_entries += 1;
-
+    write_log(&ailog->per_node_logger[node_id], type, tcs);
     return 0;
 }
-
 
 void calculate_deltas(struct asgard_logger *slog) {
     int i;
@@ -182,27 +165,15 @@ void calculate_deltas(struct asgard_logger *slog) {
     }
 }
 #ifndef ASGARD_KERNEL_MODULE
-void dump_ingress_log(struct asgard_logger *slog, int node_id, uint64_t hb_ns) {
+void dump_log_to_file(struct asgard_logger *slog, const char *filename, int node_id, int hbi){
     FILE *fp;
     int i;
-    struct tm *timenow;
-    time_t now = time(NULL);
-    char timestring[40];
-    char filename[80];
-
-    timenow = gmtime(&now);
-
-    strftime(timestring, sizeof(timestring), "%Y-%m-%d_%H:%M:%S", timenow);
-
-    sprintf(filename, "ingress_timestamp_%f_ms_hb_from_%d_at_%s", hb_ns * 0.000001, node_id, timestring);
-
-    asgard_dbg("\n\nDumping logs to %s\n\n",filename);
 
     fp = fopen(filename, "a");
 
     calculate_deltas(slog);
     fprintf(fp, "# stats for node %d\n", node_id);
-    fprintf(fp, "# node_id, nanoseconds timestamp, delta to previous timestamp in nanoseconds\n");
+    fprintf(fp, "# node_id, nanoseconds timestamp, delta to previous timestamp\n");
     asgard_dbg("\n\nDumping %d entries\n\n", slog->current_entries);
 
     for(i = 0; i < slog->current_entries; i++)
@@ -212,11 +183,45 @@ void dump_ingress_log(struct asgard_logger *slog, int node_id, uint64_t hb_ns) {
                     slog->events[i].timestamp_tcs,
                     slog->events[i].delta,
                     0.000001 * slog->events[i].delta,
-                    (hb_ns * 0.000001),
-                    (hb_ns * 0.000001) - (0.000001 * slog->events[i].delta));
+                    (hbi * 0.000001),
+                    (hbi * 0.000001) - (0.000001 * slog->events[i].delta));
 
     fclose(fp);
 }
+
+
+void dump_ingress_logs_to_file(struct asgard_device *sdev)
+{
+    int i;
+    struct tm *timenow;
+    time_t now = time(NULL);
+    struct stat st = {0};
+    char filename[80];
+    char foldername[80];
+    char timestring[40];
+
+    timenow = gmtime(&now);
+
+    strftime(timestring, sizeof(timestring), "%Y-%m-%d_%H:%M:%S", timenow);
+    sprintf(foldername, "logs/%s", timestring);
+
+    if (stat("logs", &st) == -1) {
+        mkdir("logs", 0700);
+    }
+
+    if (stat(foldername, &st) == -1) {
+        mkdir(foldername, 0700);
+    }
+
+    for(i = 0; i < sdev->ingress_logger.num_of_nodes; i++){
+        sprintf(filename, "RXTS_from_node_%d", i);
+        asgard_dbg("Writing ingress logs to %s\n",filename);
+        dump_log_to_file( &sdev->ingress_logger.per_node_logger[i], filename, i, sdev->pminfo.hbi);
+    }
+
+
+}
+
 #endif
 
 void clear_ingress_logger(struct asgard_ingress_logger *ailog){
