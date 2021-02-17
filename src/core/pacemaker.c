@@ -279,7 +279,6 @@ static inline int out_of_schedule_multi_tx(struct asgard_device *sdev) {
 
 /* --------- Emitter Functions --------- */
 
-
 #ifdef ASGARD_DPDK
 
 
@@ -302,7 +301,7 @@ ip_sum(const unaligned_uint16_t *hdr, int hdr_len)
     return ~sum;
 }
 
-static unsigned int get_packet_size_for_alloc(void){
+static unsigned int get_packet_header_size_for_alloc(void){
     unsigned int ip_len, udp_len, asgard_len, total_len;
 
     udp_len = UDP_HLEN;
@@ -322,7 +321,11 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
     struct rte_ipv4_hdr *ip_hdr;
     struct rte_udp_hdr *udp_hdr;
     char* payload_ptr;
-    unsigned pkt_size = get_packet_size_for_alloc();
+
+    unsigned int asgard_len = sizeof(struct asgard_payload);
+    unsigned int udp_len = asgard_len + sizeof(struct rte_udp_hdr);
+    unsigned int ip_len = udp_len + sizeof(struct rte_ipv4_hdr);
+    unsigned int pkt_size = ip_len + sizeof(struct rte_ether_hdr);
 
     if(!recv_mac){
         asgard_error("Recv mac is NULL\n");
@@ -335,7 +338,14 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
         asgard_error("fail to alloc mbuf for packet\n");
         return NULL;
     }
+
+    pkt->nb_segs = 1;
+    pkt->l2_len = sizeof(struct rte_ether_hdr);
+    pkt->l3_len = sizeof(struct rte_ipv4_hdr);
+    pkt->l4_len = sizeof(struct rte_udp_hdr);
     pkt->data_len = pkt_size;
+    pkt->pkt_len = pkt_size;
+
     pkt->next = NULL;
 
     /* Initialize Ethernet header. */
@@ -367,8 +377,7 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
     ip_hdr->src_addr = rte_cpu_to_be_32(send_ip);
     ip_hdr->dst_addr = rte_cpu_to_be_32((uint32_t) recvaddr.dst_ip);
 
-    ip_hdr->total_length = rte_cpu_to_be_16(pkt_size -
-                                            sizeof(*eth_hdr));
+    ip_hdr->total_length = rte_cpu_to_be_16(pkt_size - sizeof(*eth_hdr));
     ip_hdr->hdr_checksum = ip_sum((unaligned_uint16_t *)ip_hdr,
                                   sizeof(*ip_hdr));
 
@@ -386,11 +395,7 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
                                           sizeof(*eth_hdr) -
                                           sizeof(*ip_hdr));
 
-    pkt->nb_segs = 1;
-    pkt->pkt_len = pkt_size;
-    pkt->l2_len = sizeof(struct rte_ether_hdr);
-    pkt->l3_len = sizeof(struct rte_ipv4_hdr);
-    pkt->l4_len = sizeof(struct rte_udp_hdr);
+
 
     /* Copy the Payload to the allocated dpdk packet
      * 1. Get Pointer after pkt with (currently) only headers
