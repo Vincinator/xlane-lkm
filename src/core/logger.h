@@ -113,7 +113,7 @@ enum le_event_type {
 
 struct logger_event {
     uint64_t timestamp_tcs;
-    int type;
+    enum le_event_type type;
     int node_id;
 
     // used to store the delta to the previous event.
@@ -163,10 +163,10 @@ int init_logger(struct asgard_logger *slog, uint16_t instance_id, int ifindex, c
                 int accept_user_ts);
 
 void clear_logger(struct asgard_logger *slog);
-int write_log(struct asgard_logger *slog, int type, uint64_t tcs);
+int write_log(struct asgard_logger *slog, enum le_event_type type, uint64_t tcs);
 void dump_log_to_file(struct asgard_logger *sdev, const char *filename, int node_id, int hbi);
 
-int write_ingress_log(struct asgard_ingress_logger *slog, int type, uint64_t tcs, int node_id);
+int write_ingress_log(struct asgard_ingress_logger *slog, enum le_event_type type, uint64_t tcs, int node_id);
 
 void logger_state_transition_to(struct asgard_logger *slog, enum logger_state state);
 

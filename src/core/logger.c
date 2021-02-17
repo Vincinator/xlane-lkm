@@ -115,7 +115,7 @@ void clear_logger(struct asgard_logger *slog)
         AFREE(slog->events);
 }
 
-int write_log(struct asgard_logger *slog, int type, uint64_t tcs)
+int write_log(struct asgard_logger *slog, enum le_event_type type, uint64_t tcs)
 {
     if (slog->state != LOGGER_RUNNING)
         return 0;
@@ -130,20 +130,24 @@ int write_log(struct asgard_logger *slog, int type, uint64_t tcs)
 
     slog->events[slog->current_entries].timestamp_tcs = tcs;
     slog->events[slog->current_entries].type = type;
-    slog->events[slog->current_entries].node_id = -1; // invalidate node_id
 
     slog->current_entries += 1;
     return 0;
 }
 
-int write_ingress_log(struct asgard_ingress_logger *ailog, int type, uint64_t tcs, int node_id)
+int write_ingress_log(struct asgard_ingress_logger *ailog, enum le_event_type type, uint64_t tcs, int node_id)
 {
+    struct asgard_logger *slog;
+
     if(node_id < 0 || node_id > MAX_NODE_ID){
         asgard_dbg("invalid/uninitialized logger for node %d\n", node_id);
         return -EINVAL;
     }
 
-    write_log(&ailog->per_node_logger[node_id], type, tcs);
+    slog = &ailog->per_node_logger[node_id];
+    write_log(slog, type, tcs);
+    slog->events[slog->current_entries].node_id = node_id;
+
     return 0;
 }
 
@@ -174,7 +178,7 @@ void dump_log_to_file(struct asgard_logger *slog, const char *filename, int node
     calculate_deltas(slog);
     fprintf(fp, "# stats for node %d\n", node_id);
     fprintf(fp, "# node_id, nanoseconds timestamp, delta to previous timestamp\n");
-    asgard_dbg("\n\nDumping %d entries\n\n", slog->current_entries);
+    asgard_dbg("Dumping %d entries", slog->current_entries);
 
     for(i = 0; i < slog->current_entries; i++)
         if( slog->events[i].node_id != -1 && slog->events[i].type == INGRESS_PACKET)
