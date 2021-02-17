@@ -305,9 +305,9 @@ ip_sum(const unaligned_uint16_t *hdr, int hdr_len)
 static unsigned int get_packet_size_for_alloc(void){
     unsigned int ip_len, udp_len, asgard_len, total_len;
 
-    udp_len = UDP_HLEN;
-    ip_len = udp_len + IP_HLEN;
-    total_len = ip_len + ETH_HLEN;
+    udp_len =  sizeof(struct rte_udp_hdr);
+    ip_len = udp_len + sizeof(struct rte_ipv4_hdr);
+    total_len = ip_len + sizeof(struct rte_ether_hdr);
 
     return total_len;
 }
