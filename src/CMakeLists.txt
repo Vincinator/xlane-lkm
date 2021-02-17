@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 project(asgard C)
 
 # -------------------------------------------
-message("Checking build parameters: ")
+message(" 2Checking build parameters: ")
 
 
 if(DEFINED ENV{kerneldir})
@@ -119,7 +119,8 @@ list(APPEND library_sources core/libasraft.c core/libasraft.h core/types.h core/
         core/ringbuffer.c core/ringbuffer.h core/membership.c core/membership.h core/leader.c core/leader.h core/follower.c
         core/follower.h core/candidate.c core/candidate.h core/replication.c core/replication.h core/pktqueue.c core/pktqueue.h
         core/pkthandler.c core/pkthandler.h core/proto.c core/proto.h core/multicast.c core/multicast.h
-        core/eval_helper.c core/eval_helper.h core/echo.c core/echo.h core/config.h core/timekeeping.h core/timekeeping.c )
+        core/eval_helper.c core/eval_helper.h core/echo.c core/echo.h core/config.h core/timekeeping.h core/timekeeping.c
+        core/pingpong.c core/pingpong.h)
 
 if(NOT ${ASGARD_KERNEL_MODULE})
     list(PREPEND library_sources userspace/tnode.c userspace/tnode.h userspace/ini.c)
