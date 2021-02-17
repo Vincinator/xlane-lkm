@@ -24,7 +24,7 @@ void DumpHex(const void* data, size_t size) {
     size_t i, j;
     ascii[16] = '\0';
 
-    asgard_dbg("Hex Dump of %zu bytes starting from address: %p",size, data);
+    asgard_dbg("Hex Dump of %zu bytes starting from address: %p\n",size, data);
 
     for (i = 0; i < size; ++i) {
         printf("%02X ", ((unsigned char*)data)[i]);
