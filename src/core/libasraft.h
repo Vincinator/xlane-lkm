@@ -577,7 +577,7 @@ struct asgard_device {
 
 };
 
-
+void dump_ingress_logs_to_file(struct asgard_device *sdev);
 char * asgard_convert_mac(const char *str);
 uint32_t asgard_ip_convert(const char *str);
 void init_asgard_device(struct asgard_device *sdev);

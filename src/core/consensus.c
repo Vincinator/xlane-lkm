@@ -698,9 +698,7 @@ int consensus_stop(struct proto_instance *ins) {
 
     // Dump Logs to File
 #ifndef ASGARD_KERNEL_MODULE
-    for(i = 1; i <= priv->sdev->pminfo.num_of_targets + 1; i++){
-        dump_log_to_file(&priv->sdev->ingress_logger.per_node_logger[i], i, priv->sdev->pminfo.hbi);
-    }
+    dump_ingress_logs_to_file(priv->sdev);
 #endif
 
     switch (priv->nstate) {
@@ -740,8 +738,7 @@ int consensus_clean(struct proto_instance *ins) {
     //remove_le_config_ctrl_interfaces(priv);
 
     clear_logger(&ins->logger);
-    clear_ingress_logger(&ins->ingress_logger);
-
+    clear_ingress_logger(&priv->sdev->ingress_logger);
     clear_logger(&priv->throughput_logger);
     clear_logger(&ins->user_a);
     clear_logger(&ins->user_b);
@@ -854,7 +851,7 @@ int consensus_init(struct proto_instance *ins) {
     // requires "proto_instances/%d"
     init_logger(&ins->logger, ins->instance_id, priv->sdev->ifindex,"consensus_le", 0);
 
-    init_ingress_logger(&ins->ingress_logger, ins->instance_id);
+    init_ingress_logger(&priv->sdev->ingress_logger, ins->instance_id);
 
     init_logger(&ins->user_a, ins->instance_id, priv->sdev->ifindex, "user_a", 1);
     init_logger(&ins->user_b, ins->instance_id, priv->sdev->ifindex, "user_b", 1);
