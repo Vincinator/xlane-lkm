@@ -7,6 +7,8 @@
 
 #else
 #include <string.h>
+#include <stdio.h>
+
 #endif
 
 
@@ -14,6 +16,42 @@
 #include "membership.h"
 
 
+
+#ifndef ASGARD_KERNEL_MODULE
+
+void DumpHex(const void* data, size_t size) {
+    char ascii[17];
+    size_t i, j;
+    ascii[16] = '\0';
+
+    asgard_dbg("Hex Dump of %zu bytes starting from address: %p",size, data);
+
+    for (i = 0; i < size; ++i) {
+        printf("%02X ", ((unsigned char*)data)[i]);
+        if (((unsigned char*)data)[i] >= ' ' && ((unsigned char*)data)[i] <= '~') {
+            ascii[i % 16] = ((unsigned char*)data)[i];
+        } else {
+            ascii[i % 16] = '.';
+        }
+        if ((i+1) % 8 == 0 || i+1 == size) {
+            printf(" ");
+            if ((i+1) % 16 == 0) {
+                printf("|  %s \n", ascii);
+            } else if (i+1 == size) {
+                ascii[(i+1) % 16] = '\0';
+                if ((i+1) % 16 <= 8) {
+                    printf(" ");
+                }
+                for (j = (i+1) % 16; j < 16; ++j) {
+                    printf("   ");
+                }
+                printf("|  %s \n", ascii);
+            }
+        }
+    }
+}
+
+#endif
 
 struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t proto_id)
 {
@@ -40,6 +78,9 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
     uint16_t cur_proto_id;
     uint16_t cur_offset;
     struct proto_instance *cur_ins;
+
+
+
 
     /* bcnt <= 0:
      *		no payload left to handle
@@ -208,6 +249,8 @@ void *pkt_process_handler(void *data)
     asgard_dbg("\t  wd->received_proto_instances = %d\n",  wd->received_proto_instances);
     asgard_dbg("\t  wd->bcnt = %d\n",  wd->bcnt);
 
+    DumpHex(wd->payload, wd->bcnt);
+
     handle_sub_payloads(wd->sdev, wd->remote_lid, wd->rcluster_id,
                          GET_PROTO_START_SUBS_PTR(wd->payload),
                          wd->received_proto_instances, wd->bcnt);
@@ -358,10 +401,6 @@ void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *p
     memcpy(payload, payload_in, payload_len);
     // asgard_write_timestamp(sdev, 1, RDTSC_ASGARD, asgard_id);
 
-    if (!sdev) {
-        asgard_error("sdev is NULL\n");
-        return;
-    }
 
     if (sdev->pminfo.state != ASGARD_PM_EMITTING) {
         asgard_error("pacemaker is not emitting!\n");
