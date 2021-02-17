@@ -249,7 +249,7 @@ void *pkt_process_handler(void *data)
     asgard_dbg("\t  wd->received_proto_instances = %d\n",  wd->received_proto_instances);
     asgard_dbg("\t  wd->bcnt = %d\n",  wd->bcnt);
 
-    DumpHex(wd->payload, 256);
+    // DumpHex(wd->payload, 256);
 
     handle_sub_payloads(wd->sdev, wd->remote_lid, wd->rcluster_id,
                          GET_PROTO_START_SUBS_PTR(wd->payload),
