@@ -391,11 +391,13 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
     pkt->l3_len = sizeof(struct rte_ipv4_hdr);
     pkt->l4_len = sizeof(struct rte_udp_hdr);
 
+    asgard_dbg("Pre payload allocation pkt len: %d", pkt->pkt_len);
     /* Copy the Payload to the allocated dpdk packet
      * 1. Get Pointer after pkt with (currently) only headers
      * 2. memcpy asgard payload to pkt
      * */
     payload_ptr = rte_pktmbuf_append(pkt, sizeof(struct asgard_payload));
+    asgard_dbg("Post payload allocation pkt len: %d", pkt->pkt_len);
 
     if (payload_ptr != NULL) {
         rte_memcpy(payload_ptr, asgp, sizeof(struct asgard_payload));
