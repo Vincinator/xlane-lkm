@@ -243,11 +243,11 @@ void pkt_process_handler(struct work_struct *w)
 void *pkt_process_handler(void *data)
 {
     struct pkt_work_data *wd = (struct pkt_work_data*) data;
-    asgard_dbg("processing pkt\n");
-    asgard_dbg("\t  wd->remote_lid = %d\n",  wd->remote_lid);
-    asgard_dbg("\t  wd->rcluster_id = %d\n",  wd->rcluster_id);
-    asgard_dbg("\t  wd->received_proto_instances = %d\n",  wd->received_proto_instances);
-    asgard_dbg("\t  wd->bcnt = %d\n",  wd->bcnt);
+    //asgard_dbg("processing pkt\n");
+    //asgard_dbg("\t  wd->remote_lid = %d\n",  wd->remote_lid);
+    //asgard_dbg("\t  wd->rcluster_id = %d\n",  wd->rcluster_id);
+    //asgard_dbg("\t  wd->received_proto_instances = %d\n",  wd->received_proto_instances);
+    //asgard_dbg("\t  wd->bcnt = %d\n",  wd->bcnt);
 
     // DumpHex(wd->payload, 256);
 
