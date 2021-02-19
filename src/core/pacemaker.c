@@ -637,7 +637,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
     /* Send heartbeats to all targets */
     for(i=0; i< spminfo->num_of_targets; i++) {
 
-        pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
+        pkt_payload = spminfo->pm_targets[i].hb_pkt_data.payload;
 
 #ifdef ASGARD_DPDK
         sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
@@ -647,7 +647,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
 #elif ASGARD_KERNEL_MODULE
 
 #else
-        emit_packet(spminfo->pm_targets[i].pkt_data.naddr, pkt_payload);
+        emit_packet(spminfo->pm_targets[i].hb_pkt_data.naddr, pkt_payload);
 #endif
 
         /* Protocols have been emitted, do not send them again ..
@@ -656,7 +656,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
     }
 
     for(i=0; i< spminfo->num_of_targets; i++)
-        update_alive_msg(sdev, spminfo->pm_targets[i].pkt_data.payload); // Setup next HB Message
+        update_alive_msg(sdev, spminfo->pm_targets[i].hb_pkt_data.payload); // Setup next HB Message
 
     for(i = 0; i < spminfo->num_of_targets; i++)
         update_aliveness_states(sdev, spminfo, i);

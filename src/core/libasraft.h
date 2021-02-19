@@ -431,6 +431,9 @@ struct asgard_pm_target_info {
     /* Params used to build the SKB for TX */
     struct asgard_packet_data pkt_data;
 
+    /* Heartbeat packages*/
+    struct asgard_packet_data hb_pkt_data;
+
     /* async packet queue for pm target*/
     struct asgard_async_queue_priv *aapriv;
 

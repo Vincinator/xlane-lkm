@@ -181,8 +181,12 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
 
     // payload buffer
     pmtarget->pkt_data.payload = ACMALLOC(1, sizeof(struct asgard_payload), GFP_KERNEL);
-
     pmtarget->pkt_data.payload->protocols_included = 0;
+
+
+    pmtarget->hb_pkt_data.payload = ACMALLOC(1, sizeof(struct asgard_payload), GFP_KERNEL);
+    pmtarget->hb_pkt_data.payload->protocols_included = 0;
+
     /* off-by one - so at index num_peers is nothing registered yet */
 
     pmtarget->aapriv = ACMALLOC(1, sizeof(struct asgard_async_queue_priv), GFP_KERNEL);
