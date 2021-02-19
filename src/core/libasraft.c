@@ -32,6 +32,7 @@
 
 #include "logger.h"
 #include "proto.h"
+#include "pingpong.h"
 
 
 void generate_asgard_eval_uuid(unsigned char uuid[16]) {
@@ -99,6 +100,9 @@ struct proto_instance *generate_protocol_instance(struct asgard_device *sdev, in
         case ASGARD_PROTO_CONSENSUS:
             sproto = get_consensus_proto_instance(sdev);
             break;
+        case ASGARD_PROTO_PP:
+            sproto = get_pp_proto_instance(sdev);
+            break;
         default:
             asgard_error("not a known protocol id\n");
             break;
@@ -120,7 +124,6 @@ void init_asgard_device(struct asgard_device *sdev){
 #ifdef ASGARD_KERNEL_MODULE
     asg_init_workqueues(sdev);
 #endif
-
 
     for(i = 0; i < MAX_PROTO_INSTANCES; i++)
         sdev->instance_id_mapping[i] = -1;

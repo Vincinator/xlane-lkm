@@ -777,17 +777,16 @@ int consensus_us_update(struct proto_instance *ins, void *payload) {
 }
 
 int consensus_post_payload(struct proto_instance *ins, int remote_lid,
-                           int rcluster_id, void *payload) {
+                           int rcluster_id, void *payload, uint64_t ots) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
 
-    if (!consensus_is_alive(priv))
-        return 0;
-
-    // safety check during debugging and development
     if (!priv) {
         asgard_dbg("private consensus data is null!\n");
         return 0;
     }
+
+    if (!consensus_is_alive(priv))
+        return 0;
 
     switch (priv->nstate) {
         case FOLLOWER:

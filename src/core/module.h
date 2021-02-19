@@ -74,6 +74,7 @@ struct asgard_pkt_work_data {
     int received_proto_instances;
     u32 cqe_bcnt;
     u16 headroom;
+    u64 ots;
 
 };
 

@@ -58,6 +58,7 @@ enum asgard_protocol_type {
     ASGARD_PROTO_ECHO = 0,
     ASGARD_PROTO_FD = 1,
     ASGARD_PROTO_CONSENSUS = 2,
+    ASGARD_PROTO_PP = 3,
 
 };
 
@@ -83,7 +84,7 @@ struct asgard_protocol_ctrl_ops {
     int (*clean)(struct proto_instance *ins);
 
     int (*post_payload)(struct proto_instance *ins, int remote_lid, int cluster_id,
-                        void *payload);
+                        void *payload, uint64_t ots);
 
     int (*post_ts)(struct proto_instance *ins, unsigned char *remote_mac,
                    uint64_t ts);

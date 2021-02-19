@@ -218,9 +218,9 @@ void dump_ingress_logs_to_file(struct asgard_device *sdev)
     }
 
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-        sprintf(filename, "%s/RXTS_from_node_%d", foldername, i);
+        sprintf(filename, "%s/RXTS_from_node_%d", foldername, sdev->pminfo.pm_targets[i].cluster_id);
         asgard_dbg("Writing ingress logs to %s\n",filename);
-        dump_log_to_file( &sdev->ingress_logger.per_node_logger[i], filename, i, sdev->pminfo.hbi);
+        dump_log_to_file( &sdev->ingress_logger.per_node_logger[i], filename, sdev->pminfo.pm_targets[i].cluster_id, sdev->pminfo.hbi);
     }
 
 
