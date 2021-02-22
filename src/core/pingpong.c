@@ -9,9 +9,11 @@
 #include <sys/stat.h>
 #endif
 
-void set_pp_opcode(unsigned char *pkt, enum pp_opcode opco, uint64_t id, uint64_t t1, uint64_t t2) {
+void set_pp_opcode(unsigned char *pkt, pp_opcode_t opco, uint64_t id, uint64_t t1, uint64_t t2) {
     uint16_t *opcode;
     uint64_t *id_pkt_ptr, *t1_pkt_ptr, *t2_pkt_ptr;
+
+    asgard_dbg("target opcode is: %d", opco);
 
     opcode = GET_PP_PROTO_OPCODE_PTR(pkt);
     *opcode = (uint16_t) opco;
@@ -241,7 +243,7 @@ int pingpong_post_payload(struct proto_instance *ins, int remote_lid, int cluste
     switch(opcode){
         case PING:
             pp_t1 = GET_PP_T1_VAL(payload);
-            setup_pp_msg(ins, &priv->sdev->pminfo, opcode, remote_lid, pp_id, pp_t1, 0);
+            setup_pp_msg(ins, &priv->sdev->pminfo, PONG, remote_lid, pp_id, pp_t1, 0);
             break;
         case PONG:
             pp_t1 = GET_PP_T1_VAL(payload);
