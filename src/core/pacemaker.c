@@ -112,14 +112,11 @@ void update_alive_msg(struct asgard_device *sdev, struct asgard_payload *pkt_pay
         }
     }
 
-    // only leaders will append an ALIVE operation to the heartbeat
-    if (sdev->is_leader == 0)
-        return;
-
-    // iterate through consensus protocols and include ALIVE message
+    // Scheduled Protocol operations
     for (j = 0; j < sdev->num_of_proto_instances; j++) {
 
-        if (sdev->protos[j]->proto_type == ASGARD_PROTO_CONSENSUS) {
+        // only leaders will append an ALIVE operation to the heartbeat
+        if (sdev->protos[j]->proto_type == ASGARD_PROTO_CONSENSUS && sdev->is_leader != 0) {
             // get corresponding local instance data for consensus
             setup_alive_msg((struct consensus_priv *) sdev->protos[j]->proto_data,
                             pkt_payload, sdev->protos[j]->instance_id);
