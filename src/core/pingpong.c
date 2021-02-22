@@ -304,7 +304,7 @@ struct proto_instance *get_pp_proto_instance(struct asgard_device *sdev)
     if (!ins)
         goto error;
 
-    ins->proto_type = ASGARD_PROTO_CONSENSUS;
+    ins->proto_type = ASGARD_PROTO_PP;
     ins->ctrl_ops = pingpong_ops;
 
     ins->logger.name = "pingpong";
