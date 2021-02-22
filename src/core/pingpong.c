@@ -251,7 +251,7 @@ int pingpong_post_payload(struct proto_instance *ins, int remote_lid, int cluste
         case PONG:
             pp_t1 = GET_PP_T1_VAL(payload);
 
-            handle_pong(priv, remote_lid, pp_id, pp_t1, ots);
+            //handle_pong(priv, remote_lid, pp_id, pp_t1, ots);
 
             break;
         default:
