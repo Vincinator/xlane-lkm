@@ -584,7 +584,7 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
                                                  sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.naddr,
                                                  spminfo->pm_targets[i].pkt_data.payload,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
-        asgard_dbg("Emitting oos dpdk pkt \n");
+
 #elif ASGARD_KERNEL_MODULE
 
 #else

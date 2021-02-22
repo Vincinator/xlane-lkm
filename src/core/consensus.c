@@ -335,15 +335,15 @@ void reply_append(struct proto_instance *ins, struct pminfo *spminfo, int remote
 
     struct asgard_payload *pkt_payload;
     unsigned char *pkt_payload_sub;
-
-    asgard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
-            nstate_string(priv->nstate),
-            (unsigned long long) ASGARD_TIMESTAMP,
-            priv->term,
-            append_success,
-            param1,
-            logged_idx,
-            priv->sm_log.stable_idx);
+    if(priv->verbosity != 0)
+        asgard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
+                nstate_string(priv->nstate),
+                (unsigned long long) ASGARD_TIMESTAMP,
+                priv->term,
+                append_success,
+                param1,
+                logged_idx,
+                priv->sm_log.stable_idx);
 
     asg_mutex_lock(&spminfo->pm_targets[remote_lid].pkt_data.mlock);
 
