@@ -234,7 +234,7 @@ int pingpong_post_payload(struct proto_instance *ins, int remote_lid, int cluste
     if(priv->state != PP_RUNNING)
         return 0;
 
-    opcode = ntohs(GET_PP_PROTO_OPCODE_VAL(payload));
+    opcode = GET_PP_PROTO_OPCODE_VAL(payload);
     pp_id = GET_PP_N_VAL(payload);
 
 
