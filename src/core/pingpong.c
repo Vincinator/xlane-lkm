@@ -236,6 +236,7 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_id, uint16_t round_id, 
     }
 
     pPriv->round_trip_local_stores[remote_id][round_id].ts4 = ots;
+    pPriv->num_of_rounds++;
 
 }
 
@@ -261,7 +262,7 @@ int pingpong_post_payload(struct proto_instance *ins, int remote_lid, int cluste
         case PONG:
             pp_t1 = GET_PP_T1_VAL(payload);
 
-            //handle_pong(priv, remote_lid, pp_id, pp_t1, ots);
+            handle_pong(priv, remote_lid, pp_id, pp_t1, ots);
 
             break;
         default:
