@@ -235,7 +235,7 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_id, uint16_t round_id, 
         return;
     }
     if(!pPriv->round_trip_local_stores[remote_id]) {
-        asgard_error("could not access round trip local store\n");
+        asgard_error("could not access round trip local store with remote id: %d\n", remote_id);
         return;
     }
     pPriv->round_trip_local_stores[remote_id][round_id].ts4 = ots;
