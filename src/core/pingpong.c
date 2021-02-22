@@ -13,7 +13,7 @@ void set_pp_opcode(unsigned char *pkt, pp_opcode_t opco, uint64_t id, uint64_t t
     uint16_t *opcode;
     uint64_t *id_pkt_ptr, *t1_pkt_ptr, *t2_pkt_ptr;
 
-    asgard_dbg("target opcode is: %d", opco);
+    asgard_dbg("target opcode is: %d\n", opco);
 
     opcode = GET_PP_PROTO_OPCODE_PTR(pkt);
     *opcode = (uint16_t) opco;
@@ -331,14 +331,18 @@ error:
 int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int instance_id) {
     unsigned char *pkt_payload_sub;
 
-    if(pPriv->num_of_rounds >= MAX_PING_PONG_ROUND_TRIPS)
+    if(pPriv->num_of_rounds >= MAX_PING_PONG_ROUND_TRIPS) {
+        asgard_dbg("num of rounds exceeded maximum. \n");
         return 0;
+    }
 
 
     pkt_payload_sub = asgard_reserve_proto(instance_id, spay, ASGARD_PROTO_PP_PAYLOAD_SZ);
 
-    if (!pkt_payload_sub)
+    if (!pkt_payload_sub) {
+        asgard_error("Could not reserve space in payload for ping\n");
         return -1;
+    }
 
 
     set_pp_opcode((unsigned char *) pkt_payload_sub, PING, pPriv->num_of_rounds, ASGARD_TIMESTAMP, 0);
