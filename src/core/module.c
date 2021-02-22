@@ -252,21 +252,6 @@ error:
 }
 
 
-const char *asgard_get_protocol_name(enum asgard_protocol_type protocol_type)
-{
-    switch (protocol_type) {
-        case ASGARD_PROTO_FD:
-            return "Failure Detector";
-        case ASGARD_PROTO_ECHO:
-            return "Echo";
-        case ASGARD_PROTO_CONSENSUS:
-            return "Consensus";
-        default:
-            return "Unknown Protocol!";
-    }
-}
-EXPORT_SYMBOL(asgard_get_protocol_name);
-
 void asgard_stop_pacemaker(struct asgard_device *adev)
 {
     if (!adev) {

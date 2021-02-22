@@ -34,6 +34,25 @@
 #include "proto.h"
 #include "pingpong.h"
 
+const char *asgard_get_protocol_name(enum asgard_protocol_type protocol_type)
+{
+    switch (protocol_type) {
+        case ASGARD_PROTO_FD:
+            return "Failure Detector";
+        case ASGARD_PROTO_ECHO:
+            return "Echo";
+        case ASGARD_PROTO_CONSENSUS:
+            return "Consensus";
+        case ASGARD_PROTO_PP:
+            return "Ping Ping";
+        default:
+            return "Unknown Protocol!";
+    }
+}
+#ifdef ASGARD_KERNEL_MODULE
+EXPORT_SYMBOL(asgard_get_protocol_name);
+#endif
+
 
 void generate_asgard_eval_uuid(unsigned char uuid[16]) {
     //uuid_generate_random(uuid);
@@ -142,3 +161,4 @@ void init_asgard_device(struct asgard_device *sdev){
 
     sdev->ci = ACMALLOC(1, sizeof(struct cluster_info), GFP_KERNEL);
 }
+

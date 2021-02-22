@@ -334,6 +334,7 @@ int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int
     if(pPriv->num_of_rounds >= MAX_PING_PONG_ROUND_TRIPS)
         return 0;
 
+
     pkt_payload_sub = asgard_reserve_proto(instance_id, spay, ASGARD_PROTO_PP_PAYLOAD_SZ);
 
     if (!pkt_payload_sub)
@@ -341,6 +342,7 @@ int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int
 
 
     set_pp_opcode((unsigned char *) pkt_payload_sub, PING, pPriv->num_of_rounds, ASGARD_TIMESTAMP, 0);
+    asgard_dbg("Ping scheduled for next heartbeat\n");
 
     return 0;
 }
