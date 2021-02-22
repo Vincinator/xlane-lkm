@@ -27,7 +27,7 @@ void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, i
 
     for(i = 0; i < pPriv->sdev->pminfo.num_of_targets; i++){
         fprintf(fp, "# latency from node %d to node %d\n", self_id, i);
-        fprintf(fp, "# self id, other id, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
+        fprintf(fp, "# round, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
 
         for(r = 1; r < pPriv->received_pongs; r++){
             last_rt = &pPriv->round_trip_local_stores[i][r-1];
@@ -41,8 +41,8 @@ void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, i
             // Delta between pong receptions
             z = cur_rt->ts4 - last_rt->ts4;
 
-            fprintf(fp, "%d, %d, %lu, %lu, %lu, %lu, %fms\n",
-                    self_id, i,
+            fprintf(fp, "%d, %lu, %lu, %lu, %lu, %fms\n",
+                    r,
                     last_rt->ts1, last_rt->ts4,
                     cur_rt->ts1, cur_rt->ts4,
                     // convert from nanoseconds to milliseconds
