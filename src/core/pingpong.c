@@ -145,17 +145,17 @@ uint64_t calculate_latencies(uint64_t ts1, uint64_t ts4, uint64_t y, uint64_t z)
 
 #ifndef ASGARD_KERNEL_MODULE
 
-void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, int self_id, int node_id){
+void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, int self_id){
     FILE *fp;
     int i, r;
     struct ping_round_trip *cur_rt, *last_rt;
     fp = fopen(filename, "a");
     uint64_t z,y;
 
-    fprintf(fp, "# latency from node %d to node %d\n", self_id,  node_id);
-    fprintf(fp, "# self id, other id, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
 
     for(i = 0; i < pPriv->sdev->pminfo.num_of_targets - 1; i++){
+        fprintf(fp, "# latency from node %d to node %d\n", self_id, i);
+        fprintf(fp, "# self id, other id, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
 
         for(r = 1; r < pPriv->num_of_rounds; r++){
             last_rt = &pPriv->round_trip_local_stores[i][r-1];
@@ -205,11 +205,9 @@ void dump_ping_pong_raw_timestamps(struct asgard_device *sdev, struct pingpong_p
         mkdir(foldername, 0777);
     }
 
-    for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-        sprintf(filename, "%s/RAW_Ping_pong_from_%d_to_%d", foldername, sdev->pminfo.cluster_id, sdev->pminfo.pm_targets[i].cluster_id);
-        asgard_dbg("Writing raw ping pong timestamps to %s\n",filename);
-        dump_ping_pong_to_file( pPriv, filename, sdev->pminfo.cluster_id, sdev->pminfo.pm_targets[i].cluster_id);
-    }
+    sprintf(filename, "%s/RAW_Ping_pong_latencies", foldername);
+    asgard_dbg("Writing raw ping pong timestamps to %s\n",filename);
+    dump_ping_pong_to_file( pPriv, filename, sdev->pminfo.cluster_id);
 
 
 }
