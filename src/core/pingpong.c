@@ -165,7 +165,7 @@ int pingpong_init(struct proto_instance *ins, int verbosity){
 
     priv->round_trip_local_stores = AMALLOC( sdev->pminfo.num_of_targets * sizeof(struct ping_round_trip *), GFP_KERNEL);
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-            priv->round_trip_local_stores[i] = AMALLOC(MAX_PING_PONG_ROUND_TRIPS * sizeof(struct ping_round_trip), GFP_KERNEL);
+        priv->round_trip_local_stores[i] = AMALLOC(MAX_PING_PONG_ROUND_TRIPS * sizeof(struct ping_round_trip), GFP_KERNEL);
     }
 
 
@@ -234,11 +234,11 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_id, uint16_t round_id, 
         asgard_error("Invalid remote id\n");
         return;
     }
-    if(!pPriv->round_trip_local_stores[remote_id * MAX_PING_PONG_ROUND_TRIPS + round_id]) {
+    if(!pPriv->round_trip_local_stores[remote_id]) {
         asgard_error("could not access round trip local store\n");
         return;
     }
-    pPriv->round_trip_local_stores[remote_id * MAX_PING_PONG_ROUND_TRIPS + round_id]->ts4 = ots;
+    pPriv->round_trip_local_stores[remote_id][round_id].ts4 = ots;
     pPriv->num_of_rounds++;
 
 }
