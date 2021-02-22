@@ -702,6 +702,7 @@ int consensus_stop(struct proto_instance *ins) {
     // Dump Logs to File
 #ifndef ASGARD_KERNEL_MODULE
     dump_ingress_logs_to_file(priv->sdev);
+
 #endif
 
     switch (priv->nstate) {

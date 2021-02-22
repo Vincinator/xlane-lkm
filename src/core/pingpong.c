@@ -13,8 +13,6 @@ void set_pp_opcode(unsigned char *pkt, pp_opcode_t opco, uint64_t id, uint64_t t
     uint16_t *opcode;
     uint64_t *id_pkt_ptr, *t1_pkt_ptr, *t2_pkt_ptr;
 
-    asgard_dbg("target opcode is: %d\n", opco);
-
     opcode = GET_PP_PROTO_OPCODE_PTR(pkt);
     *opcode = (uint16_t) opco;
 
@@ -170,7 +168,7 @@ void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, i
             z = cur_rt->ts4 - last_rt->ts4;
 
             fprintf(fp, "%d, %d, %lu, %lu, %lu, %lu, %fms\n",
-                    self_id, node_id,
+                    self_id, i,
                     last_rt->ts1, last_rt->ts4,
                     cur_rt->ts1, cur_rt->ts4,
                     // convert from nanoseconds to milliseconds
@@ -354,7 +352,6 @@ int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int
 
 
     set_pp_opcode((unsigned char *) pkt_payload_sub, PING, pPriv->num_of_rounds, ASGARD_TIMESTAMP, 0);
-    asgard_dbg("Ping scheduled for next heartbeat\n");
 
     return 0;
 }
