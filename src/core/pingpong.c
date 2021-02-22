@@ -30,8 +30,8 @@ void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, i
         fprintf(fp, "# self id, other id, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
 
         for(r = 1; r < pPriv->num_of_rounds; r++){
-            last_rt = &pPriv->round_trip_local_stores[i][r-1];
-            cur_rt = &pPriv->round_trip_local_stores[i][r];
+            last_rt = pPriv->round_trip_local_stores[i  * MAX_PING_PONG_ROUND_TRIPS + r-1];
+            cur_rt = pPriv->round_trip_local_stores[i * MAX_PING_PONG_ROUND_TRIPS +r];
 
             // Delta between ping pong emissions
             y = cur_rt->ts1 - last_rt->ts1;
@@ -158,14 +158,14 @@ void pingpong_state_transition_to(struct pingpong_priv *priv, pingpong_state_t s
 int pingpong_init(struct proto_instance *ins, int verbosity){
     struct pingpong_priv *priv = (struct pingpong_priv *)ins->proto_data;
     struct asgard_device *sdev = priv->sdev;
-    int i;
+    int  i, j;
 
     priv->num_of_rounds = 0;
     priv->verbosity = verbosity;
 
-    priv->round_trip_local_stores = AMALLOC( sdev->pminfo.num_of_targets * sizeof(struct ping_round_trip*), GFP_KERNEL);
+    priv->round_trip_local_stores = AMALLOC( sdev->pminfo.num_of_targets * sizeof(struct ping_round_trip *), GFP_KERNEL);
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-        priv->round_trip_local_stores[i] = AMALLOC(MAX_PING_PONG_ROUND_TRIPS * sizeof(struct ping_round_trip), GFP_KERNEL);
+            priv->round_trip_local_stores[i] = AMALLOC(MAX_PING_PONG_ROUND_TRIPS * sizeof(struct ping_round_trip), GFP_KERNEL);
     }
 
 
@@ -234,11 +234,11 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_id, uint16_t round_id, 
         asgard_error("Invalid remote id\n");
         return;
     }
-    if(!pPriv->round_trip_local_stores[remote_id][round_id]) {
+    if(!pPriv->round_trip_local_stores[remote_id * MAX_PING_PONG_ROUND_TRIPS + round_id]) {
         asgard_error("could not access round trip local store\n");
         return;
     }
-    pPriv->round_trip_local_stores[remote_id][round_id].ts4 = ots;
+    pPriv->round_trip_local_stores[remote_id * MAX_PING_PONG_ROUND_TRIPS + round_id]->ts4 = ots;
     pPriv->num_of_rounds++;
 
 }
