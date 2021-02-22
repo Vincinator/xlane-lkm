@@ -52,6 +52,7 @@
 #define MAX_PROTOCOLS 4
 
 #define MAX_NODE_ID 10
+#define CLUSTER_SIZE 3
 
 
 enum asgard_protocol_type {
