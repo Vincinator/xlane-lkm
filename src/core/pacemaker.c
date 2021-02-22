@@ -101,28 +101,29 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asgard_payload *spay
     return 0;
 }
 
-
-void update_alive_msg(struct asgard_device *sdev, struct asgard_payload *pkt_payload) {
+/* Logic to include protocol dependent messages for the heartbeat message */
+void pre_hb_setup(struct asgard_device *sdev, struct asgard_payload *pkt_payload) {
     int j;
 
-    /* Not a member of a cluster yet - thus, append advertising messages */
+    // Not a member of a cluster yet - thus, append advertising messages
     if (sdev->warmup_state == WARMING_UP) {
         if (sdev->self_mac) {
             setup_cluster_join_advertisement(pkt_payload, sdev->pminfo.cluster_id, sdev->self_ip, sdev->self_mac);
         }
+        return; // All currently defined protocols require the cluster to be warmed up
     }
 
-    // Scheduled Protocol operations
     for (j = 0; j < sdev->num_of_proto_instances; j++) {
 
-        // only leaders will append an ALIVE operation to the heartbeat
         if (sdev->protos[j]->proto_type == ASGARD_PROTO_CONSENSUS && sdev->is_leader != 0) {
-            // get corresponding local instance data for consensus
+
             setup_alive_msg((struct consensus_priv *) sdev->protos[j]->proto_data,
                             pkt_payload, sdev->protos[j]->instance_id);
+
         } else if(sdev->protos[j]->proto_type == ASGARD_PROTO_PP) {
+
             setup_ping_msg((struct pingpong_priv *) sdev->protos[j]->proto_data,
-                            pkt_payload, sdev->protos[j]->instance_id);
+                    pkt_payload, sdev->protos[j]->instance_id);
 
         }
     }
@@ -828,8 +829,9 @@ int do_pacemaker(void *data) {
             prev_time = cur_time;
             err = emit_pkts_scheduled(sdev, spminfo);
 
+            //  the HB Message
             for(i=0; i< spminfo->num_of_targets; i++)
-                update_alive_msg(sdev, spminfo->pm_targets[i].hb_pkt_data.payload); // Setup next HB Message
+                pre_hb_setup(sdev, spminfo->pm_targets[i].hb_pkt_data.payload);
 
             for(i = 0; i < spminfo->num_of_targets; i++)
                 update_aliveness_states(sdev, spminfo, i);

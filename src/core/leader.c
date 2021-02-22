@@ -35,12 +35,12 @@ void initialize_indices(struct consensus_priv *priv)
         priv->sm_log.retrans_entries[i] = 0;
 
         // Unicast Version:
-        update_alive_msg(priv->sdev, priv->sdev->pminfo.pm_targets[i].pkt_data.payload);
+        pre_hb_setup(priv->sdev, priv->sdev->pminfo.pm_targets[i].pkt_data.payload);
     }
     /*
     // Multicast Version
     multicast_pkt_payload = priv->sdev->pminfo.multicast_pkt_data.payload;
-    update_alive_msg(priv->sdev, multicast_pkt_payload);
+    pre_hb_setup(priv->sdev, multicast_pkt_payload);
     */
 }
 
@@ -433,7 +433,7 @@ int start_leader(struct proto_instance *ins)
     priv->candidate_counter = 0;
 
     for(i = 0; i <sdev->pminfo.num_of_targets; i++) {
-        update_alive_msg(sdev, sdev->pminfo.pm_targets[i].pkt_data.payload);
+        pre_hb_setup(sdev, sdev->pminfo.pm_targets[i].pkt_data.payload);
     }
 
     check_pending_log_rep(priv->sdev);
