@@ -29,7 +29,7 @@ void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, i
         fprintf(fp, "# latency from node %d to node %d\n", self_id, i);
         fprintf(fp, "# self id, other id, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
 
-        for(r = 1; r < pPriv->num_of_rounds; r++){
+        for(r = 1; r < pPriv->received_pongs; r++){
             last_rt = &pPriv->round_trip_local_stores[i][r-1];
             cur_rt = &pPriv->round_trip_local_stores[i][r];
 
@@ -162,7 +162,8 @@ int pingpong_init(struct proto_instance *ins, int verbosity){
     struct asgard_device *sdev = priv->sdev;
     int  i, j;
 
-    priv->num_of_rounds = 0;
+    priv->received_pongs = 0;
+    priv->scheduled_pings = 0;
     priv->verbosity = verbosity;
 
     priv->round_trip_local_stores = AMALLOC( CLUSTER_SIZE * sizeof(struct ping_round_trip *), GFP_KERNEL);
@@ -242,7 +243,7 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_id, uint16_t round_id, 
         return;
     }
     pPriv->round_trip_local_stores[remote_id][round_id].ts4 = ots;
-    pPriv->num_of_rounds++;
+    pPriv->received_pongs++;
 
 }
 
@@ -348,10 +349,30 @@ error:
     return NULL;
 }
 
+void add_ts1_to_local_store(struct pingpong_priv *pPriv, int target_lid, uint64_t ts1){
+
+    if(target_lid < 0 || target_lid > pPriv->sdev->pminfo.num_of_targets){
+        asgard_error("invalud target_lid. could not add ts1 to local store\n");
+        return;
+    }
+
+    if(pPriv->scheduled_pings >= MAX_PING_PONG_ROUND_TRIPS){
+        asgard_error("Maximum number of ping pong rounds reached\n");
+        return;
+    }
+
+    pPriv->round_trip_local_stores[target_lid][pPriv->scheduled_pings].ts1 = ts1;
+
+}
+
+
+
 int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int instance_id) {
     unsigned char *pkt_payload_sub;
+    uint64_t ts1;
+    int i;
 
-    if(pPriv->num_of_rounds >= MAX_PING_PONG_ROUND_TRIPS) {
+    if(pPriv->received_pongs >= MAX_PING_PONG_ROUND_TRIPS) {
         asgard_dbg("num of rounds exceeded maximum. \n");
         return 0;
     }
@@ -364,8 +385,13 @@ int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int
         return -1;
     }
 
+    ts1 = ASGARD_TIMESTAMP;
+    set_pp_opcode((unsigned char *) pkt_payload_sub, PING, pPriv->scheduled_pings, ts1 , 0);
 
-    set_pp_opcode((unsigned char *) pkt_payload_sub, PING, pPriv->num_of_rounds, ASGARD_TIMESTAMP, 0);
+    for(i = 0; i < pPriv->sdev->pminfo.num_of_targets;i++)
+        add_ts1_to_local_store(pPriv, i,ts1 );
+
+    pPriv->scheduled_pings++;
 
     return 0;
 }

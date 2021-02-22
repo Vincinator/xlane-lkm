@@ -79,7 +79,8 @@ struct pingpong_priv {
 
 
 
-    int num_of_rounds;
+    int received_pongs;
+    int scheduled_pings;
 
 };
 
