@@ -30,8 +30,10 @@ void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, i
         fprintf(fp, "# self id, other id, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
 
         for(r = 1; r < pPriv->num_of_rounds; r++){
-            last_rt = pPriv->round_trip_local_stores[i  * MAX_PING_PONG_ROUND_TRIPS + r-1];
-            cur_rt = pPriv->round_trip_local_stores[i * MAX_PING_PONG_ROUND_TRIPS +r];
+            last_rt = &pPriv->round_trip_local_stores[i][r-1];
+            cur_rt = &pPriv->round_trip_local_stores[i][r];
+
+
 
             // Delta between ping pong emissions
             y = cur_rt->ts1 - last_rt->ts1;
