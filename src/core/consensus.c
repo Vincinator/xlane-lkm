@@ -687,7 +687,6 @@ int consensus_start(struct proto_instance *ins) {
 
 int consensus_stop(struct proto_instance *ins) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
-    int i;
 
     if (!consensus_is_alive(priv))
         return 0;

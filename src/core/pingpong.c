@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 #endif
 
-void set_pp_opcode(unsigned char *pkt, enum le_opcode opco, uint64_t id, uint64_t t1, uint64_t t2) {
+void set_pp_opcode(unsigned char *pkt, enum pp_opcode opco, uint64_t id, uint64_t t1, uint64_t t2) {
     uint16_t *opcode;
     uint64_t *id_pkt_ptr, *t1_pkt_ptr, *t2_pkt_ptr;
 
@@ -227,7 +227,7 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_id, uint16_t round_id, 
 }
 
 int pingpong_post_payload(struct proto_instance *ins, int remote_lid, int cluster_id, void *payload, uint64_t ots){
-    uint16_t opcode, pp_id, pp_t1, pp_t2;
+    uint16_t opcode, pp_id, pp_t1;
     struct pingpong_priv *priv = (struct pingpong_priv *)ins->proto_data;
 
     if(priv->state != PP_RUNNING)
@@ -327,3 +327,22 @@ error:
     asgard_dbg("Error in %s", __func__);
     return NULL;
 }
+
+int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int instance_id) {
+    unsigned char *pkt_payload_sub;
+
+    if(pPriv->num_of_rounds >= MAX_PING_PONG_ROUND_TRIPS)
+        return 0;
+
+    pkt_payload_sub = asgard_reserve_proto(instance_id, spay, ASGARD_PROTO_PP_PAYLOAD_SZ);
+
+    if (!pkt_payload_sub)
+        return -1;
+
+
+    set_pp_opcode((unsigned char *) pkt_payload_sub, PING, pPriv->num_of_rounds, ASGARD_TIMESTAMP, 0);
+
+    return 0;
+}
+
+

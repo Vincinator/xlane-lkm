@@ -81,5 +81,6 @@ struct pingpong_priv {
 
 };
 
-
+struct asgard_payload;
+int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int instance_id);
 struct proto_instance *get_pp_proto_instance(struct asgard_device *sdev);
