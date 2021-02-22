@@ -250,7 +250,7 @@ int pingpong_post_payload(struct proto_instance *ins, int remote_lid, int cluste
 
             break;
         default:
-            asgard_error("Received unknown opcode for Ping pong protocol!\n");
+            asgard_error("Received unknown opcode for Ping pong protocol %d!\n", opcode);
             break;
     }
 

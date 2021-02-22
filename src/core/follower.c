@@ -62,11 +62,11 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
             /* Ignore other cases for ALIVE operation*/
             break;
         case APPEND:
-
-            asgard_dbg("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
-                   rcluster_id,
-                   *GET_CON_AE_PREV_LOG_IDX_PTR(pkt),
-                   *GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt));
+            if(priv->verbosity != 0)
+                asgard_dbg("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
+                       rcluster_id,
+                       *GET_CON_AE_PREV_LOG_IDX_PTR(pkt),
+                       *GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt));
 
             if(priv->leader_id != rcluster_id) {
 
