@@ -9,6 +9,83 @@
 #include <sys/stat.h>
 #endif
 
+#ifndef ASGARD_KERNEL_MODULE
+
+uint64_t calculate_latencies(uint64_t ts1, uint64_t ts4, uint64_t y, uint64_t z){
+    uint64_t res = ts4 - ts1 - (z-y);
+    res = res/2;
+    return res;
+}
+
+void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, int self_id){
+    FILE *fp;
+    int i, r;
+    struct ping_round_trip *cur_rt, *last_rt;
+    fp = fopen(filename, "a");
+    uint64_t z,y;
+
+
+    for(i = 0; i < pPriv->sdev->pminfo.num_of_targets - 1; i++){
+        fprintf(fp, "# latency from node %d to node %d\n", self_id, i);
+        fprintf(fp, "# self id, other id, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
+
+        for(r = 1; r < pPriv->num_of_rounds; r++){
+            last_rt = &pPriv->round_trip_local_stores[i][r-1];
+            cur_rt = &pPriv->round_trip_local_stores[i][r];
+
+            // Delta between ping pong emissions
+            y = cur_rt->ts1 - last_rt->ts1;
+
+            // Delta between pong receptions
+            z = cur_rt->ts4 - last_rt->ts4;
+
+            fprintf(fp, "%d, %d, %lu, %lu, %lu, %lu, %fms\n",
+                    self_id, i,
+                    last_rt->ts1, last_rt->ts4,
+                    cur_rt->ts1, cur_rt->ts4,
+                    // convert from nanoseconds to milliseconds
+                    0.000001 * calculate_latencies(cur_rt->ts1, cur_rt->ts4, y, z));
+
+        }
+
+    }
+
+
+    fclose(fp);
+}
+
+
+void dump_ping_pong_raw_timestamps(struct asgard_device *sdev, struct pingpong_priv *pPriv){
+    int i;
+    struct tm *timenow;
+    time_t now = time(NULL);
+    struct stat st = {0};
+    char filename[80];
+    char foldername[80];
+    char timestring[40];
+
+    timenow = gmtime(&now);
+
+    strftime(timestring, sizeof(timestring), "%Y-%m-%d_%H:%M:%S", timenow);
+    sprintf(foldername, "logs/%s", timestring);
+
+    if (stat("logs", &st) == -1) {
+        mkdir("logs", 0777);
+    }
+
+    if (stat(foldername, &st) == -1) {
+        mkdir(foldername, 0777);
+    }
+
+    sprintf(filename, "%s/RAW_Ping_pong_latencies", foldername);
+    asgard_dbg("Writing raw ping pong timestamps to %s\n",filename);
+    dump_ping_pong_to_file( pPriv, filename, sdev->pminfo.cluster_id);
+
+
+}
+#endif
+
+
 void set_pp_opcode(unsigned char *pkt, pp_opcode_t opco, uint64_t id, uint64_t t1, uint64_t t2) {
     uint16_t *opcode;
     uint64_t *id_pkt_ptr, *t1_pkt_ptr, *t2_pkt_ptr;
@@ -114,7 +191,12 @@ int pingpong_start(struct proto_instance *ins){
 int pingpong_stop(struct proto_instance *ins){
     struct pingpong_priv *priv = (struct pingpong_priv *)ins->proto_data;
 
-    pingpong_state_transition_to(priv, PP_STOPPED);    return 0;
+#ifndef ASGARD_KERNEL_MODULE
+    dump_ping_pong_raw_timestamps(priv->sdev, priv);
+#endif
+
+    pingpong_state_transition_to(priv, PP_STOPPED);
+    return 0;
 }
 
 int pingpong_us_update(struct proto_instance *ins, void *payload){
@@ -137,81 +219,8 @@ int pingpong_clean(struct proto_instance *ins){
 
     return 0;
 }
-uint64_t calculate_latencies(uint64_t ts1, uint64_t ts4, uint64_t y, uint64_t z){
-    uint64_t res = ts4 - ts1 - (z-y);
-    res = res/2;
-    return res;
-}
-
-#ifndef ASGARD_KERNEL_MODULE
-
-void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, int self_id){
-    FILE *fp;
-    int i, r;
-    struct ping_round_trip *cur_rt, *last_rt;
-    fp = fopen(filename, "a");
-    uint64_t z,y;
 
 
-    for(i = 0; i < pPriv->sdev->pminfo.num_of_targets - 1; i++){
-        fprintf(fp, "# latency from node %d to node %d\n", self_id, i);
-        fprintf(fp, "# self id, other id, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
-
-        for(r = 1; r < pPriv->num_of_rounds; r++){
-            last_rt = &pPriv->round_trip_local_stores[i][r-1];
-            cur_rt = &pPriv->round_trip_local_stores[i][r];
-
-            // Delta between ping pong emissions
-            y = cur_rt->ts1 - last_rt->ts1;
-
-            // Delta between pong receptions
-            z = cur_rt->ts4 - last_rt->ts4;
-
-            fprintf(fp, "%d, %d, %lu, %lu, %lu, %lu, %fms\n",
-                    self_id, i,
-                    last_rt->ts1, last_rt->ts4,
-                    cur_rt->ts1, cur_rt->ts4,
-                    // convert from nanoseconds to milliseconds
-                    0.000001 * calculate_latencies(cur_rt->ts1, cur_rt->ts4, y, z));
-
-        }
-
-    }
-
-
-    fclose(fp);
-}
-
-
-void dump_ping_pong_raw_timestamps(struct asgard_device *sdev, struct pingpong_priv *pPriv, const char *path){
-    int i;
-    struct tm *timenow;
-    time_t now = time(NULL);
-    struct stat st = {0};
-    char filename[80];
-    char foldername[80];
-    char timestring[40];
-
-    timenow = gmtime(&now);
-
-    strftime(timestring, sizeof(timestring), "%Y-%m-%d_%H:%M:%S", timenow);
-    sprintf(foldername, "logs/%s", timestring);
-
-    if (stat("logs", &st) == -1) {
-        mkdir("logs", 0777);
-    }
-
-    if (stat(foldername, &st) == -1) {
-        mkdir(foldername, 0777);
-    }
-
-    sprintf(filename, "%s/RAW_Ping_pong_latencies", foldername);
-    asgard_dbg("Writing raw ping pong timestamps to %s\n",filename);
-    dump_ping_pong_to_file( pPriv, filename, sdev->pminfo.cluster_id);
-
-
-}
-#endif
 
 
 void handle_pong(struct pingpong_priv *pPriv, int remote_id, uint16_t round_id, uint16_t t1, uint64_t ots) {
