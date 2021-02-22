@@ -655,11 +655,6 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
         invalidate_proto_data(pkt_payload);
     }
 
-    for(i=0; i< spminfo->num_of_targets; i++)
-        update_alive_msg(sdev, spminfo->pm_targets[i].hb_pkt_data.payload); // Setup next HB Message
-
-    for(i = 0; i < spminfo->num_of_targets; i++)
-        update_aliveness_states(sdev, spminfo, i);
 
 
     return 0;
@@ -761,6 +756,7 @@ int do_pacemaker(void *data) {
     int scheduled_hb = 0, out_of_sched_hb = 0, async_pkts = 0, out_of_sched_multi = 0;
     uint64_t interval = spminfo->hbi;
     int err = 0;
+    int i;
 
 #ifndef ASGARD_KERNEL_MODULE
     signal(SIGINT, &trap);
@@ -831,6 +827,12 @@ int do_pacemaker(void *data) {
 
             prev_time = cur_time;
             err = emit_pkts_scheduled(sdev, spminfo);
+
+            for(i=0; i< spminfo->num_of_targets; i++)
+                update_alive_msg(sdev, spminfo->pm_targets[i].hb_pkt_data.payload); // Setup next HB Message
+
+            for(i = 0; i < spminfo->num_of_targets; i++)
+                update_aliveness_states(sdev, spminfo, i);
 
             if (sdev->consensus_priv && sdev->consensus_priv->nstate != LEADER) {
                 update_leader(sdev, spminfo);
