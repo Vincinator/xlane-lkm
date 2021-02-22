@@ -243,6 +243,8 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_id, uint16_t round_id, 
         return;
     }
     pPriv->round_trip_local_stores[remote_id][round_id].ts4 = ots;
+    pPriv->round_trip_local_stores[remote_id][round_id].n = round_id;
+
     pPriv->received_pongs++;
 
 }
