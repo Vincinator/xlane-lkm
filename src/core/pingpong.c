@@ -78,12 +78,13 @@ void pingpong_state_transition_to(struct pingpong_priv *priv, pingpong_state_t s
 
 
 /* Initializes data and user space interfaces */
-int pingpong_init(struct proto_instance *ins){
+int pingpong_init(struct proto_instance *ins, int verbosity){
     struct pingpong_priv *priv = (struct pingpong_priv *)ins->proto_data;
     struct asgard_device *sdev = priv->sdev;
     int i;
 
     priv->num_of_rounds = 0;
+    priv->verbosity = verbosity;
 
     priv->round_trip_local_stores = AMALLOC( sdev->pminfo.num_of_targets * sizeof(struct ping_round_trip*), GFP_KERNEL);
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){

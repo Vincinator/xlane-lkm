@@ -154,9 +154,9 @@ void init_asgard_device(struct asgard_device *sdev){
 
     // Only use consensus protocol for this evaluation.
     //sdev->protos[0] = generate_protocol_instance(sdev, ASGARD_PROTO_CONSENSUS);
-    register_protocol_instance(sdev, 2, ASGARD_PROTO_CONSENSUS);
+    register_protocol_instance(sdev, 2, ASGARD_PROTO_CONSENSUS, 0);
 
-    register_protocol_instance(sdev, 1, ASGARD_PROTO_PP);
+    register_protocol_instance(sdev, 1, ASGARD_PROTO_PP, 1);
 
 
     sdev->ci = ACMALLOC(1, sizeof(struct cluster_info), GFP_KERNEL);

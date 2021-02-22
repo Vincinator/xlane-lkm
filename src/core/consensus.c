@@ -482,7 +482,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
     priv->sdev->pminfo.pm_targets[remote_lid].received_log_replications++;
 
     if (num_entries == 0) {
-        asgard_dbg("no entries in payload \n");
+        if(priv->verbosity != 0)
+            asgard_dbg("no entries in payload \n");
         return;    // no reply if nothing to append!
     }
     pkt_size = GET_PROTO_OFFSET_VAL(pkt);
@@ -514,17 +515,19 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
         if (*prev_log_term == priv->term && priv->leader_id == rcluster_id) {
 
             unstable = 1;
-            asgard_dbg("Unstable log rep detected!\n");
+            if(priv->verbosity != 0)
+                asgard_dbg("Unstable log rep detected!\n");
 
         } else {
-            asgard_dbg("Case unhandled!\n");
+            asgard_error("Case unhandled!\n");
         }
     }
 
     start_idx = (*prev_log_idx) + 1;
 
     if (check_prev_log_match(priv, *prev_log_term, priv->sm_log.stable_idx)) {
-        asgard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
+        if(priv->verbosity != 0)
+            asgard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
                    *prev_log_term, *prev_log_idx);
 
         print_log_state(&priv->sm_log);
@@ -533,18 +536,20 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
     }
 
     if (append_commands(priv, pkt, num_entries, pkt_size, start_idx, unstable)) {
-        asgard_dbg("append commands failed. start_idx=%d, unstable=%d\n", start_idx, unstable);
+        asgard_error("append commands failed. start_idx=%d, unstable=%d\n", start_idx, unstable);
         goto reply_false_unlock;
     }
 
     update_next_retransmission_request_idx(priv);
 
     if (unstable) {
-        asgard_dbg("[Unstable] appending entries %d - %d | re_idx=%d | stable_idx=%d\n",
-         	start_idx, start_idx + num_entries, priv->sm_log.next_retrans_req_idx, priv->sm_log.stable_idx);
+        if(priv->verbosity != 0)
+            asgard_dbg("[Unstable] appending entries %d - %d | re_idx=%d | stable_idx=%d\n",
+         	    start_idx, start_idx + num_entries, priv->sm_log.next_retrans_req_idx, priv->sm_log.stable_idx);
         priv->sm_log.unstable_commits++;
     } else {
-        asgard_dbg("[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
+        if(priv->verbosity != 0)
+            asgard_dbg("[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
     }
 
     if (priv->sm_log.next_retrans_req_idx != -2)
@@ -579,14 +584,14 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
     struct consensus_priv *priv =
             (struct consensus_priv *) ins->proto_data;
 
-#if VERBOSE_DEBUG
-    asgard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
-        nstate_string(priv->nstate),
-        (unsigned long long) ASGARD_TIMESTAMP,
-        priv->term,
-        rcluster_id,
-        param1);
-#endif
+    if(priv->verbosity >= 2)
+        asgard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
+            nstate_string(priv->nstate),
+            (unsigned long long) ASGARD_TIMESTAMP,
+            priv->term,
+            rcluster_id,
+            param1);
+
 
     setup_le_msg(ins, &priv->sdev->pminfo, VOTE, remote_lid, param1, param2, 0, 0);
     priv->voted = param1;
@@ -612,7 +617,6 @@ void check_pending_log_rep_for_multicast(struct asgard_device *sdev)
 
     if(next_index < 0)
         return;
-    asgard_dbg("multicast schedule called\n");
     schedule_log_rep(sdev, 0, next_index, retrans, 1);
 }
 #ifdef ASGARD_KERNEL_MODULE
@@ -806,13 +810,14 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid,
 }
 
 
-int consensus_init(struct proto_instance *ins) {
+int consensus_init(struct proto_instance *ins, int verbosity) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
     int i;
 
     priv->voted = -1;
     priv->term = 0;
     priv->state = LE_READY;
+    priv->verbosity = verbosity;
 
     priv->sm_log.last_idx = -1;
     priv->sm_log.commit_idx = -1;

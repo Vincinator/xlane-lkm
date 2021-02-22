@@ -66,6 +66,8 @@ struct pingpong_priv {
     struct asgard_device *sdev;
     struct proto_instance *ins;
 
+    int verbosity;
+
     pingpong_state_t state;
 
     /* Array of Buffers allocated in pingpong_init function of pingpong.c

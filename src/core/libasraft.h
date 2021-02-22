@@ -70,7 +70,7 @@ struct asgard_protocol_ctrl_ops {
     int (*init_ctrl)(void);
 #endif
     /* Initializes data and user space interfaces */
-    int (*init)(struct proto_instance *ins);
+    int (*init)(struct proto_instance *ins, int verbosity);
 
     int (*init_payload)(void *payload);
 
@@ -94,6 +94,7 @@ struct asgard_protocol_ctrl_ops {
 };
 struct proto_instance {
     uint16_t instance_id;
+
 
     enum asgard_protocol_type proto_type;
 
@@ -291,6 +292,8 @@ struct consensus_priv {
     uint32_t leader_id;
 
     uint32_t node_id;
+
+    int verbosity;
 
     /* index of array is node_id,
      * value at index of array is index to pm_targets
