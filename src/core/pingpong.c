@@ -165,6 +165,7 @@ int pingpong_init(struct proto_instance *ins, int verbosity){
 
     priv->round_trip_local_stores = AMALLOC( sdev->pminfo.num_of_targets * sizeof(struct ping_round_trip *), GFP_KERNEL);
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
+        asgard_dbg("allocated local store for target %d\n",i );
         priv->round_trip_local_stores[i] = AMALLOC(MAX_PING_PONG_ROUND_TRIPS * sizeof(struct ping_round_trip), GFP_KERNEL);
     }
 
