@@ -139,7 +139,7 @@ int write_ingress_log(struct asgard_ingress_logger *ailog, enum le_event_type ty
 {
     struct asgard_logger *slog;
 
-    if(node_id < 0 || node_id > MAX_NODE_ID){
+    if(node_id < 0 || node_id > CLUSTER_SIZE){
         asgard_dbg("invalid/uninitialized logger for node %d\n", node_id);
         return -EINVAL;
     }
@@ -248,7 +248,7 @@ int init_ingress_logger(struct asgard_ingress_logger *ailog, int instance_id)
         return -EINVAL;
     }
 
-    ailog->per_node_logger = AMALLOC(sizeof(struct asgard_logger) * MAX_NODE_ID, GFP_KERNEL);
+    ailog->per_node_logger = AMALLOC(sizeof(struct asgard_logger) * CLUSTER_SIZE, GFP_KERNEL);
 
     if (!ailog->per_node_logger) {
         asgard_error("Could not allocate memory for logs\n");
@@ -256,7 +256,7 @@ int init_ingress_logger(struct asgard_ingress_logger *ailog, int instance_id)
     }
 
     // Just init all loggers for all possible nodes.. TODO
-    for(i = 0; i < MAX_NODE_ID; i++){
+    for(i = 0; i < CLUSTER_SIZE; i++){
         init_logger(&ailog->per_node_logger[i], instance_id, -1, "nodelogger", -1);
         logger_state_transition_to(&ailog->per_node_logger[i], LOGGER_RUNNING);
     }

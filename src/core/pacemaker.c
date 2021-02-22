@@ -601,7 +601,7 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
 {
     struct asgard_payload *pkt_payload = NULL;
     int i;
-    int target_fire[MAX_NODE_ID];
+    int target_fire[CLUSTER_SIZE];
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
         target_fire[i] = spminfo->pm_targets[i].fire;

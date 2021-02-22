@@ -51,7 +51,6 @@
 
 #define MAX_PROTOCOLS 4
 
-#define MAX_NODE_ID 10
 #define CLUSTER_SIZE 3
 
 
@@ -208,19 +207,19 @@ struct sm_log_entry {
 
 struct state_machine_cmd_log {
 
-    int num_retransmissions[MAX_NODE_ID];
+    int num_retransmissions[CLUSTER_SIZE];
 
     int unstable_commits;
 
-    int32_t next_index[MAX_NODE_ID];
+    int32_t next_index[CLUSTER_SIZE];
 
-    int32_t match_index[MAX_NODE_ID];
+    int32_t match_index[CLUSTER_SIZE];
 
-    struct list_head retrans_head[MAX_NODE_ID];
+    struct list_head retrans_head[CLUSTER_SIZE];
 
-    asg_rwlock_t retrans_list_lock[MAX_NODE_ID];
+    asg_rwlock_t retrans_list_lock[CLUSTER_SIZE];
 
-    int retrans_entries[MAX_NODE_ID];
+    int retrans_entries[CLUSTER_SIZE];
 
     int32_t last_applied;
 
@@ -299,7 +298,7 @@ struct consensus_priv {
     /* index of array is node_id,
      * value at index of array is index to pm_targets
      */
-    int cluster_mapping[MAX_NODE_ID];
+    int cluster_mapping[CLUSTER_SIZE];
 
     int32_t term;
 
