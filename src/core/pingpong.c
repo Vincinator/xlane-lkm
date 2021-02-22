@@ -90,7 +90,7 @@ int pingpong_init(struct proto_instance *ins, int verbosity){
 
     priv->round_trip_local_stores = AMALLOC( sdev->pminfo.num_of_targets * sizeof(struct ping_round_trip*), GFP_KERNEL);
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-        priv->round_trip_local_stores[i] = AMALLOC(sizeof(struct ping_round_trip), GFP_KERNEL);
+        priv->round_trip_local_stores[i] = AMALLOC(MAX_PING_PONG_ROUND_TRIPS * sizeof(struct ping_round_trip), GFP_KERNEL);
     }
 
 
@@ -222,6 +222,11 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_id, uint16_t round_id, 
 
     if(round_id < 0 || round_id > MAX_PING_PONG_ROUND_TRIPS){
         asgard_error("Invalid ping pong id (%d)\n", round_id);
+        return;
+    }
+
+    if(remote_id < 0 || remote_id > pPriv->sdev->pminfo.num_of_targets){
+        asgard_error("Invalid remote id\n");
         return;
     }
 
