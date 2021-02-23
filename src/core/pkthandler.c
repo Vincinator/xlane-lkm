@@ -78,52 +78,37 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
     uint16_t cur_proto_id;
     uint16_t cur_offset;
     struct proto_instance *cur_ins;
+    int i;
+    uint32_t cur_bcnt = bcnt;
 
+    char *cur_payload_ptr = payload;
 
+    for(i = 0; i < instances; i++) {
 
+        if (cur_bcnt <= 0)
+            return;
 
-    /* bcnt <= 0:
-     *		no payload left to handle
-     *
-     * instances <= 0:
-     *		all included instances were handled
-     */
-    if (instances <= 0 || bcnt <= 0)
-        return;
+        if (instances > 4) {
+            asgard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
+            return;
+        }
 
-    /* Protect this kernel from buggy packets.
-     * In the current state, more than 4 instances are not intentional.
+        cur_proto_id = GET_PROTO_TYPE_VAL(cur_payload_ptr);
+        cur_offset = GET_PROTO_OFFSET_VAL(cur_payload_ptr);
 
-    if (instances > 4) {
-        asgard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
-        return;
-    }*/
+        cur_ins = get_proto_instance(sdev, cur_proto_id);
 
-    // if (sdev->verbose >= 3)
-    //	asgard_dbg("recursion. instances %d bcnt %d", instances, bcnt);
-
-    cur_proto_id = GET_PROTO_TYPE_VAL(payload);
-
-    // if (sdev->verbose >= 3)
-    //	asgard_dbg("cur_proto_id %d", cur_proto_id);
-
-    cur_offset = GET_PROTO_OFFSET_VAL(payload);
-
-    // if (sdev->verbose >= 3)
-    //	asgard_dbg("cur_offset %d", cur_offset);
-
-    cur_ins = get_proto_instance(sdev, cur_proto_id);
-
-    // check if instance for the given protocol id exists
-    if (!cur_ins) {
+        if (!cur_ins) {
             asgard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
 
-    } else {
-        asgard_dbg("(offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %lu )\n", cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
-        cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload, ots);
+        } else {
+            asgard_dbg("(i: %d, offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %lu )\n", i, cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
+            cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload, ots);
+        }
+        cur_bcnt = cur_bcnt - cur_offset;
+        cur_payload_ptr = cur_payload_ptr + cur_offset;
+
     }
-    // handle next payload
-    handle_sub_payloads(sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset, ots);
 
 }
 
