@@ -256,7 +256,7 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_lid, uint16_t round_id,
     }
     cur_target_trip->round_trip_data[round_id].ts4 = ots;
     cur_target_trip->round_trip_data[round_id].n = round_id;
-    asgard_dbg("received pong %d\n", cur_target_trip->received_pongs);
+    asgard_dbg("received pong %d\n", round_id);
 
     cur_target_trip->received_pongs++;
 
@@ -424,6 +424,8 @@ int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int
     set_pp_opcode((unsigned char *) pkt_payload_sub, PING, cur_target_trip->scheduled_pings, ts1, 0);
 
     add_ts1_to_local_store(pPriv, target_lid, ts1);
+    asgard_dbg("scheduled ping %d\n", cur_target_trip->scheduled_pings);
+
     cur_target_trip->scheduled_pings++;
 
 
