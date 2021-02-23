@@ -27,6 +27,8 @@ void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, i
 
     for(i = 0; i < pPriv->sdev->pminfo.num_of_targets; i++){
         fprintf(fp, "# latency from node %d to node %d\n", self_id, i);
+        fprintf(fp, "# scheduled pings: %d, received pongs: %d\n", pPriv->targets_rt_meta[i].scheduled_pings, pPriv->targets_rt_meta[i].received_pongs);
+
         fprintf(fp, "# round, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
 
         for(r = 1; r < pPriv->targets_rt_meta[i].received_pongs; r++){
