@@ -122,7 +122,7 @@ int setup_pp_msg(struct proto_instance *ins, struct pminfo *spminfo, uint16_t op
             asgard_reserve_proto(ins->instance_id, pkt_payload, ASGARD_PROTO_PP_PAYLOAD_SZ);
 
     if (!pkt_payload_sub) {
-        asgard_error("Leader Election packet full!\n");
+        asgard_error("packet full can not include ping!\n");
         goto unlock;
     }
 
