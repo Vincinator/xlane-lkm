@@ -193,7 +193,6 @@ void generate_load(tnode_t *tn){
 }
 
 
-
 #ifdef ASGARD_DPDK
 int main(int argc, char *argv[]){
     tnode_t node;

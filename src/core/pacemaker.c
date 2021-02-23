@@ -31,6 +31,9 @@ static struct task_struct *heartbeat_task;
 #define IP_ADDR_FMT_SIZE 15
 
 
+struct rte_eth_dev_tx_buffer *tx_buffer;
+
+
 const char *pm_state_string(enum pmstate state) {
     switch (state) {
         case ASGARD_PM_UNINIT:
@@ -425,7 +428,10 @@ unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_
     }
 
     /* queue id = 0, number of packets = 1 (due to "fire when ready" approach) */
-    nb_tx = rte_eth_tx_burst(portid, 0, &dpdk_pkt, 1);
+    nb_tx = rte_eth_tx_buffer(portid, 0, tx_buffer, dpdk_pkt);
+
+    if(nb_tx == 0)
+        nb_tx = rte_eth_tx_buffer_flush(portid, 0, tx_buffer);
 
     return nb_tx;
 }
