@@ -61,6 +61,16 @@ struct ping_round_trip {
 };
 
 
+struct ping_pong_round_trip {
+    int received_pongs;
+    int scheduled_pings;
+
+    struct ping_round_trip *round_trip_data;
+
+
+};
+
+
 struct pingpong_priv {
 
     struct asgard_device *sdev;
@@ -70,20 +80,12 @@ struct pingpong_priv {
 
     pingpong_state_t state;
 
-    /* Array of Buffers allocated in pingpong_init function of pingpong.c
-     *
-     * Once the buffer is full, the latency benchmark will stop.
-     * It is up to the benchmark to start a new ping pong session. */
-    struct ping_round_trip **round_trip_local_stores;
+    struct ping_pong_round_trip *targets_rt_meta;
 
 
-
-
-    int received_pongs;
-    int scheduled_pings;
 
 };
 
 struct asgard_payload;
-int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int instance_id);
+int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int instance_id, int target_lid);
 struct proto_instance *get_pp_proto_instance(struct asgard_device *sdev);

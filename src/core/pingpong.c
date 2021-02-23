@@ -29,10 +29,9 @@ void dump_ping_pong_to_file(struct pingpong_priv *pPriv, const char *filename, i
         fprintf(fp, "# latency from node %d to node %d\n", self_id, i);
         fprintf(fp, "# round, ts1_1, ts4_1, ts1_2, ts4_2, latency in ns, latency in ms\n");
 
-        for(r = 1; r < pPriv->received_pongs; r++){
-            last_rt = &pPriv->round_trip_local_stores[i][r-1];
-            cur_rt = &pPriv->round_trip_local_stores[i][r];
-
+        for(r = 1; r < pPriv->targets_rt_meta[i].received_pongs; r++){
+            last_rt = &pPriv->targets_rt_meta[i].round_trip_data[r-1];
+            cur_rt = &pPriv->targets_rt_meta[i].round_trip_data[r];
 
 
             // Delta between ping pong emissions
@@ -162,14 +161,16 @@ int pingpong_init(struct proto_instance *ins, int verbosity){
     struct asgard_device *sdev = priv->sdev;
     int  i, j;
 
-    priv->received_pongs = 0;
-    priv->scheduled_pings = 0;
     priv->verbosity = verbosity;
 
-    priv->round_trip_local_stores = AMALLOC( CLUSTER_SIZE * sizeof(struct ping_round_trip *), GFP_KERNEL);
+    priv->targets_rt_meta = AMALLOC( CLUSTER_SIZE * sizeof(struct ping_pong_round_trip *), GFP_KERNEL);
+
     for(i = 0; i < CLUSTER_SIZE; i++){
-        asgard_dbg("allocated local store for target %d\n",i );
-        priv->round_trip_local_stores[i] = AMALLOC(MAX_PING_PONG_ROUND_TRIPS * sizeof(struct ping_round_trip), GFP_KERNEL);
+        priv->targets_rt_meta[i].round_trip_data = AMALLOC(MAX_PING_PONG_ROUND_TRIPS * sizeof(struct ping_round_trip), GFP_KERNEL);
+        priv->targets_rt_meta[i].received_pongs = 0;
+        priv->targets_rt_meta[i].scheduled_pings = 0;
+        if(verbosity)
+            asgard_dbg("allocated local ping pong store for target %d\n",i );
     }
 
 
@@ -216,9 +217,9 @@ int pingpong_clean(struct proto_instance *ins){
     int i;
 
     for(i = 0; i < sdev->pminfo.num_of_targets; i++){
-        AFREE(priv->round_trip_local_stores[i]);
+        AFREE(priv->targets_rt_meta[i].round_trip_data);
     }
-    AFREE(priv->round_trip_local_stores);
+    AFREE(priv->targets_rt_meta);
 
 
     return 0;
@@ -227,25 +228,34 @@ int pingpong_clean(struct proto_instance *ins){
 
 
 
-void handle_pong(struct pingpong_priv *pPriv, int remote_id, uint16_t round_id, uint16_t t1, uint64_t ots) {
+void handle_pong(struct pingpong_priv *pPriv, int remote_lid, uint16_t round_id, uint16_t t1, uint64_t ots) {
+    struct ping_pong_round_trip *cur_target_trip;
+
+    if(remote_lid < 0 || remote_lid > pPriv->sdev->pminfo.num_of_targets){
+        asgard_error("invalid target_lid. could not add ts1 to local store\n");
+        return;
+    }
+    cur_target_trip = &pPriv->targets_rt_meta[remote_lid];
+
+    if(!cur_target_trip){
+        asgard_error("Could not access rountrip target store in %s\n", __FUNCTION__ );
+        return;
+    }
 
     if(round_id < 0 || round_id > MAX_PING_PONG_ROUND_TRIPS){
         asgard_error("Invalid ping pong id (%d)\n", round_id);
         return;
     }
 
-    if(remote_id < 0 || remote_id > pPriv->sdev->pminfo.num_of_targets){
-        asgard_error("Invalid remote id\n");
-        return;
-    }
-    if(!pPriv->round_trip_local_stores[remote_id]) {
-        asgard_error("could not access round trip local store with remote id: %d\n", remote_id);
-        return;
-    }
-    pPriv->round_trip_local_stores[remote_id][round_id].ts4 = ots;
-    pPriv->round_trip_local_stores[remote_id][round_id].n = round_id;
 
-    pPriv->received_pongs++;
+    if(!&cur_target_trip->round_trip_data[round_id]) {
+        asgard_error("could not access round trip local store with remote id: %d\n", remote_lid);
+        return;
+    }
+    cur_target_trip->round_trip_data[round_id].ts4 = ots;
+    cur_target_trip->round_trip_data[round_id].n = round_id;
+
+    cur_target_trip->received_pongs++;
 
 }
 
@@ -351,34 +361,54 @@ error:
     return NULL;
 }
 
+/* scheduled_pings index must not be incremented before this function is called */
 void add_ts1_to_local_store(struct pingpong_priv *pPriv, int target_lid, uint64_t ts1){
+    struct ping_pong_round_trip *cur_target_trip;
 
     if(target_lid < 0 || target_lid > pPriv->sdev->pminfo.num_of_targets){
-        asgard_error("invalud target_lid. could not add ts1 to local store\n");
+        asgard_error("invalid target_lid. could not add ts1 to local store\n");
         return;
     }
 
-    if(pPriv->scheduled_pings >= MAX_PING_PONG_ROUND_TRIPS){
+    cur_target_trip = &pPriv->targets_rt_meta[target_lid];
+
+    if(!cur_target_trip){
+        asgard_error("Could not access rountrip target store in %s\n", __FUNCTION__ );
+        return;
+    }
+
+    if(cur_target_trip->scheduled_pings >= MAX_PING_PONG_ROUND_TRIPS){
         asgard_error("Maximum number of ping pong rounds reached\n");
         return;
     }
 
-    pPriv->round_trip_local_stores[target_lid][pPriv->scheduled_pings].ts1 = ts1;
+    cur_target_trip->round_trip_data[cur_target_trip->scheduled_pings].ts1 = ts1;
 
 }
 
 
 
-int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int instance_id) {
+int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int instance_id, int target_lid) {
     unsigned char *pkt_payload_sub;
     uint64_t ts1;
-    int i;
+    struct ping_pong_round_trip *cur_target_trip;
 
-    if(pPriv->received_pongs >= MAX_PING_PONG_ROUND_TRIPS) {
+    if(target_lid < 0 || target_lid > pPriv->sdev->pminfo.num_of_targets){
+        asgard_error("invalid target_lid. could not add ts1 to local store\n");
+        return -1;
+    }
+
+    cur_target_trip = &pPriv->targets_rt_meta[target_lid];
+
+    if(!cur_target_trip){
+        asgard_error("Could not access rountrip target store\n");
+        return -1;
+    }
+
+    if (cur_target_trip->scheduled_pings >= MAX_PING_PONG_ROUND_TRIPS) {
         asgard_dbg("num of rounds exceeded maximum. \n");
         return 0;
     }
-
 
     pkt_payload_sub = asgard_reserve_proto(instance_id, spay, ASGARD_PROTO_PP_PAYLOAD_SZ);
 
@@ -388,12 +418,12 @@ int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int
     }
 
     ts1 = ASGARD_TIMESTAMP;
-    set_pp_opcode((unsigned char *) pkt_payload_sub, PING, pPriv->scheduled_pings, ts1 , 0);
+    set_pp_opcode((unsigned char *) pkt_payload_sub, PING, cur_target_trip->scheduled_pings, ts1, 0);
 
-    for(i = 0; i < pPriv->sdev->pminfo.num_of_targets;i++)
-        add_ts1_to_local_store(pPriv, i,ts1 );
+    add_ts1_to_local_store(pPriv, target_lid, ts1);
+    cur_target_trip->scheduled_pings++;
 
-    pPriv->scheduled_pings++;
+
 
     return 0;
 }

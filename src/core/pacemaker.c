@@ -102,7 +102,7 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asgard_payload *spay
 }
 
 /* Logic to include protocol dependent messages for the heartbeat message */
-void pre_hb_setup(struct asgard_device *sdev, struct asgard_payload *pkt_payload) {
+void pre_hb_setup(struct asgard_device *sdev, struct asgard_payload *pkt_payload, int target_lid) {
     int j;
 
     // Not a member of a cluster yet - thus, append advertising messages
@@ -123,7 +123,7 @@ void pre_hb_setup(struct asgard_device *sdev, struct asgard_payload *pkt_payload
         } else if(sdev->protos[j]->proto_type == ASGARD_PROTO_PP) {
 
             setup_ping_msg((struct pingpong_priv *) sdev->protos[j]->proto_data,
-                    pkt_payload, sdev->protos[j]->instance_id);
+                    pkt_payload, sdev->protos[j]->instance_id, target_lid);
 
         }
     }
@@ -831,7 +831,7 @@ int do_pacemaker(void *data) {
 
             //  the HB Message
             for(i=0; i< spminfo->num_of_targets; i++)
-                pre_hb_setup(sdev, spminfo->pm_targets[i].hb_pkt_data.payload);
+                pre_hb_setup(sdev, spminfo->pm_targets[i].hb_pkt_data.payload, i);
 
             for(i = 0; i < spminfo->num_of_targets; i++)
                 update_aliveness_states(sdev, spminfo, i);

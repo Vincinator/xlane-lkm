@@ -62,7 +62,7 @@ void *pacemaker(void *data);
 
 #endif
 void pm_state_transition_to(struct pminfo *spminfo, const enum pmstate state);
-void pre_hb_setup(struct asgard_device *sdev, struct asgard_payload *pkt_payload);
+void pre_hb_setup(struct asgard_device *sdev, struct asgard_payload *pkt_payload, int target_lid);
 void init_pacemaker(struct pminfo *spminfo);
 void update_leader(struct asgard_device *sdev, struct pminfo *spminfo);
 int asgard_pm_reset(struct pminfo *spminfo);
