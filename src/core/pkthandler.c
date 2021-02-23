@@ -83,15 +83,15 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
 
     char *cur_payload_ptr = payload;
 
+    if (instances > 4) {
+        asgard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
+        return;
+    }
+
     for(i = 0; i < instances; i++) {
 
         if (cur_bcnt <= 0)
             return;
-
-        if (instances > 4) {
-            asgard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
-            return;
-        }
 
         cur_proto_id = GET_PROTO_TYPE_VAL(cur_payload_ptr);
         cur_offset = GET_PROTO_OFFSET_VAL(cur_payload_ptr);
