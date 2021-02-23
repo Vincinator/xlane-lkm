@@ -795,8 +795,9 @@ static void postwork_pm_loop(struct asgard_device *sdev) {
             asgard_dbg("Stopping Protocol\n");
         }
     }
-
+#ifdef ASGARD_DPDK
     AFREE(tx_buffer);
+#endif
     pm_state_transition_to(&sdev->pminfo, ASGARD_PM_READY);
 }
 
