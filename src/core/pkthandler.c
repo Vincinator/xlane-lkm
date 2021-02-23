@@ -119,6 +119,7 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
             asgard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
 
     } else {
+        asgard_dbg("posting Payload from %d to protocol instance %d of type %d\n", remote_lid, instances, cur_proto_id);
         cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload, ots);
     }
     // handle next payload
