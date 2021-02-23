@@ -31,8 +31,9 @@ static struct task_struct *heartbeat_task;
 #define IP_ADDR_FMT_SIZE 15
 
 
+#ifdef ASGARD_DPDK
 struct rte_eth_dev_tx_buffer *tx_buffer;
-
+#endif
 
 const char *pm_state_string(enum pmstate state) {
     switch (state) {
@@ -737,6 +738,10 @@ static int prepare_pm_loop(struct asgard_device *sdev, struct pminfo *spminfo) {
 #endif
 
 
+#ifdef ASGARD_DPDK
+    tx_buffer = AMALLOC(sizeof(struct rte_eth_dev_tx_buffer), GFP_KERNEL);
+#endif
+
     return 0;
 }
 
@@ -751,6 +756,8 @@ static void postwork_pm_loop(struct asgard_device *sdev) {
             asgard_dbg("Stopping Protocol\n");
         }
     }
+
+    AFREE(tx_buffer);
     pm_state_transition_to(&sdev->pminfo, ASGARD_PM_READY);
 }
 
