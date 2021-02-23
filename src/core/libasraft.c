@@ -141,7 +141,7 @@ void init_asgard_device(struct asgard_device *sdev){
     sdev->tx_counter = 0;
 
 #ifdef ASGARD_MODULE_GIT_VERSION
-    asgard_dbg("Running asgard Version: %s", ASGARD_MODULE_GIT_VERSION);
+    asgard_dbg("Running asgard Version: %s\n", ASGARD_MODULE_GIT_VERSION);
 #endif
 
 #ifdef ASGARD_KERNEL_MODULE

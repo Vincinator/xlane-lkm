@@ -254,6 +254,7 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_lid, uint16_t round_id,
     }
     cur_target_trip->round_trip_data[round_id].ts4 = ots;
     cur_target_trip->round_trip_data[round_id].n = round_id;
+    asgard_dbg("received pong %d\n", cur_target_trip->received_pongs);
 
     cur_target_trip->received_pongs++;
 
