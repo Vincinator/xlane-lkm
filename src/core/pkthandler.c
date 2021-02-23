@@ -102,7 +102,7 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
             asgard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
 
         } else {
-            asgard_dbg("(i: %d, offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %lu )\n", i, cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
+            //asgard_dbg("(i: %d, offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %lu )\n", i, cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
             cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload, ots);
         }
         cur_bcnt = cur_bcnt - cur_offset;

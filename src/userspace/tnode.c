@@ -23,7 +23,7 @@
 #undef LOG_PREFIX
 #define LOG_PREFIX "[ASGARD][TNODE]"
 
-#define MAX_PKT_BURST 32
+#define MAX_PKT_BURST 1
 
 
 void error(tnode_t *tn, char *msg) {
