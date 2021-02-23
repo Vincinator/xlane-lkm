@@ -32,7 +32,43 @@ static struct task_struct *heartbeat_task;
 
 
 #ifdef ASGARD_DPDK
-struct rte_eth_dev_tx_buffer *tx_buffer;
+struct rte_eth_dev_tx_buffer *tx_buffer[RTE_MAX_ETHPORTS];
+
+/*
+ * Tx buffer error callback
+ */
+static void flush_tx_error_callback(struct rte_mbuf **unsent, uint16_t count,
+                        void *userdata) {
+    int i;
+    uint16_t port_id = (uintptr_t)userdata;
+    /* free the mbufs which failed from transmit */
+    for (i = 0; i < count; i++)
+        rte_pktmbuf_free(unsent[i]);
+}
+
+
+static void configure_tx_buffer(uint16_t port_id, uint16_t size)
+{
+    int ret;
+
+    tx_buffer[port_id] = rte_zmalloc_socket("tx_buffer", RTE_ETH_TX_BUFFER_SIZE(size), 0,
+                                            rte_eth_dev_socket_id(port_id));
+
+    if (tx_buffer[port_id] == NULL)
+        rte_exit(EXIT_FAILURE, "Cannot allocate buffer for tx on port %u\n",
+                 port_id);
+
+    rte_eth_tx_buffer_init(tx_buffer[port_id], size);
+    ret = rte_eth_tx_buffer_set_err_callback(tx_buffer[port_id],
+                                             flush_tx_error_callback, (void *)(intptr_t)port_id);
+    if (ret < 0)
+        rte_exit(EXIT_FAILURE,
+                 "Cannot set error callback for tx buffer on port %u\n",
+                 port_id);
+}
+
+
+
 #endif
 
 const char *pm_state_string(enum pmstate state) {
@@ -742,7 +778,7 @@ static int prepare_pm_loop(struct asgard_device *sdev, struct pminfo *spminfo) {
 
 
 #ifdef ASGARD_DPDK
-    tx_buffer = AMALLOC(sizeof(struct rte_eth_dev_tx_buffer), GFP_KERNEL);
+    configure_tx_buffer(sdev->dpdk_portid, 32);
 #endif
 
     return 0;
