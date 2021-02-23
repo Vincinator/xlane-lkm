@@ -59,8 +59,17 @@ endif()
 set(CMAKE_C_STANDARD 99)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CMAKE_BUILD_TYPE Debug)
+set(ASGARD_GIT_VERSION )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
+
+execute_process(COMMAND git log -1 --format=%h
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_COMMIT_HASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+add_definitions("-DASGARD_MODULE_GIT_VERSION=\"ASGARD-${GIT_COMMIT_HASH}\"")
+
 
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
