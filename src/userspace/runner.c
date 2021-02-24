@@ -290,7 +290,6 @@ int main(int argc, char *argv[]){
         rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup:err=%d, port=%u\n",
                  ret, node.sdev->dpdk_portid);
 
-    /* init one TX queue on each port */
     fflush(stdout);
     txq_conf = dev_info.default_txconf;
     txq_conf.offloads = local_port_conf.txmode.offloads;
