@@ -270,7 +270,7 @@ int pingpong_post_payload(struct proto_instance *ins, int remote_lid, int cluste
         return 0;
 
 #ifndef ASGARD_KERNEL_MODULE
-    DumpHex(payload, ASGARD_PROTO_PP_PAYLOAD_SZ);
+    // DumpHex(payload, ASGARD_PROTO_PP_PAYLOAD_SZ);
 #endif
     opcode = GET_PP_PROTO_OPCODE_VAL(payload);
     pp_id = GET_PP_N_VAL(payload);
