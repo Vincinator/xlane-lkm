@@ -47,7 +47,7 @@ static void flush_tx_error_callback(struct rte_mbuf **unsent, uint16_t count,
 }
 
 
-static void configure_tx_buffer(uint16_t port_id, uint16_t size)
+void configure_tx_buffer(uint16_t port_id, uint16_t size)
 {
     int ret;
 

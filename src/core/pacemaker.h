@@ -57,6 +57,7 @@ int asgard_pm_stop(struct pminfo *spminfo);
 
 #ifdef ASGARD_DPDK
 int pacemaker(void *data);
+void configure_tx_buffer(uint16_t port_id, uint16_t size);
 #else
 void *pacemaker(void *data);
 
@@ -66,6 +67,7 @@ void pre_hb_setup(struct asgard_device *sdev, struct asgard_payload *pkt_payload
 void init_pacemaker(struct pminfo *spminfo);
 void update_leader(struct asgard_device *sdev, struct pminfo *spminfo);
 int asgard_pm_reset(struct pminfo *spminfo);
+
 
 #ifdef ASGARD_KERNEL_MODULE
 int asgard_pm_start_loop(void *data);

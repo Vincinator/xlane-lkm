@@ -302,23 +302,7 @@ int main(int argc, char *argv[]){
         rte_exit(EXIT_FAILURE, "rte_eth_tx_queue_setup:err=%d, port=%u\n",
                  ret, node.sdev->dpdk_portid);
 
-    /* Initialize TX buffers */
-    tx_buffer = rte_zmalloc_socket("tx_buffer",
-                                   RTE_ETH_TX_BUFFER_SIZE(MAX_PKT_BURST), 0,
-                                   rte_eth_dev_socket_id(node.sdev->dpdk_portid));
-    if (tx_buffer == NULL)
-        rte_exit(EXIT_FAILURE, "Cannot allocate buffer for tx on port %u\n",
-                 node.sdev->dpdk_portid);
-
-    rte_eth_tx_buffer_init(tx_buffer, MAX_PKT_BURST);
-
-    ret = rte_eth_tx_buffer_set_err_callback(tx_buffer,
-                                             rte_eth_tx_buffer_count_callback,
-                                             &dropped);
-    if (ret < 0)
-        rte_exit(EXIT_FAILURE,
-                 "Cannot set init_error callback for tx buffer on port %u\n",
-                 node.sdev->dpdk_portid);
+    configure_tx_buffer(node.sdev->dpdk_portid, 32);
 
     /* Start device */
     ret = rte_eth_dev_start(node.sdev->dpdk_portid);
