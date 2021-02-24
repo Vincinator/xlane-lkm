@@ -463,15 +463,12 @@ unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_
         asgard_dbg("DPDK packet not created! dropping packet transmission\n");
         return -1;
     }
-    asgard_dbg("before buffer\n");
 
     /* queue id = 0, number of packets = 1 (due to "fire when ready" approach) */
-    nb_tx = rte_eth_tx_buffer(portid, 0, tx_buffer, dpdk_pkt);
-    asgard_dbg("after buffer\n");
+    nb_tx = rte_eth_tx_buffer(portid, 0, tx_buffer[portid], dpdk_pkt);
 
     if(nb_tx == 0)
-        nb_tx = rte_eth_tx_buffer_flush(portid, 0, tx_buffer);
-    asgard_dbg("2after buffer\n");
+        nb_tx = rte_eth_tx_buffer_flush(portid, 0, tx_buffer[portid]);
 
     return nb_tx;
 }

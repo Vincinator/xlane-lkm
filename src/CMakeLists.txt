@@ -4,7 +4,7 @@ project(asgard C)
 # -------------------------------------------
 message(" 2Checking build parameters: ")
 
-#set(ASGARD_DPDK 1)
+set(ASGARD_DPDK 1)
 if(DEFINED ENV{kerneldir})
     set(kerneldir $ENV{kerneldir})
 else()
