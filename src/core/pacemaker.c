@@ -474,7 +474,6 @@ unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_
         nb_tx = rte_eth_tx_buffer_flush(portid, 0, tx_buffer[portid]);
 #endif
 
-    asgard_dbg("scheduled dpdk transmission. nb_tx=%d\n", nb_tx);
 
     return nb_tx;
 }
@@ -694,6 +693,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
                                                  sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.naddr,
                                                  pkt_payload,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
+        asgard_dbg("Emitting heartbeat\n");
 #elif ASGARD_KERNEL_MODULE
 
 #else
