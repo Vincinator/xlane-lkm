@@ -5,6 +5,7 @@ project(asgard C)
 message(" 2Checking build parameters: ")
 
 set(ASGARD_DPDK 1)
+set(DPDK_BURST_SINGLE 1)
 if(DEFINED ENV{kerneldir})
     set(kerneldir $ENV{kerneldir})
 else()
@@ -208,6 +209,8 @@ if(${ASGARD_DPDK})
     endif ()
 
     add_compile_definitions(ASGARD_DPDK=${ASGARD_DPDK})
+    add_compile_definitions(DPDK_BURST_SINGLE=${DPDK_BURST_SINGLE})
+
     target_link_libraries(asgard PRIVATE ${DPDK_LIBRARIES} )
 endif ()
 
