@@ -261,10 +261,10 @@ int main(int argc, char *argv[]){
 
     /* init port */
     rte_eth_dev_info_get(node.sdev->dpdk_portid, &dev_info);
-    if (dev_info.tx_offload_capa & DEV_TX_OFFLOAD_MBUF_FAST_FREE)
-        local_port_conf.txmode.offloads |=
-                DEV_TX_OFFLOAD_MBUF_FAST_FREE;
-
+    if (dev_info.tx_offload_capa & DEV_TX_OFFLOAD_MBUF_FAST_FREE) {
+        local_port_conf.txmode.offloads |= DEV_TX_OFFLOAD_MBUF_FAST_FREE;
+        asgard_dbg("DEV_TX_OFFLOAD_MBUF_FAST_FREE bit set\n");
+    }
     ret = rte_eth_dev_configure(node.sdev->dpdk_portid, 1, 1, &local_port_conf);
     if (ret < 0)
         rte_exit(EXIT_FAILURE, "Cannot configure device: err=%d, port=%u\n",
@@ -294,6 +294,8 @@ int main(int argc, char *argv[]){
     fflush(stdout);
     txq_conf = dev_info.default_txconf;
     txq_conf.offloads = local_port_conf.txmode.offloads;
+    txq_conf.tx_rs_thresh = 1;
+    txq_conf.tx_free_thresh = 2;
     ret = rte_eth_tx_queue_setup(node.sdev->dpdk_portid, 0, nb_txd,
                                  rte_eth_dev_socket_id(node.sdev->dpdk_portid),
                                  &txq_conf);
