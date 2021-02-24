@@ -91,7 +91,7 @@ int dpdk_server_listener(void *data) {
     asgard_dbg("Starting Packet listener on port %d\n", tn->port);
     signal(SIGINT, &trap);
     while (tn->is_running && user_requested_stop != 1) {
-        nb_rx = rte_eth_rx_burst(tn->sdev->dpdk_portid, 0, rx_burst, 2);
+        nb_rx = rte_eth_rx_burst(tn->sdev->dpdk_portid, 0, rx_burst, MAX_PKT_BURST);
 
         if (nb_rx) {
             //asgard_dbg("something arrived\n");
