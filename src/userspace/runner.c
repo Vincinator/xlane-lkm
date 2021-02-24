@@ -301,7 +301,7 @@ int main(int argc, char *argv[]){
         rte_exit(EXIT_FAILURE, "rte_eth_tx_queue_setup:err=%d, port=%u\n",
                  ret, node.sdev->dpdk_portid);
 
-    configure_tx_buffer(node.sdev->dpdk_portid, 32);
+    configure_tx_buffer(node.sdev->dpdk_portid, 1);
 
     /* Start device */
     ret = rte_eth_dev_start(node.sdev->dpdk_portid);
