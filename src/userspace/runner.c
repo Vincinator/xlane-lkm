@@ -202,8 +202,15 @@ int main(int argc, char *argv[]){
     unsigned int stored_dpdk_portid;
     uint64_t dropped;
 
-    printf("DPDK version of asgard\n");
-    
+    asgard_dbg("DPDK version of asgard\n");
+
+#if DPDK_BURST_SINGLE
+    asgard_dbg("DPDK Burst mode enabled\n");
+#else
+    asgard_dbg("DPDK Burst mode disabled\n");
+#endif
+
+
     // TODO: we may want to load the mode via the config file
     node.testmode = ONE_SHOT;
 
