@@ -464,8 +464,7 @@ unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_
         return -1;
     }
 
-#ifdef DPDK_BURST_SINGLE
-
+#if DPDK_BURST_SINGLE
     nb_tx = rte_eth_tx_burst(portid, 0, &dpdk_pkt, 1);
 #else
     /* queue id = 0, number of packets = 1 (due to "fire when ready" approach) */
