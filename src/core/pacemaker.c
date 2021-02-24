@@ -469,6 +469,7 @@ unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_
 
     if(nb_tx == 0)
         nb_tx = rte_eth_tx_buffer_flush(portid, 0, tx_buffer[portid]);
+    asgard_dbg("scheduled dpdk emition. nb_tx=%d\n", nb_tx);
 
     return nb_tx;
 }
