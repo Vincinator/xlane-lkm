@@ -96,7 +96,10 @@ int dpdk_server_listener(void *data) {
         if (nb_rx) {
             //asgard_dbg("something arrived\n");
             ots = ASGARD_TIMESTAMP;
+            if(nb_rx > 1)
+                asgard_dbg("Received %d packets in burst", nb_rx);
             for (i = 0; i < nb_rx; i++) {
+
                 pkt = rx_burst[i];
 
                 eth_hdr = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
