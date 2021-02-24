@@ -42,7 +42,6 @@ uint32_t DPDK_LIBASRAFT_LOG_LEVEL = RTE_LOG_DEBUG;
 static uint16_t nb_rxd = RTE_TEST_RX_DESC_DEFAULT;
 static uint16_t nb_txd = RTE_TEST_TX_DESC_DEFAULT;
 
-static struct rte_eth_dev_tx_buffer *tx_buffer;
 
 int RTE_LOGTYPE_LIBASRAFT;
 
