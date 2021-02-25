@@ -41,9 +41,11 @@ pipeline {
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 
             echo "$ASGARD_KERNEL_SRC"
-            sh 'export kerneldir=$ASGARD_KERNEL_SRC && ./build.sh --lkm'
-            archiveArtifacts 'bin/asgard.ko'
+            sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
+            sh 'cd bin && tar -czvf asgard-lkm.tar.gz *.ko'
+            archiveArtifacts 'bin/asgard-lkm.tar.gz'
             office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
+
           }
         }
         post
@@ -61,7 +63,7 @@ pipeline {
             }
         }
         steps {
-          nexusArtifactUploader artifacts: [[artifactId: 'asgard-lkm', classifier: '', file: 'bin/asgard.ko', type: 'ko']], credentialsId: 'nexus-user-credentials', groupId: 'lab', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: 'latest'
+          nexusArtifactUploader artifacts: [[artifactId: 'asgard-lkm', classifier: '', file: 'bin/asgard-lkm.tar.gz', type: 'ko']], credentialsId: 'nexus-user-credentials', groupId: 'lab', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: 'latest'
         }
     }
 
@@ -128,15 +130,11 @@ pipeline {
             }
         }
         steps {
-            build '../Deploy - ASGARD/master'
+            build '../Deploy - ASGARD/asgard_evaluation_automation'
         }
     }
 
-
-
-
   }
-
 
 }
 

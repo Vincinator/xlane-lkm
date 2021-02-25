@@ -2,10 +2,9 @@ cmake_minimum_required(VERSION 3.13)
 project(asgard C)
 
 # -------------------------------------------
-message(" 2Checking build parameters: ")
+message(" 11Checking build parameters: ")
 
-set(ASGARD_DPDK 1)
-set(DPDK_BURST_SINGLE 1)
+set(ASGARD_KERNEL_MODULE 1)
 if(DEFINED ENV{kerneldir})
     set(kerneldir $ENV{kerneldir})
 else()
@@ -69,6 +68,8 @@ execute_process(COMMAND git log -1 --format=%h
         OUTPUT_VARIABLE GIT_COMMIT_HASH
         OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+
+
 add_definitions("-DASGARD_MODULE_GIT_VERSION=\"ASGARD-${GIT_COMMIT_HASH}\"")
 
 
@@ -104,6 +105,8 @@ if(${ASGARD_DPDK})
     add_compile_options(-mssse3)
 
 elseif(${ASGARD_KERNEL_MODULE})
+
+
 
     message("Selected Option: kernel module")
     message("kerneldir is set to ${kerneldir}")
@@ -144,6 +147,25 @@ add_library(asgard STATIC ${library_sources})
 if(${ASGARD_KERNEL_MODULE})
     message("config kernel module")
 
+    execute_process(COMMAND git log -1 --format=%h
+            WORKING_DIRECTORY ${kerneldir}
+            OUTPUT_VARIABLE ASGARD_KERNEL_GIT_COMMIT_HASH
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+
+
+    if(ASGARD_KERNEL_GIT_COMMIT_HASH STREQUAL "")
+        execute_process(COMMAND make kernelversion
+                WORKING_DIRECTORY ${kerneldir}
+                OUTPUT_VARIABLE ASGARD_KERNEL_PLAIN_VERSION
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+        set(ASGARD_KERNEL_VERSION_STRING ${ASGARD_KERNEL_PLAIN_VERSION})
+    else()
+        set(ASGARD_KERNEL_VERSION_STRING ${ASGARD_KERNEL_GIT_COMMIT_HASH})
+    endif()
+
+    message("${ASGARD_KERNEL_GIT_COMMIT_HASH}")
+
     get_target_property(module_sources asgard SOURCES)
     file(GLOB lkmfiles "lkm/*")
     foreach(src ${lkmfiles})
@@ -177,7 +199,7 @@ if(${ASGARD_KERNEL_MODULE})
     message("using module cmd: ${module_cmd}")
 
 
-    add_custom_command(OUTPUT asgard.ko
+    add_custom_command(OUTPUT asgard-${ASGARD_KERNEL_VERSION_STRING}.ko
             COMMAND ${module_cmd} modules
             WORKING_DIRECTORY ${bindir}
             DEPENDS ${module_sources_lkm} ${bindir}
@@ -185,7 +207,7 @@ if(${ASGARD_KERNEL_MODULE})
     add_compile_definitions(ASGARD_KERNEL_MODULE)
     message("using  ${kerneldir}")
 
-    add_custom_target(module DEPENDS asgard.ko )
+    add_custom_target(module DEPENDS asgard-${ASGARD_KERNEL_VERSION_STRING}.ko )
     add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir})
     add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir}/lib)
     include_directories("${bindir}")

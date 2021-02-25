@@ -474,7 +474,7 @@ unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_
         nb_tx = rte_eth_tx_buffer_flush(portid, 0, tx_buffer[portid]);
 #endif
 
-
+    DumpHex(asg_payload->proto_data, ASGARD_PROTO_PP_PAYLOAD_SZ);
     return nb_tx;
 }
 #elif ASGARD_KERNEL_MODULE
