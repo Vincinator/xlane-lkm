@@ -210,15 +210,13 @@ if(${ASGARD_KERNEL_MODULE})
     add_custom_target(module DEPENDS asgard-${ASGARD_KERNEL_VERSION_STRING}.ko )
     add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir})
     add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir}/lib)
+    add_custom_command(TARGET module  COMMAND  ${CMAKE_COMMAND} -E copy ${bindir}/asgard.ko ${bindir}/asgard-${ASGARD_KERNEL_VERSION_STRING}.ko)
+
     include_directories("${bindir}")
 
     # add_custom_target(module-clean COMMAND ${module_cmd} clean
     #        WORKING_DIRECTORY ${bindir})
-    if(DEFINED ENV{CALL_FROM_BUILD_SCRIPT})
-        execute_process(COMMAND ls
-                WORKING_DIRECTORY ${bindir})
-        configure_file("${bindir}/asgard.ko" "${bindir}/asgard-${ASGARD_KERNEL_VERSION_STRING}.ko" COPYONLY)
-    endif()
+
 
 else()
     target_link_libraries(asgard PRIVATE Threads::Threads)
