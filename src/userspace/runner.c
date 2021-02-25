@@ -204,7 +204,7 @@ int main(int argc, char *argv[]){
 
     asgard_dbg("DPDK version of asgard\n");
 
-#if DPDK_BURST_SINGLE
+#ifdef DPDK_BURST_SINGLE
     asgard_dbg("DPDK Burst mode enabled\n");
 #else
     asgard_dbg("DPDK Burst mode disabled\n");
