@@ -161,7 +161,7 @@ void pingpong_state_transition_to(struct pingpong_priv *priv, pingpong_state_t s
 int pingpong_init(struct proto_instance *ins, int verbosity){
     struct pingpong_priv *priv = (struct pingpong_priv *)ins->proto_data;
     struct asgard_device *sdev = priv->sdev;
-    int  i, j;
+    int  i;
 
     priv->verbosity = verbosity;
 

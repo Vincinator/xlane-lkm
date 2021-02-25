@@ -6,6 +6,8 @@ lkm=0
 plain=0
 dpdk=0
 
+export CALL_FROM_BUILD_SCRIPT=1
+
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -l|--lkm) lkm=1;;

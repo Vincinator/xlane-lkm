@@ -214,6 +214,9 @@ if(${ASGARD_KERNEL_MODULE})
 
     # add_custom_target(module-clean COMMAND ${module_cmd} clean
     #        WORKING_DIRECTORY ${bindir})
+if(DEFINED ENV{CALL_FROM_BUILD_SCRIPT})
+    configure_file("${bindir}/asgard.ko" "${bindir}/asgard-${ASGARD_KERNEL_VERSION_STRING}.ko" COPYONLY)
+endif()
 
 else()
     target_link_libraries(asgard PRIVATE Threads::Threads)
