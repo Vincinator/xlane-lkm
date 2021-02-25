@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 project(asgard C)
 
 # -------------------------------------------
-message(" 11Checking build parameters: ")
+message(" Checking build parameters: ")
 
 set(ASGARD_KERNEL_MODULE 1)
 if(DEFINED ENV{kerneldir})
