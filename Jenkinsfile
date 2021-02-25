@@ -63,7 +63,7 @@ pipeline {
             }
         }
         steps {
-          nexusArtifactUploader artifacts: [[artifactId: 'asgard-lkm', classifier: '', file: 'bin/asgard-lkm.tar.gz', type: 'ko']], credentialsId: 'nexus-user-credentials', groupId: 'lab', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: 'latest'
+          nexusArtifactUploader artifacts: [[artifactId: 'asgard-lkm', classifier: '', file: 'bin/asgard-lkm.tar.gz', type: 'tar.gz']], credentialsId: 'nexus-user-credentials', groupId: 'lab', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: 'latest'
         }
     }
 
