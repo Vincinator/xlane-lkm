@@ -29,7 +29,7 @@ else()
     message("[CMAKE] Define it and export it before invoking cmake")
 endif()
 
-if(DEFINED ENV{DASGARD_REAL_TEST})
+if(DEFINED ENV{ASGARD_KERNEL_MODULE})
     set(ASGARD_KERNEL_MODULE $ENV{ASGARD_KERNEL_MODULE})
 else()
     message("[CMAKE] ASGARD_KERNEL_MODULE environment variable is not defined.")
