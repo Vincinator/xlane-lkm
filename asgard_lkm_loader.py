@@ -1,5 +1,8 @@
 import configparser
 import subprocess
+import glob
+import os
+import fnmatch
 
 
 # [node]
@@ -30,11 +33,21 @@ def main():
     print("LKM Config:")
     print(f"\tifindex: {ifindex}")
 
+    directory = '.'
+    asgard_module_name = ''
+    for dirpath, dirnames, files in os.walk(directory):
+        for filename in fnmatch.filter(files, 'asgard-*.ko'):
+            asgard_module_name = os.path.join(dirpath, filename)
+            break
 
-    bashCommand = f"sudo insmod asgard-*.ko ifindex={ifindex}"
+    if asgard_module_name == '':
+        print("asgard lkm not found\n")
+        return
+
+
+    bashCommand = f"sudo insmod {asgard_module_name} ifindex={ifindex}"
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
-
 
 
 if __name__ == '__main__':

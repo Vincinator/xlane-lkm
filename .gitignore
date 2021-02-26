@@ -5,12 +5,14 @@ authorized_keys
 id_ed25519
 id_ed25519.pub
 Makefile
+node.ini
 
 known_hosts
 build/
 
 CMakeCache.txt
 CMakeFiles/
+venv/
 Testing/
 cmake_install.cmake
 libasraft.cbp
