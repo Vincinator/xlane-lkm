@@ -195,6 +195,8 @@ static int __init asgard_connection_core_init(void)
 #if ASGARD_REAL_TEST
     err = register_asgard_at_nic(ifindex, asgard_post_ts,
                                  asgard_post_payload, asgard_force_quit);
+#else
+    asgard_error("ASGARD IS NOT CONFIGURED TO BE RUN. Enable it with ASGARD_REAL_TEST flag\n");
 #endif
 
     if (err)
