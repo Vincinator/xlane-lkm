@@ -3,7 +3,6 @@ project(asgard C)
 
 # -------------------------------------------
 message(" 2Checking build parameters: ")
-set(ASGARD_KERNEL_MODULE 1)
 
 if(DEFINED ENV{ASGARD_REAL_TEST})
     set(ASGARD_REAL_TEST $ENV{ASGARD_REAL_TEST})
