@@ -2,9 +2,20 @@ cmake_minimum_required(VERSION 3.13)
 project(asgard C)
 
 # -------------------------------------------
-message(" Checking build parameters: ")
-
+message(" 2Checking build parameters: ")
 set(ASGARD_KERNEL_MODULE 1)
+
+if(DEFINED ENV{ASGARD_REAL_TEST})
+    set(ASGARD_REAL_TEST $ENV{ASGARD_REAL_TEST})
+    message("[CMAKE] Enabling ASGARD_REAL_TEST config")
+
+else()
+    # default is disabled
+    set(ASGARD_REAL_TEST 0)
+    message("[CMAKE] Disabling ASGARD_REAL_TEST config")
+
+endif()
+
 if(DEFINED ENV{kerneldir})
     set(kerneldir $ENV{kerneldir})
 else()
@@ -19,7 +30,7 @@ else()
     message("[CMAKE] Define it and export it before invoking cmake")
 endif()
 
-if(DEFINED ENV{ASGARD_KERNEL_MODULE})
+if(DEFINED ENV{DASGARD_REAL_TEST})
     set(ASGARD_KERNEL_MODULE $ENV{ASGARD_KERNEL_MODULE})
 else()
     message("[CMAKE] ASGARD_KERNEL_MODULE environment variable is not defined.")
@@ -195,7 +206,7 @@ if(${ASGARD_KERNEL_MODULE})
        # message("configuring ${src}")
         configure_file(${src} ${src} COPYONLY)
     endforeach()
-    set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir}  ccflags-y="-DASGARD_KERNEL_MODULE=1")
+    set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir}  ccflags-y+="-DASGARD_KERNEL_MODULE=1" ccflags-y+="-DASGARD_REAL_TEST=${ASGARD_REAL_TEST}")
     message("using module cmd: ${module_cmd}")
 
 
@@ -238,6 +249,7 @@ if(${ASGARD_DPDK})
 
     target_link_libraries(asgard PRIVATE ${DPDK_LIBRARIES} )
 endif ()
+
 
 
 # Clean all .o and .cmd files
