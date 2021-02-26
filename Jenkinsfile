@@ -42,7 +42,7 @@ pipeline {
 
             echo "$ASGARD_KERNEL_SRC"
             sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
-            sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko'
+            sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko ../asgard_lkm_loader.py'
             archiveArtifacts 'bin/asgard-lkm.tar.gz'
             office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
 
