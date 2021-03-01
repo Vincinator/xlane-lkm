@@ -4,8 +4,8 @@ project(asgard C)
 # -------------------------------------------
 message(" 2Checking build parameters: ")
 
-if(DEFINED ENV{ASGARD_REAL_TEST})
-    set(ASGARD_REAL_TEST $ENV{ASGARD_REAL_TEST})
+if(DEFINED ENV{CALL_FROM_BUILD_SCRIPT})
+    set(ASGARD_REAL_TEST $ENV{CALL_FROM_BUILD_SCRIPT})
     message("[CMAKE] Enabling ASGARD_REAL_TEST config")
 
 else()
