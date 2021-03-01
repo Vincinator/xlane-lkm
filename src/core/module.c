@@ -16,6 +16,9 @@
 #include <linux/kernel.h>
 #include <linux/compiler.h>
 
+#if ASGARD_REAL_TEST
+    #include <asgard_con/asgard_con.h>
+#endif
 
 #include "module.h"
 
@@ -192,10 +195,19 @@ static int __init asgard_connection_core_init(void)
         goto error;
     }
 
+
+    /*
+     int register_asgard_at_nic(int ifindex,
+				void (*asgard_post_ts)(int, uint64_t, int),
+				void (*asgard_post_payload)(int, void *, u16, u32),
+				void (*asgard_force_quite)(void))
+
+     */
 // Pre-processor switch between asgard kernel and generic kernel
 #if ASGARD_REAL_TEST
     err = register_asgard_at_nic(ifindex, asgard_post_ts,
-                                 asgard_post_payload, asgard_force_quit);
+                                 asgard_post_payload,
+                                 asgard_force_quit);
 #else
     asgard_error("ASGARD IS NOT CONFIGURED TO BE RUN WITH ASGARD KERNEL. Enable it with ASGARD_REAL_TEST flag\n");
 #endif
