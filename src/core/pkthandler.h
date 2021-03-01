@@ -33,6 +33,7 @@ struct pkt_work_data{
 
 #ifdef ASGARD_KERNEL_MODULE
 void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uint32_t cqe_bcnt, uint64_t ots);
+
 #else
 void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *payload_in, uint32_t payload_len, uint64_t ots);
 void DumpHex(const void* data, size_t size);

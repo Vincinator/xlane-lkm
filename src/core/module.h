@@ -88,6 +88,7 @@ struct asgard_ringbuf_read_work_data {
 
 
 
+void asgard_force_quit(void);
 struct asgard_device *get_sdev(int devid);
 void asg_init_workqueues(struct asgard_device *sdev);
 int is_ip_local(struct net_device *dev,	u32 ip_addr);

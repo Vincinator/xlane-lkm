@@ -22,7 +22,6 @@
 
 #include "module.h"
 
-
 #include "logger.h"
 #include "echo.h"
 #include "../lkm/synbuf-chardev.h"
@@ -183,6 +182,13 @@ void asg_init_workqueues(struct asgard_device *sdev){
 
 }
 EXPORT_SYMBOL(asg_init_workqueues);
+
+
+void asgard_force_quit(void){
+    asgard_error("Force Quitting Asgard Kernel Module\n");
+}
+EXPORT_SYMBOL(asgard_force_quit);
+
 
 static int __init asgard_connection_core_init(void)
 {
