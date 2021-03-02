@@ -61,8 +61,8 @@ def stop_protocol(cfg, protocol):
 @click.command()
 @click.option('--load', is_flag=True, help='load asgard kernel module')
 @click.argument('protocol', help='ping pong/consensus')
-@click.argument('--start', is_flag=True, help='starts the selected protocol. requires a selected protocol')
-@click.argument('--stop', is_flag=True, help='stops the selected protocol. requires a selected protocol')
+@click.option('--start', is_flag=True, help='starts the selected protocol. requires a selected protocol')
+@click.option('--stop', is_flag=True, help='stops the selected protocol. requires a selected protocol')
 def main(load, protocol, start, stop):
     cfg = configparser.ConfigParser()
     cfg.read('node.ini')
