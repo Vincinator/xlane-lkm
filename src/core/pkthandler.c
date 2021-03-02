@@ -343,6 +343,12 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
     char *user_data;
 
 
+    if (unlikely(!sdev)) {
+        asgard_error("sdev is NULL\n");
+        return;
+    }
+
+
     // freed by pkt_process_handler
     payload = kzalloc(cqe_bcnt, GFP_KERNEL);
     memcpy(payload, payload_in, cqe_bcnt);
@@ -354,11 +360,6 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
                 sizeof(struct iphdr) + sizeof(struct udphdr);
 
     //ts2 = RDTSC_ASGARD;
-
-    if (unlikely(!sdev)) {
-        asgard_error("sdev is NULL\n");
-        return;
-    }
 
     if (unlikely(sdev->pminfo.state != ASGARD_PM_EMITTING))
         return;

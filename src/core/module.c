@@ -194,32 +194,11 @@ static int __init asgard_connection_core_init(void)
 {
     int i;
     int err = -EINVAL;
-    int ret = 0;
 
     if (ifindex < 0) {
         asgard_error("ifindex parameter is missing\n");
         goto error;
     }
-
-
-    /*
-     int register_asgard_at_nic(int ifindex,
-				void (*asgard_post_ts)(int, uint64_t, int),
-				void (*asgard_post_payload)(int, void *, u16, u32),
-				void (*asgard_force_quite)(void))
-
-     */
-// Pre-processor switch between asgard kernel and generic kernel
-#if ASGARD_REAL_TEST
-    err = register_asgard_at_nic(ifindex, asgard_post_ts,
-                                 asgard_post_payload,
-                                 asgard_force_quit);
-#else
-    asgard_error("ASGARD IS NOT CONFIGURED TO BE RUN WITH ASGARD KERNEL. Enable it with ASGARD_REAL_TEST flag\n");
-#endif
-
-    if (err)
-        goto error;
 
     /* Initialize User Space interfaces
      * NOTE: BEFORE call to asgard_core_register_nic! */
@@ -253,10 +232,15 @@ static int __init asgard_connection_core_init(void)
 
     proc_mkdir("asgard", NULL);
 
-//    ret = asgard_core_register_nic(ifindex,
-//                                   get_asgard_id_by_ifindex(ifindex));
-
-    if (ret < 0) {
+// Pre-processor switch between asgard kernel and generic kernel
+#if ASGARD_REAL_TEST
+    err = register_asgard_at_nic(ifindex, asgard_post_ts,
+                                 asgard_post_payload,
+                                 asgard_force_quit);
+#else
+    asgard_error("ASGARD IS NOT CONFIGURED TO BE RUN WITH ASGARD KERNEL. Enable it with ASGARD_REAL_TEST flag\n");
+#endif
+    if (err < 0) {
         asgard_error("Could not register NIC at asgard\n");
         goto reg_failed;
     }
@@ -406,24 +390,8 @@ void clear_protocol_instances(struct asgard_device *sdev)
 }
 
 
-static void __exit asgard_connection_core_exit(void)
-{
+static void unload_score(void){
     int i, j;
-
-    asgard_wq_lock = 1;
-
-    mb();
-
-    if (asgard_wq)
-        flush_workqueue(asgard_wq);
-
-    /* MUST unregister asgard for drivers first */
-//    unregister_asgard();
-
-    if (!score) {
-        asgard_error("score is NULL \n");
-        return;
-    }
 
     for (i = 0; i < MAX_NIC_DEVICES; i++) {
         if (!score->sdevices[i]) {
@@ -446,8 +414,6 @@ static void __exit asgard_connection_core_exit(void)
 
         kfree(score->sdevices[i]);
     }
-    if (asgard_wq)
-        destroy_workqueue(asgard_wq);
 
     if (score->sdevices)
         kfree(score->sdevices);
@@ -455,13 +421,41 @@ static void __exit asgard_connection_core_exit(void)
     if (score)
         kfree(score);
 
+
+}
+
+static void __exit asgard_connection_core_exit(void)
+{
+    asgard_wq_lock = 1;
+
+    mb();
+
+    if (asgard_wq)
+        flush_workqueue(asgard_wq);
+
+#if ASGARD_REAL_TEST
+    /* MUST unregister asgard for drivers first */
+    unregister_asgard();
+#else
+    asgard_error("Skipping unregistration of ASGARD since asgard is not compiled against asgard kernel.\n");
+#endif
+
+
+    if (!score) {
+        asgard_error("score is NULL \n");
+    } else {
+        unload_score();
+    }
+
+    if (asgard_wq)
+        destroy_workqueue(asgard_wq);
+
+
     remove_proc_entry("asgard", NULL);
 
     synbuf_clean_class();
     asgard_dbg("ASGARD CORE CLEANED \n\n\n\n");
-    // flush_workqueue(asgard_wq);
 }
-
 
 
 

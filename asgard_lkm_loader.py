@@ -3,7 +3,7 @@ import subprocess
 import glob
 import os
 import fnmatch
-
+import click
 
 # [node]
 # id=1
@@ -13,9 +13,9 @@ import fnmatch
 # hbi=1000000000
 # peer_ip_id_tuple=tnode1,1;tnode2,2;tnode3,3
 
-def main():
-    cfg = configparser.ConfigParser()
-    cfg.read('node.ini')
+
+
+def load_module(cfg):
 
     node_id = cfg.getint('node', 'id')
     node_name = cfg.get('node', 'name')
@@ -48,6 +48,33 @@ def main():
     bashCommand = f"sudo insmod {asgard_module_name} ifindex={ifindex}"
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
+
+
+def start_protocol(cfg, protocol):
+    print(f"starting {protocol}")
+
+
+def stop_protocol(cfg, protocol):
+    print(f"stopping {protocol}")
+
+
+@click.command()
+@click.option('--load', is_flag=True, help='load asgard kernel module')
+@click.argument('protocol', help='ping pong/consensus')
+@click.argument('--start', is_flag=True, help='starts the selected protocol. requires a selected protocol')
+@click.argument('--stop', is_flag=True, help='stops the selected protocol. requires a selected protocol')
+def main(load, protocol, start, stop):
+    cfg = configparser.ConfigParser()
+    cfg.read('node.ini')
+
+    if load:
+        load_module(cfg)
+
+    if start:
+        start_protocol(cfg, protocol)
+
+    if stop:
+        stop_protocol(cfg, protocol)
 
 
 if __name__ == '__main__':
