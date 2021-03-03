@@ -7,6 +7,7 @@ import click
 from pathlib import Path
 
 
+
 def print_config(cfg):
     node_id = cfg.getint('node', 'id')
     node_name = cfg.get('node', 'name')
