@@ -88,16 +88,10 @@ def stop_protocol(cfg, protocol):
 
 
 def unload_module(cfg):
-    node_id = cfg.getint('node', 'id')
-    node_name = cfg.get('node', 'name')
-    port = cfg.getint('node', 'port')
-    hbi = cfg.getint('node', 'hbi')
-    peer_ip_id_tuple = cfg.get('node', 'peer_ip_id_tuple')
-    ifindex = cfg.getint('lkm', 'ifindex')
-
     bashCommand = f"sudo rmmod asgard"
     process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
+
 
 def load_module(cfg):
     ifindex = cfg.getint('lkm', 'ifindex')
@@ -121,7 +115,7 @@ def load_module(cfg):
 @click.command()
 @click.option('--load', is_flag=True, help='load asgard kernel module')
 @click.option('--unload', is_flag=True, help='unload asgard kernel module')
-@click.argument('protocol')
+@click.option('--protocol', help='protocol to load')
 @click.option('--start', is_flag=True, help='starts the selected protocol. requires a selected protocol')
 @click.option('--stop', is_flag=True, help='stops the selected protocol. requires a selected protocol')
 def main(load, unload, protocol, start, stop):
