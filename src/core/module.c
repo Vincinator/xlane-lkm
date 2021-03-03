@@ -190,6 +190,173 @@ void asgard_force_quit(void){
 EXPORT_SYMBOL(asgard_force_quit);
 
 
+int asgard_core_register_nic(int ifindex, int asgard_id)
+{
+	char name_buf[MAX_ASGARD_PROC_NAME];
+	int i;
+
+	if (asgard_id < 0 || ifindex < 0) {
+		asgard_error("Invalid parameter. asgard_id=%d, ifindex=%d",
+			     asgard_id, ifindex);
+		return -EINVAL;
+	}
+
+	asgard_dbg("register nic at asgard core. ifindex=%d, asgard_id=%d\n",
+		   ifindex, asgard_id);
+	// freed by asgard_connection_core_exit
+	score->sdevices[asgard_id] =
+		kmalloc(sizeof(struct asgard_device), GFP_KERNEL);
+
+	score->num_devices++;
+	score->sdevices[asgard_id]->ifindex = ifindex;
+	score->sdevices[asgard_id]->hb_interval = 0;
+
+	score->sdevices[asgard_id]->bug_counter = 0;
+	score->sdevices[asgard_id]->asgard_id = asgard_id;
+	score->sdevices[asgard_id]->ndev = asgard_get_netdevice(ifindex);
+	score->sdevices[asgard_id]->pminfo.num_of_targets = 0;
+	score->sdevices[asgard_id]->pminfo.waiting_window = 100000;
+	//	score->sdevices[asgard_id]->proto = NULL;
+	score->sdevices[asgard_id]->verbose = 0;
+	score->sdevices[asgard_id]->rx_state = ASGARD_RX_DISABLED;
+	score->sdevices[asgard_id]->ts_state = ASGARD_TS_UNINIT;
+	score->sdevices[asgard_id]->last_leader_ts = 0;
+	score->sdevices[asgard_id]->num_of_proto_instances = 0;
+	score->sdevices[asgard_id]->hold_fire = 0;
+	score->sdevices[asgard_id]->tx_port = 3319;
+	score->sdevices[asgard_id]->cur_leader_lid = -1;
+	score->sdevices[asgard_id]->is_leader = 0;
+	score->sdevices[asgard_id]->consensus_priv = NULL;
+	score->sdevices[asgard_id]->echo_priv = NULL;
+
+	score->sdevices[asgard_id]->multicast_ip =
+		asgard_ip_convert("232.43.211.234");
+	score->sdevices[asgard_id]->multicast_mac =
+		asgard_convert_mac("01:00:5e:2b:d3:ea");
+
+	score->sdevices[asgard_id]->multicast.aapriv =
+		kmalloc(sizeof(struct asgard_async_queue_priv), GFP_KERNEL);
+
+	score->sdevices[asgard_id]->multicast.delay = 0;
+	score->sdevices[asgard_id]->multicast.enable = 0;
+	score->sdevices[asgard_id]->multicast.nextIdx = 0;
+
+	init_asgard_async_queue(score->sdevices[asgard_id]->multicast.aapriv);
+
+	if (score->sdevices[asgard_id]->ndev) {
+		if (!score->sdevices[asgard_id]->ndev->ip_ptr ||
+		    !score->sdevices[asgard_id]->ndev->ip_ptr->ifa_list) {
+			asgard_error(
+				"Network Interface with ifindex %d has no IP Address configured!\n",
+				ifindex);
+			return -EINVAL;
+		}
+
+		score->sdevices[asgard_id]->self_ip =
+			score->sdevices[asgard_id]
+				->ndev->ip_ptr->ifa_list->ifa_address;
+
+		if (!score->sdevices[asgard_id]->self_ip) {
+			asgard_error("self IP Address is NULL!");
+			return -EINVAL;
+		}
+
+		if (!score->sdevices[asgard_id]->ndev->dev_addr) {
+			asgard_error("self MAC Address is NULL!");
+			return -EINVAL;
+		}
+		score->sdevices[asgard_id]->self_mac = kmalloc(6, GFP_KERNEL);
+
+		memcpy(score->sdevices[asgard_id]->self_mac,
+		       score->sdevices[asgard_id]->ndev->dev_addr, 6);
+
+		asgard_dbg("Using IP: %x and MAC: %pMF",
+			   score->sdevices[asgard_id]->self_ip,
+			   score->sdevices[asgard_id]->self_mac);
+	}
+
+	score->sdevices[asgard_id]->pminfo.multicast_pkt_data.payload =
+		kzalloc(sizeof(struct asgard_payload), GFP_KERNEL);
+
+	score->sdevices[asgard_id]->pminfo.multicast_pkt_data_oos.payload =
+		kzalloc(sizeof(struct asgard_payload), GFP_KERNEL);
+
+	spin_lock_init(
+		&score->sdevices[asgard_id]->pminfo.multicast_pkt_data_oos.lock);
+
+	score->sdevices[asgard_id]->asgard_leader_wq = alloc_workqueue(
+		"asgard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
+
+	/* Only one active Worker! Due to reading of the ringbuffer ..*/
+	score->sdevices[asgard_id]->asgard_ringbuf_reader_wq =
+		alloc_workqueue("asgard_ringbuf_reader",
+				WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
+
+	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
+		score->sdevices[asgard_id]->instance_id_mapping[i] = -1;
+
+	// freed by clear_protocol_instances
+	score->sdevices[asgard_id]->protos =
+		kmalloc_array(MAX_PROTO_INSTANCES,
+			      sizeof(struct proto_instance *), GFP_KERNEL);
+
+	if (!score->sdevices[asgard_id]->protos)
+		asgard_error("ERROR! Not enough memory for protocols\n");
+
+	/* set default heartbeat interval */
+	//sdev->pminfo.hbi = DEFAULT_HB_INTERVAL;
+	score->sdevices[asgard_id]->pminfo.hbi = CYCLES_PER_1MS;
+
+	snprintf(name_buf, sizeof(name_buf), "asgard/%d", ifindex);
+	proc_mkdir(name_buf, NULL);
+
+	/* Initialize Timestamping for NIC */
+	init_asgard_ts_ctrl_interfaces(score->sdevices[asgard_id]);
+	init_timestamping(score->sdevices[asgard_id]);
+
+	/* Initialize logger base for NIC */
+	//init_log_ctrl_base(score->sdevices[asgard_id]);
+
+	/*  Initialize protocol instance controller */
+	init_proto_instance_ctrl(score->sdevices[asgard_id]);
+
+	/*  Initialize multicast controller */
+	init_multicast(score->sdevices[asgard_id]);
+
+	/* Initialize Control Interfaces for NIC */
+	init_asgard_pm_ctrl_interfaces(score->sdevices[asgard_id]);
+	init_asgard_ctrl_interfaces(score->sdevices[asgard_id]);
+
+	/* Initialize Component States*/
+	pm_state_transition_to(&score->sdevices[asgard_id]->pminfo,
+			       ASGARD_PM_UNINIT);
+
+	/* Initialize synbuf for Cluster Membership - one page is enough */
+	score->sdevices[asgard_id]->synbuf_clustermem =
+		create_synbuf("clustermem", 1);
+
+	if (!score->sdevices[asgard_id]->synbuf_clustermem) {
+		asgard_error("Could not create synbuf for clustermem");
+		return -1;
+	}
+
+	/* Write ci changes directly to the synbuf
+     * ubuf is at least one page which should be enough
+     */
+	score->sdevices[asgard_id]->ci =
+		(struct cluster_info *)score->sdevices[asgard_id]
+			->synbuf_clustermem->ubuf;
+
+	score->sdevices[asgard_id]->ci->overall_cluster_member =
+		1; /* Node itself is a member */
+	score->sdevices[asgard_id]->ci->cluster_self_id =
+		score->sdevices[asgard_id]->pminfo.cluster_id;
+
+	return asgard_id;
+}
+EXPORT_SYMBOL(asgard_core_register_nic);
+
+
 static int __init asgard_connection_core_init(void)
 {
     int i;
@@ -232,6 +399,16 @@ static int __init asgard_connection_core_init(void)
 
     proc_mkdir("asgard", NULL);
 
+
+	ret = asgard_core_register_nic(ifindex,
+				       get_asgard_id_by_ifindex(ifindex));
+
+	if (ret < 0) {
+		asgard_error("Could not register NIC at asgard\n");
+		goto reg_failed;
+	}
+
+
 // Pre-processor switch between asgard kernel and generic kernel
 #if ASGARD_REAL_TEST
     err = register_asgard_at_nic(ifindex, asgard_post_ts,
@@ -245,8 +422,7 @@ static int __init asgard_connection_core_init(void)
         goto reg_failed;
     }
 
-    //init_asgard_proto_info_interfaces();
-
+    // init_asgard_proto_info_interfaces();
 
 
     asgard_dbg("asgard core initialized.\n");
