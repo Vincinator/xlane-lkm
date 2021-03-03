@@ -22,5 +22,5 @@ bin/
 *.o
 *cbp
 docs/.buildinfo
-__pycache__/
 *.pyc
+!**/__pycache__/
