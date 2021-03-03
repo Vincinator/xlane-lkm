@@ -15,7 +15,7 @@ def entry_point():
 
 entry_point.add_command(gen.generateData)
 entry_point.add_command(v.verifyData)
-entry_point.add_command(evalRedis.evalRedis)
+#entry_point.add_command(evalRedis.evalRedis)
 entry_point.add_command(configure.generateConfig)
 entry_point.add_command(asg.evalAsgard)
 entry_point.add_command(orchestra.orchestrate)

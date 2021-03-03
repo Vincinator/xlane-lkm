@@ -14,8 +14,7 @@ import os.path
 @click.option('--redis_ip', default='127.0.0.1')
 @click.option('--asgard_iface', prompt=True, default='4')
 @click.option('--asgard_ifacename', prompt=True, default='enp130s0f0')
-@click.option('--asgard_proto_instance', default='1')
-@click.option('--asgard_echo_instance_id', default='2')
+@click.option('--asgard_ping_pong_instance_id', default='2')
 @click.option('--asgard_hbi', default='2400000')
 @click.option('--asgard_waiting_window', default='5000')
 @click.option('--asgard_max_entries', default='160')
@@ -33,7 +32,7 @@ import os.path
 @click.option('--num_of_targets', prompt=True, type=click.Choice(["3", "5", "7", "9"]), required=True)
 
 def generateConfig(config_path, redis_base, redis_leader_port, redis_port, redis_leader_ip,
-                   redis_ip, asgard_iface, asgard_ifacename, asgard_proto_instance, asgard_echo_instance_id, asgard_hbi, asgard_waiting_window, asgard_max_entries,
+                   redis_ip, asgard_iface, asgard_ifacename, asgard_ping_pong_instance_id, asgard_hbi, asgard_waiting_window, asgard_max_entries,
                    asgard_targets_string, asgard_pm_cpu, asgard_cluster_id, asgard_ping_pong_rounds, asgard_consensus_requests_per_second, asgard_consensus_request_rounds,
                    asgard_leader_net_queue_id, asgard_echo_net_queue_id, asgard_default_net_queue_id, asgard_multicast_delay, num_of_targets):
 
@@ -78,20 +77,26 @@ def generateConfig(config_path, redis_base, redis_leader_port, redis_port, redis
     config['asgard']['consensus_eval_seconds'] = "2"
 
     config['asgard']['base_path'] = os.path.join(os.path.abspath('/proc/asguard'), asgard_iface)
-    config['asgard']['proto_instance'] = asgard_proto_instance
-    config['asgard']['proto_instances_path'] =  os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_proto_instance )
-    config['asgard']['proto_echo_instance_path'] =  os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_echo_instance_id )
+    config['asgard']['proto_instance_base_path'] =  os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances")
+    config['asgard']['proto_ping_pong_instance_path'] =  os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_ping_pong_instance_id )
 
     config['asgard']['leader_net_queue_id'] = asgard_leader_net_queue_id
     config['asgard']['echo_net_queue_id'] = asgard_echo_net_queue_id
     config['asgard']['default_net_queue_id'] = asgard_default_net_queue_id
 
-    config['asgard']['log_user_a'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "log_user_a")
-    config['asgard']['log_user_b'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "log_user_b")
-    config['asgard']['log_user_c'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "log_user_c")
-    config['asgard']['log_user_d'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "log_user_d")
-    config['asgard']['log_consensus_throughput'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "log_consensus_throughput")
-    config['asgard']['log_consensus_le'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "log_consensus_le")
+    # Build path:  os.path.join(os.path.abspath(config['asgard']['proto_instance_base_path']), instance_id, name_of_endpoint)
+    config['asgard']['log_user_a_endpoint'] = "log_user_a"
+    config['asgard']['log_user_b_endpoint'] = "log_user_b"
+    config['asgard']['log_user_c_endpoint'] = "log_user_c"
+    config['asgard']['log_user_d_endpoint'] = "log_user_d"
+    config['asgard']['log_consensus_throughput_endpoint'] = "log_consensus_throughput"
+    config['asgard']['log_consensus_le_endpoint'] = "log_consensus_le"
+    config['asgard']['ctrl_user_a_endpoint'] = "ctrl_user_a"
+    config['asgard']['ctrl_user_b_endpoint'] = "ctrl_user_b"
+    config['asgard']['ctrl_user_c_endpoint'] = "ctrl_user_c"
+    config['asgard']['ctrl_user_d_endpoint'] = "ctrl_user_d"
+    config['asgard']['ctrl_consensus_throughput_endpoint'] = "ctrl_consensus_throughput"
+    config['asgard']['ctrl_consensus_le_endpoint'] =  "ctrl_consensus_le"
 
     config['evalLogs'] = {}
 
@@ -110,12 +115,6 @@ def generateConfig(config_path, redis_base, redis_leader_port, redis_port, redis
     config['asgard']['ping_pong_rounds'] = asgard_ping_pong_rounds
 
 
-    config['asgard']['ctrl_user_a'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "ctrl_user_a")
-    config['asgard']['ctrl_user_b'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "ctrl_user_b")
-    config['asgard']['ctrl_user_c'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "ctrl_user_c")
-    config['asgard']['ctrl_user_d'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "ctrl_user_d")
-    config['asgard']['ctrl_consensus_throughput'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "ctrl_consensus_throughput")
-    config['asgard']['ctrl_consensus_le'] = os.path.join(os.path.abspath(config['asgard']['proto_instances_path']), "ctrl_consensus_le")
     config['asgard']['ctrl_pacemaker_path'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "pacemaker", "ctrl")
     config['asgard']['ctrl_debug_path'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "debug")
 

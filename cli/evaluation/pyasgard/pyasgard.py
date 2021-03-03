@@ -186,38 +186,33 @@ def prepareConsensus(config):
 
 
 def prepareAsgardPacemaker(config):
-    """
-    Prepares asgard pacemaker
-
-    :param config: configuration file created by the asguard-benchmark generateconfig command
-    :return: true if asgard pacemaker was prepared successfully, otherwise false
-    """
-
     log_id = str(uuid.uuid4())
 
     singlewrite(config['asgard']['ctrl_pacemaker_path'], "0")
     singlewrite(config['asgard']['ctrl_debug_path'], "5")
-    singlewrite(config['asgard']['ctrl_proto_instances'], "-1")
     singlewrite(config['asgard']['ctrl_pacemaker_cluster_id'], config['asgard']['cluster_id'])
     singlewrite(config['asgard']['ctrl_pacemaker_cpu'], config['asgard']['pm_cpu'])
+    singlewrite(config['asgard']['ctrl_hbi'], config['asgard']['val_hbi'])
+    singlewrite(config['asgard']['ctrl_waiting_window'], config['asgard']['val_waiting_window'])
 
-    singlewrite(config['asgard']['ctrl_ts'], "2")
-    singlewrite(config['asgard']['ctrl_ts'], "0")
+    # singlewrite(config['asgard']['ctrl_proto_instance_uuid'], log_id)
+
+    # clean protocol instances
+    #singlewrite(config['asgard']['ctrl_proto_instances'], "-1")
+
+
+    #singlewrite(config['asgard']['ctrl_ts'], "2")
+    #singlewrite(config['asgard']['ctrl_ts'], "0")
 
 
     # singlewrite(config['asgard']['ctrl_consensus_throughput'], "2")
     # singlewrite(config['asgard']['ctrl_consensus_throughput'], "2")
 
-    singlewrite(config['asgard']['ctrl_proto_instance_uuid'], log_id)
 
     # singlewrite(config['asgard']['ctrl_consensus_throughput'], "1")
 
-    singlewrite(config['asgard']['ctrl_hbi'], config['asgard']['val_hbi'])
 
-    singlewrite(config['asgard']['ctrl_waiting_window'], config['asgard']['val_waiting_window'])
-
-
-    enableAsgardTimestamps(config)
+    # enableAsgardTimestamps(config)
 
 
 def prepareAsgardMc(config):

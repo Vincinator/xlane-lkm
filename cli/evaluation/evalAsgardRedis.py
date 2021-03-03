@@ -1,15 +1,11 @@
-import time
+# ##########
+#
+# NOT FINISHED - NOT WORKING YET - WORK IN PROGRESS
+#
+# ##########
 
-import redis
-import click
 
-import binascii
-import json
 import os.path
-
-from ..verification.verify import _verify_data
-import subprocess
-import configparser
 
 from cli.evaluation.evalRedis import *
 from cli.evaluation.pyasgard.pyasgard import *
@@ -44,7 +40,7 @@ def evalRedisASG(input, config_path, isleader, requests, prepare, clean, stats):
 
     if prepare:
 
-        if not prepareAsgard(config):
+        if not prepareAsgardPacemaker(config):
             print("Could not boot up asgard")
             return
 
