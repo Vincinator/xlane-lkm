@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 project(asgard C)
 
 # -------------------------------------------
-message(" 2Checking build parameters: ")
+message(" 222Checking build parameters: ")
 set(ASGARD_KERNEL_MODULE 1)
 
 if(DEFINED ENV{CALL_FROM_BUILD_SCRIPT})
@@ -166,11 +166,10 @@ if(${ASGARD_KERNEL_MODULE})
 
 
     if(ASGARD_KERNEL_GIT_COMMIT_HASH STREQUAL "")
-        execute_process(COMMAND make kernelversion
-                WORKING_DIRECTORY ${kerneldir}
-                OUTPUT_VARIABLE ASGARD_KERNEL_PLAIN_VERSION
-                OUTPUT_STRIP_TRAILING_WHITESPACE)
-        set(ASGARD_KERNEL_VERSION_STRING ${GIT_COMMIT_HASH}-kernel-${ASGARD_KERNEL_PLAIN_VERSION})
+        message("ooo")
+
+
+        set(ASGARD_KERNEL_VERSION_STRING unconfigured-kernel-unknown)
     else()
         set(ASGARD_KERNEL_VERSION_STRING ${GIT_COMMIT_HASH}-kernel-${ASGARD_KERNEL_GIT_COMMIT_HASH})
     endif()
@@ -200,11 +199,15 @@ if(${ASGARD_KERNEL_MODULE})
             DESTINATION  ${bindir})
 
     string(REPLACE ";" " " module_sources_string "${module_sources_lkm}")
+    message("yo")
     configure_file(${bindir}/Kbuild.in ${bindir}/Kbuild @ONLY)
+    message("yoyo")
 
     foreach(src ${module_sources_lkm})
        # message("configuring ${src}")
         configure_file(${src} ${src} COPYONLY)
+       message("yoyoyo")
+
     endforeach()
     set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir}  ccflags-y+="-DASGARD_KERNEL_MODULE=1" ccflags-y+="-DASGARD_REAL_TEST=${ASGARD_REAL_TEST}")
     message("using module cmd: ${module_cmd}")

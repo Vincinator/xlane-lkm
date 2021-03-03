@@ -22,6 +22,8 @@
 
 #include "module.h"
 
+#include "../lkm/ts-ctrl.h"
+
 #include "logger.h"
 #include "echo.h"
 #include "../lkm/synbuf-chardev.h"
@@ -30,6 +32,7 @@
 #include "../lkm/core-ctrl.h"
 #include "../lkm/proto-instance-ctrl.h"
 #include "../lkm/multicast-ctrl.h"
+#include "../lkm/asgard-net.h"
 
 #include "replication.h"
 #include "membership.h"
@@ -282,7 +285,7 @@ int asgard_core_register_nic(int ifindex, int asgard_id)
 		kzalloc(sizeof(struct asgard_payload), GFP_KERNEL);
 
 	spin_lock_init(
-		&score->sdevices[asgard_id]->pminfo.multicast_pkt_data_oos.lock);
+		&score->sdevices[asgard_id]->pminfo.multicast_pkt_data_oos.slock);
 
 	score->sdevices[asgard_id]->asgard_leader_wq = alloc_workqueue(
 		"asgard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
@@ -362,6 +365,13 @@ static int __init asgard_connection_core_init(void)
     int i;
     int err = -EINVAL;
 
+#if ASGARD_REAL_TEST
+    asgard_dbg("Starting asgard module init\n");
+#else
+    asgard_error("ASGARD IS NOT CONFIGURED TO BE RUN WITH ASGARD KERNEL. Enable it with ASGARD_REAL_TEST flag\n");
+    return -ENOSYS;
+#endif
+
     if (ifindex < 0) {
         asgard_error("ifindex parameter is missing\n");
         goto error;
@@ -399,14 +409,18 @@ static int __init asgard_connection_core_init(void)
 
     proc_mkdir("asgard", NULL);
 
+#if ASGARD_REAL_TEST
 
-	ret = asgard_core_register_nic(ifindex,
+	err = asgard_core_register_nic(ifindex,
 				       get_asgard_id_by_ifindex(ifindex));
 
-	if (ret < 0) {
+    if (err < 0) {
 		asgard_error("Could not register NIC at asgard\n");
 		goto reg_failed;
 	}
+#endif
+
+
 
 
 // Pre-processor switch between asgard kernel and generic kernel
