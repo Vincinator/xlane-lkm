@@ -2,8 +2,19 @@ cmake_minimum_required(VERSION 3.13)
 project(asgard C)
 
 # -------------------------------------------
-message("Checking build parameters: ")
+message(" 222Checking build parameters: ")
+set(ASGARD_KERNEL_MODULE 1)
 
+if(DEFINED ENV{CALL_FROM_BUILD_SCRIPT})
+    set(ASGARD_REAL_TEST $ENV{CALL_FROM_BUILD_SCRIPT})
+    message("[CMAKE] Enabling ASGARD_REAL_TEST config")
+
+else()
+    # default is disabled
+    set(ASGARD_REAL_TEST 0)
+    message("[CMAKE] Disabling ASGARD_REAL_TEST config")
+
+endif()
 
 if(DEFINED ENV{kerneldir})
     set(kerneldir $ENV{kerneldir})
@@ -59,8 +70,19 @@ endif()
 set(CMAKE_C_STANDARD 99)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 set(CMAKE_BUILD_TYPE Debug)
+set(ASGARD_GIT_VERSION )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
+
+execute_process(COMMAND git log -1 --format=%h
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GIT_COMMIT_HASH
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+
+
+add_definitions("-DASGARD_MODULE_GIT_VERSION=\"ASGARD-${GIT_COMMIT_HASH}\"")
+
 
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
@@ -95,6 +117,8 @@ if(${ASGARD_DPDK})
 
 elseif(${ASGARD_KERNEL_MODULE})
 
+
+
     message("Selected Option: kernel module")
     message("kerneldir is set to ${kerneldir}")
     #set(kerneldir "" CACHE STRING "Path to the kernel build directory")
@@ -119,7 +143,8 @@ list(APPEND library_sources core/libasraft.c core/libasraft.h core/types.h core/
         core/ringbuffer.c core/ringbuffer.h core/membership.c core/membership.h core/leader.c core/leader.h core/follower.c
         core/follower.h core/candidate.c core/candidate.h core/replication.c core/replication.h core/pktqueue.c core/pktqueue.h
         core/pkthandler.c core/pkthandler.h core/proto.c core/proto.h core/multicast.c core/multicast.h
-        core/eval_helper.c core/eval_helper.h core/echo.c core/echo.h core/config.h core/timekeeping.h core/timekeeping.c )
+        core/eval_helper.c core/eval_helper.h core/echo.c core/echo.h core/config.h core/timekeeping.h core/timekeeping.c
+        core/pingpong.c core/pingpong.h)
 
 if(NOT ${ASGARD_KERNEL_MODULE})
     list(PREPEND library_sources userspace/tnode.c userspace/tnode.h userspace/ini.c)
@@ -132,6 +157,24 @@ add_library(asgard STATIC ${library_sources})
 
 if(${ASGARD_KERNEL_MODULE})
     message("config kernel module")
+
+    execute_process(COMMAND git log -1 --format=%h
+            WORKING_DIRECTORY ${kerneldir}
+            OUTPUT_VARIABLE ASGARD_KERNEL_GIT_COMMIT_HASH
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+
+
+    if(ASGARD_KERNEL_GIT_COMMIT_HASH STREQUAL "")
+        message("ooo")
+
+
+        set(ASGARD_KERNEL_VERSION_STRING unconfigured-kernel-unknown)
+    else()
+        set(ASGARD_KERNEL_VERSION_STRING ${GIT_COMMIT_HASH}-kernel-${ASGARD_KERNEL_GIT_COMMIT_HASH})
+    endif()
+
+    message("${ASGARD_KERNEL_GIT_COMMIT_HASH}")
 
     get_target_property(module_sources asgard SOURCES)
     file(GLOB lkmfiles "lkm/*")
@@ -156,17 +199,21 @@ if(${ASGARD_KERNEL_MODULE})
             DESTINATION  ${bindir})
 
     string(REPLACE ";" " " module_sources_string "${module_sources_lkm}")
+    message("yo")
     configure_file(${bindir}/Kbuild.in ${bindir}/Kbuild @ONLY)
+    message("yoyo")
 
     foreach(src ${module_sources_lkm})
        # message("configuring ${src}")
         configure_file(${src} ${src} COPYONLY)
+       message("yoyoyo")
+
     endforeach()
-    set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir}  ccflags-y="-DASGARD_KERNEL_MODULE=1")
+    set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir}  ccflags-y+="-DASGARD_KERNEL_MODULE=1" ccflags-y+="-DASGARD_REAL_TEST=${ASGARD_REAL_TEST}")
     message("using module cmd: ${module_cmd}")
 
 
-    add_custom_command(OUTPUT asgard.ko
+    add_custom_command(OUTPUT asgard-${ASGARD_KERNEL_VERSION_STRING}.ko
             COMMAND ${module_cmd} modules
             WORKING_DIRECTORY ${bindir}
             DEPENDS ${module_sources_lkm} ${bindir}
@@ -174,13 +221,17 @@ if(${ASGARD_KERNEL_MODULE})
     add_compile_definitions(ASGARD_KERNEL_MODULE)
     message("using  ${kerneldir}")
 
-    add_custom_target(module DEPENDS asgard.ko )
+    add_custom_target(module DEPENDS asgard-${ASGARD_KERNEL_VERSION_STRING}.ko )
     add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir})
     add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir}/lib)
+    add_custom_command(TARGET module  COMMAND  ${CMAKE_COMMAND} -E copy ${bindir}/asgard.ko ${bindir}/asgard-${ASGARD_KERNEL_VERSION_STRING}.ko)
+    add_custom_command(TARGET module  COMMAND  ${CMAKE_COMMAND} -E remove ${bindir}/asgard.ko)
+
     include_directories("${bindir}")
 
     # add_custom_target(module-clean COMMAND ${module_cmd} clean
     #        WORKING_DIRECTORY ${bindir})
+
 
 else()
     target_link_libraries(asgard PRIVATE Threads::Threads)
@@ -198,8 +249,11 @@ if(${ASGARD_DPDK})
     endif ()
 
     add_compile_definitions(ASGARD_DPDK=${ASGARD_DPDK})
+    add_compile_definitions(DPDK_BURST_SINGLE=${DPDK_BURST_SINGLE})
+
     target_link_libraries(asgard PRIVATE ${DPDK_LIBRARIES} )
 endif ()
+
 
 
 # Clean all .o and .cmd files

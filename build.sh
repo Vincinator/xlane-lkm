@@ -6,6 +6,8 @@ lkm=0
 plain=0
 dpdk=0
 
+export CALL_FROM_BUILD_SCRIPT=1
+
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -l|--lkm) lkm=1;;
@@ -19,6 +21,7 @@ done
 
 if [ -z ${kerneldir} ] && [ ${lkm} -eq 1 ]; then
   echo "[ASGARD build.sh] the kerneldir path variable is not set"
+  exit 1
 fi
 
 
@@ -27,7 +30,7 @@ build_lkm() {
   echo "[ASGARD build.sh] kerneldir is set to '$kerneldir'"
 
   cd $SRC_DIR || (echo "Directory $SRC_DIR not found" && exit)
-
+  export kerneldir
   export ASGARD_DPDK=0
   export ASGARD_KERNEL_MODULE=1
   cmake . -G "Unix Makefiles"

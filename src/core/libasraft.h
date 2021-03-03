@@ -51,13 +51,14 @@
 
 #define MAX_PROTOCOLS 4
 
-#define MAX_NODE_ID 10
+#define CLUSTER_SIZE 3
 
 
 enum asgard_protocol_type {
     ASGARD_PROTO_ECHO = 0,
     ASGARD_PROTO_FD = 1,
     ASGARD_PROTO_CONSENSUS = 2,
+    ASGARD_PROTO_PP = 3,
 
 };
 
@@ -69,7 +70,7 @@ struct asgard_protocol_ctrl_ops {
     int (*init_ctrl)(void);
 #endif
     /* Initializes data and user space interfaces */
-    int (*init)(struct proto_instance *ins);
+    int (*init)(struct proto_instance *ins, int verbosity);
 
     int (*init_payload)(void *payload);
 
@@ -83,7 +84,7 @@ struct asgard_protocol_ctrl_ops {
     int (*clean)(struct proto_instance *ins);
 
     int (*post_payload)(struct proto_instance *ins, int remote_lid, int cluster_id,
-                        void *payload);
+                        void *payload, uint64_t ots);
 
     int (*post_ts)(struct proto_instance *ins, unsigned char *remote_mac,
                    uint64_t ts);
@@ -94,9 +95,9 @@ struct asgard_protocol_ctrl_ops {
 struct proto_instance {
     uint16_t instance_id;
 
+
     enum asgard_protocol_type proto_type;
 
-    struct asgard_ingress_logger ingress_logger;
 
     struct asgard_logger logger;
     struct asgard_logger user_a;
@@ -206,19 +207,19 @@ struct sm_log_entry {
 
 struct state_machine_cmd_log {
 
-    int num_retransmissions[MAX_NODE_ID];
+    int num_retransmissions[CLUSTER_SIZE];
 
     int unstable_commits;
 
-    int32_t next_index[MAX_NODE_ID];
+    int32_t next_index[CLUSTER_SIZE];
 
-    int32_t match_index[MAX_NODE_ID];
+    int32_t match_index[CLUSTER_SIZE];
 
-    struct list_head retrans_head[MAX_NODE_ID];
+    struct list_head retrans_head[CLUSTER_SIZE];
 
-    asg_rwlock_t retrans_list_lock[MAX_NODE_ID];
+    asg_rwlock_t retrans_list_lock[CLUSTER_SIZE];
 
-    int retrans_entries[MAX_NODE_ID];
+    int retrans_entries[CLUSTER_SIZE];
 
     int32_t last_applied;
 
@@ -292,10 +293,12 @@ struct consensus_priv {
 
     uint32_t node_id;
 
+    int verbosity;
+
     /* index of array is node_id,
      * value at index of array is index to pm_targets
      */
-    int cluster_mapping[MAX_NODE_ID];
+    int cluster_mapping[CLUSTER_SIZE];
 
     int32_t term;
 
@@ -430,6 +433,9 @@ struct asgard_pm_target_info {
 
     /* Params used to build the SKB for TX */
     struct asgard_packet_data pkt_data;
+
+    /* Heartbeat packages*/
+    struct asgard_packet_data hb_pkt_data;
 
     /* async packet queue for pm target*/
     struct asgard_async_queue_priv *aapriv;
@@ -570,10 +576,17 @@ struct asgard_device {
 
     /* Ensures that all targets are first checked before the */
     asg_mutex_t logrep_schedule_lock;
+
+
+    struct asgard_ingress_logger ingress_logger;
+
+
+
 };
 
-
+void dump_ingress_logs_to_file(struct asgard_device *sdev);
 char * asgard_convert_mac(const char *str);
 uint32_t asgard_ip_convert(const char *str);
 void init_asgard_device(struct asgard_device *sdev);
 struct proto_instance *generate_protocol_instance(struct asgard_device *sdev, int protocol_id);
+const char *asgard_get_protocol_name(enum asgard_protocol_type protocol_type);

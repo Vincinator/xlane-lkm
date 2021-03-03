@@ -90,7 +90,8 @@ static ssize_t proto_instance_ctrl_write(struct file *file, const char __user *u
             if (err)
                 goto error;
 
-            err = register_protocol_instance(sdev, instance_id, protocol_id);
+            // TODO: parse verbosity from user
+            err = register_protocol_instance(sdev, instance_id, protocol_id, 1);
 
             if (err)
                 goto error;

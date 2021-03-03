@@ -140,6 +140,8 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
 
     struct asgard_pm_target_info *pmtarget;
 
+    asgard_dbg("[DEBUG] %s\n", __FUNCTION__ );
+
     if(id == sdev->pminfo.cluster_id){
         sdev->self_ip = ip;
 
@@ -179,8 +181,12 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
 
     // payload buffer
     pmtarget->pkt_data.payload = ACMALLOC(1, sizeof(struct asgard_payload), GFP_KERNEL);
-
     pmtarget->pkt_data.payload->protocols_included = 0;
+
+
+    pmtarget->hb_pkt_data.payload = ACMALLOC(1, sizeof(struct asgard_payload), GFP_KERNEL);
+    pmtarget->hb_pkt_data.payload->protocols_included = 0;
+
     /* off-by one - so at index num_peers is nothing registered yet */
 
     pmtarget->aapriv = ACMALLOC(1, sizeof(struct asgard_async_queue_priv), GFP_KERNEL);
@@ -292,6 +298,11 @@ void update_cluster_member(struct cluster_info* ci, int local_id, uint8_t state)
 
     if(local_id > MAX_CLUSTER_MEMBER){
         asgard_error("Local Cluster ID (%d) is higher than hardcoded current cluster limit (%d)\n", local_id, MAX_CLUSTER_MEMBER);
+        return;
+    }
+
+    if(local_id < 0) {
+        asgard_error("Local Cluster ID (%d) is invalid\n", local_id);
         return;
     }
 

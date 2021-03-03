@@ -42,7 +42,6 @@ uint32_t DPDK_LIBASRAFT_LOG_LEVEL = RTE_LOG_DEBUG;
 static uint16_t nb_rxd = RTE_TEST_RX_DESC_DEFAULT;
 static uint16_t nb_txd = RTE_TEST_TX_DESC_DEFAULT;
 
-static struct rte_eth_dev_tx_buffer *tx_buffer;
 
 int RTE_LOGTYPE_LIBASRAFT;
 
@@ -193,7 +192,6 @@ void generate_load(tnode_t *tn){
 }
 
 
-
 #ifdef ASGARD_DPDK
 int main(int argc, char *argv[]){
     tnode_t node;
@@ -204,8 +202,15 @@ int main(int argc, char *argv[]){
     unsigned int stored_dpdk_portid;
     uint64_t dropped;
 
-    printf("DPDK version of asgard\n");
-    
+    asgard_dbg("DPDK version of asgard\n");
+
+#ifdef DPDK_BURST_SINGLE
+    asgard_dbg("DPDK Burst mode enabled\n");
+#else
+    asgard_dbg("DPDK Burst mode disabled\n");
+#endif
+
+
     // TODO: we may want to load the mode via the config file
     node.testmode = ONE_SHOT;
 
@@ -263,10 +268,10 @@ int main(int argc, char *argv[]){
 
     /* init port */
     rte_eth_dev_info_get(node.sdev->dpdk_portid, &dev_info);
-    if (dev_info.tx_offload_capa & DEV_TX_OFFLOAD_MBUF_FAST_FREE)
-        local_port_conf.txmode.offloads |=
-                DEV_TX_OFFLOAD_MBUF_FAST_FREE;
-
+    if (dev_info.tx_offload_capa & DEV_TX_OFFLOAD_MBUF_FAST_FREE) {
+        local_port_conf.txmode.offloads |= DEV_TX_OFFLOAD_MBUF_FAST_FREE;
+        asgard_dbg("DEV_TX_OFFLOAD_MBUF_FAST_FREE bit set\n");
+    }
     ret = rte_eth_dev_configure(node.sdev->dpdk_portid, 1, 1, &local_port_conf);
     if (ret < 0)
         rte_exit(EXIT_FAILURE, "Cannot configure device: err=%d, port=%u\n",
@@ -292,10 +297,11 @@ int main(int argc, char *argv[]){
         rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup:err=%d, port=%u\n",
                  ret, node.sdev->dpdk_portid);
 
-    /* init one TX queue on each port */
     fflush(stdout);
     txq_conf = dev_info.default_txconf;
     txq_conf.offloads = local_port_conf.txmode.offloads;
+    txq_conf.tx_rs_thresh = 1;
+    txq_conf.tx_free_thresh = 2;
     ret = rte_eth_tx_queue_setup(node.sdev->dpdk_portid, 0, nb_txd,
                                  rte_eth_dev_socket_id(node.sdev->dpdk_portid),
                                  &txq_conf);
@@ -303,23 +309,7 @@ int main(int argc, char *argv[]){
         rte_exit(EXIT_FAILURE, "rte_eth_tx_queue_setup:err=%d, port=%u\n",
                  ret, node.sdev->dpdk_portid);
 
-    /* Initialize TX buffers */
-    tx_buffer = rte_zmalloc_socket("tx_buffer",
-                                   RTE_ETH_TX_BUFFER_SIZE(MAX_PKT_BURST), 0,
-                                   rte_eth_dev_socket_id(node.sdev->dpdk_portid));
-    if (tx_buffer == NULL)
-        rte_exit(EXIT_FAILURE, "Cannot allocate buffer for tx on port %u\n",
-                 node.sdev->dpdk_portid);
-
-    rte_eth_tx_buffer_init(tx_buffer, MAX_PKT_BURST);
-
-    ret = rte_eth_tx_buffer_set_err_callback(tx_buffer,
-                                             rte_eth_tx_buffer_count_callback,
-                                             &dropped);
-    if (ret < 0)
-        rte_exit(EXIT_FAILURE,
-                 "Cannot set init_error callback for tx buffer on port %u\n",
-                 node.sdev->dpdk_portid);
+    configure_tx_buffer(node.sdev->dpdk_portid, 1);
 
     /* Start device */
     ret = rte_eth_dev_start(node.sdev->dpdk_portid);
@@ -350,11 +340,11 @@ int main(int argc, char *argv[]){
         sleep(1);
         /* If this node is the leader, then generate the test load against this leader node.
          * This way, we do not measure any overhead between leader and client.
-         *
-         * if(node.sdev->is_leader)
-         *   generate_load(&node);
-         *
          */
+
+        if(node.sdev->is_leader)
+            generate_load(&node);
+
 
         if(user_requested_stop != 0) {
             asgard_dbg("Stopping node ..\n");

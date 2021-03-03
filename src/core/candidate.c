@@ -26,7 +26,7 @@ int setup_nomination(struct proto_instance *ins)
             (struct consensus_priv *)ins->proto_data;
     int i;
 
-    //asgard_dbg("setting up nominaton\n");
+    asgard_dbg("setting up nominaton\n");
 
     priv->term++;
     //priv->votes = 1; // start with selfvote
@@ -105,9 +105,9 @@ int candidate_process_pkt(struct proto_instance *ins, int remote_lid, int rclust
     int32_t param1, param2, param3, param4;
     param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
 
-#if VERBOSE_DEBUG
-    log_le_rx(priv->nstate, ASGARD_TIMESTAMP, priv->term, opcode, rcluster_id, param1);
-#endif
+    if(priv->verbosity != 0)
+        log_le_rx(priv->nstate, ASGARD_TIMESTAMP, priv->term, opcode, rcluster_id, param1);
+
     switch (opcode) {
         case ADVERTISE:
             break;
@@ -198,7 +198,7 @@ int start_candidate(struct proto_instance *ins)
         return -1;
     }
 
-    //asgard_dbg("started candidate\n");
+    asgard_dbg("started candidate\n");
 
     priv->votes = 0;
     priv->nstate = CANDIDATE;

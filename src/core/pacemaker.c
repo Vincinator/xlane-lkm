@@ -3,7 +3,7 @@
  */
 #include "pacemaker.h"
 
-
+#include "pingpong.h"
 
 
 #ifdef ASGARD_DPDK
@@ -30,6 +30,46 @@ static struct task_struct *heartbeat_task;
 #define IP_VHL_DEF (IP_VERSION | IP_HDRLEN)
 #define IP_ADDR_FMT_SIZE 15
 
+
+#ifdef ASGARD_DPDK
+struct rte_eth_dev_tx_buffer *tx_buffer[RTE_MAX_ETHPORTS];
+
+/*
+ * Tx buffer error callback
+ */
+static void flush_tx_error_callback(struct rte_mbuf **unsent, uint16_t count,
+                        void *userdata) {
+    int i;
+    uint16_t port_id = (uintptr_t)userdata;
+    /* free the mbufs which failed from transmit */
+    for (i = 0; i < count; i++)
+        rte_pktmbuf_free(unsent[i]);
+}
+
+
+void configure_tx_buffer(uint16_t port_id, uint16_t size)
+{
+    int ret;
+
+    tx_buffer[port_id] = rte_zmalloc_socket("tx_buffer", RTE_ETH_TX_BUFFER_SIZE(size), 0,
+                                            rte_eth_dev_socket_id(port_id));
+
+    if (tx_buffer[port_id] == NULL)
+        rte_exit(EXIT_FAILURE, "Cannot allocate buffer for tx on port %u\n",
+                 port_id);
+
+    rte_eth_tx_buffer_init(tx_buffer[port_id], size);
+    ret = rte_eth_tx_buffer_set_err_callback(tx_buffer[port_id],
+                                             flush_tx_error_callback, (void *)(intptr_t)port_id);
+    if (ret < 0)
+        rte_exit(EXIT_FAILURE,
+                 "Cannot set error callback for tx buffer on port %u\n",
+                 port_id);
+}
+
+
+
+#endif
 
 const char *pm_state_string(enum pmstate state) {
     switch (state) {
@@ -101,29 +141,30 @@ int setup_alive_msg(struct consensus_priv *cur_priv, struct asgard_payload *spay
     return 0;
 }
 
-
-void update_alive_msg(struct asgard_device *sdev, struct asgard_payload *pkt_payload) {
+/* Logic to include protocol dependent messages for the heartbeat message */
+void pre_hb_setup(struct asgard_device *sdev, struct asgard_payload *pkt_payload, int target_lid) {
     int j;
 
-    /* Not a member of a cluster yet - thus, append advertising messages */
+    // Not a member of a cluster yet - thus, append advertising messages
     if (sdev->warmup_state == WARMING_UP) {
         if (sdev->self_mac) {
             setup_cluster_join_advertisement(pkt_payload, sdev->pminfo.cluster_id, sdev->self_ip, sdev->self_mac);
         }
+        return; // All currently defined protocols require the cluster to be warmed up
     }
 
-    // only leaders will append an ALIVE operation to the heartbeat
-    if (sdev->is_leader == 0)
-        return;
-
-    // iterate through consensus protocols and include ALIVE message
     for (j = 0; j < sdev->num_of_proto_instances; j++) {
 
-        if (sdev->protos[j]->proto_type == ASGARD_PROTO_CONSENSUS) {
+        if (sdev->protos[j]->proto_type == ASGARD_PROTO_CONSENSUS && sdev->is_leader != 0) {
 
-            // get corresponding local instance data for consensus
             setup_alive_msg((struct consensus_priv *) sdev->protos[j]->proto_data,
                             pkt_payload, sdev->protos[j]->instance_id);
+
+        } else if(sdev->protos[j]->proto_type == ASGARD_PROTO_PP) {
+
+            setup_ping_msg((struct pingpong_priv *) sdev->protos[j]->proto_data,
+                    pkt_payload, sdev->protos[j]->instance_id, target_lid);
+
         }
     }
 }
@@ -217,7 +258,6 @@ void update_aliveness_states(struct asgard_device *sdev, struct pminfo *spminfo,
 
     // may be redundant - since we already update aliveness on reception of pkt
     //spminfo->pm_targets[i].alive = 1; // Todo: remove this?
-
     //update_cluster_member(sdev->ci, i, 1);
 
     spminfo->pm_targets[i].lhb_ts = spminfo->pm_targets[i].chb_ts;
@@ -306,9 +346,9 @@ ip_sum(const unaligned_uint16_t *hdr, int hdr_len)
 static unsigned int get_packet_size_for_alloc(void){
     unsigned int ip_len, udp_len, asgard_len, total_len;
 
-    udp_len = UDP_HLEN;
-    ip_len = udp_len + IP_HLEN;
-    total_len = ip_len + ETH_HLEN;
+    udp_len =  sizeof(struct rte_udp_hdr);
+    ip_len = udp_len + sizeof(struct rte_ipv4_hdr);
+    total_len = ip_len + sizeof(struct rte_ether_hdr);
 
     return total_len;
 }
@@ -329,7 +369,6 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
         asgard_error("Recv mac is NULL\n");
         return NULL;
     }
-
 
     pkt = rte_pktmbuf_alloc(pktmbuf_pool);
     if (!pkt) {
@@ -383,9 +422,6 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
     udp_hdr->dst_port = rte_cpu_to_be_16((uint16_t)recvaddr.port);
 
     udp_hdr->dgram_cksum = 0; /* No UDP checksum. */
-    udp_hdr->dgram_len = rte_cpu_to_be_16(pkt_size -
-                                          sizeof(*eth_hdr) -
-                                          sizeof(*ip_hdr));
 
     pkt->nb_segs = 1;
     pkt->pkt_len = pkt_size;
@@ -393,17 +429,26 @@ static struct rte_mbuf *contruct_dpdk_asg_packet(struct rte_mempool *pktmbuf_poo
     pkt->l3_len = sizeof(struct rte_ipv4_hdr);
     pkt->l4_len = sizeof(struct rte_udp_hdr);
 
+    // asgard_dbg("Pre payload allocation pkt len: %d\n", pkt->pkt_len);
     /* Copy the Payload to the allocated dpdk packet
      * 1. Get Pointer after pkt with (currently) only headers
      * 2. memcpy asgard payload to pkt
      * */
     payload_ptr = rte_pktmbuf_append(pkt, sizeof(struct asgard_payload));
+    // asgard_dbg("Post payload allocation pkt len: %d\n", pkt->pkt_len);
 
     if (payload_ptr != NULL) {
         rte_memcpy(payload_ptr, asgp, sizeof(struct asgard_payload));
     } else {
         asgard_error("Could not append %ld bytes to packet. \n", sizeof(struct asgard_payload));
+        return NULL;
     }
+
+    udp_hdr->dgram_len = rte_cpu_to_be_16(pkt->pkt_len - (sizeof(*eth_hdr) + sizeof(*ip_hdr)));
+    // asgard_dbg("udp_hdr->dgram_len: %d\n", rte_be_to_cpu_16(udp_hdr->dgram_len));
+
+
+
     return pkt;
 }
 
@@ -419,9 +464,17 @@ unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_
         return -1;
     }
 
-    /* queue id = 0, number of packets = 1 (due to "fire when ready" approach) */
+#ifdef DPDK_BURST_SINGLE
     nb_tx = rte_eth_tx_burst(portid, 0, &dpdk_pkt, 1);
+#else
+    /* queue id = 0, number of packets = 1 (due to "fire when ready" approach) */
+    nb_tx = rte_eth_tx_buffer(portid, 0, tx_buffer[portid], dpdk_pkt);
 
+    if(nb_tx == 0)
+        nb_tx = rte_eth_tx_buffer_flush(portid, 0, tx_buffer[portid]);
+#endif
+
+    DumpHex(asg_payload->proto_data, ASGARD_PROTO_PP_PAYLOAD_SZ);
     return nb_tx;
 }
 #elif ASGARD_KERNEL_MODULE
@@ -580,6 +633,7 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
                                                  sdev->pktmbuf_pool, spminfo->pm_targets[i].pkt_data.naddr,
                                                  spminfo->pm_targets[i].pkt_data.payload,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
+
 #elif ASGARD_KERNEL_MODULE
 
 #else
@@ -595,7 +649,7 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
 {
     struct asgard_payload *pkt_payload = NULL;
     int i;
-    int target_fire[MAX_NODE_ID];
+    int target_fire[CLUSTER_SIZE];
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
         target_fire[i] = spminfo->pm_targets[i].fire;
@@ -608,7 +662,6 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
     for (i = 0; i < spminfo->num_of_targets; i++) {
         if (!target_fire[i])
             continue;
-
         pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
 
         memset(pkt_payload, 0, sizeof(struct asgard_payload));
@@ -633,7 +686,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
     /* Send heartbeats to all targets */
     for(i=0; i< spminfo->num_of_targets; i++) {
 
-        pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
+        pkt_payload = spminfo->pm_targets[i].hb_pkt_data.payload;
 
 #ifdef ASGARD_DPDK
         sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
@@ -643,7 +696,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
 #elif ASGARD_KERNEL_MODULE
 
 #else
-        emit_packet(spminfo->pm_targets[i].pkt_data.naddr, pkt_payload);
+        emit_packet(spminfo->pm_targets[i].hb_pkt_data.naddr, pkt_payload);
 #endif
 
         /* Protocols have been emitted, do not send them again ..
@@ -651,11 +704,6 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
         invalidate_proto_data(pkt_payload);
     }
 
-    for(i=0; i< spminfo->num_of_targets; i++)
-        update_alive_msg(sdev, spminfo->pm_targets[i].pkt_data.payload); // Setup next HB Message
-
-    for(i = 0; i < spminfo->num_of_targets; i++)
-        update_aliveness_states(sdev, spminfo, i);
 
 
     return 0;
@@ -731,6 +779,10 @@ static int prepare_pm_loop(struct asgard_device *sdev, struct pminfo *spminfo) {
 #endif
 
 
+#ifdef ASGARD_DPDK
+    configure_tx_buffer(sdev->dpdk_portid, 32);
+#endif
+
     return 0;
 }
 
@@ -745,6 +797,9 @@ static void postwork_pm_loop(struct asgard_device *sdev) {
             asgard_dbg("Stopping Protocol\n");
         }
     }
+#ifdef ASGARD_DPDK
+    rte_free(tx_buffer);
+#endif
     pm_state_transition_to(&sdev->pminfo, ASGARD_PM_READY);
 }
 
@@ -757,6 +812,7 @@ int do_pacemaker(void *data) {
     int scheduled_hb = 0, out_of_sched_hb = 0, async_pkts = 0, out_of_sched_multi = 0;
     uint64_t interval = spminfo->hbi;
     int err = 0;
+    int i;
 
 #ifndef ASGARD_KERNEL_MODULE
     signal(SIGINT, &trap);
@@ -827,6 +883,13 @@ int do_pacemaker(void *data) {
 
             prev_time = cur_time;
             err = emit_pkts_scheduled(sdev, spminfo);
+
+            //  the HB Message
+            for(i=0; i< spminfo->num_of_targets; i++)
+                pre_hb_setup(sdev, spminfo->pm_targets[i].hb_pkt_data.payload, i);
+
+            for(i = 0; i < spminfo->num_of_targets; i++)
+                update_aliveness_states(sdev, spminfo, i);
 
             if (sdev->consensus_priv && sdev->consensus_priv->nstate != LEADER) {
                 update_leader(sdev, spminfo);

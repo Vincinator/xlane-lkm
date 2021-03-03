@@ -74,6 +74,7 @@ struct asgard_pkt_work_data {
     int received_proto_instances;
     u32 cqe_bcnt;
     u16 headroom;
+    u64 ots;
 
 };
 
@@ -87,10 +88,10 @@ struct asgard_ringbuf_read_work_data {
 
 
 
+void asgard_force_quit(void);
 struct asgard_device *get_sdev(int devid);
 void asg_init_workqueues(struct asgard_device *sdev);
 int is_ip_local(struct net_device *dev,	u32 ip_addr);
 void clear_protocol_instances(struct asgard_device *sdev);
-const char *asgard_get_protocol_name(enum asgard_protocol_type protocol_type);
 int asgard_core_register_remote_host(int asgard_id, u32 ip, char *mac,
                                      int protocol_id, int cluster_id);

@@ -7,6 +7,8 @@
 
 #else
 #include <string.h>
+#include <stdio.h>
+
 #endif
 
 
@@ -14,6 +16,42 @@
 #include "membership.h"
 
 
+
+#ifndef ASGARD_KERNEL_MODULE
+
+void DumpHex(const void* data, size_t size) {
+    char ascii[17];
+    size_t i, j;
+    ascii[16] = '\0';
+
+    asgard_dbg("Hex Dump of %zu bytes starting from address: %p\n",size, data);
+
+    for (i = 0; i < size; ++i) {
+        printf("%02X ", ((unsigned char*)data)[i]);
+        if (((unsigned char*)data)[i] >= ' ' && ((unsigned char*)data)[i] <= '~') {
+            ascii[i % 16] = ((unsigned char*)data)[i];
+        } else {
+            ascii[i % 16] = '.';
+        }
+        if ((i+1) % 8 == 0 || i+1 == size) {
+            printf(" ");
+            if ((i+1) % 16 == 0) {
+                printf("|  %s \n", ascii);
+            } else if (i+1 == size) {
+                ascii[(i+1) % 16] = '\0';
+                if ((i+1) % 16 <= 8) {
+                    printf(" ");
+                }
+                for (j = (i+1) % 16; j < 16; ++j) {
+                    printf("   ");
+                }
+                printf("|  %s \n", ascii);
+            }
+        }
+    }
+}
+
+#endif
 
 struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t proto_id)
 {
@@ -35,53 +73,42 @@ struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t p
     return sdev->protos[idx];
 }
 
-void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster_id, char *payload, int instances, uint32_t bcnt)
+void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster_id, char *payload, int instances, uint32_t bcnt, uint64_t ots)
 {
     uint16_t cur_proto_id;
     uint16_t cur_offset;
     struct proto_instance *cur_ins;
+    int i;
+    uint32_t cur_bcnt = bcnt;
 
-    /* bcnt <= 0:
-     *		no payload left to handle
-     *
-     * instances <= 0:
-     *		all included instances were handled
-     */
-    if (instances <= 0 || bcnt <= 0)
-        return;
-
-    /* Protect this kernel from buggy packets.
-     * In the current state, more than 4 instances are not intentional.
+    char *cur_payload_ptr = payload;
 
     if (instances > 4) {
         asgard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
         return;
-    }*/
+    }
 
-    // if (sdev->verbose >= 3)
-    //	asgard_dbg("recursion. instances %d bcnt %d", instances, bcnt);
+    for(i = 0; i < instances; i++) {
 
-    cur_proto_id = GET_PROTO_TYPE_VAL(payload);
+        if (cur_bcnt <= 0)
+            return;
 
-    // if (sdev->verbose >= 3)
-    //	asgard_dbg("cur_proto_id %d", cur_proto_id);
+        cur_proto_id = GET_PROTO_TYPE_VAL(cur_payload_ptr);
+        cur_offset = GET_PROTO_OFFSET_VAL(cur_payload_ptr);
 
-    cur_offset = GET_PROTO_OFFSET_VAL(payload);
+        cur_ins = get_proto_instance(sdev, cur_proto_id);
 
-    // if (sdev->verbose >= 3)
-    //	asgard_dbg("cur_offset %d", cur_offset);
-
-    cur_ins = get_proto_instance(sdev, cur_proto_id);
-
-    // check if instance for the given protocol id exists
-    if (!cur_ins) {
+        if (!cur_ins) {
             asgard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
 
-    } else {
-        cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload);
+        } else {
+            //asgard_dbg("(i: %d, offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %lu )\n", i, cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
+            cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload, ots);
+        }
+        cur_bcnt = cur_bcnt - cur_offset;
+        cur_payload_ptr = cur_payload_ptr + cur_offset;
+
     }
-    // handle next payload
-    handle_sub_payloads(sdev, remote_lid, cluster_id, payload + cur_offset, instances - 1, bcnt - cur_offset);
 
 }
 
@@ -138,6 +165,7 @@ void get_cluster_ids_by_ip(struct asgard_device *sdev, uint32_t remote_ip, int *
     *lid = -1;
     *cid = -1;
 
+
     for (i = 0; i < spminfo->num_of_targets; i++) {
         if (spminfo->pm_targets[i].pkt_data.naddr.dst_ip == remote_ip) {
             *cid = spminfo->pm_targets[i].pkt_data.naddr.cluster_id;
@@ -145,6 +173,8 @@ void get_cluster_ids_by_ip(struct asgard_device *sdev, uint32_t remote_ip, int *
             return;
         }
     }
+    asgard_error("Did not find ids for remote_ip");
+    asg_print_ip(remote_ip);
 }
 
 
@@ -186,7 +216,7 @@ void pkt_process_handler(struct work_struct *w)
 
     handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id,
                         GET_PROTO_START_SUBS_PTR(user_data),
-                        aw->received_proto_instances, aw->cqe_bcnt);
+                        aw->received_proto_instances, aw->cqe_bcnt, aw->ots);
 
     exit:
 
@@ -199,11 +229,16 @@ void pkt_process_handler(struct work_struct *w)
 void *pkt_process_handler(void *data)
 {
     struct pkt_work_data *wd = (struct pkt_work_data*) data;
-    asgard_dbg("processing pkt\n");
+    //asgard_dbg("processing pkt\n");
+    //asgard_dbg("\t  wd->remote_lid = %d\n",  wd->remote_lid);
+    //asgard_dbg("\t  wd->rcluster_id = %d\n",  wd->rcluster_id);
+    //asgard_dbg("\t  wd->received_proto_instances = %d\n",  wd->received_proto_instances);
+    //asgard_dbg("\t  wd->bcnt = %d\n",  wd->bcnt);
+
 
     handle_sub_payloads(wd->sdev, wd->remote_lid, wd->rcluster_id,
                          GET_PROTO_START_SUBS_PTR(wd->payload),
-                         wd->received_proto_instances, wd->bcnt);
+                         wd->received_proto_instances, wd->bcnt, wd->ots);
     AFREE(wd->payload);
     AFREE(wd);
 
@@ -212,14 +247,13 @@ void *pkt_process_handler(void *data)
 
 #endif
 
-void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id, char *payload, uint32_t cqe_bcnt) {
+void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id, char *payload, uint32_t cqe_bcnt, uint64_t ots) {
     struct pminfo *spminfo = &sdev->pminfo;
     int cluster_id_ad;
     uint32_t cluster_ip_ad;
     char *cluster_mac_ad;
     struct pkt_work_data *wd;
     uint16_t received_proto_instances;
-
 
     /* Remote IP is not registered as peer yet! */
     if (remote_lid == -1) {
@@ -253,16 +287,12 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     spminfo->pm_targets[remote_lid].chb_ts = ASGARD_TIMESTAMP;
     spminfo->pm_targets[remote_lid].alive = 1;
     update_cluster_member(sdev->ci, remote_lid, 1);
-    write_ingress_log(&sdev->protos[0]->ingress_logger, INGRESS_PACKET, ASGARD_TIMESTAMP, rcluster_id);
+    write_ingress_log(&sdev->ingress_logger, INGRESS_PACKET, ASGARD_TIMESTAMP, rcluster_id);
 
     if (check_warmup_state(sdev, spminfo)) {
         AFREE(payload);
         return;
     }
-
-    //asgard_dbg("PKT START:");
-    //(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
-    //                payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
     received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
 
@@ -273,6 +303,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     wd->received_proto_instances = received_proto_instances;
     wd->remote_lid = remote_lid;
     wd->bcnt = cqe_bcnt;
+    wd->ots = ots;
 
 #ifdef ASGARD_KERNEL_MODULE
     if (sdev->asgard_wq_lock) {
@@ -303,13 +334,19 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
 
 #ifdef ASGARD_KERNEL_MODULE
 
-void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uint32_t cqe_bcnt){
+void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uint32_t cqe_bcnt, uint64_t ots){
     struct asgard_device *sdev = get_sdev(asgard_id);
     int remote_lid, rcluster_id;
     //uint64_t ts2, ts3;
     char *payload;
     char *remote_mac;
     char *user_data;
+
+
+    if (unlikely(!sdev)) {
+        asgard_error("sdev is NULL\n");
+        return;
+    }
 
 
     // freed by pkt_process_handler
@@ -324,24 +361,19 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
 
     //ts2 = RDTSC_ASGARD;
 
-    if (unlikely(!sdev)) {
-        asgard_error("sdev is NULL\n");
-        return;
-    }
-
     if (unlikely(sdev->pminfo.state != ASGARD_PM_EMITTING))
         return;
 
     get_cluster_ids_by_mac(sdev, remote_mac, &remote_lid, &rcluster_id);
 
-    do_post_payload(sdev, remote_lid, rcluster_id, payload, cqe_bcnt);
+    do_post_payload(sdev, remote_lid, rcluster_id, payload, cqe_bcnt, ots);
 }
 
 
 #else
 
 
-void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *payload_in, int payload_len)
+void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *payload_in, uint32_t payload_len, uint64_t ots)
 {
     struct pminfo *spminfo = &sdev->pminfo;
     int remote_lid, rcluster_id, cluster_id_ad, i;
@@ -356,10 +388,6 @@ void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *p
     memcpy(payload, payload_in, payload_len);
     // asgard_write_timestamp(sdev, 1, RDTSC_ASGARD, asgard_id);
 
-    if (!sdev) {
-        asgard_error("sdev is NULL\n");
-        return;
-    }
 
     if (sdev->pminfo.state != ASGARD_PM_EMITTING) {
         asgard_error("pacemaker is not emitting!\n");
@@ -369,8 +397,19 @@ void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *p
 
 
     // TODO!!!
-    get_cluster_ids_by_ip(sdev, remote_ip, &remote_lid, &rcluster_id);
+    get_cluster_ids_by_ip(sdev, htonl(remote_ip), &remote_lid, &rcluster_id);
+
+    if(remote_lid == -1){
+        asgard_error("Could not find local id\n");
+    }
+
+
+
     spminfo->pm_targets[remote_lid].pkt_rx_counter++;
+
+
+    do_post_payload(sdev, remote_lid, rcluster_id, payload, payload_len, ots);
+
 
 
 }

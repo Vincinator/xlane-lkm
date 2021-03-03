@@ -16,8 +16,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
     int32_t param1, param2, param3, param4, *commit_idx;
 
     param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-
-    log_le_rx(priv->nstate, ASGARD_TIMESTAMP, priv->term, opcode, rcluster_id, param1);
+    if(priv->verbosity != 0)
+     log_le_rx(priv->nstate, ASGARD_TIMESTAMP, priv->term, opcode, rcluster_id, param1);
 
     switch (opcode) {
         // param1 interpreted as term
@@ -62,11 +62,11 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
             /* Ignore other cases for ALIVE operation*/
             break;
         case APPEND:
-
-            asgard_dbg("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
-                   rcluster_id,
-                   *GET_CON_AE_PREV_LOG_IDX_PTR(pkt),
-                   *GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt));
+            if(priv->verbosity != 0)
+                asgard_dbg("APPEND from %d with prev_log_idx=%d leader_commit_idx=%d\n",
+                       rcluster_id,
+                       *GET_CON_AE_PREV_LOG_IDX_PTR(pkt),
+                       *GET_CON_AE_PREV_LEADER_COMMIT_IDX_PTR(pkt));
 
             if(priv->leader_id != rcluster_id) {
 

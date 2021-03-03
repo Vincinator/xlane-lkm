@@ -86,6 +86,7 @@ int dpdk_server_listener(void *data) {
     struct pminfo *spminfo = &sdev->pminfo;
     unsigned int i, l2_len;
     uint8_t *udp_payload;
+    uint64_t ots;
 
     asgard_dbg("Starting Packet listener on port %d\n", tn->port);
     signal(SIGINT, &trap);
@@ -93,8 +94,10 @@ int dpdk_server_listener(void *data) {
         nb_rx = rte_eth_rx_burst(tn->sdev->dpdk_portid, 0, rx_burst, MAX_PKT_BURST);
 
         if (nb_rx) {
-            //asgard_dbg("something arrived\n");
+            ots = ASGARD_TIMESTAMP;
+
             for (i = 0; i < nb_rx; i++) {
+
                 pkt = rx_burst[i];
 
                 eth_hdr = rte_pktmbuf_mtod(pkt, struct rte_ether_hdr *);
@@ -108,8 +111,8 @@ int dpdk_server_listener(void *data) {
                     if(ip_hdr->next_proto_id == IPPROTO_UDP) {
                         if(udp_hdr->dst_port == 4000){
                             udp_payload = (uint8_t *)(udp_hdr + 1);
-                            asg_print_ip(rte_be_to_cpu_32(ip_hdr->src_addr));
-                            asgard_post_payload(sdev, rte_be_to_cpu_32(ip_hdr->src_addr), udp_payload, udp_hdr->dgram_len);
+                            //asg_print_ip(rte_be_to_cpu_32(ip_hdr->src_addr));
+                            asgard_post_payload(sdev, rte_be_to_cpu_32(ip_hdr->src_addr), udp_payload, rte_be_to_cpu_16(udp_hdr->dgram_len), ots);
                         }
                     }
                 }
@@ -173,7 +176,7 @@ void *server_listener(void *data) {
 
         /* DEBUG: Print the Buffer*/
         inet_ntop(AF_INET, &clientaddr.sin_addr, sender_addr_buf, sizeof(sender_addr_buf));
-        asgard_post_payload(tn->sdev, clientaddr.sin_addr.s_addr, buf, BUFSIZE);
+        asgard_post_payload(tn->sdev, clientaddr.sin_addr.s_addr, buf, BUFSIZE, ASGARD_TIMESTAMP);
 
     }
 

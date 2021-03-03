@@ -32,6 +32,26 @@
 
 #include "logger.h"
 #include "proto.h"
+#include "pingpong.h"
+
+const char *asgard_get_protocol_name(enum asgard_protocol_type protocol_type)
+{
+    switch (protocol_type) {
+        case ASGARD_PROTO_FD:
+            return "Failure Detector";
+        case ASGARD_PROTO_ECHO:
+            return "Echo";
+        case ASGARD_PROTO_CONSENSUS:
+            return "Consensus";
+        case ASGARD_PROTO_PP:
+            return "Ping Ping";
+        default:
+            return "Unknown Protocol!";
+    }
+}
+#ifdef ASGARD_KERNEL_MODULE
+EXPORT_SYMBOL(asgard_get_protocol_name);
+#endif
 
 
 void generate_asgard_eval_uuid(unsigned char uuid[16]) {
@@ -99,6 +119,9 @@ struct proto_instance *generate_protocol_instance(struct asgard_device *sdev, in
         case ASGARD_PROTO_CONSENSUS:
             sproto = get_consensus_proto_instance(sdev);
             break;
+        case ASGARD_PROTO_PP:
+            sproto = get_pp_proto_instance(sdev);
+            break;
         default:
             asgard_error("not a known protocol id\n");
             break;
@@ -117,10 +140,13 @@ void init_asgard_device(struct asgard_device *sdev){
     sdev->tx_port = 4000;
     sdev->tx_counter = 0;
 
+#ifdef ASGARD_MODULE_GIT_VERSION
+    asgard_dbg("Running asgard Version: %s\n", ASGARD_MODULE_GIT_VERSION);
+#endif
+
 #ifdef ASGARD_KERNEL_MODULE
     asg_init_workqueues(sdev);
 #endif
-
 
     for(i = 0; i < MAX_PROTO_INSTANCES; i++)
         sdev->instance_id_mapping[i] = -1;
@@ -132,6 +158,12 @@ void init_asgard_device(struct asgard_device *sdev){
 
     // Only use consensus protocol for this evaluation.
     //sdev->protos[0] = generate_protocol_instance(sdev, ASGARD_PROTO_CONSENSUS);
-    register_protocol_instance(sdev, 1, ASGARD_PROTO_CONSENSUS);
+
+    register_protocol_instance(sdev, 1, ASGARD_PROTO_CONSENSUS, 0);
+
+    register_protocol_instance(sdev, 2, ASGARD_PROTO_PP, 1);
+
+
     sdev->ci = ACMALLOC(1, sizeof(struct cluster_info), GFP_KERNEL);
 }
+

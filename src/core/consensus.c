@@ -276,6 +276,7 @@ int check_handle_nomination(struct consensus_priv *priv, uint32_t param1, uint32
                             int rcluster_id) {
     uint32_t buf_lastidx;
 
+    asgard_dbg("Handle received nomination\n");
 
     /* Learn new Term if self id is lower but incoming nomination request has higher term */
     if(priv->sdev->pminfo.cluster_id < rcluster_id)
@@ -334,15 +335,15 @@ void reply_append(struct proto_instance *ins, struct pminfo *spminfo, int remote
 
     struct asgard_payload *pkt_payload;
     unsigned char *pkt_payload_sub;
-
-    asgard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
-            nstate_string(priv->nstate),
-            (unsigned long long) ASGARD_TIMESTAMP,
-            priv->term,
-            append_success,
-            param1,
-            logged_idx,
-            priv->sm_log.stable_idx);
+    if(priv->verbosity != 0)
+        asgard_log_le("%s, %llu, %d: REPLY APPEND state=%d, param1=%d, param3=%d, param4=%d\n",
+                nstate_string(priv->nstate),
+                (unsigned long long) ASGARD_TIMESTAMP,
+                priv->term,
+                append_success,
+                param1,
+                logged_idx,
+                priv->sm_log.stable_idx);
 
     asg_mutex_lock(&spminfo->pm_targets[remote_lid].pkt_data.mlock);
 
@@ -481,7 +482,8 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
     priv->sdev->pminfo.pm_targets[remote_lid].received_log_replications++;
 
     if (num_entries == 0) {
-        asgard_dbg("no entries in payload \n");
+        if(priv->verbosity != 0)
+            asgard_dbg("no entries in payload \n");
         return;    // no reply if nothing to append!
     }
     pkt_size = GET_PROTO_OFFSET_VAL(pkt);
@@ -513,17 +515,19 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
         if (*prev_log_term == priv->term && priv->leader_id == rcluster_id) {
 
             unstable = 1;
-            asgard_dbg("Unstable log rep detected!\n");
+            if(priv->verbosity != 0)
+                asgard_dbg("Unstable log rep detected!\n");
 
         } else {
-            asgard_dbg("Case unhandled!\n");
+            asgard_error("Case unhandled!\n");
         }
     }
 
     start_idx = (*prev_log_idx) + 1;
 
     if (check_prev_log_match(priv, *prev_log_term, priv->sm_log.stable_idx)) {
-        asgard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
+        if(priv->verbosity != 0)
+            asgard_dbg("Log inconsitency detected. prev_log_term=%d, prev_log_idx=%d\n",
                    *prev_log_term, *prev_log_idx);
 
         print_log_state(&priv->sm_log);
@@ -532,18 +536,20 @@ void _handle_append_rpc(struct proto_instance *ins, struct consensus_priv *priv,
     }
 
     if (append_commands(priv, pkt, num_entries, pkt_size, start_idx, unstable)) {
-        asgard_dbg("append commands failed. start_idx=%d, unstable=%d\n", start_idx, unstable);
+        asgard_error("append commands failed. start_idx=%d, unstable=%d\n", start_idx, unstable);
         goto reply_false_unlock;
     }
 
     update_next_retransmission_request_idx(priv);
 
     if (unstable) {
-        asgard_dbg("[Unstable] appending entries %d - %d | re_idx=%d | stable_idx=%d\n",
-         	start_idx, start_idx + num_entries, priv->sm_log.next_retrans_req_idx, priv->sm_log.stable_idx);
+        if(priv->verbosity != 0)
+            asgard_dbg("[Unstable] appending entries %d - %d | re_idx=%d | stable_idx=%d\n",
+         	    start_idx, start_idx + num_entries, priv->sm_log.next_retrans_req_idx, priv->sm_log.stable_idx);
         priv->sm_log.unstable_commits++;
     } else {
-        asgard_dbg("[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
+        if(priv->verbosity != 0)
+            asgard_dbg("[Stable] appending entries %d - %d\n", start_idx, start_idx + num_entries);
     }
 
     if (priv->sm_log.next_retrans_req_idx != -2)
@@ -578,14 +584,14 @@ void reply_vote(struct proto_instance *ins, int remote_lid, int rcluster_id, int
     struct consensus_priv *priv =
             (struct consensus_priv *) ins->proto_data;
 
-#if VERBOSE_DEBUG
-    asgard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
-        nstate_string(priv->nstate),
-        (unsigned long long) ASGARD_TIMESTAMP,
-        priv->term,
-        rcluster_id,
-        param1);
-#endif
+    if(priv->verbosity >= 2)
+        asgard_log_le("%s, %llu, %d: voting for cluster node %d with term %d\n",
+            nstate_string(priv->nstate),
+            (unsigned long long) ASGARD_TIMESTAMP,
+            priv->term,
+            rcluster_id,
+            param1);
+
 
     setup_le_msg(ins, &priv->sdev->pminfo, VOTE, remote_lid, param1, param2, 0, 0);
     priv->voted = param1;
@@ -611,7 +617,6 @@ void check_pending_log_rep_for_multicast(struct asgard_device *sdev)
 
     if(next_index < 0)
         return;
-    asgard_dbg("multicast schedule called\n");
     schedule_log_rep(sdev, 0, next_index, retrans, 1);
 }
 #ifdef ASGARD_KERNEL_MODULE
@@ -686,7 +691,6 @@ int consensus_start(struct proto_instance *ins) {
 
 int consensus_stop(struct proto_instance *ins) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
-    int i;
 
     if (!consensus_is_alive(priv))
         return 0;
@@ -697,9 +701,7 @@ int consensus_stop(struct proto_instance *ins) {
 
     // Dump Logs to File
 #ifndef ASGARD_KERNEL_MODULE
-    for(i = 1; i <= priv->sdev->pminfo.num_of_targets + 1; i++){
-        dump_ingress_log(&ins->ingress_logger.per_node_logger[i],  i, priv->sdev->pminfo.hbi);
-    }
+    dump_ingress_logs_to_file(priv->sdev);
 #endif
 
     switch (priv->nstate) {
@@ -739,8 +741,7 @@ int consensus_clean(struct proto_instance *ins) {
     //remove_le_config_ctrl_interfaces(priv);
 
     clear_logger(&ins->logger);
-    clear_ingress_logger(&ins->ingress_logger);
-
+    clear_ingress_logger(&priv->sdev->ingress_logger);
     clear_logger(&priv->throughput_logger);
     clear_logger(&ins->user_a);
     clear_logger(&ins->user_b);
@@ -779,17 +780,16 @@ int consensus_us_update(struct proto_instance *ins, void *payload) {
 }
 
 int consensus_post_payload(struct proto_instance *ins, int remote_lid,
-                           int rcluster_id, void *payload) {
+                           int rcluster_id, void *payload, uint64_t ots) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
 
-    if (!consensus_is_alive(priv))
-        return 0;
-
-    // safety check during debugging and development
     if (!priv) {
         asgard_dbg("private consensus data is null!\n");
         return 0;
     }
+
+    if (!consensus_is_alive(priv))
+        return 0;
 
     switch (priv->nstate) {
         case FOLLOWER:
@@ -810,13 +810,14 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid,
 }
 
 
-int consensus_init(struct proto_instance *ins) {
+int consensus_init(struct proto_instance *ins, int verbosity) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
     int i;
 
     priv->voted = -1;
     priv->term = 0;
     priv->state = LE_READY;
+    priv->verbosity = verbosity;
 
     priv->sm_log.last_idx = -1;
     priv->sm_log.commit_idx = -1;
@@ -853,7 +854,7 @@ int consensus_init(struct proto_instance *ins) {
     // requires "proto_instances/%d"
     init_logger(&ins->logger, ins->instance_id, priv->sdev->ifindex,"consensus_le", 0);
 
-    init_ingress_logger(&ins->ingress_logger, ins->instance_id);
+    init_ingress_logger(&priv->sdev->ingress_logger, ins->instance_id);
 
     init_logger(&ins->user_a, ins->instance_id, priv->sdev->ifindex, "user_a", 1);
     init_logger(&ins->user_b, ins->instance_id, priv->sdev->ifindex, "user_b", 1);
