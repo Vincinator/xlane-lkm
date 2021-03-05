@@ -41,7 +41,7 @@ pipeline {
         when { expression { VENV_EXISTS == 'true' } }
         steps {
             sh '''python3 -m venv asgard-cli/asgard-cli-venv &&
-            source asgard-cli/asgard-cli-venv/bin/activate &&
+            . asgard-cli/asgard-cli-venv/bin/activate &&
             python3 -m pip install --upgrade build'''
         }
     }
@@ -55,7 +55,7 @@ pipeline {
 
             echo "$ASGARD_KERNEL_SRC"
 
-            sh 'cd asgard-cli && source asgard-cli-venv/bin/activate && python3 -m build'
+            sh 'cd asgard-cli && . asgard-cli-venv/bin/activate && python3 -m build'
             sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
             sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko ../asgard-cli/dist/*'
             archiveArtifacts 'bin/asgard-lkm.tar.gz'
