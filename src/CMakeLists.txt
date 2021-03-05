@@ -166,9 +166,6 @@ if(${ASGARD_KERNEL_MODULE})
 
 
     if(ASGARD_KERNEL_GIT_COMMIT_HASH STREQUAL "")
-        message("ooo")
-
-
         set(ASGARD_KERNEL_VERSION_STRING unconfigured-kernel-unknown)
     else()
         set(ASGARD_KERNEL_VERSION_STRING ${GIT_COMMIT_HASH}-kernel-${ASGARD_KERNEL_GIT_COMMIT_HASH})
@@ -199,14 +196,11 @@ if(${ASGARD_KERNEL_MODULE})
             DESTINATION  ${bindir})
 
     string(REPLACE ";" " " module_sources_string "${module_sources_lkm}")
-    message("yo")
     configure_file(${bindir}/Kbuild.in ${bindir}/Kbuild @ONLY)
-    message("yoyo")
 
     foreach(src ${module_sources_lkm})
        # message("configuring ${src}")
         configure_file(${src} ${src} COPYONLY)
-       message("yoyoyo")
 
     endforeach()
     set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir}  ccflags-y+="-DASGARD_KERNEL_MODULE=1" ccflags-y+="-DASGARD_REAL_TEST=${ASGARD_REAL_TEST}")
