@@ -2,7 +2,6 @@ def kernel_version= "v5.9.8"
 def tier = "dev"
 def project_folder = "Vincent"
 def kernel_project_name ="Asgard_Kernel"
-def venvExists = fileExists 'asgard-cli/asgard-cli-venv'
 
 
 pipeline {
@@ -11,6 +10,7 @@ pipeline {
         ASGARD_KERNEL_SRC = "${env.WORKSPACE}/../${project_folder}_${kernel_project_name}_${tier}_${kernel_version}"
         KERNEL_SRC_EXIST  = fileExists "../${project_folder}_${kernel_project_name}_${tier}_${kernel_version}"
         WEBHOOK           = credentials('Teams-WebHook-DevOps-Vincent')
+        VENV_EXISTS       = fileExists 'asgard-cli/asgard-cli-venv'
 
         PUBLISH = 'true'
         BUILD_SUCCESS_LKM = 'false'
@@ -36,23 +36,26 @@ pipeline {
 //       }
 //    }
 
+
+    stage('Prepare Python Build VEnv'){
+        when { expression VENV_EXISTS == 'true' }
+        steps {
+            sh 'python3 -m venv asgard-cli/asgard-cli-venv &&
+                source asgard-cli/asgard-cli-venv/bin/activate &&
+                python3 -m pip install --upgrade build'
+        }
+    }
+
+
+
     stage('Build Asgard Module'){
         when { expression { KERNEL_SRC_EXIST == 'true' } }
         steps {
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 
             echo "$ASGARD_KERNEL_SRC"
-            if (venvExists) {
-                echo 'asgard-cli-venv already exists'
-            } else {
-                echo 'creating asgard-cli-venv'
-                sh 'python3 -m venv asgard-cli/asgard-cli-venv'
-            }
 
-            sh 'source asgard-cli/asgard-cli-venv/bin/activate'
-            sh 'python3 -m pip install --upgrade build'
-
-            sh 'cd asgard-cli && python3 -m build'
+            sh 'cd asgard-cli && source asgard-cli-venv/bin/activate && python3 -m build'
             sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
             sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko ../asgard-cli/dist/*'
             archiveArtifacts 'bin/asgard-lkm.tar.gz'
