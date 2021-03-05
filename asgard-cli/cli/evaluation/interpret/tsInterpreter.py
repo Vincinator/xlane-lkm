@@ -1,10 +1,6 @@
 import matplotlib.pyplot as plt
-import subprocess
-from subprocess import check_output
 
 import numpy as np
-
-from cli.evaluation.pyasgard.pyasgard import getGitHash
 
 
 def plotHistogram(data):

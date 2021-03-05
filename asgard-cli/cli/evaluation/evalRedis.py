@@ -9,7 +9,6 @@ from os import path
 
 import redis
 import click
-import binascii
 import json
 import os.path
 from ..verification.verify import _verify_data

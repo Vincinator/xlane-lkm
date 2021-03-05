@@ -7,16 +7,11 @@ import fnmatch
 import subprocess
 
 import click
-import paramiko
 import os
 import configparser
 import os.path
 from os import path
 import cli.evaluation.pyasgard.pyasgard as pyasg
-import time
-
-from cli.evaluation.interpret.tsInterpreter import vanillaAsgardEvalReport
-from cli.utils import prepareHost
 
 
 def doPingPong(config):
