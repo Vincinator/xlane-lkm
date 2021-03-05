@@ -41,8 +41,20 @@ pipeline {
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 
             echo "$ASGARD_KERNEL_SRC"
+            def venvExists = fileExists 'asgard-cli/asgard-cli-venv'
+            if (venvExists) {
+                echo 'asgard-cli-venv already exists'
+            } else {
+                echo 'creating asgard-cli-venv'
+                sh 'python3 -m venv asgard-cli/asgard-cli-venv'
+            }
+
+            sh 'source asgard-cli/asgard-cli-venv/bin/activate'
+            sh 'python3 -m pip install --upgrade build'
+
+            sh 'cd asgard-cli && python3 -m build'
             sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
-            sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko ../asgard_lkm_loader.py'
+            sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko ../asgard-cli/dist/*'
             archiveArtifacts 'bin/asgard-lkm.tar.gz'
             office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
 
