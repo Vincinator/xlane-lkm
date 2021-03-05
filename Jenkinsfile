@@ -38,7 +38,7 @@ pipeline {
 
 
     stage('Prepare Python Build VEnv'){
-        when { expression { VENV_EXISTS == 'true' } }
+        when { expression { VENV_EXISTS == 'false' } }
         steps {
             sh '''python3 -m venv asgard-cli/asgard-cli-venv &&
             . asgard-cli/asgard-cli-venv/bin/activate &&
