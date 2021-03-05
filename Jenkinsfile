@@ -2,6 +2,7 @@ def kernel_version= "v5.9.8"
 def tier = "dev"
 def project_folder = "Vincent"
 def kernel_project_name ="Asgard_Kernel"
+def venvExists = fileExists 'asgard-cli/asgard-cli-venv'
 
 
 pipeline {
@@ -41,7 +42,6 @@ pipeline {
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 
             echo "$ASGARD_KERNEL_SRC"
-            def venvExists = fileExists 'asgard-cli/asgard-cli-venv'
             if (venvExists) {
                 echo 'asgard-cli-venv already exists'
             } else {
