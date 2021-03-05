@@ -44,10 +44,10 @@ def _verify_data(min, max, data):
     return False
 
 @click.command()
-@click.option('--min', default=1)
-@click.option('--max', default=500)
-@click.option('--input', default='generated_data.json')
-def verifyData(min, max, input):
+@click.option('--min', default=1, help="Minimum valid value for each entry")
+@click.option('--max', default=500, help="Maximum valid value for each entry")
+@click.option('--input', default='generated_data.json', help="Json file to validate")
+def verify_test_data(min, max, input):
 
     if os.path.exists(input) != True:
         print("File {0} does not exist".format(input))

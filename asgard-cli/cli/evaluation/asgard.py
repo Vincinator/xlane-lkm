@@ -136,18 +136,7 @@ def handle_actions(cfg, actions, protocol):
 @click.option('--protocol', '-p', default=None, help="Select the target protocol")
 @click.option('--multicast', '-m', default=False, show_default=True,is_flag=True,
               help="configures asgard for multicast enabled features")
-def evalAsgard(config_path, ifindex, log_dir, actions, protocol, multicast):
-    """
-    Controls the asgard kernel module from user space.
-
-    :param config_path:
-    :param ifindex:
-    :param log_dir:
-    :param actions:
-    :param protocol:
-    :param multicast:
-    :return:
-    """
+def eval_kernel_module_no_userspace(config_path, ifindex, log_dir, actions, protocol, multicast):
     config = load_config(config_path)
 
     if config is None:

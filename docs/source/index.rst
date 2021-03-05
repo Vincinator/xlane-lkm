@@ -10,8 +10,8 @@ Welcome to asgard-cli's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   asgard-cli
-   asgard-lkm
+   user-manual
+   modules
 
 Indices and tables
 ==================

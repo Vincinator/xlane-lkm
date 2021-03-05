@@ -1,0 +1,605 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>User Manual &mdash; asgard-cli  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer Docs" href="modules.html" />
+    <link rel="prev" title="Welcome to asgard-cli’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> asgard-cli
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#asgard-cli">asgard-cli</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#asgard-cli-eval-asgard-with-redis">eval-asgard-with-redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asgard-cli-eval-kernel-module-no-userspace">eval-kernel-module-no-userspace</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asgard-cli-generate-benchmark-configuration">generate-benchmark-configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asgard-cli-generate-test-data">generate-test-data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asgard-cli-verify-test-data">verify-test-data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Developer Docs</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">asgard-cli</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>User Manual</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/user-manual.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="user-manual">
+<h1>User Manual<a class="headerlink" href="#user-manual" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="asgard-cli">
+<h2>asgard-cli<a class="headerlink" href="#asgard-cli" title="Permalink to this headline">¶</a></h2>
+<p>Asgard CLI Entrypoint for the main click group 2
+:return:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>asgard-cli <span class="o">[</span>OPTIONS<span class="o">]</span> COMMAND <span class="o">[</span>ARGS<span class="o">]</span>...
+</pre></div>
+</div>
+<div class="section" id="asgard-cli-eval-asgard-with-redis">
+<h3>eval-asgard-with-redis<a class="headerlink" href="#asgard-cli-eval-asgard-with-redis" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>asgard-cli eval-asgard-with-redis <span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-asgard-with-redis-input">
+<code class="sig-name descname"><span class="pre">--input</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;input&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-asgard-with-redis-input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to the evaluation json file, containing messages for replication</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>generated_data.json</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-asgard-with-redis-config_path">
+<span id="cmdoption-asgard-cli-eval-asgard-with-redis-config-path"></span><code class="sig-name descname"><span class="pre">--config_path</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;config_path&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-asgard-with-redis-config_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to the configuration file. The redis leader and local IP/Port is configured in this config, as well as paths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>example.asgard-bench.ini</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-asgard-with-redis-i">
+<span id="cmdoption-asgard-cli-eval-asgard-with-redis-isleader"></span><code class="sig-name descname"><span class="pre">-i</span></code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname"><span class="pre">,</span> </code><code class="sig-name descname"><span class="pre">--isleader</span></code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-asgard-with-redis-i" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set this flag if this node should be configured as leader/master node</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-asgard-with-redis-r">
+<span id="cmdoption-asgard-cli-eval-asgard-with-redis-requests"></span><code class="sig-name descname"><span class="pre">-r</span></code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname"><span class="pre">,</span> </code><code class="sig-name descname"><span class="pre">--requests</span></code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-asgard-with-redis-r" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set data from the input file is read and requests are sent to the redis instance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-asgard-with-redis-p">
+<span id="cmdoption-asgard-cli-eval-asgard-with-redis-prepare"></span><code class="sig-name descname"><span class="pre">-p</span></code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname"><span class="pre">,</span> </code><code class="sig-name descname"><span class="pre">--prepare</span></code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-asgard-with-redis-p" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set starts a redis environment and if isleader is NOT set, this node registers as replica at the master</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-asgard-with-redis-c">
+<span id="cmdoption-asgard-cli-eval-asgard-with-redis-clean"></span><code class="sig-name descname"><span class="pre">-c</span></code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname"><span class="pre">,</span> </code><code class="sig-name descname"><span class="pre">--clean</span></code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-asgard-with-redis-c" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set cleans the dump.rdb file and kills redis-server instances on this node</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-asgard-with-redis-s">
+<span id="cmdoption-asgard-cli-eval-asgard-with-redis-stats"></span><code class="sig-name descname"><span class="pre">-s</span></code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname"><span class="pre">,</span> </code><code class="sig-name descname"><span class="pre">--stats</span></code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-asgard-with-redis-s" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set reads the eval_throughput_timestamps file (path in config.ini), and prints statistics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-asgard-with-redis-a">
+<span id="cmdoption-asgard-cli-eval-asgard-with-redis-asgard"></span><code class="sig-name descname"><span class="pre">-a</span></code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname"><span class="pre">,</span> </code><code class="sig-name descname"><span class="pre">--asgard</span></code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-asgard-with-redis-a" title="Permalink to this definition">¶</a></dt>
+<dd><p>If set uses asgard for redis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-asgard-with-redis-d">
+<span id="cmdoption-asgard-cli-eval-asgard-with-redis-dumplogs"></span><code class="sig-name descname"><span class="pre">-d</span></code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname"><span class="pre">,</span> </code><code class="sig-name descname"><span class="pre">--dumplogs</span></code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-asgard-with-redis-d" title="Permalink to this definition">¶</a></dt>
+<dd><p>persists asgard redis logs to disk</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="asgard-cli-eval-kernel-module-no-userspace">
+<h3>eval-kernel-module-no-userspace<a class="headerlink" href="#asgard-cli-eval-kernel-module-no-userspace" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>asgard-cli eval-kernel-module-no-userspace <span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-config_path">
+<span id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-config-path"></span><code class="sig-name descname"><span class="pre">--config_path</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;config_path&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-kernel-module-no-userspace-config_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to the configuration file. The redis leader and local IP/Port is configured in this config, as well as paths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>example.asgard-bench.ini</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-ifindex">
+<code class="sig-name descname"><span class="pre">--ifindex</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;ifindex&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-kernel-module-no-userspace-ifindex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses this parameter as ifindex instead of ifindex from .ini file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>-1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-log_dir">
+<span id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-log-dir"></span><code class="sig-name descname"><span class="pre">--log_dir</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;log_dir&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-kernel-module-no-userspace-log_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Directory where the timestamp logs are downloaded to</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>~/logs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-a">
+<span id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-actions"></span><code class="sig-name descname"><span class="pre">-a</span></code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname"><span class="pre">,</span> </code><code class="sig-name descname"><span class="pre">--actions</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;actions&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-kernel-module-no-userspace-a" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Default=load,configure,clean,unload]</p>
+<p>Comma separated list of actions to execute in specified order.
+The available actions are listed below:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>start: starts the selected protocol (requires protocol flag)</p></li>
+<li><p>stop: stops the selected protocol (requires protocol flag)</p></li>
+<li><p>dump: dumps logs for the selected protocol (requires protocol flag)</p></li>
+<li><p>configure: configures asgard and if specified also the selected protocol</p></li>
+<li><p>clean: cleans the asgard instance</p></li>
+<li><p>load: loads the asgard kernel module</p></li>
+<li><p>unload: unloads the asgard kernel module</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-p">
+<span id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-protocol"></span><code class="sig-name descname"><span class="pre">-p</span></code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname"><span class="pre">,</span> </code><code class="sig-name descname"><span class="pre">--protocol</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;protocol&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-kernel-module-no-userspace-p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the target protocol</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-m">
+<span id="cmdoption-asgard-cli-eval-kernel-module-no-userspace-multicast"></span><code class="sig-name descname"><span class="pre">-m</span></code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname"><span class="pre">,</span> </code><code class="sig-name descname"><span class="pre">--multicast</span></code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-asgard-cli-eval-kernel-module-no-userspace-m" title="Permalink to this definition">¶</a></dt>
+<dd><p>configures asgard for multicast enabled features</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default</dt>
+<dd class="field-odd"><p>False</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="asgard-cli-generate-benchmark-configuration">
+<h3>generate-benchmark-configuration<a class="headerlink" href="#asgard-cli-generate-benchmark-configuration" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>asgard-cli generate-benchmark-configuration <span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-config_path">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-config-path"></span><code class="sig-name descname"><span class="pre">--config_path</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;config_path&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-config_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to the config file to read from</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-redis_base">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-redis-base"></span><code class="sig-name descname"><span class="pre">--redis_base</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;redis_base&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-redis_base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to redis binaries</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-redis_leader_port">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-redis-leader-port"></span><code class="sig-name descname"><span class="pre">--redis_leader_port</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;redis_leader_port&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-redis_leader_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Port for the redis leader</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-redis_port">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-redis-port"></span><code class="sig-name descname"><span class="pre">--redis_port</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;redis_port&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-redis_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Port for redis</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-redis_leader_ip">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-redis-leader-ip"></span><code class="sig-name descname"><span class="pre">--redis_leader_ip</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;redis_leader_ip&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-redis_leader_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>The selected redis leader must be configured manually via this parameter</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-redis_ip">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-redis-ip"></span><code class="sig-name descname"><span class="pre">--redis_ip</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;redis_ip&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-redis_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>The local redis instance to connect to via this cli</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_iface">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-iface"></span><code class="sig-name descname"><span class="pre">--asgard_iface</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_iface&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_iface" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ifindex of the selected network interface</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_ifacename">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-ifacename"></span><code class="sig-name descname"><span class="pre">--asgard_ifacename</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_ifacename&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_ifacename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the asgard enabled network interface to use</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_ping_pong_instance_id">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-ping-pong-instance-id"></span><code class="sig-name descname"><span class="pre">--asgard_ping_pong_instance_id</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_ping_pong_instance_id&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_ping_pong_instance_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance ID of the ping pong protocol. Used for latency tests</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_hbi">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-hbi"></span><code class="sig-name descname"><span class="pre">--asgard_hbi</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_hbi&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_hbi" title="Permalink to this definition">¶</a></dt>
+<dd><p>The heartbeat interval in ticks. Make sure to setup your system accordingly, otherwise you can not rely on the clock source.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_waiting_window">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-waiting-window"></span><code class="sig-name descname"><span class="pre">--asgard_waiting_window</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_waiting_window&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_waiting_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>The waiting window</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_max_entries">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-max-entries"></span><code class="sig-name descname"><span class="pre">--asgard_max_entries</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_max_entries&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_max_entries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_targets_string">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-targets-string"></span><code class="sig-name descname"><span class="pre">--asgard_targets_string</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_targets_string&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_targets_string" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_pm_cpu">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-pm-cpu"></span><code class="sig-name descname"><span class="pre">--asgard_pm_cpu</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_pm_cpu&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_pm_cpu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_cluster_id">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-cluster-id"></span><code class="sig-name descname"><span class="pre">--asgard_cluster_id</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_cluster_id&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_cluster_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_ping_pong_rounds">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-ping-pong-rounds"></span><code class="sig-name descname"><span class="pre">--asgard_ping_pong_rounds</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_ping_pong_rounds&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_ping_pong_rounds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_consensus_requests_per_second">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-consensus-requests-per-second"></span><code class="sig-name descname"><span class="pre">--asgard_consensus_requests_per_second</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_consensus_requests_per_second&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_consensus_requests_per_second" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_consensus_request_rounds">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-consensus-request-rounds"></span><code class="sig-name descname"><span class="pre">--asgard_consensus_request_rounds</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_consensus_request_rounds&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_consensus_request_rounds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_leader_net_queue_id">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-leader-net-queue-id"></span><code class="sig-name descname"><span class="pre">--asgard_leader_net_queue_id</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_leader_net_queue_id&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_leader_net_queue_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_echo_net_queue_id">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-echo-net-queue-id"></span><code class="sig-name descname"><span class="pre">--asgard_echo_net_queue_id</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_echo_net_queue_id&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_echo_net_queue_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_default_net_queue_id">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-default-net-queue-id"></span><code class="sig-name descname"><span class="pre">--asgard_default_net_queue_id</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_default_net_queue_id&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_default_net_queue_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard_multicast_delay">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-asgard-multicast-delay"></span><code class="sig-name descname"><span class="pre">--asgard_multicast_delay</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;asgard_multicast_delay&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-asgard_multicast_delay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-benchmark-configuration-num_of_targets">
+<span id="cmdoption-asgard-cli-generate-benchmark-configuration-num-of-targets"></span><code class="sig-name descname"><span class="pre">--num_of_targets</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;num_of_targets&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-benchmark-configuration-num_of_targets" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Required</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">Options</dt>
+<dd class="field-odd"><p>3 | 5 | 7 | 9</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="asgard-cli-generate-test-data">
+<h3>generate-test-data<a class="headerlink" href="#asgard-cli-generate-test-data" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>asgard-cli generate-test-data <span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-test-data-entries">
+<code class="sig-name descname"><span class="pre">--entries</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;entries&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-test-data-entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of Entries to generate</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-test-data-min">
+<code class="sig-name descname"><span class="pre">--min</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;min&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-test-data-min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum value for each randomly generated entry</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-test-data-max">
+<code class="sig-name descname"><span class="pre">--max</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;max&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-test-data-max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum value for each randomly generated entry</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-generate-test-data-output">
+<code class="sig-name descname"><span class="pre">--output</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-generate-test-data-output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output file path. Output will be a json file.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="asgard-cli-verify-test-data">
+<h3>verify-test-data<a class="headerlink" href="#asgard-cli-verify-test-data" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>asgard-cli verify-test-data <span class="o">[</span>OPTIONS<span class="o">]</span>
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-verify-test-data-min">
+<code class="sig-name descname"><span class="pre">--min</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;min&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-verify-test-data-min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum valid value for each entry</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-verify-test-data-max">
+<code class="sig-name descname"><span class="pre">--max</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;max&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-verify-test-data-max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum valid value for each entry</p>
+</dd></dl>
+
+<dl class="std option">
+<dt id="cmdoption-asgard-cli-verify-test-data-input">
+<code class="sig-name descname"><span class="pre">--input</span></code><code class="sig-prename descclassname"> <span class="pre">&lt;input&gt;</span></code><a class="headerlink" href="#cmdoption-asgard-cli-verify-test-data-input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Json file to validate</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="modules.html" class="btn btn-neutral float-right" title="Developer Docs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to asgard-cli’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Vincent Riesop, Patrick Jahnke.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -269,7 +269,7 @@ def output_stats(config):
               help="If set uses asgard for redis")
 @click.option('--dumplogs', '-d', default=False, show_default=True, is_flag=True,
               help="persists asgard redis logs to disk")
-def evalRedis(input, config_path, isleader, requests, prepare, clean, stats, asgard, dumplogs):
+def eval_asgard_with_redis(input, config_path, isleader, requests, prepare, clean, stats, asgard, dumplogs):
 
     if not os.path.exists(config_path):
         print("Config File {0} does not exist. Generate it via generate-config command".format(config_path))

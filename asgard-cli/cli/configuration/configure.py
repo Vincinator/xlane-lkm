@@ -6,17 +6,17 @@ import os.path
 
 
 @click.command()
-@click.option('--config_path', prompt=True, default='example.asgard-bench.ini')
-@click.option("--redis_base", default='../redis-bin')
-@click.option('--redis_leader_port', default='6379')
-@click.option('--redis_port', default='6379')
-@click.option('--redis_leader_ip', prompt=True, default='10.68.235.140')
-@click.option('--redis_ip', default='127.0.0.1')
-@click.option('--asgard_iface', prompt=True, default='4')
-@click.option('--asgard_ifacename', prompt=True, default='enp130s0f0')
-@click.option('--asgard_ping_pong_instance_id', default='2')
-@click.option('--asgard_hbi', default='2400000')
-@click.option('--asgard_waiting_window', default='5000')
+@click.option('--config_path', prompt=True, default='example.asgard-bench.ini', help="Path to the config file to read from")
+@click.option("--redis_base", default='../redis-bin', help="Path to redis binaries")
+@click.option('--redis_leader_port', default='6379', help="Port for the redis leader")
+@click.option('--redis_port', default='6379', help="Port for redis")
+@click.option('--redis_leader_ip', prompt=True, default='10.68.235.140', help="The selected redis leader must be configured manually via this parameter")
+@click.option('--redis_ip', default='127.0.0.1', help="The local redis instance to connect to via this cli")
+@click.option('--asgard_iface', prompt=True, default='4', help="The ifindex of the selected network interface")
+@click.option('--asgard_ifacename', prompt=True, default='enp130s0f0', help="The name of the asgard enabled network interface to use")
+@click.option('--asgard_ping_pong_instance_id', default='2', help="Instance ID of the ping pong protocol. Used for latency tests")
+@click.option('--asgard_hbi', default='2400000', help="The heartbeat interval in ticks. Make sure to setup your system accordingly, otherwise you can not rely on the clock source.")
+@click.option('--asgard_waiting_window', default='5000', help="The waiting window")
 @click.option('--asgard_max_entries', default='160')
 @click.option('--asgard_targets_string', default='(10.68.235.140,24:8a:07:29:25:ba,1,1),(10.68.235.142,24:8a:07:29:25:92,1,2),(10.68.235.150,24:8a:07:29:25:82,1,3')
 @click.option('--asgard_pm_cpu', default='52')
@@ -28,13 +28,11 @@ import os.path
 @click.option('--asgard_echo_net_queue_id',  default='51')
 @click.option('--asgard_default_net_queue_id',  default='55')
 @click.option('--asgard_multicast_delay', prompt=True, default='1000')
-
 @click.option('--num_of_targets', prompt=True, type=click.Choice(["3", "5", "7", "9"]), required=True)
-
-def generateConfig(config_path, redis_base, redis_leader_port, redis_port, redis_leader_ip,
-                   redis_ip, asgard_iface, asgard_ifacename, asgard_ping_pong_instance_id, asgard_hbi, asgard_waiting_window, asgard_max_entries,
-                   asgard_targets_string, asgard_pm_cpu, asgard_cluster_id, asgard_ping_pong_rounds, asgard_consensus_requests_per_second, asgard_consensus_request_rounds,
-                   asgard_leader_net_queue_id, asgard_echo_net_queue_id, asgard_default_net_queue_id, asgard_multicast_delay, num_of_targets):
+def generate_benchmark_configuration(config_path, redis_base, redis_leader_port, redis_port, redis_leader_ip,
+                                     redis_ip, asgard_iface, asgard_ifacename, asgard_ping_pong_instance_id, asgard_hbi, asgard_waiting_window, asgard_max_entries,
+                                     asgard_targets_string, asgard_pm_cpu, asgard_cluster_id, asgard_ping_pong_rounds, asgard_consensus_requests_per_second, asgard_consensus_request_rounds,
+                                     asgard_leader_net_queue_id, asgard_echo_net_queue_id, asgard_default_net_queue_id, asgard_multicast_delay, num_of_targets):
 
     config = configparser.ConfigParser()
     config['redis'] = {}
