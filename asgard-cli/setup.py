@@ -119,7 +119,7 @@ setup(
     # executes the function `main` from this package when invoked:
     entry_points={  # Optional
         'console_scripts': [
-            'acli=cli:main',
+            'acli=cli:entry_point',
         ],
     },
 
