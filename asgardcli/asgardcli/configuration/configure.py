@@ -14,6 +14,7 @@ import os.path
 @click.option('--redis_ip', default='127.0.0.1', help="The local redis instance to connect to via this cli")
 @click.option('--asgard_iface', prompt=True, default='4', help="The ifindex of the selected network interface")
 @click.option('--asgard_ifacename', prompt=True, default='enp130s0f0', help="The name of the asgard enabled network interface to use")
+@click.option('--asgard_consensus_instance_id', default='1', help="Instance ID of the consensus protocol. Used for consensus and failure detection tests")
 @click.option('--asgard_ping_pong_instance_id', default='2', help="Instance ID of the ping pong protocol. Used for latency tests")
 @click.option('--asgard_hbi', default='2400000', help="The heartbeat interval in ticks. Make sure to setup your system accordingly, otherwise you can not rely on the clock source.")
 @click.option('--asgard_waiting_window', default='5000', help="The waiting window")
@@ -30,7 +31,7 @@ import os.path
 @click.option('--asgard_multicast_delay', prompt=True, default='1000')
 @click.option('--num_of_targets', prompt=True, type=click.Choice(["3", "5", "7", "9"]), required=True)
 def generate_benchmark_configuration(config_path, redis_base, redis_leader_port, redis_port, redis_leader_ip,
-                                     redis_ip, asgard_iface, asgard_ifacename, asgard_ping_pong_instance_id, asgard_hbi, asgard_waiting_window, asgard_max_entries,
+                                     redis_ip, asgard_iface, asgard_ifacename, asgard_consensus_instance_id, asgard_ping_pong_instance_id, asgard_hbi, asgard_waiting_window, asgard_max_entries,
                                      asgard_targets_string, asgard_pm_cpu, asgard_cluster_id, asgard_ping_pong_rounds, asgard_consensus_requests_per_second, asgard_consensus_request_rounds,
                                      asgard_leader_net_queue_id, asgard_echo_net_queue_id, asgard_default_net_queue_id, asgard_multicast_delay, num_of_targets):
 
@@ -69,14 +70,17 @@ def generate_benchmark_configuration(config_path, redis_base, redis_leader_port,
         print("BUG: Please choose between 3,5,7 or 9 target nodes..")
         return
 
-
     config['asgard']['consensus_requests_per_second'] = asgard_consensus_requests_per_second
     config['asgard']['consensus_request_rounds'] = asgard_consensus_request_rounds
     config['asgard']['consensus_eval_seconds'] = "2"
 
+    config['asgard']['ping_pong_instance_id'] = asgard_ping_pong_instance_id
+    config['asgard']['consensus_instance_id'] = asgard_consensus_instance_id
+
     config['asgard']['base_path'] = os.path.join(os.path.abspath('/proc/asguard'), asgard_iface)
-    config['asgard']['proto_instance_base_path'] =  os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances")
-    config['asgard']['proto_ping_pong_instance_path'] =  os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_ping_pong_instance_id )
+    config['asgard']['proto_instance_base_path'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances")
+    config['asgard']['proto_ping_pong_instance_path'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_ping_pong_instance_id )
+    config['asgard']['proto_consensus_instance_path'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_consensus_instance_id )
 
     config['asgard']['leader_net_queue_id'] = asgard_leader_net_queue_id
     config['asgard']['echo_net_queue_id'] = asgard_echo_net_queue_id
@@ -101,15 +105,19 @@ def generate_benchmark_configuration(config_path, redis_base, redis_leader_port,
     config['evalLogs']['asg_vanilla_throughput'] = os.path.join("/home/dsp/logs/")
     config['evalLogs']['asg_vanilla_leader_election'] = os.path.join("/home/dsp/logs/")
 
-    config['asgard']['ctrl_echo_log2'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ctrl_echo_log2")
-    config['asgard']['ctrl_echo_log'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ctrl_echo_log")
-    config['asgard']['log_echo_log2'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "log_echo_log2")
-    config['asgard']['log_echo_log'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "log_echo_log")
+   # TODO:
+    config['asgard']['proto_echo_instance_path'] = ''
 
-    config['asgard']['echo_pupu'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ping_unicast_pong_unicast")
-    config['asgard']['echo_pmpm'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ping_multicast_pong_multicast")
-    config['asgard']['echo_pupm'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ping_unicast_pong_multicast")
-    config['asgard']['echo_pmpu'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ping_multicast_pong_unicast")
+
+    #config['asgard']['ctrl_echo_log2'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ctrl_echo_log2")
+    #config['asgard']['ctrl_echo_log'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ctrl_echo_log")
+    #config['asgard']['log_echo_log2'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "log_echo_log2")
+    #config['asgard']['log_echo_log'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "log_echo_log")
+
+    #config['asgard']['echo_pupu'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ping_unicast_pong_unicast")
+    #config['asgard']['echo_pmpm'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ping_multicast_pong_multicast")
+    #config['asgard']['echo_pupm'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ping_unicast_pong_multicast")
+    #config['asgard']['echo_pmpu'] = os.path.join(os.path.abspath(config['asgard']['proto_echo_instance_path']), "ping_multicast_pong_unicast")
     config['asgard']['ping_pong_rounds'] = asgard_ping_pong_rounds
 
 
