@@ -1,9 +1,0 @@
-README.md
-pyproject.toml
-setup.py
-asgardcli.egg-info/PKG-INFO
-asgardcli.egg-info/SOURCES.txt
-asgardcli.egg-info/dependency_links.txt
-asgardcli.egg-info/entry_points.txt
-asgardcli.egg-info/requires.txt
-asgardcli.egg-info/top_level.txt
