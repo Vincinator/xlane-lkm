@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 import click
 
-from cli.configuration.configure import generate_benchmark_configuration
-from cli.evaluation.asgard import eval_kernel_module_no_userspace
-from cli.evaluation.evalRedis import eval_asgard_with_redis
-from cli.generation.generate import generate_test_data
-from cli.verification.verify import verify_test_data
+from asgardcli.configuration.configure import generate_benchmark_configuration
+from asgardcli.evaluation.asgard import eval_kernel_module_no_userspace
+from asgardcli.evaluation.evalRedis import eval_asgard_with_redis
+from asgardcli.generation.generate import generate_test_data
+from asgardcli.verification.verify import verify_test_data
 
 
 @click.group()

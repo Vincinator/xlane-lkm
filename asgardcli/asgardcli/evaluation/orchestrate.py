@@ -8,15 +8,12 @@
 
 import datetime
 import time
-import redis
 import click
-import binascii
-import json
 import os.path
 
-from .pyasgard.pyasgard import downloadLogsFromTestNode, cleanLogsOnNode
-from ..utils import prepareHost
-from multiprocessing import Process, Manager, Pool
+from asgardcli.evaluation.pyasgard import downloadLogsFromTestNode, cleanLogsOnNode
+from asgardcli.utils import prepareHost
+from multiprocessing import Pool
 
 
 @click.command()

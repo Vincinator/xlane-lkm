@@ -11,7 +11,7 @@ known_hosts
 build/
 
 dist/
-
+asgard-cli-venv/
 CMakeCache.txt
 CMakeFiles/
 venv/

@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../asgard-cli'))
+sys.path.insert(0, os.path.abspath('../../asgardcli'))
 
 
 # -- Project information -----------------------------------------------------

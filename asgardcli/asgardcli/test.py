@@ -2,7 +2,7 @@ import time
 
 import paramiko
 
-from cli.utils import prepareHost
+from asgardcli.utils import prepareHost
 
 prepareHost('10.68.235.140', 'c')
 prepareHost('10.68.235.142', 'c')

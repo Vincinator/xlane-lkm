@@ -5,7 +5,8 @@ echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   echo "uninstalling asgard-cli site-packages"
-  pip freeze | xargs pip uninstall -y
+  #pip freeze | xargs pip uninstall -y
+  pip uninstall asgardcli
   echo #new line
   echo "installing asgard-cli"
   python3 -m pip install --no-cache-dir -I asgardcli-0.1.0-py3-none-any.whl   # todo: pass name of whl

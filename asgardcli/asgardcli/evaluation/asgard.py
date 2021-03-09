@@ -11,7 +11,7 @@ import os
 import configparser
 import os.path
 from os import path
-import cli.evaluation.pyasgard.pyasgard as pyasg
+from asgardcli.evaluation import pyasgard as pyasg
 
 
 def doPingPong(config):

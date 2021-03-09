@@ -7,8 +7,6 @@
 
 import os.path
 
-from cli.evaluation.evalRedis import *
-from cli.evaluation.pyasgard.pyasgard import *
 
 @click.command()
 @click.option('--input', default='generated_data.json', show_default=True,
