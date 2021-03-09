@@ -10,6 +10,8 @@ node.ini
 known_hosts
 build/
 
+dist/
+
 CMakeCache.txt
 CMakeFiles/
 venv/
