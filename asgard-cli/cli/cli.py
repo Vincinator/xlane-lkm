@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import click
-import gen as gen
 
 from cli.configuration.configure import generate_benchmark_configuration
 from cli.evaluation.asgard import eval_kernel_module_no_userspace
