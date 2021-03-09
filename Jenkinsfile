@@ -10,7 +10,7 @@ pipeline {
         ASGARD_KERNEL_SRC = "${env.WORKSPACE}/../${project_folder}_${kernel_project_name}_${tier}_${kernel_version}"
         KERNEL_SRC_EXIST  = fileExists "../${project_folder}_${kernel_project_name}_${tier}_${kernel_version}"
         WEBHOOK           = credentials('Teams-WebHook-DevOps-Vincent')
-        VENV_EXISTS       = fileExists 'asgard-cli/asgard-cli-venv'
+        VENV_EXISTS       = fileExists 'asgardcli/asgard-cli-venv'
 
         PUBLISH = 'true'
         BUILD_SUCCESS_LKM = 'false'
@@ -40,8 +40,8 @@ pipeline {
     stage('Prepare Python Build VEnv'){
         when { expression { VENV_EXISTS == 'false' } }
         steps {
-            sh '''python3 -m venv asgard-cli/asgard-cli-venv &&
-            . asgard-cli/asgard-cli-venv/bin/activate &&
+            sh '''python3 -m venv asgardcli/asgard-cli-venv &&
+            . asgardcli/asgard-cli-venv/bin/activate &&
             python3 -m pip install --upgrade build'''
         }
     }
@@ -55,9 +55,9 @@ pipeline {
 
             echo "$ASGARD_KERNEL_SRC"
 
-            sh 'cd asgard-cli && . asgard-cli-venv/bin/activate && python3 setup.py clean --all && python3 -m build'
+            sh 'cd asgardcli && . asgard-cli-venv/bin/activate && python3 setup.py clean --all && python3 -m build'
             sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
-            sh 'cd bin && mv ../asgard-cli/dist/* . && ls && tar -czvf asgard-lkm.tar.gz *.ko *.whl *.tar.gz ../acli-installer.sh'
+            sh 'cd bin && mv ../asgardcli/dist/* . && ls && tar -czvf asgard-lkm.tar.gz *.ko *.whl *.tar.gz ../acli-installer.sh'
             archiveArtifacts 'bin/asgard-lkm.tar.gz'
             office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
 
