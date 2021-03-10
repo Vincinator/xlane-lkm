@@ -67,10 +67,10 @@ def configure_kernel_module(config_path):
 @click.option('--asgard_default_net_queue_id',  default='55')
 @click.option('--asgard_multicast_delay', prompt=True, default='1000')
 @click.option('--num_of_targets', prompt=True, type=click.Choice(["3", "5", "7", "9"]), required=True)
-def generate_benchmark_configuration(config_path, redis_base, redis_leader_port, redis_port, redis_leader_ip,
-                                     redis_ip, asgard_iface, asgard_ifacename, asgard_consensus_instance_id, asgard_ping_pong_instance_id, asgard_hbi, asgard_waiting_window, asgard_max_entries,
-                                     asgard_targets_string, asgard_pm_cpu, asgard_cluster_id, asgard_ping_pong_rounds, asgard_consensus_requests_per_second, asgard_consensus_request_rounds,
-                                     asgard_leader_net_queue_id, asgard_echo_net_queue_id, asgard_default_net_queue_id, asgard_multicast_delay, num_of_targets):
+def generate_bench_config(config_path, redis_base, redis_leader_port, redis_port, redis_leader_ip,
+                          redis_ip, asgard_iface, asgard_ifacename, asgard_consensus_instance_id, asgard_ping_pong_instance_id, asgard_hbi, asgard_waiting_window, asgard_max_entries,
+                          asgard_targets_string, asgard_pm_cpu, asgard_cluster_id, asgard_ping_pong_rounds, asgard_consensus_requests_per_second, asgard_consensus_request_rounds,
+                          asgard_leader_net_queue_id, asgard_echo_net_queue_id, asgard_default_net_queue_id, asgard_multicast_delay, num_of_targets):
 
     config = configparser.ConfigParser()
     config['redis'] = {}
