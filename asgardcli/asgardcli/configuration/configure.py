@@ -10,7 +10,8 @@ from asgardcli.utils import load_config
 
 @click.command()
 @click.option('--config_path', prompt=True, default='example.asgard-bench.ini', help="Path to the config file to read from")
-def configure_kernel_module(config_path):
+@click.option('--module_path', prompt=True, default='', help="Path to the asgard kernel module. Default is to read from the config file")
+def configure_kernel_module(config_path, module_path):
 
     config = load_config(config_path)
     if config is None:
@@ -23,7 +24,9 @@ def configure_kernel_module(config_path):
         return
 
     # load kernel module
-    loadAsgardModule(config)
+    if module_path == '':
+        module_path = config['asgard']['module_path']
+    loadAsgardModule(config, module_path)
 
     # configure system
     configureSystem(config)

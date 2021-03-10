@@ -67,13 +67,12 @@ def singleExecute(cmd):
     return output.rstrip().lstrip().decode("utf-8")
 
 
-def loadAsgardModule(config):
-    unloadAsgardModule()
-    singleExecute("sudo insmod {0} ifindex={1}".format(config['asgard']['module_path'], config['asgard']['iface']))
+def loadAsgardModule(config, module_path):
+    singleExecute(f"sudo insmod {module_path} ifindex={config['asgard']['iface']}")
 
 
 def unloadAsgardModule():
-    singleExecute("sudo rmmod asguard")
+    singleExecute("sudo rmmod asgard")
 
 
 def cleanLogsOnNode(node_name, log_name):
