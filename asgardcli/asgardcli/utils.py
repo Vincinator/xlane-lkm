@@ -1,6 +1,19 @@
 import paramiko
 import time
 
+import os
+import configparser
+import os.path
+
+
+def load_config(config_path):
+    config = None
+    if os.path.exists(config_path):
+        config = configparser.ConfigParser()
+        config.read(config_path)
+    return config
+
+
 def prepareHost(ip, cmd, flags):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())

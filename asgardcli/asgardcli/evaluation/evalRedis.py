@@ -14,7 +14,7 @@ import os.path
 from ..verification.verify import _verify_data
 import subprocess
 import configparser
-import asgardcli.evaluation.pyasgard as pyasg
+import asgardcli.pyasgard as pyasg
 
 
 def read_from_file(filepath):

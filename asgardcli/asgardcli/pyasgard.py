@@ -45,11 +45,6 @@ def doPingPong(config):
         sleep(0.05)
 
 
-def enableAsgardTimestamps(config):
-    singlewrite(config['asgard']['ctrl_user_a'], str(1))
-    singlewrite(config['asgard']['ctrl_user_b'], str(1))
-    singlewrite(config['asgard']['ctrl_user_c'], str(1))
-    singlewrite(config['asgard']['ctrl_user_d'], str(1))
 
 def enablePingPong(config):
     if not os.path.isdir(os.path.join(config['asgard']['base_path'], "proto_instances", "2")):
@@ -176,13 +171,19 @@ def prepareAsgardProtocol(config, protocol_id, instance_id):
 
 
 def prepareConsensus(config):
-    prepareAsgardProtocol(config, )
+    # TODO: Check protocol id for consensus
+    prepareAsgardProtocol(config, 2, config['asgard']['consensus_instance_id'])
     singlewrite(config['asgard']['ctrl_consensus_le'], "0")
     singlewrite(config['asgard']['ctrl_consensus_le'], "2")
-
     singlewrite(config['asgard']['ctrl_consensus_le'], "1")
-
     singlewrite(config['asgard']['ctrl_max_entries'], f"2000000,2500000,70000000,90000000,{config['asgard']['val_max_entries']}")
+
+
+def preparePingPong(config):
+    # TODO: Check protocol id for consensus
+    prepareAsgardProtocol(config, 1, config['asgard']['ping_pong_instance_id'])
+
+
 
 
 def prepareAsgardPacemaker(config):

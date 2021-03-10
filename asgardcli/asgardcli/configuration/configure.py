@@ -1,8 +1,45 @@
 import configparser
 import json
-
 import click
 import os.path
+
+from asgardcli.pyasgard import loadAsgardModule, prepareAsgardPacemaker, configureSystem, prepareConsensus, \
+    preparePingPong
+from asgardcli.utils import load_config
+
+
+@click.command()
+@click.option('--config_path', prompt=True, default='example.asgard-bench.ini', help="Path to the config file to read from")
+def configure_kernel_module(config_path):
+
+    config = load_config(config_path)
+    if config is None:
+        print(f"Config File {config_path} does not exist. Generate it via generate-config command")
+        return
+
+    # check if kernel module is already loaded
+    if os.path.exists(config['asgard']['base_path']):
+        print("asgard kenrel module is already loaded. Unload it first to start with a clean configuration")
+        return
+
+    # load kernel module
+    loadAsgardModule(config)
+
+    # configure system
+    configureSystem(config)
+
+    # configure pacemaker
+    prepareAsgardPacemaker(config)
+
+    # configure logging
+    # TODO
+
+    # configure protocol instances
+    prepareConsensus(config)
+    preparePingPong(config)
+
+
+
 
 
 @click.command()

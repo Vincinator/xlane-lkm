@@ -11,7 +11,7 @@ import os
 import configparser
 import os.path
 from os import path
-from asgardcli.evaluation import pyasgard as pyasg
+from asgardcli import pyasgard as pyasg
 
 
 def doPingPong(config):
@@ -30,29 +30,6 @@ def setup_logs(cfg, log_dir):
 def update_ifindex(cfg, ifindex):
     if ifindex != -1:
         cfg['asgard']['iface'] = f"{ifindex}"
-
-
-def load_module(cfg):
-    ifindex = cfg['asgard']['iface']
-    directory = '.'
-    asgard_module_name = ''
-    for dirpath, dirnames, files in os.walk(directory):
-        for filename in fnmatch.filter(files, 'asgard-*.ko'):
-            asgard_module_name = os.path.join(dirpath, filename)
-            break
-
-    if asgard_module_name == '':
-        print("asgard lkm not found\n")
-        return
-
-    bashCommand = f"sudo insmod {asgard_module_name} ifindex={ifindex}"
-    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-    output, error = process.communicate()
-
-def unload_module(cfg):
-    bashCommand = f"sudo rmmod asgard"
-    process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-    output, error = process.communicate()
 
 
 def start_proto(cfg, proto):
@@ -245,12 +222,7 @@ def eval_kernel_module_no_userspace(config_path, ifindex, log_dir, actions, prot
     #         return
 
 
-def load_config(config_path):
-    config = None
-    if os.path.exists(config_path):
-        config = configparser.ConfigParser()
-        config.read(config_path)
-    return config
+
 
 
 def leaderelectionAsg(config):

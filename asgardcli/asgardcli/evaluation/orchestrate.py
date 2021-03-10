@@ -11,7 +11,7 @@ import time
 import click
 import os.path
 
-from asgardcli.evaluation.pyasgard import downloadLogsFromTestNode, cleanLogsOnNode
+from asgardcli.pyasgard import downloadLogsFromTestNode, cleanLogsOnNode
 from asgardcli.utils import prepareHost
 from multiprocessing import Pool
 
