@@ -71,7 +71,7 @@ def loadAsgardModule(config, module_path):
     singleExecute(f"sudo insmod {module_path} ifindex={config['asgard']['iface']}")
 
 
-def unloadAsgardModule():
+def unloadAsgardModule(config):
     singleExecute("sudo rmmod asgard")
 
 

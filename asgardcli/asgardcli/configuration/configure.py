@@ -4,8 +4,27 @@ import click
 import os.path
 
 from asgardcli.pyasgard import loadAsgardModule, prepareAsgardPacemaker, configureSystem, prepareConsensus, \
-    preparePingPong
+    preparePingPong, unloadAsgardModule
 from asgardcli.utils import load_config
+
+
+
+
+@click.command()
+@click.option('--config_path', prompt=True, default='example.asgard-bench.ini', help="Path to the config file to read from")
+def unload_kernel_module(config_path):
+
+    config = load_config(config_path)
+    if config is None:
+        print(f"Config File {config_path} does not exist. Generate it via generate-config command")
+        return
+
+    # check if kernel module is loaded
+    if not os.path.exists(config['asgard']['base_path']):
+        print("asgard kenrel module is not loaded.")
+        return
+
+    unloadAsgardModule(config)
 
 
 @click.command()
