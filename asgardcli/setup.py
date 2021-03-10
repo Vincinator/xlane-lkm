@@ -32,6 +32,7 @@ setup(
         'click',
         'redis',
         'scipy',
+        'paramiko'
     ],
 
     entry_points={  # Optional
