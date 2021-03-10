@@ -134,15 +134,15 @@ def generate_benchmark_configuration(config_path, redis_base, redis_leader_port,
 
     config['asgard']['ctrl_ts'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "ts", "ctrl")
 
-    config['asgard']['ctrl_consensus_le'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_proto_instance, "ctrl_consensus_le")
-    config['asgard']['ctrl_consensus_throughput'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_proto_instance, "ctrl_consensus_throughput")
-    config['asgard']['ctrl_consensus_eval'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_proto_instance, "consensus_eval_ctrl")
+    config['asgard']['ctrl_consensus_le'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_consensus_instance_id, "ctrl_consensus_le")
+    config['asgard']['ctrl_consensus_throughput'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_consensus_instance_id, "ctrl_consensus_throughput")
+    config['asgard']['ctrl_consensus_eval'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_consensus_instance_id, "consensus_eval_ctrl")
 
 
-    config['asgard']['ctrl_consensus_eval'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_proto_instance, "consensus_eval_ctrl")
+    config['asgard']['ctrl_consensus_eval'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_consensus_instance_id, "consensus_eval_ctrl")
 
 
-    config['asgard']['ctrl_proto_instance_uuid'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_proto_instance, "uuid")
+    config['asgard']['ctrl_proto_instance_uuid'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_consensus_instance_id, "uuid")
 
     config['asgard']['ctrl_hbi'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "pacemaker", "hbi")
     config['asgard']['val_hbi'] = asgard_hbi
@@ -150,7 +150,7 @@ def generate_benchmark_configuration(config_path, redis_base, redis_leader_port,
     config['asgard']['ctrl_waiting_window'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "pacemaker", "waiting_window")
     config['asgard']['val_waiting_window'] = asgard_waiting_window
 
-    config['asgard']['ctrl_max_entries'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_proto_instance, "le_config")
+    config['asgard']['ctrl_max_entries'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_consensus_instance_id, "le_config")
     config['asgard']['val_max_entries'] = asgard_max_entries
 
     config['asgard']['targets_string'] = asgard_targets_string
