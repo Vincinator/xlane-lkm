@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 read -p "WARNING: This script uses a virtual environment dedicated for asgard evaluation (../eval-venv). Continue? [y/N]" -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
