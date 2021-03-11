@@ -158,7 +158,7 @@ pipeline {
 
     stage ('Starting Deployment job') {
       when {
-            allOf {
+            anyOf {
               expression { BUILD_SUCCESS_DPDK == 'true' }
               expression { BUILD_SUCCESS_PLAIN == 'true' }
               expression { BUILD_SUCCESS_LKM == 'true' }
