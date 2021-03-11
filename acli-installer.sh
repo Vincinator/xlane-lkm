@@ -4,17 +4,19 @@ read -p "WARNING: This script uses a virtual environment dedicated for asgard ev
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-
+  INVENV=$(python3 -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "0")')
+  echo $INVENV
   # check if we run in venv
-  if [[ "$VIRTUAL_ENV" == "" ]]
+  if [[ $INVENV == 0 ]]
   then
+    echo "activating "
     # Check if venv exists
     if [ ! -d "../eval-venv" ]; then
       python3 -m venv ../eval-venv
     fi
 
     #activate eval venv
-    . asgardcli/asgard-cli-venv/bin/activate
+    source asgardcli/asgard-cli-venv/bin/activate
   fi
 
 
