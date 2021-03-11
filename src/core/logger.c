@@ -89,7 +89,7 @@ int init_logger(struct asgard_logger *slog, uint16_t instance_id, int ifindex, c
     strncpy(slog->name, name, MAX_LOGGER_NAME);
 
     // freed by clear_logger
-    slog->events =AMALLOC(LOGGER_EVENT_LIMIT * sizeof(struct logger_event), GFP_KERNEL);
+    slog->events = AMALLOC(LOGGER_EVENT_LIMIT * sizeof(struct logger_event), GFP_KERNEL);
 
     if (!slog->events) {
         err = -ENOMEM;

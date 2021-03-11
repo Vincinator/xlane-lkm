@@ -683,7 +683,7 @@ int consensus_start(struct proto_instance *ins) {
 
     return 0;
 
-    error:
+error:
     asgard_error(" %s failed\n", __func__);
     return err;
 }
@@ -814,11 +814,22 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
     int i;
 
+    if(!priv){
+        asgard_error("Proto_data is NULL! Could not initialize consensus protocol\n");
+        return -EINVAL;
+    }
+
+    priv->sm_log.entries = AMALLOC(MAX_CONSENSUS_LOG * sizeof(struct sm_log_entry *), GFP_KERNEL);
+
+    if (!priv->sm_log.entries){
+        asgard_dbg("Failed to allocate memory for log entries\n");
+        return -1;
+    }
+
     priv->voted = -1;
     priv->term = 0;
     priv->state = LE_READY;
     priv->verbosity = verbosity;
-
     priv->sm_log.last_idx = -1;
     priv->sm_log.commit_idx = -1;
     priv->sm_log.stable_idx = -1;
@@ -828,12 +839,6 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
     priv->sm_log.lock = 0;
     priv->sdev->consensus_priv = priv; /* reference for pacemaker */
     priv->sdev->cur_leader_lid = -1;
-    priv->sm_log.entries = AMALLOC(MAX_CONSENSUS_LOG * sizeof(struct sm_log_entry *), GFP_KERNEL);
-
-    if (!priv->sm_log.entries){
-        asgard_dbg("Failed to allocate memory for log entries\n");
-        return -1;
-    }
 
     /* Pre Allocate Buffer Entries */
     for (i = 0; i < MAX_CONSENSUS_LOG; i++) {
@@ -963,7 +968,7 @@ struct proto_instance *get_consensus_proto_instance(struct asgard_device *sdev)
 
     return ins;
 
-    error:
+error:
     asgard_dbg("Error in %s", __func__);
     return NULL;
 }

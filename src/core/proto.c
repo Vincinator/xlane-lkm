@@ -52,7 +52,8 @@ int register_protocol_instance(struct asgard_device *sdev, int instance_id, int 
 
     sdev->num_of_proto_instances++;
 
-    sdev->protos[idx]->ctrl_ops.init(sdev->protos[idx], verbosity);
+    if(sdev->protos[idx]->ctrl_ops.init(sdev->protos[idx], verbosity))
+        goto error;
 
     asgard_dbg("Registered  Protocol instance %d with protocol %s\n", instance_id, asgard_get_protocol_name(protocol_id));
 
