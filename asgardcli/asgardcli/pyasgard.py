@@ -170,6 +170,7 @@ def prepareAsgardProtocol(config, protocol_id, instance_id):
 
 
 def prepareConsensus(config):
+    print("preparing consensus protocol for asgard")
     # TODO: Check protocol id for consensus
     prepareAsgardProtocol(config, 2, config['asgard']['consensus_instance_id'])
     singlewrite(config['asgard']['ctrl_consensus_le'], "0")
@@ -179,13 +180,12 @@ def prepareConsensus(config):
 
 
 def preparePingPong(config):
-    # TODO: Check protocol id for consensus
-    prepareAsgardProtocol(config, 1, config['asgard']['ping_pong_instance_id'])
-
-
+    print("preparing ping pong protocol for asgard")
+    prepareAsgardProtocol(config, 3, config['asgard']['ping_pong_instance_id'])
 
 
 def prepareAsgardPacemaker(config):
+    print("preparing pacemaker for asgard")
     log_id = str(uuid.uuid4())
 
     singlewrite(config['asgard']['ctrl_pacemaker_path'], "0")
@@ -195,7 +195,7 @@ def prepareAsgardPacemaker(config):
     singlewrite(config['asgard']['ctrl_hbi'], config['asgard']['val_hbi'])
     singlewrite(config['asgard']['ctrl_waiting_window'], config['asgard']['val_waiting_window'])
 
-    # singlewrite(config['asgard']['ctrl_proto_instance_uuid'], log_id)
+    singlewrite(config['asgard']['ctrl_proto_instance_uuid'], log_id)
 
     # clean protocol instances
     #singlewrite(config['asgard']['ctrl_proto_instances'], "-1")
@@ -216,6 +216,8 @@ def prepareAsgardPacemaker(config):
 
 
 def prepareAsgardMc(config):
+    print("preparing multicast for asgard")
+
     singlewrite(config['asgard']['ctrl_multicast_enable'], "1")
     singlewrite(config['asgard']['ctrl_multicast_enable'], config['asgard']['val_multicast_delay'])
 
