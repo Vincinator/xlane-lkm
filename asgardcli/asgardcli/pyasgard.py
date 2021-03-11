@@ -13,15 +13,25 @@ class ConfigurationError(Exception):
         self.errors = error
         self.cmd = cmd
 
+
+
+
 def singlewrite(path, value):
     if not os.path.isfile(path):
         return
+
     with open(path, "w") as file:
         try:
             file.write(value)
         except:
             print(f"write exception for {value} > {path}")
             pass
+
+
+def singlewrite_timeout(path, value, sec_to_wait):
+    singlewrite(path, value)
+    sleep(sec_to_wait)
+
 
 def doPingPong(config):
 
@@ -166,7 +176,7 @@ def configureSystem(config):
 
 
 def prepareAsgardProtocol(config, protocol_id, instance_id):
-    singlewrite(config['asgard']['ctrl_proto_instances'], f"{instance_id},{protocol_id}")
+    singlewrite_timeout(config['asgard']['ctrl_proto_instances'], f"{instance_id},{protocol_id}", 0.5)
 
 
 def prepareConsensus(config):
@@ -191,7 +201,7 @@ def prepareAsgardPacemaker(config):
     singlewrite(config['asgard']['ctrl_pacemaker_path'], "0")
     singlewrite(config['asgard']['ctrl_debug_path'], "5")
     singlewrite(config['asgard']['ctrl_pacemaker_cluster_id'], config['asgard']['cluster_id'])
-    singlewrite(config['asgard']['ctrl_pacemaker_cpu'], config['asgard']['pm_cpu'])
+    singlewrite_timeout(config['asgard']['ctrl_pacemaker_cpu'], config['asgard']['pm_cpu'], 0.5)
     singlewrite(config['asgard']['ctrl_hbi'], config['asgard']['val_hbi'])
     singlewrite(config['asgard']['ctrl_waiting_window'], config['asgard']['val_waiting_window'])
 
