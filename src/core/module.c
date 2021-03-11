@@ -531,7 +531,8 @@ int asgard_core_remove_nic(int asgard_id)
     remove_proc_entry(name_buf, NULL);
 
     /* Clean Cluster Membership Synbuf*/
-    synbuf_chardev_exit(score->sdevices[asgard_id]->synbuf_clustermem);
+    if(score->sdevices[asgard_id] && score->sdevices[asgard_id]->synbuf_clustermem)
+        synbuf_chardev_exit(score->sdevices[asgard_id]->synbuf_clustermem);
 
     return 0;
 }
