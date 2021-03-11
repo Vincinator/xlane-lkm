@@ -147,6 +147,11 @@ void init_asgard_ctrl_interfaces(struct asgard_device *sdev)
 {
     char name_buf[MAX_ASGARD_PROC_NAME];
 
+    if(!sdev) {
+        asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
+        return;
+    }
+
     snprintf(name_buf, sizeof(name_buf), "asgard/%d/rx_ctrl", sdev->ifindex);
     sdev->rx_ctrl_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asgard_core_ctrl_ops, sdev);
 

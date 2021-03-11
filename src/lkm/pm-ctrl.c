@@ -718,6 +718,11 @@ static const struct proc_ops asgard_test_ctrl_ops = {
 void init_asgard_pm_ctrl_interfaces(struct asgard_device *sdev)
 {
     char name_buf[MAX_ASGARD_PROC_NAME];
+    if(!sdev) {
+        asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
+        return;
+    }
+
 
     snprintf(name_buf, sizeof(name_buf), "asgard/%d/pacemaker",
              sdev->ifindex);

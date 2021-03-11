@@ -98,14 +98,16 @@ void init_eval_ctrl_interfaces(struct consensus_priv *priv)
 {
     char name_buf[MAX_ASGARD_PROC_NAME];
 
+    if(!priv || !priv->sdev || priv->ins) {
+        asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
+        return;
+    }
+
     snprintf(name_buf, sizeof(name_buf),
              "asgard/%d/proto_instances/%d/consensus_eval_ctrl",
              priv->sdev->ifindex, priv->ins->instance_id);
 
     priv->consensus_eval_ctrl_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asgard_eval_ctrl_ops, priv);
-
-
-
 
 
 }

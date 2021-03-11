@@ -148,6 +148,11 @@ void init_proto_instance_ctrl(struct asgard_device *sdev)
 {
     char name_buf[MAX_ASGARD_PROC_NAME];
 
+    if(!sdev) {
+        asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
+        return;
+    }
+
     snprintf(name_buf, sizeof(name_buf), "asgard/%d/proto_instances",
              sdev->ifindex);
 

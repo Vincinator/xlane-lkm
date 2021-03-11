@@ -172,6 +172,11 @@ void init_multicast(struct asgard_device *sdev)
 {
     char name_buf[MAX_ASGARD_PROC_NAME];
 
+    if(!sdev) {
+        asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
+        return;
+    }
+
     snprintf(name_buf, sizeof(name_buf), "asgard/%d/multicast",
              sdev->ifindex);
 
