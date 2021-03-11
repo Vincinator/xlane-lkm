@@ -207,7 +207,7 @@ if(${ASGARD_KERNEL_MODULE})
     message("using module cmd: ${module_cmd}")
 
 
-    add_custom_command(OUTPUT asgard-${ASGARD_KERNEL_VERSION_STRING}.ko
+    add_custom_command(OUTPUT asgard.ko
             COMMAND ${module_cmd} modules
             WORKING_DIRECTORY ${bindir}
             DEPENDS ${module_sources_lkm} ${bindir}
@@ -215,10 +215,12 @@ if(${ASGARD_KERNEL_MODULE})
     add_compile_definitions(ASGARD_KERNEL_MODULE)
     message("using  ${kerneldir}")
 
-    add_custom_target(module DEPENDS asgard-${ASGARD_KERNEL_VERSION_STRING}.ko )
+    file(TOUCH "${bindir}/asgard-${ASGARD_KERNEL_VERSION_STRING}.version")
+
+    add_custom_target(module DEPENDS asgard.ko )
     add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir})
     add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir}/lib)
-    add_custom_command(TARGET module  COMMAND  ${CMAKE_COMMAND} -E copy ${bindir}/asgard.ko ${bindir}/asgard-${ASGARD_KERNEL_VERSION_STRING}.ko)
+    add_custom_command(TARGET module  COMMAND  ${CMAKE_COMMAND} -E copy ${bindir}/asgard.ko ${bindir}/asgard.ko)
     add_custom_command(TARGET module  COMMAND  ${CMAKE_COMMAND} -E remove ${bindir}/asgard.ko)
 
     include_directories("${bindir}")
