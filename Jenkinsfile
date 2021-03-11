@@ -13,6 +13,11 @@ pipeline {
         VENV_EXISTS       = fileExists 'asgardcli/asgard-cli-venv'
 
         PUBLISH = 'true'
+
+        BUILD_LKM = 'true'
+        BUILD_DPDK = 'false'
+        BUILD_PLAIN = 'false'
+
         BUILD_SUCCESS_LKM = 'false'
         BUILD_SUCCESS_DPDK = 'false'
         BUILD_SUCCESS_PLAIN = 'false'
@@ -49,7 +54,12 @@ pipeline {
 
 
     stage('Build Asgard Module'){
-        when { expression { KERNEL_SRC_EXIST == 'true' } }
+        when {
+            allOf {
+                expression { KERNEL_SRC_EXIST == 'true' }
+                expression { BUILD_LKM == 'true' }
+            }
+        }
         steps {
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
 
@@ -83,6 +93,11 @@ pipeline {
     }
 
     stage('Build Asgard DPDK'){
+        when {
+            allOf {
+                expression { BUILD_DPDK == 'true' }
+            }
+        }
         steps {
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
             sh './build.sh --dpdk'
@@ -110,6 +125,11 @@ pipeline {
     }
 
     stage('Build Asgard Plain'){
+        when {
+            allOf {
+                expression { BUILD_PLAIN == 'true' }
+            }
+        }
         steps {
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
             sh './build.sh --plain'
