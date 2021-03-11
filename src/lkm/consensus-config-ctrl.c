@@ -191,16 +191,26 @@ void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
     char name_buf[MAX_ASGARD_PROC_NAME];
 
+    if(!priv || !priv->sdev || priv->ins) {
+        asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
+        return;
+    }
+
     snprintf(name_buf, sizeof(name_buf),
              "asgard/%d/proto_instances/%d/le_config",
              priv->sdev->ifindex, priv->ins->instance_id);
 
+    asgard_dbg("Creating interface %s", name_buf );
     priv->le_config_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asgard_le_config_ops, priv);
+
+    asgard_dbg("Creating interface /proc/asgard/%d/proto_instances/%d/le_config",
+             priv->sdev->ifindex, priv->ins->instance_id);
 
     snprintf(name_buf, sizeof(name_buf),
              "asgard/%d/proto_instances/%d/uuid",
              priv->sdev->ifindex, priv->ins->instance_id);
 
+    asgard_dbg("Creating interface %s", name_buf );
     priv->uuid_entry = proc_create_data(name_buf, S_IRWXU | S_IRWXO, NULL, &asgard_eval_uuid_ops, priv);
 
 }

@@ -5,6 +5,7 @@ echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   echo "uninstalling asgard-cli site-packages"
+  pip install --upgrade pip
   #pip freeze | xargs pip uninstall -y
   pip uninstall asgardcli
   echo #new line
