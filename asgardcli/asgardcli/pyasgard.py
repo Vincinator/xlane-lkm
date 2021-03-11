@@ -176,7 +176,8 @@ def configureSystem(config):
 
 
 def prepareAsgardProtocol(config, protocol_id, instance_id):
-    singlewrite_timeout(config['asgard']['ctrl_proto_instances'], f"{instance_id},{protocol_id}", 0.5)
+    print("Creating protocol instance - this will take a moment, please wait...")
+    singlewrite_timeout(config['asgard']['ctrl_proto_instances'], f"{instance_id},{protocol_id}", 5)
 
 
 def prepareConsensus(config):
