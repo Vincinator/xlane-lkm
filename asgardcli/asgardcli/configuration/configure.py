@@ -27,7 +27,7 @@ def unload_kernel_module(config_path):
 
 @click.command()
 @click.option('--config_path', prompt=True, default='example.asgard-bench.ini', help="Path to the config file to read from")
-@click.option('--module_path', prompt=True, default='', help="Path to the asgard kernel module. Default is to read from the config file")
+@click.option('--module_path', default='asgard.ko', help="Path to the asgard kernel module.")
 def configure_kernel_module(config_path, module_path):
 
     config = load_config(config_path)
@@ -39,10 +39,6 @@ def configure_kernel_module(config_path, module_path):
     if os.path.exists(config['asgard']['base_path']):
         print("asgard kenrel module is already loaded. Unload it first to start with a clean configuration")
         return
-
-    # load kernel module
-    if module_path == '':
-        module_path = config['asgard']['module_path']
 
     loadAsgardModule(config, module_path)
 
