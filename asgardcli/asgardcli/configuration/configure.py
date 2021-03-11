@@ -99,14 +99,18 @@ def generate_bench_config(config_path, redis_base, redis_leader_port, redis_port
     config['redis']['leader_ip'] =  redis_leader_ip
     config['redis']['port'] = redis_port
     config['redis']['ip'] =  redis_ip
-    config['redis']['redis_server_bin'] = os.path.join(os.path.abspath(redis_base), 'redis-server')
-    config['redis']['redis_cli_bin'] = os.path.join(os.path.abspath(redis_base), 'redis-cli')
-    config['redis']['redis_vanilla_log'] = os.path.join(os.path.abspath(redis_base), 'redis-vanilla.log')
-    config['redis']['redis_asgard_log'] =  os.path.join(os.path.abspath(redis_base), 'redis-asgard.log')
-    config['redis']['redis_vanilla_conf'] = os.path.join(os.path.abspath(redis_base), 'redis-cluster.conf')
-    config['redis']['redis_asgard_conf'] = os.path.join(os.path.abspath(redis_base), 'redis-asgard.conf')
-    config['redis']['redis_dump_rdb'] =  'dump.rdb'
-    config['redis']['eval_throughput_timestamps'] = 'redis_eval_throughput_ts.log'
+
+    if os.path.exists(redis_base):
+        config['redis']['redis_server_bin'] = os.path.join(os.path.abspath(redis_base), 'redis-server')
+        config['redis']['redis_cli_bin'] = os.path.join(os.path.abspath(redis_base), 'redis-cli')
+        config['redis']['redis_vanilla_log'] = os.path.join(os.path.abspath(redis_base), 'redis-vanilla.log')
+        config['redis']['redis_asgard_log'] =  os.path.join(os.path.abspath(redis_base), 'redis-asgard.log')
+        config['redis']['redis_vanilla_conf'] = os.path.join(os.path.abspath(redis_base), 'redis-cluster.conf')
+        config['redis']['redis_asgard_conf'] = os.path.join(os.path.abspath(redis_base), 'redis-asgard.conf')
+        config['redis']['redis_dump_rdb'] =  'dump.rdb'
+        config['redis']['eval_throughput_timestamps'] = 'redis_eval_throughput_ts.log'
+    else:
+        print(f"Provided path to redis binaries does not exist: {redis_base}")
 
     config['asgard'] = {}
 
