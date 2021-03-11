@@ -16,7 +16,7 @@ then
     fi
 
     #activate eval venv
-    source asgardcli/asgard-cli-venv/bin/activate
+    source ../eval-venv/bin/activate
   fi
 
 
