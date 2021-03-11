@@ -20,6 +20,7 @@ def singlewrite(path, value):
         try:
             file.write(value)
         except:
+            print(f"write exception for {value} > {path}")
             pass
 
 def doPingPong(config):
@@ -43,7 +44,6 @@ def doPingPong(config):
     for i in range(int(config['asgard']['ping_pong_rounds'])):
         singlewrite(config['asgard']['echo_pmpm'], str(1))
         sleep(0.05)
-
 
 
 def enablePingPong(config):

@@ -8,8 +8,6 @@ from asgardcli.pyasgard import loadAsgardModule, prepareAsgardPacemaker, configu
 from asgardcli.utils import load_config
 
 
-
-
 @click.command()
 @click.option('--config_path', prompt=True, default='example.asgard-bench.ini', help="Path to the config file to read from")
 def unload_kernel_module(config_path):
@@ -20,8 +18,8 @@ def unload_kernel_module(config_path):
         return
 
     # check if kernel module is loaded
-    if not os.path.exists(config['asgard']['base_path']):
-        print("asgard kenrel module is not loaded.")
+    if not os.path.exists('/proc/asgard'):
+        print("asgard kernel module is not loaded.")
         return
 
     unloadAsgardModule(config)
@@ -45,6 +43,7 @@ def configure_kernel_module(config_path, module_path):
     # load kernel module
     if module_path == '':
         module_path = config['asgard']['module_path']
+
     loadAsgardModule(config, module_path)
 
     # configure system
@@ -136,7 +135,7 @@ def generate_bench_config(config_path, redis_base, redis_leader_port, redis_port
     config['asgard']['ping_pong_instance_id'] = asgard_ping_pong_instance_id
     config['asgard']['consensus_instance_id'] = asgard_consensus_instance_id
 
-    config['asgard']['base_path'] = os.path.join(os.path.abspath('/proc/asguard'), asgard_iface)
+    config['asgard']['base_path'] = os.path.join(os.path.abspath('/proc/asgard'), asgard_iface)
     config['asgard']['proto_instance_base_path'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances")
     config['asgard']['proto_ping_pong_instance_path'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_ping_pong_instance_id )
     config['asgard']['proto_consensus_instance_path'] = os.path.join(os.path.abspath(config['asgard']['base_path']), "proto_instances", asgard_consensus_instance_id )
