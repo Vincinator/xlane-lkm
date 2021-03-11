@@ -59,7 +59,7 @@ pipeline {
             sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
             sh 'cd bin && mv ../asgardcli/dist/* . && ls && tar -czvf asgard-lkm.tar.gz *.ko *.whl *.tar.gz ../acli-installer.sh'
             archiveArtifacts 'bin/asgard-lkm.tar.gz'
-            office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
+            #office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
 
           }
         }
@@ -87,7 +87,7 @@ pipeline {
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
             sh './build.sh --dpdk'
             archiveArtifacts 'bin/runner-dpdk'
-            office365ConnectorSend message: "ASGARD DPDK version build successfully", webhookUrl: WEBHOOK
+            #office365ConnectorSend message: "ASGARD DPDK version build successfully", webhookUrl: WEBHOOK
           }
         }
         post
@@ -114,7 +114,7 @@ pipeline {
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
             sh './build.sh --plain'
             archiveArtifacts 'bin/runner-plain'
-            office365ConnectorSend message: "ASGARD plain version build successfully", webhookUrl: WEBHOOK
+            #office365ConnectorSend message: "ASGARD plain version build successfully", webhookUrl: WEBHOOK
           }
         }
         post
