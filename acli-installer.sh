@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-read -p "WARNING: This scipr uses a virtual environment dedicated for asgard evaliation (../eval-venv). Continue? [y/N]" -n 1 -r
+read -p "WARNING: This script uses a virtual environment dedicated for asgard evaluation (../eval-venv). Continue? [y/N]" -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
 
   # check if we run in venv
-  if [[ "$VIRTUAL_ENV" 0= "" ]]
+  if [[ "$VIRTUAL_ENV" == "" ]]
   then
     # Check if venv exists
     if [ ! -d "../eval-venv" ]; then
