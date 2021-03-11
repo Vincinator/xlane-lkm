@@ -220,8 +220,10 @@ if(${ASGARD_KERNEL_MODULE})
     add_custom_target(module DEPENDS asgard.ko )
     add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir})
     add_custom_command(TARGET module  PRE_BUILD COMMAND ${CMAKE_COMMAND} -E make_directory  ${bindir}/lib)
-    add_custom_command(TARGET module  COMMAND  ${CMAKE_COMMAND} -E copy ${bindir}/asgard.ko ${bindir}/asgard.ko)
-    add_custom_command(TARGET module  COMMAND  ${CMAKE_COMMAND} -E remove ${bindir}/asgard.ko)
+
+    # Use the following two lines if you want to rename asgard.ko after the build
+    #add_custom_command(TARGET module  COMMAND  ${CMAKE_COMMAND} -E copy ${bindir}/asgard-some-other-name.ko ${bindir}/asgard.ko)
+    #add_custom_command(TARGET module  COMMAND  ${CMAKE_COMMAND} -E remove ${bindir}/asgard.ko)
 
     include_directories("${bindir}")
 
