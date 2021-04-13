@@ -37,12 +37,6 @@ int register_protocol_instance(struct asgard_device *sdev, int instance_id, int 
         goto error;
     }
 
-
-    if(!sdev) {
-        asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
-        return;
-    }
-
     snprintf(name_buf, sizeof(name_buf), "asgard/%d/proto_instances/%d", sdev->ifindex, instance_id);
     proc_mkdir(name_buf, NULL);
 
