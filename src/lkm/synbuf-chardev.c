@@ -299,7 +299,7 @@ int synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 
     sdev->device = device_create(synbuf_bypass_class, NULL, devno, NULL, "%s%s", DEVNAME, name);
 
-    if (!sdev->device) {
+    if (IS_ERR(sdev->device)) {
         printk(KERN_ERR "[SYNBUF] Failed to create device %d\n", synbuf_bypass_minor);
         ret = -ENODEV;
         goto device_create_error;
@@ -319,8 +319,8 @@ int synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 
     return 0;
 
-    ubuf_error:
-    device_create_error:
+ubuf_error:
+device_create_error:
     cdev_del(&sdev->cdev);
     cdev_error:
     mutex_destroy(&sdev->ubuf_mutex);

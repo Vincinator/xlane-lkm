@@ -748,14 +748,15 @@ int consensus_clean(struct proto_instance *ins) {
     clear_logger(&ins->user_c);
     clear_logger(&ins->user_d);
 
-    for (i = 0; i < priv->sm_log.max_entries; i++) {
-        if (priv->sm_log.entries[i] != NULL) {
+    if (priv->sm_log.entries != NULL) {
+        for (i = 0; i < priv->sm_log.max_entries; i++) {
             if (priv->sm_log.entries[i]->dataChunk != NULL) {
                 AFREE(priv->sm_log.entries[i]->dataChunk);
             }
-            AFREE(priv->sm_log.entries[i]);
         }
+        AFREE(priv->sm_log.entries);
     }
+
 
     /* Clean Follower (RX) Synbuf */
     // synbuf_chardev_exit(priv->synbuf_rx);
