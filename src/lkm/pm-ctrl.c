@@ -26,8 +26,6 @@ static ssize_t asgard_hb_ctrl_proc_write(struct file *file, const char __user *b
             (struct pminfo *)PDE_DATA(file_inode(file));
     long new_hb_state = -1;
 
-    asgard_error("hb ctrl interface accessed!\n");
-
     if (!spminfo) {
         asgard_error("pacemaker info is not initialized!\n");
         return -ENODEV;
@@ -39,7 +37,6 @@ static ssize_t asgard_hb_ctrl_proc_write(struct file *file, const char __user *b
     }
 
     err = copy_from_user(kernel_buffer, buffer, count);
-    asgard_error("copy_from_user!\n");
 
     if (err) {
         asgard_error("Copy from user failed%s\n", __func__);
@@ -49,7 +46,6 @@ static ssize_t asgard_hb_ctrl_proc_write(struct file *file, const char __user *b
     kernel_buffer[count] = '\0';
 
     err = kstrtol(kernel_buffer, 0, &new_hb_state);
-    asgard_error("kstrtol!\n");
 
     if (err) {
         asgard_error("Error converting input%s\n", __func__);

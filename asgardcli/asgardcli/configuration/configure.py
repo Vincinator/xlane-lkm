@@ -26,7 +26,7 @@ def unload_kernel_module(config_path):
 
 
 @click.command()
-@click.option('--config_path', prompt=True, default='example.asgard-bench.ini', help="Path to the config file to read from")
+@click.option('--config_path', prompt=True, default='../node.ini', help="Path to the config file to read from")
 @click.option('--module_path', default='asgard.ko', help="Path to the asgard kernel module.")
 def configure_kernel_module(config_path, module_path):
 

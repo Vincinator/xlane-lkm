@@ -191,8 +191,18 @@ void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
 {
     char name_buf[MAX_ASGARD_PROC_NAME];
 
-    if(!priv || !priv->sdev || priv->ins) {
-        asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
+    if(!priv ) {
+        asgard_error("Catched NULL pointer in %s. priv\n", __FUNCTION__);
+        return;
+    }
+
+    if(!priv->sdev ) {
+        asgard_error("Catched NULL pointer in %s. priv->sdev \n", __FUNCTION__);
+        return;
+    }
+
+    if(priv->ins) {
+        asgard_error("Catched NUll pointer in %s. priv->ins\n", __FUNCTION__);
         return;
     }
 

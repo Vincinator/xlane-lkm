@@ -420,9 +420,6 @@ static int __init asgard_connection_core_init(void)
 	}
 #endif
 
-
-
-
 // Pre-processor switch between asgard kernel and generic kernel
 #if ASGARD_REAL_TEST
     err = register_asgard_at_nic(ifindex, asgard_post_ts,
