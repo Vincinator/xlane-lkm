@@ -13,11 +13,10 @@
 
 int register_protocol_instance(struct asgard_device *sdev, int instance_id, int protocol_id, int verbosity)
 {
+    char name_buf[MAX_ASGARD_PROC_NAME];
 
     int idx = sdev->num_of_proto_instances;
     int ret;
-
-
 
     if (idx > MAX_PROTO_INSTANCES) {
         ret = -EPERM;
@@ -37,6 +36,15 @@ int register_protocol_instance(struct asgard_device *sdev, int instance_id, int 
         ret = -EINVAL;
         goto error;
     }
+
+
+    if(!sdev) {
+        asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
+        return;
+    }
+
+    snprintf(name_buf, sizeof(name_buf), "asgard/%d/proto_instances/%d", sdev->ifindex, instance_id);
+    proc_mkdir(name_buf, NULL);
 
     sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
 
