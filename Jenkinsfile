@@ -8,7 +8,7 @@ pipeline {
    agent {label 'asgard01-vm1'}
    environment {
         ASGARD_KERNEL_SRC = "${env.WORKSPACE}/../${project_folder}_${kernel_project_name}_${tier}_${kernel_version}"
-        KERNEL_SRC_EXIST  = fileExists "../${project_folder}_${kernel_project_name}_${tier}_${kernel_version}"
+        KERNEL_SRC_EXIST  = fileExists "${ASGARD_KERNEL_SRC}"
         WEBHOOK           = credentials('Teams-WebHook-DevOps-Vincent')
         VENV_EXISTS       = fileExists 'asgardcli/asgard-cli-venv'
 
@@ -36,7 +36,7 @@ pipeline {
        when { expression { KERNEL_SRC_EXIST == 'false' } }
        steps {
          echo "$ASGARD_KERNEL_SRC"
-         echo 'No directory found at ${ASGARD_KERNEL_SRC}. Please check if Jenkins has build the Kernel already, and did not clean the Workspace!'
+         echo 'No directory found at $ASGARD_KERNEL_SRC. Please check if Jenkins has build the Kernel already, and did not clean the Workspace!'
          sh 'exit 1'
        }
     }
