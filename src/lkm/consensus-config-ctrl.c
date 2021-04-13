@@ -201,7 +201,7 @@ void init_le_config_ctrl_interfaces(struct consensus_priv *priv)
         return;
     }
 
-    if(priv->ins) {
+    if(!priv->ins) {
         asgard_error("Catched NUll pointer in %s. priv->ins\n", __FUNCTION__);
         return;
     }

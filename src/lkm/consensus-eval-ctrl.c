@@ -98,7 +98,7 @@ void init_eval_ctrl_interfaces(struct consensus_priv *priv)
 {
     char name_buf[MAX_ASGARD_PROC_NAME];
 
-    if(!priv || !priv->sdev || priv->ins) {
+    if(!priv || !priv->sdev || !priv->ins) {
         asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
         return;
     }
