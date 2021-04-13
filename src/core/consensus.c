@@ -839,6 +839,7 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
     priv->sm_log.lock = 0;
     priv->sdev->consensus_priv = priv; /* reference for pacemaker */
     priv->sdev->cur_leader_lid = -1;
+    priv->ins = ins;
 
     /* Pre Allocate Buffer Entries */
     for (i = 0; i < MAX_CONSENSUS_LOG; i++) {
