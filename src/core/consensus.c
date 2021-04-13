@@ -757,14 +757,17 @@ int consensus_clean(struct proto_instance *ins) {
         AFREE(priv->sm_log.entries);
     }
 
-
+#ifdef ASGARD_KERNEL_MODULE
     /* Clean Follower (RX) Synbuf */
-    // synbuf_chardev_exit(priv->synbuf_rx);
-    AFREE(priv->txbuf);
+    synbuf_chardev_exit(priv->synbuf_rx);
 
     /* Clean Leader (TX) Synbuf  */
-    // synbuf_chardev_exit(priv->synbuf_tx);
+    synbuf_chardev_exit(priv->synbuf_tx);
+#else
+    AFREE(priv->txbuf);
     AFREE(priv->rxbuf);
+#endif
+
 
     return 0;
 }

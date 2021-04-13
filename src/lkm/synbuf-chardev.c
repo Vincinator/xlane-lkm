@@ -60,11 +60,11 @@ struct synbuf_device* create_synbuf(const char *name, int num_pages)
         goto error;
     }
 
-    printk(KERN_ERR"Initilized synbuf for %s\n", name);
+    printk(KERN_INFO"Initilized synbuf for %s\n", name);
 
     return device;
 
-    error:
+error:
     // if a device was allocated, but an error occurred ...
     if(device)
         kfree(device); // ... clean it up directly!
@@ -307,7 +307,7 @@ int synbuf_chardev_init(struct synbuf_device *sdev, const char *name, int size)
 
     page_aligned_size = PAGE_ALIGN(size);
 
-    sdev->ubuf = vmalloc_user(page_aligned_size);
+    sdev->ubuf = vmalloc_user(page_aligned_size); //use vfree
 
     if (!sdev->ubuf) {
         printk(KERN_ERR "[SYNBUF] Failed to allocate ubuf memory\n");
