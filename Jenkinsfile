@@ -32,14 +32,14 @@ pipeline {
 
   stages {
       
-//    stage('Stop build if kernel source can not be found.'){
-//       when { expression { KERNEL_SRC_EXIST == 'false' } }
-//       steps {
-//         echo "$ASGARD_KERNEL_SRC"
-//         echo 'No directory found at ${ASGARD_KERNEL_SRC}. Please check if Jenkins has build the Kernel already, and did not clean the Workspace!'
-//         sh 'exit 1'
-//       }
-//    }
+    stage('Stop build if kernel source can not be found.'){
+       when { expression { KERNEL_SRC_EXIST == 'false' } }
+       steps {
+         echo "$ASGARD_KERNEL_SRC"
+         echo 'No directory found at ${ASGARD_KERNEL_SRC}. Please check if Jenkins has build the Kernel already, and did not clean the Workspace!'
+         sh 'exit 1'
+       }
+    }
 
 
     stage('Prepare Python Build VEnv'){
@@ -50,8 +50,6 @@ pipeline {
             python3 -m pip install --upgrade build'''
         }
     }
-
-
 
     stage('Build Asgard Module'){
         when {
