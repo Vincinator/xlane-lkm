@@ -91,7 +91,7 @@ static ssize_t asgard_le_config_write(struct file *file, const char __user *user
     return count;
 error:
     asgard_error("Error during parsing of input.%s\n", __func__);
-    return err;
+    return count;
 
 }
 

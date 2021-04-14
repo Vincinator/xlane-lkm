@@ -564,6 +564,8 @@ void clear_protocol_instances(struct asgard_device *sdev)
             sdev->protos[i]->ctrl_ops.clean(sdev->protos[i]);
         }
 
+        clean_proto_instance_root(sdev, sdev->protos[i]->instance_id);
+
         // timer are not finished yet!?
         if (sdev->protos[i]->proto_data)
             kfree(sdev->protos[i]->proto_data);
