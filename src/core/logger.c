@@ -231,8 +231,8 @@ void dump_ingress_logs_to_file(struct asgard_device *sdev)
 void clear_ingress_logger(struct asgard_ingress_logger *ailog){
     int i;
 
-    if(ailog->per_node_logger) {
-        for(i = 0; i < ailog->num_of_nodes; i++)
+    if(ailog && ailog->per_node_logger) {
+        for(i = 0; i < CLUSTER_SIZE; i++)
             clear_logger(&ailog->per_node_logger[i]);
 
         AFREE(ailog->per_node_logger);
