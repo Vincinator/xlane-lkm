@@ -736,9 +736,10 @@ int consensus_clean(struct proto_instance *ins) {
 
     le_state_transition_to(priv, LE_UNINIT);
 
-    //remove_eval_ctrl_interfaces(priv);
-
-    //remove_le_config_ctrl_interfaces(priv);
+#ifdef ASGARD_KERNEL_MODULE
+    remove_eval_ctrl_interfaces(priv);
+    remove_le_config_ctrl_interfaces(priv);
+#endif
 
     clear_logger(&ins->logger);
     clear_ingress_logger(&priv->sdev->ingress_logger);
