@@ -92,7 +92,7 @@ def handle_actions(cfg, actions, protocol):
 
 
 @click.command(context_settings=dict(max_content_width=120))
-@click.option('--config_path', default='example.asgard-bench.ini', show_default=True,
+@click.option('--config_path', default='../node.ini', show_default=True,
               help="Path to the configuration file. The redis leader and local IP/Port is configured in this config, as well as paths")
 @click.option('--ifindex', default=-1, show_default=True,
               help="Uses this parameter as ifindex instead of ifindex from .ini file")

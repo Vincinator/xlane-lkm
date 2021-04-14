@@ -11,7 +11,7 @@ import os.path
 @click.command()
 @click.option('--input', default='generated_data.json', show_default=True,
               help="Path to the evaluation json file, containing messages for replication")
-@click.option('--config_path', default='example.asgard-bench.ini', show_default=True,
+@click.option('--config_path', default='../node.ini', show_default=True,
               help="Path to the configuration file. The redis leader and local IP/Port is configured in this config, as well as paths")
 @click.option('--isleader', default=False, show_default=True, is_flag=True,
               help="Set this flag if this node should be configured as leader/master node")

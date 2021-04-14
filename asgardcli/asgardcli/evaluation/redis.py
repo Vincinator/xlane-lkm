@@ -67,7 +67,7 @@ def start_redis_server(config):
 
 @click.command()
 @click.option('--input', default='generated_data.json')
-@click.option('--config_path', default='example.asgard-bench.ini')
+@click.option('--config_path', default='../node.ini')
 @click.option('--isleader', default=0)
 def evalRedis(input, config_path,  isleader):
 

@@ -9,7 +9,7 @@ from asgardcli.utils import load_config
 
 
 @click.command()
-@click.option('--config_path', prompt=True, default='example.asgard-bench.ini', help="Path to the config file to read from")
+@click.option('--config_path', prompt=True, default='../node.ini', help="Path to the config file to read from")
 def unload_kernel_module(config_path):
 
     config = load_config(config_path)
@@ -60,7 +60,7 @@ def configure_kernel_module(config_path, module_path):
 
 
 @click.command()
-@click.option('--config_path', prompt=True, default='example.asgard-bench.ini', help="Path to the config file to read from")
+@click.option('--config_path', prompt=True, default='../node.ini', help="Path to the config file to read from")
 @click.option("--redis_base", default='../redis-bin', help="Path to redis binaries")
 @click.option('--redis_leader_port', default='6379', help="Port for the redis leader")
 @click.option('--redis_port', default='6379', help="Port for redis")
