@@ -233,7 +233,7 @@ void clear_ingress_logger(struct asgard_ingress_logger *ailog){
 
     if(ailog->per_node_logger) {
         for(i = 0; i < CLUSTER_SIZE; i++)
-            AFREE(ailog->per_node_logger[i].events)
+            AFREE(ailog->per_node_logger[i].events);
 
         AFREE(ailog->per_node_logger);
     }
