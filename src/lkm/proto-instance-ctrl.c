@@ -144,6 +144,22 @@ static const struct proc_ops proto_instance_ctrl_ops = {
         .proc_release = single_release,
 };
 
+
+
+void init_proto_instance_root(struct asgard_device *sdev, int instance_id)
+{
+    char name_buf[MAX_ASGARD_PROC_NAME];
+
+    if(!sdev) {
+        asgard_error("Catched NUll pointer in %s\n", __FUNCTION__);
+        return;
+    }
+
+    snprintf(name_buf, sizeof(name_buf), "asgard/%d/proto_instances/%d", sdev->ifindex, instance_id);
+    proc_mkdir(name_buf, NULL);
+}
+
+
 void init_proto_instance_ctrl(struct asgard_device *sdev)
 {
     char name_buf[MAX_ASGARD_PROC_NAME];

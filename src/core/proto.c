@@ -5,16 +5,19 @@
 #include "proto.h"
 #include "logger.h"
 
-#ifndef ASGARD_KERNEL_MODULE
+
+#ifdef ASGARD_KERNEL_MODULE
+#include "../lkm/proto-instance-ctrl.h"
+
+#else
 #include <errno.h>
+
 #endif
 
 
 
 int register_protocol_instance(struct asgard_device *sdev, int instance_id, int protocol_id, int verbosity)
 {
-    char name_buf[MAX_ASGARD_PROC_NAME];
-
     int idx = sdev->num_of_proto_instances;
     int ret;
 
@@ -37,8 +40,7 @@ int register_protocol_instance(struct asgard_device *sdev, int instance_id, int 
         goto error;
     }
 
-    snprintf(name_buf, sizeof(name_buf), "asgard/%d/proto_instances/%d", sdev->ifindex, instance_id);
-    proc_mkdir(name_buf, NULL);
+
 
     sdev->protos[idx] = generate_protocol_instance(sdev, protocol_id);
 
@@ -53,6 +55,11 @@ int register_protocol_instance(struct asgard_device *sdev, int instance_id, int 
     sdev->protos[idx]->instance_id = instance_id;
 
     sdev->num_of_proto_instances++;
+
+#ifdef ASGARD_KERNEL_MODULE
+    // Required before we call init of protocol
+    init_proto_instance_root(sdev, instance_id);
+#endif
 
     if(sdev->protos[idx]->ctrl_ops.init(sdev->protos[idx], verbosity))
         goto error;
