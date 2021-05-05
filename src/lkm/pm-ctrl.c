@@ -563,12 +563,19 @@ static int asgard_target_show(struct seq_file *m, void *v)
     struct pminfo *spminfo =
             (struct pminfo *)m->private;
     int i;
+
     // freed in this function
     char *current_ip =
             kmalloc(16, GFP_KERNEL); /* strlen of 255.255.255.255 is 15*/
 
-    if (!spminfo)
+    if (!spminfo) {
+        seq_printf(m, "xlane is uninitialized!\n");
         return -ENODEV;
+    }
+
+    if(spminfo->num_of_targets <= 0) {
+        seq_printf(m, "number of targets is %d!\n", spminfo->num_of_targets);
+    }
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
         asgard_hex_to_ip(current_ip,

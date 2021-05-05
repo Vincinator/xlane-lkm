@@ -1,0 +1,21 @@
+---
+- hosts: testnodes
+  gather_facts: True
+  gather_subset:
+    - '!all'
+  tasks:
+
+    - name: {{ node_name }} joins cluster {{ cluster_name }}
+      shell: |
+        bash {{ join_cluster_binding }}
+        bash {{ observe_cluster_membership_binding }} # starts a timer
+      become: yes
+
+    - name: Wait for 5 seconds
+      wait_for:
+        timeout: 5
+      delegate_to: localhost
+
+    - name: {{ node_name }} drops out of cluster {{ cluster_name }}
+      shell: |
+        echo "NOT IMPLEMENTED"

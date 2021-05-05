@@ -81,7 +81,7 @@ int asgard_write_timestamp(struct asgard_device *sdev,
     struct asgard_timestamp_logs *logs;
 
 
-    if (!sdev||! sdev->stats||!sdev->stats->timestamp_logs[logid]) {
+    if (!sdev||!sdev->stats||!sdev->stats->timestamp_logs[logid]) {
         asgard_dbg("Nullptr error in %s\n", __func__);
         return 0;
     }

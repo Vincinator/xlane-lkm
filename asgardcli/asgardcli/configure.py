@@ -3,9 +3,9 @@ import json
 import click
 import os.path
 
-from asgardcli.pyasgard import loadAsgardModule, prepareAsgardPacemaker, configureSystem, prepareConsensus, \
+from pyasgard import loadAsgardModule, prepareAsgardPacemaker, configureSystem, prepareConsensus, \
     preparePingPong, unloadAsgardModule
-from asgardcli.utils import load_config
+from utils import load_config
 
 
 @click.command()
@@ -163,7 +163,7 @@ def generate_bench_config(config_path, redis_base, redis_leader_port, redis_port
     config['evalLogs']['asg_vanilla_throughput'] = os.path.join("/home/dsp/logs/")
     config['evalLogs']['asg_vanilla_leader_election'] = os.path.join("/home/dsp/logs/")
 
-   # TODO:
+    # TODO:
     config['asgard']['proto_echo_instance_path'] = ''
 
 

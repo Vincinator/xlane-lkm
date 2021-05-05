@@ -11,7 +11,7 @@ import redis
 import click
 import json
 import os.path
-from ..verification.verify import _verify_data
+from asgardcli.asgardcli.legacy.verification import _verify_data
 import subprocess
 import configparser
 import asgardcli.pyasgard as pyasg

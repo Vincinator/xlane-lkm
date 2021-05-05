@@ -86,7 +86,7 @@ pipeline {
             }
         }
         steps {
-          nexusArtifactUploader artifacts: [[artifactId: 'asgard-lkm', classifier: '', file: 'bin/asgard-lkm.tar.gz', type: 'tar.gz']], credentialsId: 'nexus-user-credentials', groupId: 'lab', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: 'latest'
+          nexusArtifactUploader artifacts: [[artifactId: 'asgard-lkm', classifier: '', file: 'bin/asgard-lkm.tar.gz', type: 'tar.gz']], credentialsId: 'nexus-user-credentials', groupId: 'lab', nexusUrl: '10.173.238.110:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: 'latest'
         }
     }
 
@@ -118,7 +118,7 @@ pipeline {
             }
         }
         steps {
-          nexusArtifactUploader artifacts: [[artifactId: 'asgard-dpdk', classifier: '', file: 'bin/runner-dpdk', type: 'bin']], credentialsId: 'nexus-user-credentials', groupId: 'lab', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: 'latest'
+          nexusArtifactUploader artifacts: [[artifactId: 'asgard-dpdk', classifier: '', file: 'bin/runner-dpdk', type: 'bin']], credentialsId: 'nexus-user-credentials', groupId: 'lab', nexusUrl: '10.173.238.110:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: 'latest'
         }
     }
 
@@ -150,7 +150,7 @@ pipeline {
             }
         }
         steps {
-          nexusArtifactUploader artifacts: [[artifactId: 'asgard-plain', classifier: '', file: 'bin/runner-plain', type: 'bin']], credentialsId: 'nexus-user-credentials', groupId: 'lab', nexusUrl: '10.125.1.120:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: 'latest'
+          nexusArtifactUploader artifacts: [[artifactId: 'asgard-plain', classifier: '', file: 'bin/runner-plain', type: 'bin']], credentialsId: 'nexus-user-credentials', groupId: 'lab', nexusUrl: '10.173.238.110:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'cerebro', version: 'latest'
         }
     }
 

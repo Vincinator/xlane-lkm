@@ -13,9 +13,6 @@ class ConfigurationError(Exception):
         self.errors = error
         self.cmd = cmd
 
-
-
-
 def singlewrite(path, value):
     if not os.path.isfile(path):
         return
@@ -38,7 +35,7 @@ def doPingPong(config):
     for i in range(int(config['asgard']['ping_pong_rounds'])):
         singlewrite(config['asgard']['echo_pupu'], str(1))
         singlewrite(config['asgard']['echo_pupu'], str(2))
-        singlewrite(config['asgard']['echo_pupu'], str(3))
+        singlewrite(config['asgard']['ec ho_pupu'], str(3))
         sleep(0.05)
 
     for i in range(int(config['asgard']['ping_pong_rounds'])):

@@ -124,7 +124,7 @@ static int asgard_verbose_ctrl_show(struct seq_file *m, void *v)
     if (!sdev)
         return -ENODEV;
 
-    seq_printf(m, "asgard device verbosity level is set to %d\n", sdev->verbose);
+    seq_printf(m, "%d\n", sdev->verbose);
 
     return 0;
 }
