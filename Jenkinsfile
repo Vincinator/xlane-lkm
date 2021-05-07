@@ -15,8 +15,8 @@ pipeline {
         PUBLISH = 'true'
 
         BUILD_LKM = 'true'
-        BUILD_DPDK = 'false'
-        BUILD_PLAIN = 'false'
+        BUILD_DPDK = 'true'
+        BUILD_PLAIN = 'true'
 
         BUILD_SUCCESS_LKM = 'false'
         BUILD_SUCCESS_DPDK = 'false'
