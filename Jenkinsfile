@@ -163,7 +163,7 @@ pipeline {
             }
         }
         steps {
-            build '../Deploy - ASGARD/asgard_evaluation_automation'
+            build '../Deploy - ASGARD/xlane'
         }
     }
 
