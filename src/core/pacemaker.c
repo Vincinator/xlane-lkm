@@ -322,8 +322,6 @@ static inline int out_of_schedule_multi_tx(struct asgard_device *sdev) {
 
 
 #ifdef ASGARD_DPDK
-
-
 static inline uint16_t
 ip_sum(const unaligned_uint16_t *hdr, int hdr_len)
 {
@@ -479,8 +477,80 @@ unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_
 }
 #elif ASGARD_KERNEL_MODULE
 
-#else
+int asg_xmit_skb(struct net_device *ndev, struct netdev_queue *txq,  struct sk_buff *skb) {
+    int ret = 0;
 
+    skb_get(skb);
+
+    ret = netdev_start_xmit(skb, ndev, txq, 0);
+
+    switch (ret) {
+        case NETDEV_TX_OK:
+            break;
+        case NET_XMIT_DROP:
+            asgard_error("NETDEV TX DROP\n");
+            break;
+        case NET_XMIT_CN:
+            asgard_error("NETDEV XMIT CN\n");
+            break;
+        default:
+            asgard_error("NETDEV UNKNOWN \n");
+            /* fall through */
+        case NETDEV_TX_BUSY:
+            asgard_error("NETDEV TX BUSY\n");
+            break;
+    }
+    return ret;
+}
+
+
+static inline void asgard_send_multicast_hb(struct net_device *ndev, struct pminfo *spminfo)
+{
+    struct netdev_queue *txq;
+    struct sk_buff *skb;
+    unsigned long flags;
+    int tx_index = smp_processor_id();
+
+    if (unlikely(!netif_running(ndev) ||
+                 !netif_carrier_ok(ndev))) {
+        asgard_error("Network device offline!\n exiting pacemaker\n");
+        spminfo->errors++;
+        return;
+    }
+    spminfo->errors = 0;
+
+    local_irq_save(flags);
+    local_bh_disable();
+
+    /* The queue mapping is the same for each target <i>
+     * Since we pinned the pacemaker to a single cpu,
+     * we can use the smp_processor_id() directly.
+     */
+    txq = &ndev->_tx[tx_index];
+
+    HARD_TX_LOCK(ndev, txq, tx_index);
+
+    if (unlikely(netif_xmit_frozen_or_drv_stopped(txq))) {
+        //asgard_error("Device Busy unlocking.\n");
+        goto unlock;
+    }
+
+    skb = spminfo->multicast_skb;
+
+    asg_xmit_skb(ndev, txq, skb);
+
+unlock:
+    HARD_TX_UNLOCK(ndev, txq);
+
+    local_bh_enable();
+    local_irq_restore(flags);
+
+}
+
+
+
+
+#else
 int emit_packet(struct node_addr recv_nodeaddr, struct asgard_payload *asg_payload) {
 
     int sockfd;
@@ -695,6 +765,12 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 #elif ASGARD_KERNEL_MODULE
 
+        asgard_update_skb_udp_port(spminfo->multicast_skb, sdev->tx_port);
+        asgard_update_skb_payload(spminfo->multicast_skb, pkt_payload);
+
+        /* Send heartbeats to all targets */
+        asgard_send_multicast_hb(sdev->ndev, spminfo);
+
 #else
         emit_packet(spminfo->pm_targets[i].hb_pkt_data.naddr, pkt_payload);
 #endif
@@ -884,7 +960,7 @@ int do_pacemaker(void *data) {
             prev_time = cur_time;
             err = emit_pkts_scheduled(sdev, spminfo);
 
-            //  the HB Message
+            //  Post HB emission work. Setup next HB message and update states
             for(i=0; i< spminfo->num_of_targets; i++)
                 pre_hb_setup(sdev, spminfo->pm_targets[i].hb_pkt_data.payload, i);
 
