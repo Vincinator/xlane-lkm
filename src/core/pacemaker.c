@@ -477,6 +477,26 @@ unsigned int emit_dpdk_asg_packet(uint16_t portid, uint32_t self_ip, struct rte_
 }
 #elif ASGARD_KERNEL_MODULE
 
+static inline void asgard_update_skb_udp_port(struct sk_buff *skb, int udp_port)
+{
+	struct udphdr *uh = udp_hdr(skb);
+
+	uh->dest = htons((u16)udp_port);
+}
+
+static inline void asgard_update_skb_payload(struct sk_buff *skb, void *payload)
+{
+	unsigned char *tail_ptr;
+	unsigned char *data_ptr;
+
+	tail_ptr = skb_tail_pointer(skb);
+	data_ptr = (tail_ptr - ASGARD_PAYLOAD_BYTES);
+
+	memcpy(data_ptr, payload, ASGARD_PAYLOAD_BYTES);
+}
+
+
+
 int asg_xmit_skb(struct net_device *ndev, struct netdev_queue *txq,  struct sk_buff *skb) {
     int ret = 0;
 
