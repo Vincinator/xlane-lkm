@@ -106,46 +106,45 @@ static int multicast_delay_open(struct inode *inode, struct file *file)
                        PDE_DATA(file_inode(file)));
 }
 
-static ssize_t multicast_enable_write(struct file *file, const char __user *user_buffer,
-size_t count, loff_t *data)
+static ssize_t multicast_enable_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *data)
 {
-int err;
-char kernel_buffer[ASGARD_TARGETS_BUF];
-struct asgard_device *sdev =
-        (struct asgard_device *)PDE_DATA(file_inode(file));
-size_t size = min(sizeof(kernel_buffer) - 1, count);
-long new_value = -1;
+    int err;
+    char kernel_buffer[ASGARD_TARGETS_BUF];
+    struct asgard_device *sdev =
+            (struct asgard_device *)PDE_DATA(file_inode(file));
+    size_t size = min(sizeof(kernel_buffer) - 1, count);
+    long new_value = -1;
 
-if (!sdev) {
-asgard_error(" Could not find asgard device!\n");
-return -ENODEV;
-}
+    if (!sdev) {
+        asgard_error(" Could not find asgard device!\n");
+        return -ENODEV;
+    }
 
-memset(kernel_buffer, 0, sizeof(kernel_buffer));
+    memset(kernel_buffer, 0, sizeof(kernel_buffer));
 
-err = copy_from_user(kernel_buffer, user_buffer, count);
+    err = copy_from_user(kernel_buffer, user_buffer, count);
 
-if (err) {
-asgard_error("Copy from user failed%s\n", __func__);
-goto error;
-}
+    if (err) {
+        asgard_error("Copy from user failed%s\n", __func__);
+        goto error;
+    }
 
-kernel_buffer[size] = '\0';
+    kernel_buffer[size] = '\0';
 
-err = kstrtol(kernel_buffer, 0, &new_value);
+    err = kstrtol(kernel_buffer, 0, &new_value);
 
-if (err) {
-asgard_error(" Error converting input%s\n", __func__);
-return err;
-}
+    if (err) {
+        asgard_error(" Error converting input%s\n", __func__);
+        return err;
+    }
 
-sdev->multicast.enable = new_value;
+    sdev->multicast.enable = new_value;
 
-return count;
+    return count;
 error:
 
-asgard_error("Error during parsing of input.%s\n", __func__);
-return err;
+    asgard_error("Error during parsing of input.%s\n", __func__);
+    return err;
 }
 
 static int multicast_enable_show(struct seq_file *m, void *v)

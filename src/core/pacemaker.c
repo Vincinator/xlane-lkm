@@ -654,7 +654,7 @@ int emit_async_multicast_pkt(struct asgard_device *sdev, struct pminfo *spminfo)
         //                                cur_apkt->pkt_data.payload,
         //                                NULL, sdev->rte_self_mac);
 #elif ASGARD_KERNEL_MODULE
-
+        asgard_dbg("Function Not Implemented %s /n", __FUNCTION__);
 #else
         emit_packet(cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload);
 #endif
@@ -681,6 +681,7 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
     //                               pkt_payload->payload,
     //                               spminfo->pm_targets[i].mac_addr, sdev->rte_self_mac);
 #elif ASGARD_KERNEL_MODULE
+    asgard_dbg("Function Not Implemented %s /n", __FUNCTION__);
 
 #else
     emit_packet(pkt_payload->naddr, pkt_payload->payload);
@@ -725,6 +726,7 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 
 #elif ASGARD_KERNEL_MODULE
+        asgard_dbg("Function Not Implemented %s /n", __FUNCTION__);
 
 #else
         emit_packet(spminfo->pm_targets[i].pkt_data.naddr, spminfo->pm_targets[i].pkt_data.payload);
@@ -790,6 +792,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
 
         /* Send heartbeats to all targets */
         asgard_send_multicast_hb(sdev->ndev, spminfo);
+        asgard_dbg("Function %s debug /n", __FUNCTION__);
 
 #else
         emit_packet(spminfo->pm_targets[i].hb_pkt_data.naddr, pkt_payload);

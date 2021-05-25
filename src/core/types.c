@@ -8,7 +8,6 @@
 
 void asg_mutex_lock(asg_mutex_t *mutex){
     mutex_lock(mutex);
-
 }
 void asg_mutex_unlock(asg_mutex_t *mutex){
     mutex_unlock(mutex);
