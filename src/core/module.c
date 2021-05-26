@@ -289,7 +289,7 @@ int asgard_core_register_nic(int ifindex, int asgard_id)
 	spin_lock_init(
 		&score->sdevices[asgard_id]->pminfo.multicast_pkt_data_oos.slock);
 
-    asg_mutex_init(score->sdevices[asgard_id]->pminfo.multicast_pkt_data_oos.mlock);
+    asg_mutex_init(&score->sdevices[asgard_id]->pminfo.multicast_pkt_data_oos.mlock);
 
 	score->sdevices[asgard_id]->asgard_leader_wq = alloc_workqueue(
 		"asgard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
