@@ -679,7 +679,6 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
                                                  struct pminfo *spminfo)
 {
     struct asgard_packet_data *pkt_payload = NULL;
-    asgard_dbg("Function Not Implemented %s \n", __FUNCTION__);
 
     asg_mutex_lock(&spminfo->multicast_pkt_data_oos.mlock);
 
@@ -814,7 +813,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
 
         /* Send heartbeats to all targets */
         asgard_send_skb(sdev->ndev, spminfo, spminfo->multicast_skb);
-        asgard_dbg("Function %s debug \n", __FUNCTION__);
+        //asgard_dbg("Function %s debug \n", __FUNCTION__);
 
 #else
         emit_packet(spminfo->pm_targets[i].hb_pkt_data.naddr, pkt_payload);

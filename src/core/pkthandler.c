@@ -282,7 +282,8 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
             return;
         }
     }
-
+    if(sdev->verbose >= 4)
+        asgard_dbg("Packet from remote_lid: %d \n", remote_lid);
     // Update aliveness state and timestamps
     spminfo->pm_targets[remote_lid].chb_ts = ASGARD_TIMESTAMP;
     spminfo->pm_targets[remote_lid].alive = 1;
