@@ -654,7 +654,7 @@ int emit_async_multicast_pkt(struct asgard_device *sdev, struct pminfo *spminfo)
         //                                cur_apkt->pkt_data.payload,
         //                                NULL, sdev->rte_self_mac);
 #elif ASGARD_KERNEL_MODULE
-        asgard_dbg("Function Not Implemented %s /n", __FUNCTION__);
+        asgard_dbg("Function Not Implemented %s \n", __FUNCTION__);
 #else
         emit_packet(cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload);
 #endif
@@ -681,7 +681,7 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
     //                               pkt_payload->payload,
     //                               spminfo->pm_targets[i].mac_addr, sdev->rte_self_mac);
 #elif ASGARD_KERNEL_MODULE
-    asgard_dbg("Function Not Implemented %s /n", __FUNCTION__);
+    asgard_dbg("Function Not Implemented %s \n", __FUNCTION__);
 
 #else
     emit_packet(pkt_payload->naddr, pkt_payload->payload);
@@ -726,7 +726,7 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 
 #elif ASGARD_KERNEL_MODULE
-        asgard_dbg("Function Not Implemented %s /n", __FUNCTION__);
+        asgard_dbg("Function Not Implemented %s \n", __FUNCTION__);
 
 #else
         emit_packet(spminfo->pm_targets[i].pkt_data.naddr, spminfo->pm_targets[i].pkt_data.payload);
@@ -792,7 +792,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
 
         /* Send heartbeats to all targets */
         asgard_send_multicast_hb(sdev->ndev, spminfo);
-        asgard_dbg("Function %s debug /n", __FUNCTION__);
+        asgard_dbg("Function %s debug \n", __FUNCTION__);
 
 #else
         emit_packet(spminfo->pm_targets[i].hb_pkt_data.naddr, pkt_payload);
@@ -935,6 +935,8 @@ int do_pacemaker(void *data) {
 
     prev_time = ASGARD_TIMESTAMP;
     while (pacemaker_is_alive(spminfo)) {
+        if(sdev->verbose > 5)
+            asgard_dbg("PM loop\n");
         cur_time = ASGARD_TIMESTAMP;
 
         out_of_sched_hb = 0;
@@ -975,7 +977,7 @@ int do_pacemaker(void *data) {
             goto emit;
 
         continue;
-        emit:
+emit:
         if (scheduled_hb) {
            // asgard_dbg("(scheduled_hb=%d, interval=%lld)scheduled hb: cur_time= %lld, prev_time=%lld\n",scheduled_hb, interval, cur_time, prev_time);
             sdev->hb_interval++;
