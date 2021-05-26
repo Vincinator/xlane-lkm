@@ -49,6 +49,8 @@ int push_front_async_pkt(struct asgard_async_queue_priv *aqueue, struct asgard_a
 struct asgard_async_pkt *dequeue_async_pkt(struct asgard_async_queue_priv *aqueue)
 {
     struct asgard_async_pkt *queued_apkt;
+    asgard_dbg("dequeue async pkt... \n");
+
 
     asg_rwlock_lock(&aqueue->queue_rwlock, ASG_RW_WRITE);
 
