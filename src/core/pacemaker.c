@@ -524,10 +524,9 @@ int asg_xmit_skb(struct net_device *ndev, struct netdev_queue *txq,  struct sk_b
 }
 
 
-static inline void asgard_send_multicast_hb(struct net_device *ndev, struct pminfo *spminfo)
+static inline void asgard_send_skb(struct net_device *ndev, struct pminfo *spminfo, struct sk_buff *skb )
 {
     struct netdev_queue *txq;
-    struct sk_buff *skb;
     unsigned long flags;
     int tx_index = smp_processor_id();
 
@@ -555,7 +554,7 @@ static inline void asgard_send_multicast_hb(struct net_device *ndev, struct pmin
         goto unlock;
     }
 
-    skb = spminfo->multicast_skb;
+    // skb = spminfo->multicast_skb;
 
     asg_xmit_skb(ndev, txq, skb);
 
@@ -566,8 +565,6 @@ unlock:
     local_irq_restore(flags);
 
 }
-
-
 
 
 #else
@@ -729,6 +726,12 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
 #elif ASGARD_KERNEL_MODULE
         asgard_dbg("Function Not Implemented %s \n", __FUNCTION__);
 
+        asgard_update_skb_udp_port(spminfo->pm_targets[i].pkt_data.skb, sdev->tx_port);
+        asgard_update_skb_payload(spminfo->pm_targets[i].pkt_data.skb, spminfo->pm_targets[i].pkt_data.payload);
+
+        asgard_send_skb(sdev->ndev, spminfo, spminfo->pm_targets[i].pkt_data.skb);
+
+        asgard_dbg("Function %s debug \n", __FUNCTION__);
 #else
         emit_packet(spminfo->pm_targets[i].pkt_data.naddr, spminfo->pm_targets[i].pkt_data.payload);
 #endif
@@ -793,7 +796,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
         asgard_update_skb_payload(spminfo->multicast_skb, pkt_payload);
 
         /* Send heartbeats to all targets */
-        asgard_send_multicast_hb(sdev->ndev, spminfo);
+        asgard_send_skb(sdev->ndev, spminfo, spminfo->multicast_skb);
         asgard_dbg("Function %s debug \n", __FUNCTION__);
 
 #else
