@@ -669,6 +669,7 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
                                                  struct pminfo *spminfo)
 {
     struct asgard_packet_data *pkt_payload = NULL;
+    asgard_dbg("Function Not Implemented %s \n", __FUNCTION__);
 
     asg_mutex_lock(&spminfo->multicast_pkt_data_oos.mlock);
 
@@ -742,6 +743,7 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
     struct asgard_payload *pkt_payload = NULL;
     int i;
     int target_fire[CLUSTER_SIZE];
+    asgard_dbg("Function under debug %s \n", __FUNCTION__);
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
         target_fire[i] = spminfo->pm_targets[i].fire;
