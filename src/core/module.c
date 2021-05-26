@@ -148,6 +148,8 @@ int asgard_core_register_remote_host(int asgard_id, u32 ip, char *mac,
 
     spin_lock_init(&pmtarget->pkt_data.slock);
 
+    asg_mutex_init(&pmtarget->pkt_data.mlock);
+
     memcpy(&pmtarget->pkt_data.naddr.dst_mac, mac,
            sizeof(unsigned char) * 6);
 
