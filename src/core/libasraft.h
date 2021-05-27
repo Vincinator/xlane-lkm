@@ -110,8 +110,12 @@ struct proto_instance {
     void *proto_data;
 };
 
-
-
+struct node_addr {
+    int cluster_id;
+    uint32_t dst_ip;
+    uint32_t port;
+    unsigned char dst_mac[6];
+};
 
 struct asgard_async_queue_priv {
 
@@ -363,12 +367,7 @@ struct asgard_payload {
     unsigned char proto_data[MAX_ASGARD_PAYLOAD_BYTES - 2];
 };
 
-struct node_addr {
-    int cluster_id;
-    uint32_t dst_ip;
-    uint32_t port;
-    unsigned char dst_mac[6];
-};
+
 
 #ifdef ASGARD_KERNEL_MODULE
 struct asgard_process_info {
