@@ -127,6 +127,7 @@ struct multicast {
     int enable;
 
     int delay;
+    struct node_addr naddr;
 
     struct asgard_logger logger;
     struct asgard_async_queue_priv *aapriv;
@@ -566,9 +567,9 @@ struct asgard_device {
 #endif
 
     struct multicast multicast;
-    uint32_t multicast_ip;
-    unsigned char *multicast_mac;
 
+    // uint32_t multicast_ip;
+    // unsigned char *multicast_mac;
 
     uint32_t self_ip;
 

@@ -11,6 +11,8 @@
 #include "list.h"
 #include <stdlib.h>
 #include <string.h>
+#include "../lkm/asgard-net.h"
+
 #else
 
 #include "module.h"
@@ -112,19 +114,21 @@ void async_clear_queue( struct asgard_async_queue_priv *queue)
 
 
 
-int do_prepare_log_replication_multicast(struct asgard_device *sdev){
+int do_prepare_log_replication_multicast(struct asgard_device *sdev, struct node_addr nodeAddr){
     int ret;
 
     struct asgard_async_pkt *apkt = NULL;
 
+#ifndef ASGARD_KERNEL_MODULE
+    asgard_error("WARNING! MULTICAST NOT PORTED! \n");
+    return -1;
+#endif
+
     if (!sdev->is_leader)
         return -1;
 
-    asgard_error("WARNING! MULTICAST NOT PORTED! \n");
-
-    // ret = setup_append_multicast_msg(sdev, get_payload_ptr(apkt));
-
-    // TODO: setup append mutlicast message
+    apkt = create_async_pkt(sdev->ndev, nodeAddr);
+    ret = setup_append_multicast_msg(sdev, get_payload_ptr(apkt));
 
     // handle errors
     if(ret < 0) {
@@ -273,7 +277,7 @@ void schedule_log_rep(struct asgard_device *sdev, int target_id, int next_index,
 
     if (multicast_enabled > 0 ){
         do{
-            more = do_prepare_log_replication_multicast(sdev); // TODO: warn, not ported yet!
+            more = do_prepare_log_replication_multicast(sdev, sdev->multicast.naddr);
         }
         while(more > 0);
     }

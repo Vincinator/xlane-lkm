@@ -234,10 +234,8 @@ int asgard_core_register_nic(int ifindex, int asgard_id)
 	score->sdevices[asgard_id]->consensus_priv = NULL;
 	score->sdevices[asgard_id]->echo_priv = NULL;
 
-	score->sdevices[asgard_id]->multicast_ip =
-		asgard_ip_convert("232.43.211.234");
-	score->sdevices[asgard_id]->multicast_mac =
-		asgard_convert_mac("01:00:5e:2b:d3:ea");
+	score->sdevices[asgard_id]->multicast.naddr.dst_ip = asgard_ip_convert("232.43.211.234");
+	score->sdevices[asgard_id]->multicast.naddr.dst_mac = asgard_convert_mac("01:00:5e:2b:d3:ea");
 
 	score->sdevices[asgard_id]->multicast.aapriv =
 		kmalloc(sizeof(struct asgard_async_queue_priv), GFP_KERNEL);

@@ -39,7 +39,7 @@ struct retrans_request {
 };
 
 void async_clear_queue( struct asgard_async_queue_priv *queue);
-int do_prepare_log_replication_multicast(struct asgard_device *sdev);
+int do_prepare_log_replication_multicast(struct asgard_device *sdev, struct node_addr nodeAddr);
 int do_prepare_log_replication(struct asgard_device *sdev, int target_id, int32_t next_index, int retrans);
 int32_t get_next_idx(struct consensus_priv *priv, int target_id);
 int32_t get_match_idx(struct consensus_priv *priv, int target_id);

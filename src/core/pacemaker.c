@@ -714,6 +714,7 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
 
 int emit_async_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
 {
+    asgard_dbg("multicast is: %d \n", sdev->multicast.enable);
 
     if (sdev->multicast.enable)
         return emit_async_multicast_pkt(sdev, spminfo);
@@ -844,24 +845,18 @@ static inline int asgard_setup_hb_skbs(struct asgard_device  *sdev)
 
     // BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
 
-    /* Setup Multicast SKB */
-    if (!sdev->multicast_mac) {
-        asgard_error("Multicast MAC is NULL");
-        return -1;
-    }
-
-    asgard_dbg("broadcast ip: %x  mac: %pM", sdev->multicast_ip,
-               sdev->multicast_mac);
+    asgard_dbg("broadcast ip: %x  mac: %pM", sdev->multicast.naddr.dst_ip,
+                sdev->multicast.naddr.dst_mac);
 
     spminfo->multicast_pkt_data_oos.skb = asgard_reserve_skb(
-            sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
+            sdev->ndev, sdev->multicast.naddr.dst_ip, sdev->multicast.naddr.dst_mac, NULL);
     skb_set_queue_mapping(
             spminfo->multicast_pkt_data_oos.skb,
             smp_processor_id()); // Queue mapping same for each target i
     spminfo->multicast_pkt_data_oos.naddr.port = 3321; /* TODO */
 
     spminfo->multicast_skb = asgard_reserve_skb(
-            sdev->ndev, sdev->multicast_ip, sdev->multicast_mac, NULL);
+            sdev->ndev,  sdev->multicast.naddr.dst_ip, sdev->multicast.naddr.dst_mac, NULL);
     skb_set_queue_mapping(
             spminfo->multicast_skb,
             smp_processor_id()); // Queue mapping same for each target i
@@ -1094,11 +1089,6 @@ static int validate_pm(struct asgard_device *sdev, struct pminfo *spminfo)
 
     if (!sdev->self_mac) {
         asgard_error("self mac is NULL\n");
-        return -EINVAL;
-    }
-
-    if (!sdev->multicast_mac) {
-        asgard_error("multicast mac is NULL\n");
         return -EINVAL;
     }
 

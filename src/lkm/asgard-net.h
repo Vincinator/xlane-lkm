@@ -31,3 +31,4 @@ void get_cluster_ids(struct asgard_device *sdev, unsigned char *remote_mac, int 
 void prepare_log_replication_handler(struct work_struct *w);
 void prepare_log_replication_multicast_handler(struct asgard_device *sdev);
 struct net_device *asgard_get_netdevice(int ifindex);
+struct asgard_payload *get_payload_ptr(struct asgard_async_pkt *pkt);
