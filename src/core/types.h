@@ -75,7 +75,7 @@ typedef enum {
 
 #else
 
-    typedef char*  asg_mac_ptr_t;
+    typedef unsigned char*  asg_mac_ptr_t;
 
 #endif
 

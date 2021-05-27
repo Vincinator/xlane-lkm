@@ -77,7 +77,7 @@ int add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
             asgard_dbg("Successfully registered MAC address of DPDK enabled Device\n");
         }
 #else
-        sdev->self_mac = asgard_convert_mac(mac);
+        asgard_convert_mac(mac, sdev->self_mac);
 #endif
 
         return 0;

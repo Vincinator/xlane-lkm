@@ -510,7 +510,7 @@ static ssize_t asgard_target_write(struct file *file, const char __user *user_bu
             }
             state = 1;
         } else if (state == 1) {
-            current_mac = asgard_convert_mac(input_str);
+            asgard_convert_mac(input_str, current_mac);
             if (!current_mac) {
                 asgard_error(
                 "Invalid MAC. Failed to convert to byte string.\n");

@@ -79,11 +79,11 @@ EXPORT_SYMBOL(asgard_ip_convert);
 /*
  * Converts an MAC address to hex char array
  */
-char * asgard_convert_mac(const char *str)
+int asgard_convert_mac(const char *str, unsigned char *bytestring_mac)
 {
     unsigned int tmp_data[6];
     // must be freed by caller
-    char *bytestring_mac =AMALLOC(sizeof(unsigned char) * 6, 1);
+    // char *bytestring_mac =AMALLOC(sizeof(unsigned char) * 6, 1);
     int i;
 
     if (sscanf(str, "%2x:%2x:%2x:%2x:%2x:%2x", &tmp_data[0], &tmp_data[1],
@@ -91,10 +91,10 @@ char * asgard_convert_mac(const char *str)
                &tmp_data[5]) == 6) {
         for (i = 0; i < 6; i++)
             bytestring_mac[i] = (char)tmp_data[i];
-        return bytestring_mac;
+        return 0;
     }
 
-    return NULL;
+    return -1;
 }
 #ifdef ASGARD_KERNEL_MODULE
 EXPORT_SYMBOL(asgard_convert_mac);

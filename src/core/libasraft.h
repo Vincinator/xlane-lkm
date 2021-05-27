@@ -114,7 +114,9 @@ struct node_addr {
     int cluster_id;
     uint32_t dst_ip;
     uint32_t port;
+
     unsigned char dst_mac[6];
+
 };
 
 struct asgard_async_queue_priv {
@@ -585,7 +587,7 @@ struct asgard_device {
 };
 
 void dump_ingress_logs_to_file(struct asgard_device *sdev);
-char * asgard_convert_mac(const char *str);
+int asgard_convert_mac(const char *str, unsigned char *bytestring_mac);
 uint32_t asgard_ip_convert(const char *str);
 void init_asgard_device(struct asgard_device *sdev);
 struct proto_instance *generate_protocol_instance(struct asgard_device *sdev, int protocol_id);
