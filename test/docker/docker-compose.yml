@@ -9,7 +9,9 @@ services:
     volumes:
       - .ssh:/home/dsp/.ssh
       - .gdbinit:/home/dsp/.gdbinit
-      - ../../src:/home/dsp/src
+      - /Users/i515875/Workspace/groot/linux:/home/dsp/linux
+      - /Users/i515875/Workspace/groot/xlane-lkm/src:/home/dsp/src
+
     ports:
       - "2224:22"
 
