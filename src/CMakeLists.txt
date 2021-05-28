@@ -181,7 +181,7 @@ if(${ASGARD_KERNEL_MODULE})
     list(PREPEND module_sources core/module.c)
 
     foreach(src ${module_sources})
-        list(APPEND module_sources_lkm ${CMAKE_SOURCE_DIR}/src/${src})
+        list(APPEND module_sources_lkm ${CMAKE_SOURCE_DIR}/${src})
         # message("configuring source path  ${CMAKE_SOURCE_DIR}/src/${src}")
     endforeach()
 
