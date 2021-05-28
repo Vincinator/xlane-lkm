@@ -85,3 +85,4 @@
 int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spay, int instance_id, int target_id, int32_t next_index, int retrans);
 
 unsigned char * asgard_reserve_proto(uint16_t instance_id, struct asgard_payload *spay, uint16_t proto_size);
+int setup_append_multicast_msg(struct asgard_device *sdev, struct asgard_payload *spay);

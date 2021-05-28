@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.13)
 project(asgard C)
 
 # -------------------------------------------
@@ -52,9 +52,9 @@ else()
 endif()
 
 
+# set(kerneldir "/home/vincent/workspace/asgard-kernel")
+set(bindir "${CMAKE_SOURCE_DIR}/../bin")
 
-set(bindir "${CMAKE_SOURCE_DIR}/bin")
-message("${CMAKE_SOURCE_DIR}")
 # -------------------------------------------
 if(${ASGARD_DPDK})
     set(runner_target runner-dpdk)
@@ -117,6 +117,8 @@ if(${ASGARD_DPDK})
 
 elseif(${ASGARD_KERNEL_MODULE})
 
+
+
     message("Selected Option: kernel module")
     message("kerneldir is set to ${kerneldir}")
     #set(kerneldir "" CACHE STRING "Path to the kernel build directory")
@@ -161,6 +163,8 @@ if(${ASGARD_KERNEL_MODULE})
             OUTPUT_VARIABLE ASGARD_KERNEL_GIT_COMMIT_HASH
             OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+
+
     if(ASGARD_KERNEL_GIT_COMMIT_HASH STREQUAL "")
         set(ASGARD_KERNEL_VERSION_STRING unconfigured-kernel-unknown)
     else()
@@ -181,17 +185,15 @@ if(${ASGARD_KERNEL_MODULE})
     list(PREPEND module_sources core/module.c)
 
     foreach(src ${module_sources})
-        list(APPEND module_sources_lkm ${CMAKE_SOURCE_DIR}/${src})
-        # message("configuring source path  ${CMAKE_SOURCE_DIR}/src/${src}")
+        list(APPEND module_sources_lkm ../src/${src})
+        #message("configuring source path  ../src/${src}")
     endforeach()
 
 
     set(ASGARD_KERNEL_MODULE 1)
 
-    file(COPY ${CMAKE_SOURCE_DIR}/Kbuild.in
+    file(COPY ${CMAKE_CURRENT_BINARY_DIR}/Kbuild.in
             DESTINATION  ${bindir})
-
-    message("module_sources_lkm: ${module_sources_lkm}\n")
 
     string(REPLACE ";" " " module_sources_string "${module_sources_lkm}")
     configure_file(${bindir}/Kbuild.in ${bindir}/Kbuild @ONLY)
@@ -203,11 +205,8 @@ if(${ASGARD_KERNEL_MODULE})
     endforeach()
 
     set(XLANE_EXTRA_FLAGS "-g")
-    set(module_cmd $(MAKE) -C ${kerneldir} M= ccflags-y+="-DASGARD_KERNEL_MODULE=1" ccflags-y+="-DASGARD_REAL_TEST=${ASGARD_REAL_TEST}" ccflags-y+="${XLANE_EXTRA_FLAGS}" EXTRA_CFLAGS=${XLANE_EXTRA_FLAGS})
-    message("using module cmd: ${module_cmd}\n")
-    message("module_sources_lkm: ${module_sources_lkm}")
-    message("bindir: ${bindir}")
-    message("module_cmd: ${module_cmd}")
+    set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir}  ccflags-y+="-DASGARD_KERNEL_MODULE=1" ccflags-y+="-DASGARD_REAL_TEST=${ASGARD_REAL_TEST}" ccflags-y+="${XLANE_EXTRA_FLAGS}" EXTRA_CFLAGS=${XLANE_EXTRA_FLAGS})
+    message("using module cmd: ${module_cmd}")
 
 
     add_custom_command(OUTPUT asgard.ko
@@ -215,11 +214,8 @@ if(${ASGARD_KERNEL_MODULE})
             WORKING_DIRECTORY ${bindir}
             DEPENDS ${module_sources_lkm} ${bindir}
             VERBATIM)
-
-
     add_compile_definitions(ASGARD_KERNEL_MODULE)
-    message("using  kerneldir ${kerneldir}")
-    message("using  bindir ${bindir}")
+    message("using  ${kerneldir}")
 
     file(TOUCH "${bindir}/asgard-${ASGARD_KERNEL_VERSION_STRING}.version")
 

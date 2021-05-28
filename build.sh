@@ -14,7 +14,7 @@ while [[ "$#" -gt 0 ]]; do
         -p|--plain) plain=1;;
         -d|--dpdk) dpdk=1 ;;
         -k|--kerneldir) kerneldir="$2"; shift ;;
-        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+        *) echo "[ASGARD build.sh] Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
 done
@@ -38,7 +38,7 @@ build_lkm() {
 }
 
 build_dpdk() {
-  echo "[ASGARD BUILD] Starting Build for dpdk asgard version"
+  echo "[ASGARD build.sh] Starting Build for dpdk asgard version"
 
   cd $SRC_DIR || (echo "Directory $SRC_DIR not found" && exit)
 
@@ -49,7 +49,7 @@ build_dpdk() {
 }
 
 build_plain() {
-  echo "[ASGARD BUILD] Starting Build for plain asgard version"
+  echo "[ASGARD build.sh] Starting Build for plain asgard version"
 
   cd $SRC_DIR || (echo "Directory $SRC_DIR not found" && exit)
 

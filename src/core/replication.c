@@ -11,9 +11,9 @@
 #include "list.h"
 #include <stdlib.h>
 #include <string.h>
-#include "../lkm/asgard-net.h"
 
 #else
+#include "../lkm/asgard-net.h"
 
 #include "module.h"
 
@@ -127,7 +127,7 @@ int do_prepare_log_replication_multicast(struct asgard_device *sdev, struct node
     if (!sdev->is_leader)
         return -1;
 
-    apkt = create_async_pkt(sdev->ndev, nodeAddr);
+    apkt = create_async_pkt(sdev, nodeAddr);
     ret = setup_append_multicast_msg(sdev, get_payload_ptr(apkt));
 
     // handle errors
@@ -173,7 +173,7 @@ int do_prepare_log_replication(struct asgard_device *sdev, int target_id, int32_
                 continue;
 
             // asgard_dbg("enqueuing pkt for target %d - num_of_proto_instances  %d\n", target_id,sdev->num_of_proto_instances);
-            apkt = create_async_pkt(spminfo->pm_targets[target_id].pkt_data.naddr);
+            apkt = create_async_pkt(sdev, spminfo->pm_targets[target_id].pkt_data.naddr);
 
             if(!apkt) {
                 asgard_error("Could not allocate async pkt!\n");

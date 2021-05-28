@@ -278,7 +278,6 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
             }
 
             register_peer_by_ip(sdev, cluster_ip_ad, cluster_id_ad);
-            asgard_update_skb_payload
             return;
         }
     }
