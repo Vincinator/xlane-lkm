@@ -61,6 +61,16 @@ acli unload-kernel-module
 # Example Use Cases
 
 
+# Development Snippets
+
+```
+curl -X POST http://cerebro:ACCESS_TOKEN@JENKINS_IP:JENKINS_PORT/job/Vincent/job/Build%20and%20Publish%20-%20ASGARD/job/master/build
+```
+
+
+
+
+
 
 # Licence
 

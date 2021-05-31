@@ -951,8 +951,7 @@ int do_pacemaker(void *data) {
 
     prev_time = ASGARD_TIMESTAMP;
     while (pacemaker_is_alive(spminfo)) {
-        if(sdev->verbose > 5)
-            asgard_dbg("PM loop\n");
+
         cur_time = ASGARD_TIMESTAMP;
 
         out_of_sched_hb = 0;
