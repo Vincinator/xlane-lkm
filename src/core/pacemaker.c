@@ -1001,7 +1001,7 @@ emit:
             err = emit_pkts_scheduled(sdev, spminfo);
 
             //  Post HB emission work. Setup next HB message and update states
-            for(i=0; i< spminfo->num_of_targets; i++)
+            for(i = 0; i< spminfo->num_of_targets; i++)
                 pre_hb_setup(sdev, spminfo->pm_targets[i].hb_pkt_data.payload, i);
 
             for(i = 0; i < spminfo->num_of_targets; i++)

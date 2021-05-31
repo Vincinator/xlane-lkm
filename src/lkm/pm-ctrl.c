@@ -510,10 +510,12 @@ static ssize_t asgard_target_write(struct file *file, const char __user *user_bu
             }
             state = 1;
         } else if (state == 1) {
+            current_mac = AMALLOC(sizeof(unsigned char) * 6, 1);
+
             asgard_convert_mac(input_str, current_mac);
+
             if (!current_mac) {
-                asgard_error(
-                "Invalid MAC. Failed to convert to byte string.\n");
+                asgard_error( "Invalid MAC. Failed to convert to byte string.\n");
                 return -EINVAL;
             }
         state = 2;
@@ -538,14 +540,15 @@ static ssize_t asgard_target_write(struct file *file, const char __user *user_bu
             sdev->ci->cluster_self_id = cluster_id;
 
         } else {
-            asgard_core_register_remote_host(sdev->asgard_id,
-            current_ip, current_mac,
-            current_protocol, cluster_id);
+            asgard_core_register_remote_host(sdev->asgard_id,current_ip, current_mac,
+                                                current_protocol, cluster_id);
             i++;
         }
         state = 0;
+
+        // current_mac is allocated in this function when state == 1
         if (current_mac)
-        kfree(current_mac);
+            kfree(current_mac);
         }
     }
     spminfo->num_of_targets = i;
