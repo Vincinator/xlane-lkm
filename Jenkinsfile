@@ -74,7 +74,13 @@ pipeline {
         post
         {
           success { script { BUILD_SUCCESS_LKM='true' } }
-         // failure { script { BUILD_SUCCESS_LKM='false' } }
+          failure {
+            script {
+              BUILD_SUCCESS_LKM='false'
+              error("Build Asgard Module failed")
+ 
+            } 
+          }
         }
     }
 
@@ -106,7 +112,13 @@ pipeline {
         post
         {
           success { script { BUILD_SUCCESS_DPDK='true' } }
-         // failure { script { BUILD_SUCCESS_DPDK='false' } }
+          failure {
+              script {
+                BUILD_SUCCESS_DPDK='false' 
+                error("Build Asgard DPDK failed")
+
+              }
+          }
         }
     }
 
@@ -138,7 +150,12 @@ pipeline {
         post
         {
           success { script { BUILD_SUCCESS_PLAIN='true' } }
-          // failure { script { BUILD_SUCCESS_PLAIN='false' } }
+          failure { 
+            script {
+               BUILD_SUCCESS_PLAIN='false' 
+               error("Building Asgard Plain failed")
+            }
+          }
         }
       }
 
