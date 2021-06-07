@@ -74,7 +74,7 @@ pipeline {
         post
         {
           success { script { BUILD_SUCCESS_LKM='true' } }
-          failure { script { BUILD_SUCCESS_LKM='false' } }
+         // failure { script { BUILD_SUCCESS_LKM='false' } }
         }
     }
 
@@ -106,7 +106,7 @@ pipeline {
         post
         {
           success { script { BUILD_SUCCESS_DPDK='true' } }
-          failure { script { BUILD_SUCCESS_DPDK='false' } }
+         // failure { script { BUILD_SUCCESS_DPDK='false' } }
         }
     }
 
@@ -138,9 +138,9 @@ pipeline {
         post
         {
           success { script { BUILD_SUCCESS_PLAIN='true' } }
-          failure { script { BUILD_SUCCESS_PLAIN='false' } }
-    }
+          // failure { script { BUILD_SUCCESS_PLAIN='false' } }
         }
+      }
 
     stage('Publish Asgard Plain version to Nexus Repository'){
         when {
