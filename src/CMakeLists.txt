@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 project(asgard C)
 
 # -------------------------------------------
-message(" 222Checking build parameters: ")
+message("Checking build parameters: ")
 set(ASGARD_KERNEL_MODULE 1)
 
 if(DEFINED ENV{CALL_FROM_BUILD_SCRIPT})
@@ -53,7 +53,7 @@ endif()
 
 
 # set(kerneldir "/home/vincent/workspace/asgard-kernel")
-set(bindir "${CMAKE_SOURCE_DIR}/../bin")
+set(bindir "${CMAKE_SOURCE_DIR}/../build")
 
 # -------------------------------------------
 if(${ASGARD_DPDK})
@@ -188,7 +188,6 @@ if(${ASGARD_KERNEL_MODULE})
         list(APPEND module_sources_lkm ../src/${src})
         #message("configuring source path  ../src/${src}")
     endforeach()
-
 
     set(ASGARD_KERNEL_MODULE 1)
 
