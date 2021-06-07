@@ -367,6 +367,7 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
 
     if (unlikely(sdev->pminfo.state != ASGARD_PM_EMITTING))
         return;
+        
     asgard_dbg("function: %s, line: %d\n", __FUNCTION__,__LINE__);
 
     get_cluster_ids_by_mac(sdev, remote_mac, &remote_lid, &rcluster_id);

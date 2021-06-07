@@ -53,7 +53,7 @@ endif()
 
 
 # set(kerneldir "/home/vincent/workspace/asgard-kernel")
-set(bindir "${CMAKE_SOURCE_DIR}/../build")
+set(bindir "${CMAKE_SOURCE_DIR}/../bin")
 
 # -------------------------------------------
 if(${ASGARD_DPDK})
