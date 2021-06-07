@@ -114,13 +114,8 @@ struct node_addr {
     int cluster_id;
     uint32_t dst_ip;
     uint32_t port;
-
-
-#ifndef ASGARD_KERNEL_MODULE
-    unsigned char dst_mac[6];
-#else
+    
     unsigned char *dst_mac;
-#endif
 
 };
 

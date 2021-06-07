@@ -187,6 +187,10 @@ void get_cluster_ids_by_mac(struct asgard_device *sdev, unsigned char *remote_ma
     *cid = -1;
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
+        if(!spminfo->pm_targets[i].pkt_data.naddr.dst_mac){
+            asgard_error("Uninitialized destination MAC");
+            continue;
+        }
         if (compare_mac(spminfo->pm_targets[i].pkt_data.naddr.dst_mac, remote_mac) == 0) {
             *cid = spminfo->pm_targets[i].pkt_data.naddr.cluster_id;
             *lid = i;
@@ -367,7 +371,7 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
 
     if (unlikely(sdev->pminfo.state != ASGARD_PM_EMITTING))
         return;
-        
+
     asgard_dbg("function: %s, line: %d\n", __FUNCTION__,__LINE__);
 
     get_cluster_ids_by_mac(sdev, remote_mac, &remote_lid, &rcluster_id);
