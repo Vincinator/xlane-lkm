@@ -351,36 +351,26 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
         asgard_error("sdev is NULL\n");
         return;
     }
-    asgard_dbg("function: %s, line: %d\n", __FUNCTION__,__LINE__);
-    asgard_dbg("cqe_bcnt: %d\n", cqe_bcnt);
-
     // freed by pkt_process_handler
     payload = kzalloc(cqe_bcnt, GFP_KERNEL);
     memcpy(payload, payload_in, cqe_bcnt);
-    asgard_dbg("function: %s, line: %d\n", __FUNCTION__,__LINE__);
-    asgard_dbg("headroom: %d\n", headroom);
 
     // asgard_write_timestamp(sdev, 1, RDTSC_ASGARD, asgard_id);
 
     remote_mac = ((char *)payload) + headroom + 6;
     user_data = ((char *)payload) + headroom + ETH_HLEN +
                 sizeof(struct iphdr) + sizeof(struct udphdr);
-    asgard_dbg("function: %s, line: %d\n", __FUNCTION__,__LINE__);
 
     //ts2 = RDTSC_ASGARD;
 
     if (unlikely(sdev->pminfo.state != ASGARD_PM_EMITTING))
         return;
 
-    asgard_dbg("function: %s, line: %d\n", __FUNCTION__,__LINE__);
 
     get_cluster_ids_by_mac(sdev, remote_mac, &remote_lid, &rcluster_id);
-    asgard_dbg("function: %s, line: %d\n", __FUNCTION__,__LINE__);
 
     do_post_payload(sdev, remote_lid, rcluster_id, payload, cqe_bcnt, ots);
 
-
-    asgard_dbg("function: %s, line: %d\n", __FUNCTION__,__LINE__);
 
 }
 
