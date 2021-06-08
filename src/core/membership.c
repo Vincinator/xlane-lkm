@@ -133,40 +133,40 @@ int add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
 
 
 /*
- * Returns 1 if ip has been successfully registered
- * Returns 0 otherwise
+ * Returns 0 if ip has been successfully registered
  */
-int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
-
+int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int cluster_id){
+ 
     struct asgard_pm_target_info *pmtarget;
 
     asgard_dbg("[DEBUG] %s\n", __FUNCTION__ );
 
-    if(id == sdev->pminfo.cluster_id){
+    if(cluster_id == sdev->pminfo.cluster_id){
         sdev->self_ip = ip;
-
-        return 0;
+        return -EINVAL;
     }
 
     if (sdev->pminfo.num_of_targets >= MAX_REMOTE_SOURCES) {
         asgard_error("Reached Limit of remote hosts.\n");
         asgard_error("Limit is=%d\n", MAX_REMOTE_SOURCES);
-        return 0;
+        return -EINVAL;
     }
 
     pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
 
     if (!pmtarget) {
         asgard_error("Pacemaker target is NULL\n");
-        return 0;
+        return -EINVAL;
     }
+
+    asg_mutex_init(&pmtarget->pkt_data.mlock);
 
     pmtarget->alive = 0;
     //pmtarget->pkt_data.sockaddr.sin_family = AF_INET; // IPv4
     pmtarget->pkt_data.naddr.dst_ip = htonl(ip);
     pmtarget->pkt_data.naddr.port = htons(sdev->tx_port);
 
-    pmtarget->cluster_id = id;
+    pmtarget->cluster_id = cluster_id;
     pmtarget->lhb_ts = 0;
     pmtarget->chb_ts = 0;
     pmtarget->resp_factor = 8;
@@ -188,11 +188,52 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
     pmtarget->hb_pkt_data.payload->protocols_included = 0;
 
     /* off-by one - so at index num_peers is nothing registered yet */
-
     pmtarget->aapriv = ACMALLOC(1, sizeof(struct asgard_async_queue_priv), GFP_KERNEL);
     init_asgard_async_queue(pmtarget->aapriv);
+ 
+#ifdef ASGARD_KERNEL_MODULE
+
+    spin_lock_init(&pmtarget->pkt_data.slock);
+
+
+    skb_set_queue_mapping(
+            sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb,
+            sdev->pminfo.active_cpu); // Queue mapping same for each target i
+
+#endif
+
+        /* Local ID is increasing with the number of targets */
+    add_cluster_member(sdev->ci, cluster_id, sdev->pminfo.num_of_targets, 2);
 
     sdev->pminfo.num_of_targets++;
+
+    return 0;
+}
+
+int register_peer(struct asgard_device *sdev, uint32_t ip, char *mac, 
+                    int current_protocol, 
+                    int cluster_id){
+
+    struct asgard_pm_target_info *pmtarget;
+
+    if(register_peer_by_ip(sdev, ip, cluster_id)){
+        asgard_error("Failed to init Peer\n");
+        return 0;
+    }
+
+    pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
+
+
+    pmtarget->pkt_data.naddr.dst_mac = AMALLOC(sizeof(unsigned char) * 6, GFP_KERNEL);
+    memcpy(pmtarget->pkt_data.naddr.dst_mac, mac,
+           sizeof(unsigned char) * 6);
+
+#ifdef ASGARD_KERNEL_MODULE
+    /* Out of schedule SKB  pre-allocation*/
+    sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb =
+            asgard_reserve_skb(sdev->ndev, ip, mac, NULL);
+#endif
+
 
     return 1;
 }
@@ -201,11 +242,9 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id){
 int register_peer_by_name(struct asgard_device *sdev, const char *cur_name, int id){
     int ret = register_peer_by_ip(sdev, hostname_to_ip(cur_name), id);
 
-    if(ret)
-        return -1;
-
-    asgard_dbg("Registered peer with: name = %s, port=%d, id = %d\n", cur_name, sdev->tx_port, id);
-    return 0;
+    if(ret == 0)
+        asgard_dbg("Registered peer with: name = %s, port=%d, id = %d\n", cur_name, sdev->tx_port, id);
+    return ret;
 }
 #endif
 

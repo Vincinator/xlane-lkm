@@ -540,7 +540,7 @@ static ssize_t asgard_target_write(struct file *file, const char __user *user_bu
             sdev->ci->cluster_self_id = cluster_id;
 
         } else {
-            asgard_core_register_remote_host(sdev->asgard_id,current_ip, current_mac,
+            register_peer(sdev, current_ip, current_mac,
                                                 current_protocol, cluster_id);
             i++;
         }

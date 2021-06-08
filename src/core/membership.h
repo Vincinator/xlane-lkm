@@ -94,3 +94,7 @@ void update_cluster_member(struct cluster_info* ci, int local_id, uint8_t state)
 void update_self_state(struct cluster_info *ci, node_state_t state);
 int hostname_to_ip(const char *hostname);
 void add_cluster_member(struct cluster_info* ci, int cluster_id, int local_id, uint8_t init_state);
+
+int register_peer(struct asgard_device *sdev, uint32_t ip, char *mac, 
+                    int current_protocol, 
+                    int cluster_id);

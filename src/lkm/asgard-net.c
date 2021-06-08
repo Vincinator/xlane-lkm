@@ -38,7 +38,7 @@ struct net_device *asgard_get_netdevice(int ifindex)
     while (ndev != NULL) {
         if (ndev->ifindex == ifindex)
             return ndev;
-        ;
+        
         ndev = next_net_device(ndev);
     }
 

@@ -71,23 +71,15 @@ struct asgard_async_pkt *dequeue_async_pkt(struct asgard_async_queue_priv *aqueu
 
 struct asgard_async_pkt *create_async_pkt(struct asgard_device *sdev, struct node_addr target_addr)
 {
-#ifndef ASGARD_KERNEL_MODULE
     struct asgard_async_pkt *apkt = NULL;
 
-    apkt = calloc(1, sizeof(struct asgard_async_pkt));
-    apkt->pkt_data.payload = calloc(1, sizeof(struct asgard_payload));
+    apkt = ACMALLOC(1, sizeof (struct asgard_async_pkt), GFP_KERNEL);
+    apkt->pkt_data.payload = ACMALLOC(1, sizeof(struct asgard_payload), GFP_KERNEL);
 
     apkt->pkt_data.naddr.port = target_addr.port;
     apkt->pkt_data.naddr.dst_ip = target_addr.dst_ip;
-
-#else
-    struct asgard_async_pkt *apkt = NULL;
-    // freed by _emit_async_pkts
-    apkt = kzalloc(sizeof(struct asgard_async_pkt), GFP_KERNEL);
-
     apkt->skb = asgard_reserve_skb(sdev->ndev, target_addr.dst_ip, target_addr.dst_mac, NULL);
 
-#endif
     return apkt;
 }
 

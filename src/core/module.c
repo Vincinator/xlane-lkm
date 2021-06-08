@@ -105,78 +105,6 @@ void asgard_post_ts(int asgard_id, uint64_t cycles, int ctype)
     }
 }
 
-int asgard_core_register_remote_host(int asgard_id, u32 ip, char *mac,
-                                     int protocol_id, int cluster_id)
-{
-    struct asgard_device *sdev = get_sdev(asgard_id);
-    struct asgard_pm_target_info *pmtarget;
-
-    if (!mac) {
-        asgard_error("input mac is NULL!\n");
-        return -1;
-    }
-
-    if (sdev->pminfo.num_of_targets >= MAX_REMOTE_SOURCES) {
-        asgard_error("Reached Limit of remote hosts.\n");
-        asgard_error("Limit is=%d\n", MAX_REMOTE_SOURCES);
-        return -1;
-    }
-
-    pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
-
-    if (!pmtarget) {
-        asgard_error("Pacemaker target is NULL\n");
-        return -1;
-    }
-    pmtarget->alive = 0;
-    pmtarget->pkt_data.naddr.dst_ip = ip;
-    pmtarget->pkt_data.naddr.cluster_id = cluster_id;
-    pmtarget->pkt_data.naddr.port = 3320;
-    pmtarget->lhb_ts = 0;
-    pmtarget->chb_ts = 0;
-    pmtarget->resp_factor = 4;
-    pmtarget->cur_waiting_interval = 2;
-    pmtarget->pkt_tx_counter = 0;
-    pmtarget->pkt_rx_counter = 0;
-    pmtarget->pkt_tx_errors = 0;
-
-    pmtarget->scheduled_log_replications = 0;
-    pmtarget->received_log_replications = 0;
-
-    pmtarget->pkt_data.payload =
-            kzalloc(sizeof(struct asgard_payload), GFP_KERNEL);
-
-    spin_lock_init(&pmtarget->pkt_data.slock);
-
-    asg_mutex_init(&pmtarget->pkt_data.mlock);
-    
-    pmtarget->pkt_data.naddr.dst_mac = AMALLOC(sizeof(unsigned char) * 6, GFP_KERNEL);
-
-    memcpy(pmtarget->pkt_data.naddr.dst_mac, mac,
-           sizeof(unsigned char) * 6);
-
-    /* Local ID is increasing with the number of targets */
-    add_cluster_member(sdev->ci, cluster_id, sdev->pminfo.num_of_targets,
-                       2);
-
-    pmtarget->aapriv =
-            kmalloc(sizeof(struct asgard_async_queue_priv), GFP_KERNEL);
-    init_asgard_async_queue(pmtarget->aapriv);
-
-    /* Out of schedule SKB  pre-allocation*/
-    sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb =
-            asgard_reserve_skb(sdev->ndev, ip, mac, NULL);
-    skb_set_queue_mapping(
-            sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets]
-                    .pkt_data.skb,
-            sdev->pminfo.active_cpu); // Queue mapping same for each target i
-
-    sdev->pminfo.num_of_targets = sdev->pminfo.num_of_targets + 1;
-    asgard_error("Registered Cluster Member with ID %d\n", cluster_id);
-
-    return 0;
-}
-EXPORT_SYMBOL(asgard_core_register_remote_host);
 
 
 void asg_init_workqueues(struct asgard_device *sdev){
@@ -414,7 +342,6 @@ static int __init asgard_connection_core_init(void)
 
     proc_mkdir("asgard", NULL);
 
-#if ASGARD_REAL_TEST
 
 	err = asgard_core_register_nic(ifindex,
 				       get_asgard_id_by_ifindex(ifindex));
@@ -423,7 +350,6 @@ static int __init asgard_connection_core_init(void)
 		asgard_error("Could not register NIC at asgard\n");
 		goto reg_failed;
 	}
-#endif
 
 // Pre-processor switch between asgard kernel and generic kernel
 #if ASGARD_REAL_TEST
