@@ -195,11 +195,6 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int cluster_id)
 
     spin_lock_init(&pmtarget->pkt_data.slock);
 
-
-    skb_set_queue_mapping(
-            sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb,
-            sdev->pminfo.active_cpu); // Queue mapping same for each target i
-
 #endif
 
         /* Local ID is increasing with the number of targets */
@@ -223,7 +218,6 @@ int register_peer(struct asgard_device *sdev, uint32_t ip, char *mac,
 
     pmtarget = &sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets];
 
-
     pmtarget->pkt_data.naddr.dst_mac = AMALLOC(sizeof(unsigned char) * 6, GFP_KERNEL);
     memcpy(pmtarget->pkt_data.naddr.dst_mac, mac,
            sizeof(unsigned char) * 6);
@@ -232,6 +226,10 @@ int register_peer(struct asgard_device *sdev, uint32_t ip, char *mac,
     /* Out of schedule SKB  pre-allocation*/
     sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb =
             asgard_reserve_skb(sdev->ndev, ip, mac, NULL);
+
+    skb_set_queue_mapping(
+            sdev->pminfo.pm_targets[sdev->pminfo.num_of_targets].pkt_data.skb,
+            sdev->pminfo.active_cpu); // Queue mapping same for each target i
 #endif
 
 
