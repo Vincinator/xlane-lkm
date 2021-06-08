@@ -152,7 +152,7 @@ struct asgard_ingress_logger {
     uint16_t instance_id;
     enum logger_state state;
 
-    struct asgard_logger *per_node_logger;
+    struct asgard_logger **per_node_logger;
 
     int num_of_nodes;
 };

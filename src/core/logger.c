@@ -167,7 +167,7 @@ int write_ingress_log(struct asgard_ingress_logger *ailog, enum le_event_type ty
         return -EINVAL;
     }
 
-    slog = &ailog->per_node_logger[node_id];
+    slog = ailog->per_node_logger[node_id];
 
     if(!slog) {
         asgard_error("Error in %s. per node logger for node %d is null \n",  __FUNCTION__, node_id);
@@ -262,7 +262,7 @@ void clear_ingress_logger(struct asgard_ingress_logger *ailog){
 
     if(ailog->per_node_logger) {
         for(i = 0; i < CLUSTER_SIZE; i++)
-            AFREE(ailog->per_node_logger[i].events);
+            AFREE(ailog->per_node_logger[i]->events);
 
         AFREE(ailog->per_node_logger);
     }
@@ -279,7 +279,7 @@ int init_ingress_logger(struct asgard_ingress_logger *ailog, int instance_id)
         return -EINVAL;
     }
 
-    ailog->per_node_logger = AMALLOC(sizeof(struct asgard_logger) * CLUSTER_SIZE, GFP_KERNEL);
+    ailog->per_node_logger = AMALLOC(sizeof(struct asgard_logger*) * CLUSTER_SIZE, GFP_KERNEL);
 
     if (!ailog->per_node_logger) {
         asgard_error("Could not allocate memory for logs\n");
@@ -288,8 +288,13 @@ int init_ingress_logger(struct asgard_ingress_logger *ailog, int instance_id)
 
     // Just init all loggers for all possible nodes.. TODO
     for(i = 0; i < CLUSTER_SIZE; i++){
-        init_logger(&ailog->per_node_logger[i], instance_id, -1, "nodelogger", -1);
-        logger_state_transition_to(&ailog->per_node_logger[i], LOGGER_RUNNING);
+        ailog->per_node_logger[i] = AMALLOC(sizeof(struct asgard_logger), GFP_KERNEL);
+        if (!ailog->per_node_logger[i]) {
+            asgard_error("Could not allocate memory for logs\n");
+            return -ENOMEM;
+        }
+        init_logger(ailog->per_node_logger[i], instance_id, -1, "nodelogger", -1);
+        logger_state_transition_to(ailog->per_node_logger[i], LOGGER_RUNNING);
     }
 
 
