@@ -540,6 +540,7 @@ static ssize_t asgard_target_write(struct file *file, const char __user *user_bu
             sdev->ci->cluster_self_id = cluster_id;
 
         } else {
+            asgard_dbg("Registering Node with current_protocol=%d, cluster_id=%d, mac=%s\n", current_protocol, cluster_id, current_mac);
             register_peer(sdev, current_ip, current_mac,
                                                 current_protocol, cluster_id);
             i++;
