@@ -53,7 +53,6 @@ void accept_vote(struct proto_instance *ins, int remote_lid, unsigned char *pkt)
 
     asgard_dbg("accepting vote\n");
 
-
     priv->votes++;
     write_log(&ins->logger, CANDIDATE_ACCEPT_VOTE, ASGARD_TIMESTAMP);
 

@@ -30,7 +30,6 @@ typedef enum {
 } asg_rw_locktype_t;
 
 
-
 #ifdef ASGARD_KERNEL_MODULE
 
     #define AFREE(ptr)                              \

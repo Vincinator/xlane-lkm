@@ -140,7 +140,7 @@ struct asgard_logger {
     int current_entries;
 
     /* Size is defined by LOGGER_EVENT_LIMIT */
-    struct logger_event *events;
+    struct logger_event **events;
 
     int applied;
     uint64_t first_ts;

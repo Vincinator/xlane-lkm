@@ -74,7 +74,8 @@ static int init_logger_out(struct asgard_logger *slog)
 int init_logger(struct asgard_logger *slog, uint16_t instance_id, int ifindex, char name[MAX_LOGGER_NAME], int accept_user_ts)
 {
     int err = 0;
-
+    int i;
+    
     if (!slog) {
         err = -EINVAL;
         asgard_error("logger device is NULL %s\n", __func__);
@@ -89,12 +90,18 @@ int init_logger(struct asgard_logger *slog, uint16_t instance_id, int ifindex, c
     strncpy(slog->name, name, MAX_LOGGER_NAME);
 
     // freed by clear_logger
-    slog->events = AMALLOC(LOGGER_EVENT_LIMIT * sizeof(struct logger_event), GFP_KERNEL);
+    slog->events = AMALLOC(LOGGER_EVENT_LIMIT * sizeof(struct logger_event*), GFP_KERNEL);
 
     if (!slog->events) {
         err = -ENOMEM;
         asgard_error("Could not allocate memory for leader election logs items\n");
         goto error;
+    }
+
+    /* Pre Allocate */
+    for (i = 0; i < LOGGER_EVENT_LIMIT; i++) {
+        // freed by clear_logger()
+         slog->events[i] = AMALLOC(sizeof(struct logger_event), GFP_KERNEL);
     }
 
     slog->current_entries = 0;
@@ -111,12 +118,23 @@ error:
 
 void clear_logger(struct asgard_logger *slog)
 {
-    if(slog->events)
+   int i;
+
+    if(slog->events){
+        for(i = 0; i < CLUSTER_SIZE; i++)
+            AFREE(slog->events[i]);
         AFREE(slog->events);
+    }
+
 }
 
 int write_log(struct asgard_logger *slog, enum le_event_type type, uint64_t tcs)
 {
+    if(!slog) {
+        asgard_error("Logger is Null\n");
+        return 0;
+    }
+
     if (slog->state != LOGGER_RUNNING)
         return 0;
 
@@ -128,8 +146,8 @@ int write_log(struct asgard_logger *slog, enum le_event_type type, uint64_t tcs)
         return -ENOMEM;
     }
 
-    slog->events[slog->current_entries].timestamp_tcs = tcs;
-    slog->events[slog->current_entries].type = type;
+    slog->events[slog->current_entries]->timestamp_tcs = tcs;
+    slog->events[slog->current_entries]->type = type;
 
     slog->current_entries += 1;
     return 0;
@@ -139,14 +157,25 @@ int write_ingress_log(struct asgard_ingress_logger *ailog, enum le_event_type ty
 {
     struct asgard_logger *slog;
 
+    if(!ailog) {
+        asgard_error("Error in %s. ingress logger is null \n", __FUNCTION__);
+        return -EINVAL;
+    }
+
     if(node_id < 0 || node_id > CLUSTER_SIZE){
         asgard_dbg("invalid/uninitialized logger for node %d\n", node_id);
         return -EINVAL;
     }
 
     slog = &ailog->per_node_logger[node_id];
+
+    if(!slog) {
+        asgard_error("Error in %s. per node logger for node %d is null \n",  __FUNCTION__, node_id);
+        return -EINVAL;
+    }
+    
+    slog->events[slog->current_entries]->node_id = node_id;
     write_log(slog, type, tcs);
-    slog->events[slog->current_entries].node_id = node_id;
 
     return 0;
 }
@@ -157,15 +186,15 @@ void calculate_deltas(struct asgard_logger *slog) {
 
     // init deltas to 0
     for(i = 0; i < slog->current_entries; i++)
-        slog->events[i].delta = 0;
+        slog->events[i]->delta = 0;
 
     for(i = 0; i < slog->current_entries; i++) {
 
-        if(slog->events[i].type != INGRESS_PACKET)
+        if(slog->events[i]->type != INGRESS_PACKET)
             continue;
 
-        slog->events[i].delta = slog->events[i].timestamp_tcs - prev;
-        prev = slog->events[i].timestamp_tcs;
+        slog->events[i]->delta = slog->events[i]->timestamp_tcs - prev;
+        prev = slog->events[i]->timestamp_tcs;
     }
 }
 #ifndef ASGARD_KERNEL_MODULE

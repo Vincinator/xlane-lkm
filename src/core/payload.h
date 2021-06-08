@@ -17,7 +17,6 @@
 #include "replication.h"
 #include "types.h"
 
-
 // protoid(uint16_t) + offset(uint16_t)
 #define GET_CON_AE_OPCODE_PTR(p) (uint16_t *)((char *) p + 2 + 2)
 
