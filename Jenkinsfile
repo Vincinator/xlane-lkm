@@ -42,14 +42,14 @@ pipeline {
     }
 
 
-    stage('Prepare Python Build VEnv'){
-        when { expression { VENV_EXISTS == 'false' } }
-        steps {
-            sh '''python3 -m venv asgardcli/asgard-cli-venv &&
-            . asgardcli/asgard-cli-venv/bin/activate &&
-            python3 -m pip install --upgrade build'''
-        }
-    }
+    // stage('Prepare Python Build VEnv'){
+    //     when { expression { VENV_EXISTS == 'false' } }
+    //     steps {
+    //         sh '''python3 -m venv asgardcli/asgard-cli-venv &&
+    //         . asgardcli/asgard-cli-venv/bin/activate &&
+    //         python3 -m pip install --upgrade build'''
+    //     }
+    // }
 
     stage('Build Asgard Module'){
         when {
@@ -63,7 +63,7 @@ pipeline {
 
             echo "$ASGARD_KERNEL_SRC"
 
-            sh 'cd asgardcli && . asgard-cli-venv/bin/activate && python3 setup.py clean --all && python3 -m build'
+           // sh 'cd asgardcli && . asgard-cli-venv/bin/activate && python3 setup.py clean --all && python3 -m build'
             sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
             sh 'cd bin && mv ../asgardcli/dist/* . && ls && tar -czvf asgard-lkm.tar.gz *.ko *.version *.whl *.tar.gz ../acli-installer.sh'
             archiveArtifacts 'bin/asgard-lkm.tar.gz'
