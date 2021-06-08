@@ -552,7 +552,7 @@ static ssize_t asgard_target_write(struct file *file, const char __user *user_bu
             kfree(current_mac);
         }
     }
-    spminfo->num_of_targets = i;
+    // spminfo->num_of_targets = i;
 
     return count;
 error:
