@@ -65,7 +65,7 @@ pipeline {
 
            // sh 'cd asgardcli && . asgard-cli-venv/bin/activate && python3 setup.py clean --all && python3 -m build'
             sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
-            sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko *.version *.tar.gz '
+            sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko *.version'
             archiveArtifacts 'bin/asgard-lkm.tar.gz'
 //            office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
 
