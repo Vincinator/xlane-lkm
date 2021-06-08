@@ -280,10 +280,9 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
                 AFREE(payload);
                 return;
             }
-
             register_peer_by_ip(sdev, cluster_ip_ad, cluster_id_ad);
-            return;
-        }
+        } 
+        return;
     }
     if(sdev->verbose >= 4)
         asgard_dbg("Packet from remote_lid: %d \n", remote_lid);
