@@ -628,7 +628,6 @@ int emit_async_unicast_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
                                                      cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload,
                                                      spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 #elif ASGARD_KERNEL_MODULE
-            asgard_dbg("Function %s debug \n", __FUNCTION__);
 
             skb_set_queue_mapping(cur_apkt->skb, smp_processor_id());
 
@@ -636,7 +635,6 @@ int emit_async_unicast_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
             asgard_update_skb_payload(cur_apkt->skb, cur_apkt->pkt_data.payload);
             asgard_send_skb(sdev->ndev, spminfo, cur_apkt->skb);
 
-            asgard_dbg("Function %s debug \n", __FUNCTION__);
 #else
             emit_packet(cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload);
 
@@ -669,7 +667,6 @@ int emit_async_multicast_pkt(struct asgard_device *sdev, struct pminfo *spminfo)
         //                                cur_apkt->pkt_data.payload,
         //                                NULL, sdev->rte_self_mac);
 #elif ASGARD_KERNEL_MODULE
-        asgard_dbg("Function %s debug \n", __FUNCTION__);
 
         skb_set_queue_mapping(cur_apkt->skb, smp_processor_id());
 
@@ -677,7 +674,6 @@ int emit_async_multicast_pkt(struct asgard_device *sdev, struct pminfo *spminfo)
         asgard_update_skb_payload(cur_apkt->skb, cur_apkt->pkt_data.payload);
         asgard_send_skb(sdev->ndev, spminfo, cur_apkt->skb);
 
-        asgard_dbg("Function %s debug \n", __FUNCTION__);
 
 #else
         emit_packet(cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload);
@@ -705,7 +701,6 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
     //                               pkt_payload->payload,
     //                               spminfo->pm_targets[i].mac_addr, sdev->rte_self_mac);
 #elif ASGARD_KERNEL_MODULE
-    asgard_dbg("Function %s debug \n", __FUNCTION__);
 
     skb_set_queue_mapping(pkt_payload->skb, smp_processor_id());
 
@@ -757,7 +752,6 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 
 #elif ASGARD_KERNEL_MODULE
-        asgard_dbg("Function %s debug \n", __FUNCTION__);
 
         asgard_update_skb_udp_port(spminfo->pm_targets[i].pkt_data.skb, sdev->tx_port);
         asgard_update_skb_payload(spminfo->pm_targets[i].pkt_data.skb, spminfo->pm_targets[i].pkt_data.payload);
@@ -823,14 +817,12 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
                                                  pkt_payload,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 #elif ASGARD_KERNEL_MODULE
-        asgard_dbg("Function %s debug \n", __FUNCTION__);
 
         asgard_update_skb_udp_port(spminfo->multicast_skb, sdev->tx_port);
         asgard_update_skb_payload(spminfo->multicast_skb, pkt_payload);
 
         /* Send heartbeats to all targets */
         asgard_send_skb(sdev->ndev, spminfo, spminfo->multicast_skb);
-        //asgard_dbg("Function %s debug \n", __FUNCTION__);
 
 #else
         emit_packet(spminfo->pm_targets[i].hb_pkt_data.naddr, pkt_payload);
