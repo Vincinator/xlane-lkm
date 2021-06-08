@@ -106,7 +106,7 @@ int add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id){
 
     asgard_dbg("registering mac for cluster id: %d\n", pmtarget->cluster_id);
 #ifdef ASGARD_DPDK
-    pmtarget->mac_addr =AMALLOC(sizeof(struct rte_ether_addr), 0);
+    pmtarget->mac_addr = AMALLOC(sizeof(struct rte_ether_addr), 0);
 
     if(!pmtarget->mac_addr){
         asgard_dbg("failed to allocate memory for mac addr!\n");
@@ -139,7 +139,7 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int cluster_id)
  
     struct asgard_pm_target_info *pmtarget;
 
-    asgard_dbg("[DEBUG] %s\n", __FUNCTION__ );
+    asgard_dbg(" %s, cluster_id=%d\n",  __FUNCTION__ , cluster_id);
 
     if(cluster_id == sdev->pminfo.cluster_id){
         sdev->self_ip = ip;
@@ -197,7 +197,7 @@ int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int cluster_id)
 
 #endif
 
-        /* Local ID is increasing with the number of targets */
+    /* Local ID is increasing with the number of targets */
     add_cluster_member(sdev->ci, cluster_id, sdev->pminfo.num_of_targets, 2);
 
     sdev->pminfo.num_of_targets++;
