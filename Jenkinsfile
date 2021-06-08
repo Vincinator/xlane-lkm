@@ -67,13 +67,18 @@ pipeline {
             sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
             sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko *.version'
             archiveArtifacts 'bin/asgard-lkm.tar.gz'
-//            office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
 
           }
         }
         post
         {
-          success { script { BUILD_SUCCESS_LKM='true' } }
+          success { 
+            script {
+               BUILD_SUCCESS_LKM='true' 
+               office365ConnectorSend message: "ASGARD Kernel Module build successfully with kernel version ${kernel_version}", webhookUrl: WEBHOOK
+
+            } 
+          }
           failure {
             script {
               BUILD_SUCCESS_LKM='false'
