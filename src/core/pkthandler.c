@@ -285,8 +285,10 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
         } 
         return;
     }
-    if(sdev->verbose >= 4)
+    
+    if(sdev->verbose >= 10)
         asgard_dbg("Packet from remote_lid: %d \n", remote_lid);
+
     // Update aliveness state and timestamps
     spminfo->pm_targets[remote_lid].chb_ts = ASGARD_TIMESTAMP;
     spminfo->pm_targets[remote_lid].alive = 1;
@@ -368,7 +370,7 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
 
 
     get_cluster_ids_by_mac(sdev, remote_mac, &remote_lid, &rcluster_id);
-    asgard_dbg("remote_lid=%d, rcluster_id=%d\n", remote_lid, rcluster_id);
+    // asgard_dbg("remote_lid=%d, rcluster_id=%d\n", remote_lid, rcluster_id);
 
     do_post_payload(sdev, remote_lid, rcluster_id, payload, cqe_bcnt, ots);
 
