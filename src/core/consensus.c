@@ -199,7 +199,7 @@ void le_state_transition_to(struct consensus_priv *priv, enum le_state state) {
 }
 
 int node_transition(struct proto_instance *ins, node_state_t state) {
-    int err;
+    int err = 0;
     struct consensus_priv *priv =
             (struct consensus_priv *) ins->proto_data;
 
