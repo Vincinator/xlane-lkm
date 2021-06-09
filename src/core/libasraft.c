@@ -131,7 +131,7 @@ struct proto_instance *generate_protocol_instance(struct asgard_device *sdev, in
 }
 
 
-void init_asgard_device(struct asgard_device *sdev){
+int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex){
     int i;
 
     sdev->hold_fire = 0;
@@ -145,6 +145,111 @@ void init_asgard_device(struct asgard_device *sdev){
 #endif
 
 #ifdef ASGARD_KERNEL_MODULE
+
+
+	sdev->ifindex = ifindex;
+	sdev->hb_interval = 0;
+
+	sdev->bug_counter = 0;
+	sdev->asgard_id = asgard_id;
+	sdev->ndev = asgard_get_netdevice(ifindex);
+	sdev->pminfo.num_of_targets = 0;
+	sdev->pminfo.waiting_window = 100000;
+	sdev->verbose = 0;
+	sdev->rx_state = ASGARD_RX_DISABLED;
+	sdev->ts_state = ASGARD_TS_UNINIT;
+	sdev->last_leader_ts = 0;
+	sdev->num_of_proto_instances = 0;
+	sdev->hold_fire = 0;
+	sdev->tx_port = 3319;
+	sdev->cur_leader_lid = -1;
+	sdev->is_leader = 0;
+	sdev->consensus_priv = NULL;
+	sdev->echo_priv = NULL;
+
+    sdev->multicast.naddr.dst_mac = AMALLOC(sizeof(char) * 6, 1);
+	sdev->multicast.naddr.dst_ip = asgard_ip_convert("232.43.211.234");
+	asgard_convert_mac("01:00:5e:2b:d3:ea", sdev->multicast.naddr.dst_mac);
+
+    sdev->multicast.aapriv =
+		kmalloc(sizeof(struct asgard_async_queue_priv), GFP_KERNEL);
+
+	sdev->multicast.delay = 0;
+	sdev->multicast.enable = 0;
+	sdev->multicast.nextIdx = 0;
+
+	init_asgard_async_queue(sdev->multicast.aapriv);
+
+	if (sdev->ndev) {
+		if (!sdev->ndev->ip_ptr ||
+		    !sdev->ndev->ip_ptr->ifa_list) {
+			asgard_error(
+				"Network Interface with ifindex %d has no IP Address configured!\n",
+				ifindex);
+			return -EINVAL;
+		}
+
+		sdev->self_ip =
+			sdev->ndev->ip_ptr->ifa_list->ifa_address;
+
+		if (!sdev->self_ip) {
+			asgard_error("self IP Address is NULL!");
+			return -EINVAL;
+		}
+
+		if (!sdev->ndev->dev_addr) {
+			asgard_error("self MAC Address is NULL!");
+			return -EINVAL;
+		}
+
+		sdev->self_mac = kmalloc(6, GFP_KERNEL);
+
+		memcpy(sdev->self_mac,
+		       sdev->ndev->dev_addr, 6);
+
+		asgard_dbg("Using IP: %x and MAC: %pMF",
+			   sdev->self_ip,
+			   sdev->self_mac);
+	}
+
+
+
+	sdev->pminfo.multicast_pkt_data.payload =
+		kzalloc(sizeof(struct asgard_payload), GFP_KERNEL);
+
+	sdev->pminfo.multicast_pkt_data_oos.payload =
+		kzalloc(sizeof(struct asgard_payload), GFP_KERNEL);
+
+	spin_lock_init(
+		&sdev->pminfo.multicast_pkt_data_oos.slock);
+
+    asg_mutex_init(&sdev->pminfo.multicast_pkt_data_oos.mlock);
+
+	sdev->asgard_leader_wq = alloc_workqueue(
+		"asgard_leader", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
+
+    /* Only one active Worker! Due to reading of the ringbuffer ..*/
+	sdev->asgard_ringbuf_reader_wq =
+		alloc_workqueue("asgard_ringbuf_reader",
+				WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_UNBOUND, 1);
+
+	for (i = 0; i < MAX_PROTO_INSTANCES; i++)
+		sdev->instance_id_mapping[i] = -1;
+
+	// freed by clear_protocol_instances
+	sdev->protos =
+		kmalloc_array(MAX_PROTO_INSTANCES,
+			      sizeof(struct proto_instance *), GFP_KERNEL);
+
+	if (!sdev->protos)
+		asgard_error("ERROR! Not enough memory for protocols\n");
+
+
+	/* set default heartbeat interval */
+	//sdev->pminfo.hbi = DEFAULT_HB_INTERVAL;
+	sdev->pminfo.hbi = CYCLES_PER_1MS;
+
+
     asg_init_workqueues(sdev);
 #endif
 
@@ -162,8 +267,31 @@ void init_asgard_device(struct asgard_device *sdev){
     register_protocol_instance(sdev, 1, ASGARD_PROTO_CONSENSUS, 0);
 
     register_protocol_instance(sdev, 2, ASGARD_PROTO_PP, 1);
+#ifdef ASGARD_KERNEL_MODULE
 
+	/* Initialize synbuf for Cluster Membership - one page is enough */
+	sdev->synbuf_clustermem =
+		create_synbuf("clustermem", 1);
 
+	if (!sdev->synbuf_clustermem) {
+		asgard_error("Could not create synbuf for clustermem");
+		return -1;
+	}
+
+    /* Write ci changes directly to the synbuf
+     * ubuf is at least one page which should be enough
+     */
+	sdev->ci =
+		(struct cluster_info *)sdev->synbuf_clustermem->ubuf;
+
+	sdev->ci->overall_cluster_member = 1; /* Node itself is a member */
+	sdev->ci->cluster_self_id =
+    sdev->pminfo.cluster_id;
+#else
     sdev->ci = ACMALLOC(1, sizeof(struct cluster_info), GFP_KERNEL);
+
+#endif
+
+    return 0;
 }
 

@@ -589,6 +589,6 @@ struct asgard_device {
 void dump_ingress_logs_to_file(struct asgard_device *sdev);
 int asgard_convert_mac(const char *str, unsigned char *bytestring_mac);
 uint32_t asgard_ip_convert(const char *str);
-void init_asgard_device(struct asgard_device *sdev);
+int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex);
 struct proto_instance *generate_protocol_instance(struct asgard_device *sdev, int protocol_id);
 const char *asgard_get_protocol_name(enum asgard_protocol_type protocol_type);

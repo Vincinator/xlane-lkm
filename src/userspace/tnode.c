@@ -231,7 +231,7 @@ tnode_t *init_node(tnode_t *tn) {
     tn->num_peers = 0;
     tn->reg_macs = 0;
     tn->reg_ips = 0;
-    init_asgard_device(tn->sdev);
+    init_asgard_device(tn->sdev, -1, -1);
     init_pacemaker(&tn->sdev->pminfo);
 
     return tn;
