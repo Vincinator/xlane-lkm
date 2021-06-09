@@ -149,27 +149,12 @@ int asgard_core_register_nic(int ifindex, int asgard_id)
 
 
 
+
     if(init_asgard_device(score->sdevices[asgard_id], asgard_id, ifindex)){
         asgard_error("Asgard Device initialization Failed!\n");
         return -ENODEV;
     }
 
-	/* Initialize Timestamping for NIC */
-	init_asgard_ts_ctrl_interfaces(score->sdevices[asgard_id]);
-	init_timestamping(score->sdevices[asgard_id]);
-
-	/* Initialize logger base for NIC */
-	//init_log_ctrl_base(score->sdevices[asgard_id]);
-
-	/*  Initialize protocol instance controller */
-	init_proto_instance_ctrl(score->sdevices[asgard_id]);
-
-	/*  Initialize multicast controller */
-	init_multicast(score->sdevices[asgard_id]);
-
-	/* Initialize Control Interfaces for NIC */
-	init_asgard_pm_ctrl_interfaces(score->sdevices[asgard_id]);
-	init_asgard_ctrl_interfaces(score->sdevices[asgard_id]);
 
 	/* Initialize Component States*/
 	pm_state_transition_to(&score->sdevices[asgard_id]->pminfo,

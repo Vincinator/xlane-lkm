@@ -7,6 +7,14 @@
 #ifdef ASGARD_KERNEL_MODULE
 #include <linux/slab.h>
 #include "module.h"
+
+#include "../lkm/core-ctrl.h"
+#include "../lkm/pm-ctrl.h"
+#include "../lkm/multicast-ctrl.h"
+#include "../lkm/proto-instance-ctrl.h"
+#include "../lkm/kernel_ts.h"
+#include "../lkm/ts-ctrl.h"
+
 #endif
 
 #ifndef ASGARD_KERNEL_MODULE
@@ -251,6 +259,26 @@ int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex){
 
 
     asg_init_workqueues(sdev);
+
+
+	/* Initialize Timestamping for NIC */
+	init_asgard_ts_ctrl_interfaces(sdev);
+	init_timestamping(sdev);
+
+	/* Initialize logger base for NIC */
+	//init_log_ctrl_base(sdev);
+
+	/*  Initialize protocol instance controller */
+	init_proto_instance_ctrl(sdev);
+
+	/*  Initialize multicast controller */
+	init_multicast(sdev);
+
+	/* Initialize Control Interfaces for NIC */
+	init_asgard_pm_ctrl_interfaces(sdev);
+	init_asgard_ctrl_interfaces(sdev);
+
+
 #endif
 
     for(i = 0; i < MAX_PROTO_INSTANCES; i++)
