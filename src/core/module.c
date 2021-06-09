@@ -144,14 +144,15 @@ int asgard_core_register_nic(int ifindex, int asgard_id)
 
 	score->num_devices++;
     
+	snprintf(name_buf, sizeof(name_buf), "asgard/%d", ifindex);
+	proc_mkdir(name_buf, NULL);
+
+
+
     if(init_asgard_device(score->sdevices[asgard_id], asgard_id, ifindex)){
         asgard_error("Asgard Device initialization Failed!\n");
         return -ENODEV;
     }
-
-	
-	snprintf(name_buf, sizeof(name_buf), "asgard/%d", ifindex);
-	proc_mkdir(name_buf, NULL);
 
 	/* Initialize Timestamping for NIC */
 	init_asgard_ts_ctrl_interfaces(score->sdevices[asgard_id]);
