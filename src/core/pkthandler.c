@@ -192,7 +192,7 @@ void get_cluster_ids_by_mac(struct asgard_device *sdev, unsigned char *remote_ma
             continue;
         }
         if (compare_mac(spminfo->pm_targets[i].pkt_data.naddr.dst_mac, remote_mac) == 0) {
-            *cid = spminfo->pm_targets[i].pkt_data.naddr.cluster_id;
+            *cid = spminfo->pm_targets[i].cluster_id;
             *lid = i;
             return;
         }
@@ -369,7 +369,7 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
 
     get_cluster_ids_by_mac(sdev, remote_mac, &remote_lid, &rcluster_id);
     asgard_dbg("remote_lid=%d, rcluster_id=%d\n", remote_lid, rcluster_id);
-    
+
     do_post_payload(sdev, remote_lid, rcluster_id, payload, cqe_bcnt, ots);
 
 
