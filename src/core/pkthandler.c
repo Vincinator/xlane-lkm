@@ -280,7 +280,8 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
                 AFREE(payload);
                 return;
             }
-            register_peer_by_ip(sdev, cluster_ip_ad, cluster_id_ad);
+            // use num of targets as local id, since id will be the index of the array
+            register_peer_by_ip(sdev, sdev->pminfo.num_of_targets, cluster_ip_ad, cluster_id_ad);
         } 
         return;
     }
@@ -339,7 +340,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
 
 void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uint32_t cqe_bcnt, uint64_t ots){
     struct asgard_device *sdev = get_sdev(asgard_id);
-    int remote_lid, rcluster_id;
+    int remote_lid = -2, rcluster_id = -2;
     //uint64_t ts2, ts3;
     char *payload;
     char *remote_mac;
@@ -367,7 +368,8 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
 
 
     get_cluster_ids_by_mac(sdev, remote_mac, &remote_lid, &rcluster_id);
-
+    asgard_dbg("remote_lid=%d, rcluster_id=%d\n", remote_lid, rcluster_id);
+    
     do_post_payload(sdev, remote_lid, rcluster_id, payload, cqe_bcnt, ots);
 
 

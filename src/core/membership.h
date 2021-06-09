@@ -88,7 +88,7 @@ struct cluster_info {
 int check_warmup_state(struct asgard_device *sdev, struct pminfo *spminfo);
 int register_peer_by_name(struct asgard_device *sdev, const char *cur_name, int id);
 int add_mac_to_peer_id(struct asgard_device *sdev, char *mac, int id);
-int register_peer_by_ip(struct asgard_device *sdev, uint32_t ip, int id);
+int register_peer_by_ip(struct asgard_device *sdev, int local_id, uint32_t ip, int cluster_id);
 int peer_is_registered(struct pminfo *spminfo , int cid);
 void update_cluster_member(struct cluster_info* ci, int local_id, uint8_t state);
 void update_self_state(struct cluster_info *ci, node_state_t state);
