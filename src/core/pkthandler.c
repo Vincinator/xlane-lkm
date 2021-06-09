@@ -168,7 +168,7 @@ void get_cluster_ids_by_ip(struct asgard_device *sdev, uint32_t remote_ip, int *
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
         if (spminfo->pm_targets[i].pkt_data.naddr.dst_ip == remote_ip) {
-            *cid = spminfo->pm_targets[i].pkt_data.naddr.cluster_id;
+            *cid = spminfo->pm_targets[i].cluster_id;
             *lid = i;
             return;
         }
@@ -188,7 +188,7 @@ void get_cluster_ids_by_mac(struct asgard_device *sdev, unsigned char *remote_ma
 
     for (i = 0; i < spminfo->num_of_targets; i++) {
         if(!spminfo->pm_targets[i].pkt_data.naddr.dst_mac){
-            asgard_error("Uninitialized destination MAC for cluster id: %d (total members=%d), i=%d\n", spminfo->pm_targets[i].pkt_data.naddr.cluster_id, spminfo->num_of_targets, i);
+            asgard_error("Uninitialized destination MAC for cluster id: %d (total members=%d), i=%d\n", spminfo->pm_targets[i].cluster_id, spminfo->num_of_targets, i);
             continue;
         }
         if (compare_mac(spminfo->pm_targets[i].pkt_data.naddr.dst_mac, remote_mac) == 0) {

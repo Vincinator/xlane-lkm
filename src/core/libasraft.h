@@ -111,7 +111,6 @@ struct proto_instance {
 };
 
 struct node_addr {
-    int cluster_id;
     uint32_t dst_ip;
     uint32_t port;
     
