@@ -180,6 +180,7 @@ typedef enum node_state {
     FOLLOWER = 0,
     CANDIDATE = 1,
     LEADER = 2,
+    NODE_UNINIT = 3,
 } node_state_t;
 
 enum le_state {

@@ -141,7 +141,7 @@ int register_peer_by_ip(struct asgard_device *sdev, int local_id, uint32_t ip, i
         return -EINVAL;
     }
     
-    asgard_dbg(" %s, local_id=%d, cluster_id=%d\n",  __FUNCTION__ , cluster_id);
+    asgard_dbg(" %s, local_id=%d, cluster_id=%d\n",  __FUNCTION__ , local_id, cluster_id);
 
     if (local_id >= MAX_REMOTE_SOURCES) {
         asgard_error("Reached Limit of remote hosts.\n");

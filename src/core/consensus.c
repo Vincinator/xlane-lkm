@@ -215,9 +215,12 @@ int node_transition(struct proto_instance *ins, node_state_t state) {
         case LEADER:
             err = stop_leader(ins);
             break;
+        case NODE_UNINIT:
+            break;
         default:
             asgard_error("Unknown node state %d\n - abort", state);
             err = -EINVAL;
+            goto error;
     }
 
     if(err){
@@ -237,7 +240,6 @@ int node_transition(struct proto_instance *ins, node_state_t state) {
             if (err) {
                 asgard_pm_stop(&priv->sdev->pminfo);
             }
-
             break;
         case LEADER:
             err = start_leader(ins);
@@ -266,7 +268,7 @@ int node_transition(struct proto_instance *ins, node_state_t state) {
 
     return 0;
 
-    error:
+error:
     asgard_error(" node transition failed\n");
     return err;
 }
@@ -714,6 +716,9 @@ int consensus_stop(struct proto_instance *ins) {
         case LEADER:
             stop_leader(ins);
             break;
+        case NODE_UNINIT:
+            asgard_dbg("Node was not initialized, nothing to stop\n");
+            break;
     }
 
     le_state_transition_to(priv, LE_READY);
@@ -805,6 +810,9 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid,
             break;
         case LEADER:
             leader_process_pkt(ins, remote_lid, rcluster_id, payload);
+            break;
+        case NODE_UNINIT:
+            asgard_error(" Uninitialized state - BUG\n");
             break;
         default:
             asgard_error("Unknown state - BUG\n");
@@ -966,6 +974,7 @@ struct proto_instance *get_consensus_proto_instance(struct asgard_device *sdev)
     cpriv->throughput_logger.name = "consensus_throughput";
 
     cpriv->state = LE_UNINIT;
+    cpriv->nstate = NODE_UNINIT;
 
     cpriv->max_entries_per_pkt = MAX_AE_ENTRIES_PER_PKT;
     cpriv->sdev = sdev;
