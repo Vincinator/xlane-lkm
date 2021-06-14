@@ -323,7 +323,10 @@ static inline int out_of_schedule_multi_tx(struct asgard_device *sdev) {
     if (sdev->hold_fire)
         return 0;
 
-    return sdev->pminfo.multicast_pkt_data_oos_fire != 0;
+    if(sdev->multicast.enable == 0)
+        return 0;
+
+    return sdev->pminfo.multicast_pkt_data_oos_fire;
 }
 
 /* --------- Emitter Functions --------- */
@@ -730,6 +733,7 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
 
 int emit_async_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
 {
+
     asgard_dbg("multicast is: %d \n", sdev->multicast.enable);
 
     if (sdev->multicast.enable)
@@ -835,7 +839,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
         /* Send heartbeats to all targets */
         asgard_send_skb(sdev->ndev, spminfo, skb);
 
-        if(sdev->verbose <= 2)
+        if(sdev->verbose <= 200)
             asgard_dbg("emitted heartbeat for local remote id %d \n", i);
 
 #else
@@ -1010,6 +1014,7 @@ int do_pacemaker(void *data) {
 
         if (out_of_sched_hb)
             goto emit;
+
 
         out_of_sched_multi = out_of_schedule_multi_tx(sdev);
 
