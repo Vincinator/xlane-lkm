@@ -812,12 +812,15 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
 static inline int emit_pkts_scheduled(struct asgard_device *sdev,
                                        struct pminfo *spminfo) {
     struct asgard_payload *pkt_payload;
+    struct sk_buff *skb;
+
     int i;
 
     /* Send heartbeats to all targets */
     for(i=0; i< spminfo->num_of_targets; i++) {
 
         pkt_payload = spminfo->pm_targets[i].hb_pkt_data.payload;
+        skb  = spminfo->pm_targets[i].hb_pkt_data.skb;
 
 #ifdef ASGARD_DPDK
         sdev->tx_counter += emit_dpdk_asg_packet(sdev->dpdk_portid, sdev->self_ip,
@@ -826,11 +829,11 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 #elif ASGARD_KERNEL_MODULE
 
-        asgard_update_skb_udp_port(spminfo->multicast_skb, sdev->tx_port);
-        asgard_update_skb_payload(spminfo->multicast_skb, pkt_payload);
+        asgard_update_skb_udp_port(skb, sdev->tx_port);
+        asgard_update_skb_payload(skb, pkt_payload);
 
         /* Send heartbeats to all targets */
-        asgard_send_skb(sdev->ndev, spminfo, spminfo->multicast_skb);
+        asgard_send_skb(sdev->ndev, spminfo, skb);
 
 #else
         emit_packet(spminfo->pm_targets[i].hb_pkt_data.naddr, pkt_payload);
@@ -851,32 +854,42 @@ static inline int asgard_setup_hb_skbs(struct asgard_device  *sdev)
 {
     struct pminfo *spminfo = &sdev->pminfo;
 
-    asgard_dbg("setup hb skbs. \n");
+    if(sdev->verbose >= 1)
+        asgard_dbg("Setting up hb skbs\n");
 
     if (!spminfo) {
         asgard_error("spminfo is NULL \n");
         //BUG();
         return -1;
     }
-
     // BUG_ON(spminfo->num_of_targets > MAX_REMOTE_SOURCES);
-
-    asgard_dbg("broadcast ip: %x  mac: %pM", sdev->multicast.naddr.dst_ip,
+    if(sdev->multicast.enable) {
+        asgard_dbg("broadcast ip: %x  mac: %pM", sdev->multicast.naddr.dst_ip,
                 sdev->multicast.naddr.dst_mac);
 
-    spminfo->multicast_pkt_data_oos.skb = 
-        asgard_reserve_skb(sdev->ndev, sdev->multicast.naddr.dst_ip, sdev->multicast.naddr.dst_mac, NULL);
+        spminfo->multicast_pkt_data_oos.skb = 
+            asgard_reserve_skb(sdev->ndev, sdev->multicast.naddr.dst_ip, sdev->multicast.naddr.dst_mac, NULL);
 
-    skb_set_queue_mapping(
-            spminfo->multicast_pkt_data_oos.skb,
-            smp_processor_id()); // Queue mapping same for each target i
-    spminfo->multicast_pkt_data_oos.naddr.port = 3321; /* TODO */
+        skb_set_queue_mapping(
+                spminfo->multicast_pkt_data_oos.skb,
+                smp_processor_id()); // Queue mapping same for each target i
+        spminfo->multicast_pkt_data_oos.naddr.port = 3321; /* TODO */
 
-    spminfo->multicast_skb = asgard_reserve_skb(
-            sdev->ndev,  sdev->multicast.naddr.dst_ip, sdev->multicast.naddr.dst_mac, NULL);
-    skb_set_queue_mapping(
-            spminfo->multicast_skb,
-            smp_processor_id()); // Queue mapping same for each target i
+        spminfo->multicast_skb = asgard_reserve_skb(
+                sdev->ndev,  sdev->multicast.naddr.dst_ip, sdev->multicast.naddr.dst_mac, NULL);
+        skb_set_queue_mapping(
+                spminfo->multicast_skb,
+                smp_processor_id()); // Queue mapping same for each target i
+
+    } else {
+        if(sdev->verbose >= 1)
+            asgard_dbg("using unicast hb skbs\n");
+
+    }
+
+
+
+
 
     return 0;
 }

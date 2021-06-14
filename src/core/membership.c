@@ -224,14 +224,25 @@ int register_peer(struct asgard_device *sdev, uint32_t ip, char *mac,
     memcpy(pmtarget->pkt_data.naddr.dst_mac, mac,
            sizeof(unsigned char) * 6);
 
+
+
 #ifdef ASGARD_KERNEL_MODULE
     /* Out of schedule SKB  pre-allocation*/
-    sdev->pminfo.pm_targets[local_id].pkt_data.skb =
+    pmtarget->pkt_data.skb =
             asgard_reserve_skb(sdev->ndev, ip, mac, NULL);
 
     skb_set_queue_mapping(
-            sdev->pminfo.pm_targets[local_id].pkt_data.skb,
+            pmtarget->pkt_data.skb,
             sdev->pminfo.active_cpu); // Queue mapping same for each target i
+
+    pmtarget->hb_pkt_data.skb = 
+        asgard_reserve_skb(sdev->ndev,ip, mac, NULL);
+
+    skb_set_queue_mapping(
+            pmtarget->hb_pkt_data.skb,
+            sdev->pminfo.active_cpu); // Queue mapping same for each target i
+
+
 #endif
 
 

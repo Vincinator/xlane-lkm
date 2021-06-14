@@ -433,8 +433,6 @@ int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int
 
     cur_target_trip->scheduled_pings++;
 
-
-
     return 0;
 }
 
