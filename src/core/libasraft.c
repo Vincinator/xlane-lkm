@@ -295,6 +295,9 @@ int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex){
     register_protocol_instance(sdev, 1, ASGARD_PROTO_CONSENSUS, 0);
 
     register_protocol_instance(sdev, 2, ASGARD_PROTO_PP, 1);
+
+
+
 #ifdef ASGARD_KERNEL_MODULE
 
 	/* Initialize synbuf for Cluster Membership - one page is enough */

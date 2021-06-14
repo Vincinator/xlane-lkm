@@ -292,7 +292,6 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
         return;
     }
     
-
     // Update aliveness state and timestamps
     spminfo->pm_targets[remote_lid].chb_ts = ASGARD_TIMESTAMP;
     spminfo->pm_targets[remote_lid].alive = 1;

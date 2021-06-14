@@ -194,7 +194,9 @@ int register_peer_by_ip(struct asgard_device *sdev, int local_id, uint32_t ip, i
 
 #endif
 
-    /* Local ID is increasing with the number of targets */
+    /* Local ID is increasing with the number of targets 
+     * Initial node state is 2 (not joined yet)
+     */
     add_cluster_member(sdev->ci, cluster_id, local_id, 2);
 
     sdev->pminfo.num_of_targets++;
@@ -246,7 +248,7 @@ int register_peer_by_name(struct asgard_device *sdev, const char *cur_name, int 
 }
 #endif
 
-/*Checks if at least 3 Nodes have joined the cluster yet  */
+/* Checks if at least 3 Nodes have joined the cluster yet  */
 int check_warmup_state(struct asgard_device *sdev, struct pminfo *spminfo)
 {
     int i;
@@ -350,10 +352,10 @@ void update_cluster_member(struct cluster_info* ci, int local_id, uint8_t state)
     /* Cluster Member state changed */
     if(state != prev_state){
 
-        /* Cluster Member became marked as dead */
-        if(state == 0) {
-            if(prev_state != 2) 
-                ci->active_cluster_member--; // was never alive
+        /* Cluster Member became marked as dead
+         * Only update cluster member if it was in the cluster previously
+         */
+        if(state == 0 && prev_state != 2) {
             ci->dead_cluster_member++;
             ci->cluster_dropouts++;
             asgard_dbg("Cluster Member with local_id: %d dropped out\n", local_id);
@@ -361,10 +363,15 @@ void update_cluster_member(struct cluster_info* ci, int local_id, uint8_t state)
 
         /* Cluster Member became alive */
         if(state == 1) {
-            if(prev_state != 2) ci->dead_cluster_member--; // was never dead
+            if(prev_state == 2){
+                // cluster member was never dead, joining the first time
+                asgard_dbg("New Cluster Member with local_id: %d joined\n", local_id);
+            } else {
+                asgard_dbg("Cluster Member with local_id: %d became alive again \n", local_id);
+                ci->dead_cluster_member--; 
+            }
             ci->active_cluster_member++;
             ci->cluster_joins++;
-            asgard_dbg("Cluster Member with local_id: %d joined\n", local_id);
 
         }
 
