@@ -427,7 +427,9 @@ int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int
     set_pp_opcode((unsigned char *) pkt_payload_sub, PING, cur_target_trip->scheduled_pings, ts1, 0);
 
     add_ts1_to_local_store(pPriv, target_lid, ts1);
-    asgard_dbg("scheduled ping %d\n", cur_target_trip->scheduled_pings);
+    
+    if(pPriv->sdev->verbose >= 4)
+        asgard_dbg("scheduled ping %d\n", cur_target_trip->scheduled_pings);
 
     cur_target_trip->scheduled_pings++;
 
