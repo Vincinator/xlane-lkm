@@ -173,8 +173,20 @@ int write_ingress_log(struct asgard_ingress_logger *ailog, enum le_event_type ty
         asgard_error("Error in %s. per node logger for node %d is null \n",  __FUNCTION__, node_id);
         return -EINVAL;
     }
+
+    if (slog->state != LOGGER_RUNNING)
+        return 0;
     
+    if (slog->current_entries > LOGGER_EVENT_LIMIT) {
+
+        asgard_dbg("Logs are full! Stopped event logging. %s\n", __func__);
+        // asgard_log_stop(slog);
+        logger_state_transition_to(slog, LOGGER_LOG_FULL);
+        return -ENOMEM;
+    }
+
     slog->events[slog->current_entries]->node_id = node_id;
+
     write_log(slog, type, tcs);
 
     return 0;
