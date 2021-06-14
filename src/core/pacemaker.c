@@ -643,6 +643,7 @@ int emit_async_unicast_pkts(struct asgard_device *sdev, struct pminfo *spminfo)
             asgard_update_skb_udp_port(cur_apkt->skb, sdev->tx_port);
             asgard_update_skb_payload(cur_apkt->skb, cur_apkt->pkt_data.payload);
             asgard_send_skb(sdev->ndev, spminfo, cur_apkt->skb);
+            sdev->tx_counter++;
 
 #else
             emit_packet(cur_apkt->pkt_data.naddr, cur_apkt->pkt_data.payload);
@@ -682,6 +683,7 @@ int emit_async_multicast_pkt(struct asgard_device *sdev, struct pminfo *spminfo)
         asgard_update_skb_udp_port(cur_apkt->skb, sdev->tx_port);
         asgard_update_skb_payload(cur_apkt->skb, cur_apkt->pkt_data.payload);
         asgard_send_skb(sdev->ndev, spminfo, cur_apkt->skb);
+        sdev->tx_counter++;
 
 
 #else
@@ -716,6 +718,7 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
     asgard_update_skb_udp_port(pkt_payload->skb, pkt_payload->naddr.port);
     asgard_update_skb_payload(pkt_payload->skb, pkt_payload);
     asgard_send_skb(sdev->ndev, spminfo, pkt_payload->skb);
+    sdev->tx_counter++;
 
 #else
     emit_packet(pkt_payload->naddr, pkt_payload->payload);
@@ -767,6 +770,7 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
         asgard_update_skb_payload(spminfo->pm_targets[i].pkt_data.skb, spminfo->pm_targets[i].pkt_data.payload);
 
         asgard_send_skb(sdev->ndev, spminfo, spminfo->pm_targets[i].pkt_data.skb);
+        sdev->tx_counter++;
 
 #else
         emit_packet(spminfo->pm_targets[i].pkt_data.naddr, spminfo->pm_targets[i].pkt_data.payload);
