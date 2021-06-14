@@ -395,6 +395,9 @@ int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int
     uint64_t ts1;
     struct ping_pong_round_trip *cur_target_trip;
 
+    if(pPriv->state != PP_RUNNING)
+        return 0;
+
     if(target_lid < 0 || target_lid > pPriv->sdev->pminfo.num_of_targets){
         asgard_error("invalid target_lid. could not add ts1 to local store\n");
         return -1;
@@ -408,7 +411,8 @@ int setup_ping_msg(struct pingpong_priv *pPriv, struct asgard_payload *spay, int
     }
 
     if (cur_target_trip->scheduled_pings >= MAX_PING_PONG_ROUND_TRIPS) {
-        asgard_dbg("num of rounds exceeded maximum. \n");
+        asgard_dbg("num of rounds exceeded maximum. Stopping Ping Pong Protocol \n");
+        pingpong_state_transition_to(pPriv, PP_STOPPED);
         return 0;
     }
 
