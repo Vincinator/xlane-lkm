@@ -162,7 +162,7 @@ int write_ingress_log(struct asgard_ingress_logger *ailog, enum le_event_type ty
         return -EINVAL;
     }
 
-    if(node_id < 0 || node_id > CLUSTER_SIZE){
+    if(node_id < 0 || node_id >= CLUSTER_SIZE){
         asgard_dbg("invalid/uninitialized logger for node %d\n", node_id);
         return -EINVAL;
     }
