@@ -879,7 +879,7 @@ static inline int asgard_setup_hb_skbs(struct asgard_device  *sdev)
         spminfo->multicast_skb = asgard_reserve_skb(
                 sdev->ndev,  sdev->multicast.naddr.dst_ip, sdev->multicast.naddr.dst_mac, NULL);
         skb_set_queue_mapping(
-                spminfo->,
+                spminfo->multicast_skb,
                 smp_processor_id()); // Queue mapping same for each target i
 
     } else {
