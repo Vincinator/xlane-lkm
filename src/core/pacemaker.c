@@ -1183,7 +1183,6 @@ int asgard_pm_reset(struct pminfo *spminfo)
     }
 
     sdev = container_of(spminfo, struct asgard_device, pminfo);
-
     asgard_reset_remote_host_counter(sdev->asgard_id);
     return 0;
 }
