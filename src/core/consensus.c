@@ -699,7 +699,7 @@ int consensus_stop(struct proto_instance *ins) {
 
     asgard_dbg("===================== End of Run: ====================\n" );
 
-    asgard_dbg("Transmitted Packets:%llu\n", (unsigned long long) priv->sdev->tx_counter);
+    asgard_dbg("Transmitted Packets: %llu\n", priv->sdev->tx_counter);
 
     // Dump Logs to File
 #ifndef ASGARD_KERNEL_MODULE

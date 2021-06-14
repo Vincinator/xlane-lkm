@@ -1006,6 +1006,7 @@ int do_pacemaker(void *data) {
             break;
         }
 
+        /* Heartbeat messages */
         if (scheduled_hb)
             goto emit;
 
@@ -1013,7 +1014,7 @@ int do_pacemaker(void *data) {
         if (!check_async_window(prev_time, cur_time, interval, spminfo->waiting_window))
             continue;
 
-        /* including Leader Election Messages  */
+        /* Irregular heartbeats - e.g. Leader Election Messages  */
         out_of_sched_hb = out_of_schedule_tx(sdev);
 
         if (out_of_sched_hb)
@@ -1025,7 +1026,7 @@ int do_pacemaker(void *data) {
         if (out_of_sched_multi)
             goto emit;
 
-        /* including Log Replication Messages */
+        /* Asynchronous messages - e.g. Log Replication Messages */
         async_pkts = check_async_door(sdev);
 
         if (async_pkts)
