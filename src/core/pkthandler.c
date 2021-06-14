@@ -65,7 +65,8 @@ struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t p
     idx = sdev->instance_id_mapping[proto_id];
 
     if (idx < 0 || idx >= MAX_PROTO_INSTANCES){
-        asgard_error("idx is invalid: %d\n", idx);
+        if(sdev->verbose >= 5)
+            asgard_error("idx is invalid: %d\n", idx);
 
         return NULL;
     }
@@ -84,7 +85,8 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
     char *cur_payload_ptr = payload;
 
     if (instances > 4) {
-        asgard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
+        if(sdev->verbose >= 5)
+            asgard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
         return;
     }
 
@@ -99,7 +101,8 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
         cur_ins = get_proto_instance(sdev, cur_proto_id);
 
         if (!cur_ins) {
-            asgard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
+            if(sdev->verbose >= 4)
+                asgard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
 
         } else {
             //asgard_dbg("(i: %d, offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %lu )\n", i, cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
