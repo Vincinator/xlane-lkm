@@ -156,6 +156,12 @@ int register_peer_by_ip(struct asgard_device *sdev, int local_id, uint32_t ip, i
         return -EINVAL;
     }
 
+    /* Local ID is increasing with the number of targets 
+     * Initial node state is 2 (not joined yet)
+     */
+    add_cluster_member(sdev->ci, cluster_id, local_id, 2);
+
+
     asg_mutex_init(&pmtarget->pkt_data.mlock);
 
     pmtarget->alive = 0;
@@ -193,11 +199,6 @@ int register_peer_by_ip(struct asgard_device *sdev, int local_id, uint32_t ip, i
     spin_lock_init(&pmtarget->pkt_data.slock);
 
 #endif
-
-    /* Local ID is increasing with the number of targets 
-     * Initial node state is 2 (not joined yet)
-     */
-    add_cluster_member(sdev->ci, cluster_id, local_id, 2);
 
     sdev->pminfo.num_of_targets++;
 
