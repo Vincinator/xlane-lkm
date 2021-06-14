@@ -337,9 +337,11 @@ void synbuf_chardev_exit(struct synbuf_device *sdev)
 
     mutex_destroy(&sdev->ubuf_mutex);
 
-    device_del (sdev->device);
+    if(sdev->device)
+        device_del (sdev->device);
 
-    cdev_del(&sdev->cdev);
+    if(&sdev->cdev)
+        cdev_del(&sdev->cdev);
 
     if(sdev->ubuf){
         printk(KERN_INFO"[SYNBUF] cleaning ubuf now..\n");
