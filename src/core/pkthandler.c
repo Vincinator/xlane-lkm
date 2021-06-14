@@ -197,6 +197,9 @@ void get_cluster_ids_by_mac(struct asgard_device *sdev, unsigned char *remote_ma
         if (compare_mac(spminfo->pm_targets[i].pkt_data.naddr.dst_mac, remote_mac) == 0) {
             *cid = spminfo->pm_targets[i].cluster_id;
             *lid = i;
+            if(sdev->verbose >= 10)
+            asgard_dbg("Received Packet from cluster id %d and local id %d\n", *cid, *lid);
+
             return;
         }
     }

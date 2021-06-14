@@ -143,8 +143,6 @@ int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex){
     int i;
 
     sdev->hold_fire = 0;
-   
-    sdev->tx_port = 4000;
     sdev->tx_counter = 0;
 
 #ifdef ASGARD_MODULE_GIT_VERSION
