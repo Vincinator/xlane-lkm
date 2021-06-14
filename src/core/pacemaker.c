@@ -839,7 +839,7 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
         /* Send heartbeats to all targets */
         asgard_send_skb(sdev->ndev, spminfo, skb);
 
-        if(sdev->verbose <= 200)
+        if(sdev->verbose >= 200)
             asgard_dbg("emitted heartbeat for local remote id %d \n", i);
 
 #else
