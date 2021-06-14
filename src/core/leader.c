@@ -429,7 +429,7 @@ int start_leader(struct proto_instance *ins)
     initialize_indices(priv);
 
     sdev->is_leader = 1;
-    sdev->tx_port = 3319;
+    sdev->tx_port = 3320;
     priv->candidate_counter = 0;
 
     for(i = 0; i <sdev->pminfo.num_of_targets; i++) {
