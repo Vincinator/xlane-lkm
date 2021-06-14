@@ -352,7 +352,8 @@ void update_cluster_member(struct cluster_info* ci, int local_id, uint8_t state)
 
         /* Cluster Member became marked as dead */
         if(state == 0) {
-            if(prev_state != 2) ci->active_cluster_member--; // was never alive
+            if(prev_state != 2) 
+                ci->active_cluster_member--; // was never alive
             ci->dead_cluster_member++;
             ci->cluster_dropouts++;
             asgard_dbg("Cluster Member with local_id: %d dropped out\n", local_id);

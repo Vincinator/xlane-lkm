@@ -170,12 +170,20 @@ void pre_hb_setup(struct asgard_device *sdev, struct asgard_payload *pkt_payload
 }
 
 int asgard_pm_stop(struct pminfo *spminfo) {
+    int i;
+    struct asgard_device *sdev =
+            container_of(spminfo, struct asgard_device, pminfo);
+
     if (!spminfo) {
         asgard_error("spminfo is NULL.\n");
         return -EINVAL;
     }
 
     pm_state_transition_to(spminfo, ASGARD_PM_READY);
+
+    // Clear Cluster Membership
+    for(i = 0; i >spminfo->num_of_targets; i++)
+        update_cluster_member(sdev->ci, i, 0);
 
     return 0;
 }

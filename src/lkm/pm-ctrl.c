@@ -54,20 +54,19 @@ static ssize_t asgard_hb_ctrl_proc_write(struct file *file, const char __user *b
 
     switch (new_hb_state) {
         case 0:
-            asgard_error("0\n");
-
+            asgard_dbg("User request: stop pacemaker\n");
             asgard_pm_stop(spminfo);
             break;
         case 1:
-            asgard_error("pm loop start\n");
+            asgard_dbg("User request: start pacemaker\n");
             asgard_pm_start_loop(spminfo);
             break;
         case 2:
-            asgard_error("2\n");
+            asgard_dbg("User request: reset pacemaker\n");
             asgard_pm_reset(spminfo);
             break;
         default:
-            asgard_error("Unknown action!\n");
+            asgard_error("Unknown user request!\n");
             err = -EINVAL;
             goto error;
     }
