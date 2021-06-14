@@ -200,6 +200,7 @@ void get_cluster_ids_by_mac(struct asgard_device *sdev, unsigned char *remote_ma
             return;
         }
     }
+    asgard_error("Received Packet with unidentified sender\n");
 }
 
 
