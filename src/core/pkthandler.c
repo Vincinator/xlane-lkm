@@ -57,6 +57,12 @@ struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t p
 {
     int idx;
 
+    if(sdev->num_of_proto_instances == 0){
+        if(sdev->verbose >= 2)
+            asgard_dbg("No protocol initialized yet. Skipping this packet\n");
+        return NULL;
+    } 
+
     if (proto_id < 0 || proto_id > MAX_PROTO_INSTANCES){
         asgard_error("proto_id is invalid: %hu\n", proto_id);
 
@@ -104,13 +110,11 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
         if (!cur_ins) {
             if(sdev->verbose >= 1){
                 asgard_dbg("No instance for protocol id %d were found. instances=%d, i=%d", cur_proto_id, instances, i);
-            
-                print_hex_dump(KERN_DEBUG, "payload: ", DUMP_PREFIX_NONE, 32, 1,
-                    payload, bcnt > 1024 ? 1024 : bcnt , 0);
-
-                                
-                print_hex_dump(KERN_DEBUG, "cur_payload_ptr: ", DUMP_PREFIX_NONE, 32, 1,
-                    cur_payload_ptr, bcnt > 1024 ? 1024 : bcnt , 0);
+                if(sdev->verbose >= 20){   
+                    asgard_dbg("cur_payload_ptr Dump in %s: \n", __FUNCTION__);
+                    print_hex_dump(KERN_DEBUG, ": ", DUMP_PREFIX_NONE, 32, 1,
+                        cur_payload_ptr, bcnt > MAX_ASGARD_PAYLOAD_BYTES ? MAX_ASGARD_PAYLOAD_BYTES : bcnt , 0);
+                }
             }
 
         } else {
