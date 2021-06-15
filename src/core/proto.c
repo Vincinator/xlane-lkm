@@ -54,7 +54,6 @@ int register_protocol_instance(struct asgard_device *sdev, int instance_id, int 
 
     sdev->protos[idx]->instance_id = instance_id;
 
-    sdev->num_of_proto_instances++;
 
 #ifdef ASGARD_KERNEL_MODULE
     // Required before we call init of protocol
@@ -65,6 +64,7 @@ int register_protocol_instance(struct asgard_device *sdev, int instance_id, int 
         goto error;
 
     asgard_dbg("Registered  Protocol instance %d with protocol %s\n", instance_id, asgard_get_protocol_name(protocol_id));
+    sdev->num_of_proto_instances++;
 
     return 0;
 error:
