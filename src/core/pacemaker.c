@@ -765,6 +765,7 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
                                                  spminfo->pm_targets[i].mac_addr, sdev->self_mac);
 
 #elif ASGARD_KERNEL_MODULE
+        pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
 
         asgard_update_skb_udp_port(spminfo->pm_targets[i].pkt_data.skb, sdev->tx_port);
         asgard_update_skb_payload(spminfo->pm_targets[i].pkt_data.skb, spminfo->pm_targets[i].pkt_data.payload);
@@ -800,7 +801,7 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
 
         if (!target_fire[i])
             continue;
-            
+
         pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
 
         memset(pkt_payload, 0, sizeof(struct asgard_payload));

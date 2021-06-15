@@ -60,8 +60,6 @@ struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t p
     if (proto_id < 0 || proto_id > MAX_PROTO_INSTANCES){
         asgard_error("proto_id is invalid: %hu\n", proto_id);
 
- 
-
         return NULL;
     }
 
@@ -69,7 +67,7 @@ struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t p
 
     if (idx < 0 || idx >= MAX_PROTO_INSTANCES){
         if(sdev->verbose >= 5)
-            asgard_error("idx is invalid: %d\n", idx);
+            asgard_error("idx is invalid: %d, proto_id: %d\n", idx, proto_id);
 
         return NULL;
     }
