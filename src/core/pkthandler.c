@@ -238,12 +238,13 @@ void pkt_process_handler(struct work_struct *w)
                         GET_PROTO_START_SUBS_PTR(user_data),
                         aw->received_proto_instances, aw->cqe_bcnt, aw->ots);
 
-    exit:
+exit:
+    if (aw){
+        if(aw->payload)
+            kfree(aw->payload);
 
-    kfree(aw->payload);
-
-    if (aw)
         kfree(aw);
+    }
 }
 #else
 void *pkt_process_handler(void *data)
@@ -371,6 +372,13 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
     }
     // freed by pkt_process_handler
     payload = kzalloc(cqe_bcnt, GFP_KERNEL);
+
+    if(unlikely(!payload)){
+        asgard_error("Not enough memory to copy payload! \n");
+        return;
+    }
+
+
     memcpy(payload, payload_in, cqe_bcnt);
 
     // asgard_write_timestamp(sdev, 1, RDTSC_ASGARD, asgard_id);
