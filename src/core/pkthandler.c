@@ -204,8 +204,8 @@ void get_cluster_ids_by_mac(struct asgard_device *sdev, unsigned char *remote_ma
         if (compare_mac(spminfo->pm_targets[i].pkt_data.naddr.dst_mac, remote_mac) == 0) {
             *cid = spminfo->pm_targets[i].cluster_id;
             *lid = i;
-            if(sdev->verbose >= 10)
-            asgard_dbg("Received Packet from cluster id %d and local id %d\n", *cid, *lid);
+            if(sdev->verbose >= 100)
+                asgard_dbg("Received Packet from cluster id %d and local id %d\n", *cid, *lid);
 
             return;
         }
@@ -276,7 +276,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     struct pkt_work_data *wd;
     uint16_t received_proto_instances;
 
-    if(sdev->verbose >= 10)
+    if(sdev->verbose >= 100)
         asgard_dbg("Packet from remote_lid: %d \n", remote_lid);
 
     /* Remote IP is not registered as peer yet! */
