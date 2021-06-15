@@ -390,9 +390,9 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
 
     if(sdev->verbose >= 100)
         print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
-                            payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
+                            user_data, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
-    do_post_payload(sdev, remote_lid, rcluster_id, payload, cqe_bcnt, ots);
+    do_post_payload(sdev, remote_lid, rcluster_id, user_data, cqe_bcnt, ots);
 
 
 }
