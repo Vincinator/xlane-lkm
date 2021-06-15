@@ -108,7 +108,7 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
                 asgard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
             
                 print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
-                    payload, bcnt > 128 ? 128 : bcnt , 0);
+                    payload, bcnt > 256 ? 256 : bcnt , 0);
             }
 
         } else {
@@ -268,7 +268,7 @@ void *pkt_process_handler(void *data)
 
 #endif
 
-void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id, char *payload, uint32_t cqe_bcnt, uint64_t ots) {
+void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id, char *payload, char *user_data, uint32_t cqe_bcnt, uint64_t ots) {
     struct pminfo *spminfo = &sdev->pminfo;
     int cluster_id_ad;
     uint32_t cluster_ip_ad;
@@ -282,15 +282,15 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     /* Remote IP is not registered as peer yet! */
     if (remote_lid == -1) {
 
-        if (GET_CON_PROTO_OPCODE_VAL(payload) == ADVERTISE) {
+        if (GET_CON_PROTO_OPCODE_VAL(user_data) == ADVERTISE) {
 
-            cluster_id_ad = extract_cluster_id_from_ad(GET_PROTO_START_SUBS_PTR(payload));
+            cluster_id_ad = extract_cluster_id_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
 
             if (peer_is_registered(&sdev->pminfo, cluster_id_ad)) {
                 asgard_error("peer cluster id is already registered under a different ip!\n");
                 return; /* ignore advertisement for already registered peer */
             }
-            cluster_ip_ad = extract_cluster_ip_from_ad(GET_PROTO_START_SUBS_PTR(payload));
+            cluster_ip_ad = extract_cluster_ip_from_ad(GET_PROTO_START_SUBS_PTR(user_data));
 
             asgard_dbg("\tID: %d", cluster_id_ad);
             asgard_dbg("\tIP: %pI4", (void *) &cluster_ip_ad);
@@ -317,7 +317,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
         return;
     }
 
-    received_proto_instances = GET_PROTO_AMOUNT_VAL(payload);
+    received_proto_instances = GET_PROTO_AMOUNT_VAL(user_data);
 
     wd = AMALLOC(sizeof(struct pkt_work_data), GFP_KERNEL);
     wd->payload = (struct asgard_payload *) payload;
@@ -400,7 +400,7 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
         print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
                             user_data, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
-    do_post_payload(sdev, remote_lid, rcluster_id, user_data, cqe_bcnt, ots);
+    do_post_payload(sdev, remote_lid, rcluster_id, payload, user_data, cqe_bcnt, ots);
 
 
 }
@@ -415,7 +415,7 @@ void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *p
     int remote_lid, rcluster_id, cluster_id_ad, i;
     uint16_t received_proto_instances;
     //uint64_t ts2, ts3;
-    char *payload;
+    char *payload, *user_data;
     uint32_t *dst_ip;
     uint32_t cluster_ip_ad;
     char *cluster_mac_ad;
@@ -440,11 +440,14 @@ void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *p
     }
 
 
+    user_data = ((char *)payload) + headroom + ETH_HLEN +
+                sizeof(struct iphdr) + sizeof(struct udphdr);
+
 
     spminfo->pm_targets[remote_lid].pkt_rx_counter++;
 
 
-    do_post_payload(sdev, remote_lid, rcluster_id, payload, payload_len, ots);
+    do_post_payload(sdev, remote_lid, rcluster_id, payload, user_data, payload_len, ots);
 
 
 
