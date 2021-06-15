@@ -103,10 +103,14 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
 
         if (!cur_ins) {
             if(sdev->verbose >= 1){
-                asgard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
+                asgard_dbg("No instance for protocol id %d were found. instances=%d, i=%d", cur_proto_id, instances, i);
             
-                print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
-                    payload, bcnt > 256 ? 256 : bcnt , 0);
+                print_hex_dump(KERN_DEBUG, "payload: ", DUMP_PREFIX_NONE, 32, 1,
+                    payload, bcnt > 1024 ? 1024 : bcnt , 0);
+
+                                
+                print_hex_dump(KERN_DEBUG, "cur_payload_ptr: ", DUMP_PREFIX_NONE, 32, 1,
+                    cur_payload_ptr, bcnt > 1024 ? 1024 : bcnt , 0);
             }
 
         } else {
