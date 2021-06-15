@@ -797,8 +797,10 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
 
     /* Leave pkts in clean state */
     for (i = 0; i < spminfo->num_of_targets; i++) {
+
         if (!target_fire[i])
             continue;
+            
         pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
 
         memset(pkt_payload, 0, sizeof(struct asgard_payload));

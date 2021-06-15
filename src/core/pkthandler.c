@@ -59,6 +59,9 @@ struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t p
 
     if (proto_id < 0 || proto_id > MAX_PROTO_INSTANCES){
         asgard_error("proto_id is invalid: %hu\n", proto_id);
+
+ 
+
         return NULL;
     }
 
@@ -101,8 +104,12 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
         cur_ins = get_proto_instance(sdev, cur_proto_id);
 
         if (!cur_ins) {
-            if(sdev->verbose >= 4)
+            if(sdev->verbose >= 1){
                 asgard_dbg("No instance for protocol id %d were found. instances=%d", cur_proto_id, instances);
+            
+                print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
+                    payload, bcnt > 128 ? 128 : bcnt , 0);
+            }
 
         } else {
             //asgard_dbg("(i: %d, offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %lu )\n", i, cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
@@ -224,6 +231,8 @@ void pkt_process_handler(struct work_struct *w)
 
     user_data = ((char *)aw->payload) + aw->headroom + ETH_HLEN +
                 sizeof(struct iphdr) + sizeof(struct udphdr);
+
+
 
     handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id,
                         GET_PROTO_START_SUBS_PTR(user_data),
@@ -378,6 +387,10 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
 
     get_cluster_ids_by_mac(sdev, remote_mac, &remote_lid, &rcluster_id);
     // asgard_dbg("remote_lid=%d, rcluster_id=%d\n", remote_lid, rcluster_id);
+
+    if(sdev->verbose >= 100)
+        print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
+                            payload, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
     do_post_payload(sdev, remote_lid, rcluster_id, payload, cqe_bcnt, ots);
 
