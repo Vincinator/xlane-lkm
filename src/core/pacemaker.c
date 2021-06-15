@@ -1058,11 +1058,11 @@ emit:
             check_pending_log_rep(sdev);
 
         } else if (out_of_sched_hb) {
-            err = emit_pkts_non_scheduled(sdev, spminfo);
+            //err = emit_pkts_non_scheduled(sdev, spminfo);
         } else if (async_pkts) {
-            err = emit_async_pkts(sdev, spminfo);
+            //err = emit_async_pkts(sdev, spminfo);
         } else if (out_of_sched_multi) {
-            err = emit_pkts_non_scheduled_multi(sdev, spminfo);
+            //err = emit_pkts_non_scheduled_multi(sdev, spminfo);
         }
         if (err) {
             asgard_pm_stop(spminfo);
