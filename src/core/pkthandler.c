@@ -110,7 +110,7 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
 
         if (!cur_ins) {
             if(sdev->verbose >= 1){
-                asgard_dbg("No instance for protocol id %d were found. instances=%d, i=%d", cur_proto_id, instances, i);
+                asgard_dbg("No instance for protocol id %d were found. instances=%d, i=%d, cluster_id=%d\n", cur_proto_id, instances, i, cluster_id);
                 if(sdev->verbose >= 1){   
                     asgard_dbg("cur_payload_ptr Dump in %s: \n", __FUNCTION__);
                     print_hex_dump(KERN_DEBUG, ": ", DUMP_PREFIX_NONE, 32, 1,
