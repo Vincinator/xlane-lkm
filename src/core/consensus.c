@@ -826,6 +826,7 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid,
 int consensus_init(struct proto_instance *ins, int verbosity) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
     int i;
+	char name_buf[MAX_ASGARD_PROC_NAME];
 
     if(!priv){
         asgard_error("Proto_data is NULL! Could not initialize consensus protocol\n");
@@ -890,16 +891,21 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
 
 #ifdef ASGARD_KERNEL_MODULE
 
+
+	snprintf(name_buf, sizeof(name_buf), "rx_i%u", ins->instance_id);
+
     /* Initialize synbuf for Follower (RX) Buffer */
-    priv->synbuf_rx = create_synbuf("rx", 250 * 20);
+    priv->synbuf_rx = create_synbuf(name_buf, 250 * 20);
 
     if(!priv->synbuf_rx) {
         asgard_error("could not initialize synbuf for rx buffer\n");
         return -1;
     }
+ 
+    snprintf(name_buf, sizeof(name_buf), "tx_i%u", ins->instance_id);
 
     /* Initialize synbuf for Leader (TX) Buffer */
-    priv->synbuf_tx = create_synbuf("tx", 250 * 20);
+    priv->synbuf_tx = create_synbuf(name_buf, 250 * 20);
 
     if(!priv->synbuf_tx) {
         asgard_error("could not initialize synbuf for tx buffer\n");

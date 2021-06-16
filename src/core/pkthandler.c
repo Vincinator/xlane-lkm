@@ -72,7 +72,7 @@ struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t p
     idx = sdev->instance_id_mapping[proto_id];
 
     if (idx < 0 || idx >= sdev->num_of_proto_instances){
-        if(sdev->verbose >= 5)
+        if(sdev->verbose >= 1)
             asgard_error("idx is invalid: %d, proto_id: %d\n", idx, proto_id);
 
         return NULL;
