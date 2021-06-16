@@ -107,6 +107,15 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
 
         cur_ins = get_proto_instance(sdev, cur_proto_id);
 
+
+        if(sdev->verbose >= 2){
+            asgard_dbg("Vars: remote_lid=%d, cur_proto_id = %d cur_offset=%d, i=%d, instances=%d", remote_lid, cur_proto_id, cur_offset, i, instances);
+            asgard_dbg("Received User Data (128 bytes): \n");
+                print_hex_dump(KERN_DEBUG, " ", DUMP_PREFIX_NONE, 32, 1,
+                    cur_payload_ptr, bcnt > 128 ? 128 : bcnt , 0);
+
+    }
+
         if (!cur_ins) {
             if(sdev->verbose >= 1){
                 asgard_dbg("No instance for protocol id %d were found. instances=%d, i=%d", cur_proto_id, instances, i);
@@ -403,11 +412,7 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
     get_cluster_ids_by_mac(sdev, remote_mac, &remote_lid, &rcluster_id);
     // asgard_dbg("remote_lid=%d, rcluster_id=%d\n", remote_lid, rcluster_id);
 
-    if(sdev->verbose >= 2){
-        asgard_dbg("Received User Data (128 bytes): \n");
-        print_hex_dump(KERN_DEBUG, " ", DUMP_PREFIX_NONE, 32, 1,
-                            user_data, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
-    }
+
     do_post_payload(sdev, remote_lid, rcluster_id, payload, user_data, cqe_bcnt, ots);
 
 
