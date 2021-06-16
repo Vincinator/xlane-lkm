@@ -16,8 +16,8 @@ int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluste
     int32_t param1, param2, param3, param4, *commit_idx;
 
     param1 = GET_CON_PROTO_PARAM1_VAL(pkt);
-    if(priv->verbosity != 0)
-     log_le_rx(priv->nstate, ASGARD_TIMESTAMP, priv->term, opcode, rcluster_id, param1);
+
+    log_le_rx(priv->nstate, ASGARD_TIMESTAMP, priv->term, opcode, rcluster_id, param1);
 
     switch (opcode) {
         // param1 interpreted as term
