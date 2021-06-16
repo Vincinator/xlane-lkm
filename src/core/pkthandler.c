@@ -284,7 +284,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     struct pkt_work_data *wd;
     uint16_t received_proto_instances;
 
-    if(sdev->verbose >= 2)
+    if(sdev->verbose >= 100)
         asgard_dbg("Packet from remote_lid: %d \n", remote_lid);
 
     /* Remote IP is not registered as peer yet! */
