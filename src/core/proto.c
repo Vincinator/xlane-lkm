@@ -21,9 +21,9 @@ int register_protocol_instance(struct asgard_device *sdev, int instance_id, int 
     int idx = sdev->num_of_proto_instances;
     int ret;
 
-    if (idx > MAX_PROTO_INSTANCES) {
+    if (idx >= MAX_PROTO_INSTANCES) {
         ret = -EPERM;
-        asgard_dbg("Too many instances exist, can not exceed maximum of %d instances\n", MAX_PROTOCOLS);
+        asgard_dbg("Too many instances exist, can not exceed maximum of %d instances\n", MAX_PROTO_INSTANCES);
         asgard_dbg("Current active instances: %d\n", sdev->num_of_proto_instances);
 
         goto error;

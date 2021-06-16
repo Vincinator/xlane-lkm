@@ -63,7 +63,7 @@ struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t p
         return NULL;
     } 
 
-    if (proto_id < 0 || proto_id > MAX_PROTO_INSTANCES){
+    if (proto_id < 0 || proto_id > sdev->num_of_proto_instances){
         asgard_error("proto_id is invalid: %hu\n", proto_id);
 
         return NULL;
@@ -71,7 +71,7 @@ struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t p
 
     idx = sdev->instance_id_mapping[proto_id];
 
-    if (idx < 0 || idx >= MAX_PROTO_INSTANCES){
+    if (idx < 0 || idx >= sdev->num_of_proto_instances){
         if(sdev->verbose >= 5)
             asgard_error("idx is invalid: %d, proto_id: %d\n", idx, proto_id);
 
@@ -118,7 +118,8 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
             }
 
         } else {
-            //asgard_dbg("(i: %d, offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %lu )\n", i, cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
+            if(sdev->verbose >= 2)
+                asgard_dbg("(i: %d, offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %llu )\n", i, cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
             cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload, ots);
         }
         cur_bcnt = cur_bcnt - cur_offset;
