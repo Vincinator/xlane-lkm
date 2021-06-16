@@ -64,19 +64,19 @@ struct asgard_core {
 
 
 
-struct asgard_pkt_work_data {
-    struct work_struct work;
+// struct asgard_pkt_work_data {
+//     struct work_struct work;
 
-    struct asgard_device *sdev;
-    int remote_lid;
-    int rcluster_id;
-    char *payload;
-    int received_proto_instances;
-    u32 cqe_bcnt;
-    u16 headroom;
-    u64 ots;
+//     struct asgard_device *sdev;
+//     int remote_lid;
+//     int rcluster_id;
+//     char *payload;
+//     int received_proto_instances;
+//     u32 cqe_bcnt;
+//     u16 headroom;
+//     u64 ots;
 
-};
+// };
 
 struct asgard_ringbuf_read_work_data {
     struct delayed_work dwork;

@@ -229,24 +229,22 @@ void get_cluster_ids_by_mac(struct asgard_device *sdev, unsigned char *remote_ma
 //		.. for consecutive packets (even from the same host)
 void pkt_process_handler(struct work_struct *w)
 {
-    struct asgard_pkt_work_data *aw = NULL;
-    char *user_data;
-
-    aw = container_of(w, struct asgard_pkt_work_data, work);
+    struct pkt_work_data *aw = NULL;
+    struct asgard_payload * user_data;
+    
+    aw = container_of(w, struct pkt_work_data, work);
 
     if (aw->sdev->asgard_wq_lock) {
         asgard_dbg("drop handling of received packet - asgard is shutting down \n");
         goto exit;
     }
 
-    user_data = ((char *)aw->payload) + aw->headroom + ETH_HLEN +
-                sizeof(struct iphdr) + sizeof(struct udphdr);
-
+    user_data = aw->user_data;
 
 
     handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id,
-                        GET_PROTO_START_SUBS_PTR(user_data),
-                        aw->received_proto_instances, aw->cqe_bcnt, aw->ots);
+                        user_data->proto_data,
+                        aw->received_proto_instances, aw->bcnt, aw->ots);
 
 exit:
     if (aw){
@@ -278,7 +276,7 @@ void *pkt_process_handler(void *data)
 
 #endif
 
-void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id, char *payload, char *user_data, uint32_t cqe_bcnt, uint64_t ots) {
+void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id, char *payload, struct asgard_payload *user_data, uint32_t cqe_bcnt, uint64_t ots) {
     struct pminfo *spminfo = &sdev->pminfo;
     int cluster_id_ad;
     uint32_t cluster_ip_ad;
@@ -330,7 +328,8 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     received_proto_instances = GET_PROTO_AMOUNT_VAL(user_data);
 
     wd = AMALLOC(sizeof(struct pkt_work_data), GFP_KERNEL);
-    wd->payload = (struct asgard_payload *) payload;
+    wd->payload = payload;
+    wd->user_data = user_data;
     wd->rcluster_id = rcluster_id;
     wd->sdev = sdev;
     wd->received_proto_instances = received_proto_instances;
@@ -404,7 +403,7 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
     // asgard_dbg("remote_lid=%d, rcluster_id=%d\n", remote_lid, rcluster_id);
 
 
-    do_post_payload(sdev, remote_lid, rcluster_id, payload, user_data, cqe_bcnt, ots);
+    do_post_payload(sdev, remote_lid, rcluster_id, payload, (struct asgard_payload *) user_data, cqe_bcnt, ots);
 
 
 }
@@ -451,7 +450,7 @@ void asgard_post_payload(struct asgard_device *sdev, uint32_t remote_ip, void *p
     spminfo->pm_targets[remote_lid].pkt_rx_counter++;
 
 
-    do_post_payload(sdev, remote_lid, rcluster_id, payload, user_data, payload_len, ots);
+    do_post_payload(sdev, remote_lid, rcluster_id, payload, (struct asgard_payload *) user_data, payload_len, ots);
 
 
 

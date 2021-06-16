@@ -23,7 +23,8 @@ struct pkt_work_data{
     struct asgard_device *sdev;
     int remote_lid;
     int rcluster_id;
-    struct asgard_payload *payload;
+    char *payload;
+    struct asgard_payload *user_data;
     int received_proto_instances;
     uint32_t bcnt;
     uint64_t ots;
