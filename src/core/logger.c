@@ -177,9 +177,8 @@ int write_ingress_log(struct asgard_ingress_logger *ailog, enum le_event_type ty
     if (slog->state != LOGGER_RUNNING)
         return 0;
     
-    if (slog->current_entries > LOGGER_EVENT_LIMIT) {
-
-        asgard_dbg("Logs are full! Stopped event logging. %s\n", __func__);
+    if (slog->current_entries >= LOGGER_EVENT_LIMIT) {
+        asgard_dbg("Logs are full! Stopped ingress logging. %s\n", __func__);
         // asgard_log_stop(slog);
         logger_state_transition_to(slog, LOGGER_LOG_FULL);
         return -ENOMEM;
