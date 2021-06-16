@@ -403,7 +403,7 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
     get_cluster_ids_by_mac(sdev, remote_mac, &remote_lid, &rcluster_id);
     // asgard_dbg("remote_lid=%d, rcluster_id=%d\n", remote_lid, rcluster_id);
 
-    if(sdev->verbose >= 100)
+    if(sdev->verbose >= 2)
         print_hex_dump(KERN_DEBUG, "raw pkt data: ", DUMP_PREFIX_NONE, 32, 1,
                             user_data, cqe_bcnt > 128 ? 128 : cqe_bcnt , 0);
 
