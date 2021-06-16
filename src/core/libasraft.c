@@ -289,7 +289,7 @@ int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex){
     // Only use consensus protocol for this evaluation.
     //sdev->protos[0] = generate_protocol_instance(sdev, ASGARD_PROTO_CONSENSUS);
 
-    register_protocol_instance(sdev, 1, ASGARD_PROTO_CONSENSUS, 0);
+    // register_protocol_instance(sdev, 1, ASGARD_PROTO_CONSENSUS, 0);
 
     //register_protocol_instance(sdev, 2, ASGARD_PROTO_PP, 1);
 

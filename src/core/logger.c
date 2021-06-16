@@ -121,8 +121,9 @@ void clear_logger(struct asgard_logger *slog)
    int i;
 
     if(slog->events){
-        for(i = 0; i < CLUSTER_SIZE; i++)
-            AFREE(slog->events[i]);
+        for(i = 0; i < LOGGER_EVENT_LIMIT; i++)
+            if(slog->events[i])
+                AFREE(slog->events[i]);
         AFREE(slog->events);
     }
 
