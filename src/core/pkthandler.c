@@ -16,6 +16,8 @@
 #include "membership.h"
 
 
+#undef LOG_PREFIX
+#define LOG_PREFIX "[ASGARD][PKTHANDLER]"
 
 #ifndef ASGARD_KERNEL_MODULE
 
@@ -361,8 +363,6 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
 
 }
 
-
-
 #ifdef ASGARD_KERNEL_MODULE
 
 void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uint32_t cqe_bcnt, uint64_t ots){
@@ -372,7 +372,6 @@ void asgard_post_payload(int asgard_id, void *payload_in, uint16_t headroom, uin
     char *payload;
     char *remote_mac;
     char *user_data;
-
 
     if (unlikely(!sdev)) {
         asgard_error("sdev is NULL\n");
