@@ -127,6 +127,7 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
     pkt_payload =
             spminfo->pm_targets[target_id].pkt_data.payload;
 
+
     pkt_payload_sub =
             asgard_reserve_proto(ins->instance_id, pkt_payload, ASGARD_PROTO_CON_PAYLOAD_SZ);
 

@@ -511,9 +511,11 @@ static inline void asgard_update_skb_payload(struct sk_buff *skb, void *payload)
     }
 
 	tail_ptr = skb_tail_pointer(skb);
-	data_ptr = (tail_ptr - ASGARD_PAYLOAD_BYTES);
+	data_ptr = (tail_ptr - sizeof(struct asgard_payload));
 
-	memcpy(data_ptr, payload, ASGARD_PAYLOAD_BYTES);
+	memcpy(data_ptr, payload, sizeof(struct asgard_payload));
+    memset(payload, 0, sizeof(struct asgard_payload));
+
 }
 
 
