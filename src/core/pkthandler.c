@@ -97,12 +97,6 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
         return;
     }
 
-    if(sdev->verbose >= 2){
-        asgard_dbg("Vars: remote_lid=%d, cur_proto_id = %d cur_offset=%d, i=%d, instances=%d", remote_lid, cur_proto_id, cur_offset, i, instances);
-        asgard_dbg("Received User Data (128 bytes): \n");
-            print_hex_dump(KERN_DEBUG, " ", DUMP_PREFIX_NONE, 32, 1,
-                cur_payload_ptr, bcnt > 128 ? 128 : bcnt , 0);
-    }
 
     for(i = 0; i < instances; i++) {
 
@@ -112,10 +106,14 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
         cur_proto_id = GET_PROTO_TYPE_VAL(cur_payload_ptr);
         cur_offset = GET_PROTO_OFFSET_VAL(cur_payload_ptr);
 
+        if(sdev->verbose >= 2){
+            asgard_dbg("Vars: remote_lid=%d, cur_proto_id = %d cur_offset=%d, i=%d, instances=%d", remote_lid, cur_proto_id, cur_offset, i, instances);
+            asgard_dbg("Received User Data (128 bytes): \n");
+            print_hex_dump(KERN_DEBUG, " ", DUMP_PREFIX_NONE, 32, 1,
+                cur_payload_ptr, bcnt > 128 ? 128 : bcnt , 0);
+        }
+
         cur_ins = get_proto_instance(sdev, cur_proto_id);
-
-
-
 
         if (!cur_ins) {
             if(sdev->verbose >= 1){
