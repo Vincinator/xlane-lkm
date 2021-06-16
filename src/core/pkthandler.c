@@ -119,7 +119,7 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
             }
 
         } else {
-            if(sdev->verbose >= 2)
+            if(sdev->verbose >= 10)
                 asgard_dbg("(i: %d, offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %llu )\n", i, cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
             cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload, ots);
         }

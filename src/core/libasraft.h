@@ -458,6 +458,8 @@ struct asgard_pacemaker_test_data {
 struct pminfo {
     enum pmstate state;
 
+    int debug_counter;
+
     int active_cpu;
 
     uint32_t cluster_id;

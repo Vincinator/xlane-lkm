@@ -136,7 +136,9 @@ int setup_le_msg(struct proto_instance *ins, struct pminfo *spminfo, enum le_opc
         goto unlock;
     }
 
-    set_le_opcode((unsigned char *) pkt_payload_sub, opcode, param1, param2, param3, param4);
+    set_le_opcode((unsigned char *) pkt_payload_sub, spminfo->debug_counter, param1, param2, param3, param4);
+
+    //set_le_opcode((unsigned char *) pkt_payload_sub, opcode, param1, param2, param3, param4);
 
 unlock:
     asg_mutex_unlock(&spminfo->pm_targets[target_id].pkt_data.mlock);

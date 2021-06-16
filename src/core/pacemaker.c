@@ -805,6 +805,12 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
 
         pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
 
+        if(sdev->verbose >= 1){   
+            asgard_dbg("Leader Election Payload Dump in %s: \n", __FUNCTION__);
+            print_hex_dump(KERN_DEBUG, ": ", DUMP_PREFIX_NONE, 32, 1,
+                pkt_payload, sizeof(struct asgard_payload), 0);
+        }
+
         memset(pkt_payload, 0, sizeof(struct asgard_payload));
 
         // after alive msg has been added, the current active buffer can be used again
@@ -1096,6 +1102,7 @@ void init_pacemaker(struct pminfo *spminfo){
     spminfo->num_of_targets = 0;
     spminfo->waiting_window = 10000000;
     spminfo->cluster_id = -1;
+    spminfo->debug_counter = 0;
 
     /* Init packet Buffers */
     spminfo->multicast_pkt_data.payload = ACMALLOC(1, sizeof(struct asgard_payload), GFP_KERNEL);
