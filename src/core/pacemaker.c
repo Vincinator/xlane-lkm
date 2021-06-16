@@ -768,6 +768,12 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
 
 #elif ASGARD_KERNEL_MODULE
 
+        if(sdev->verbose >= 1){   
+            asgard_dbg("Leader Election Payload Dump in %s: \n", __FUNCTION__);
+            print_hex_dump(KERN_DEBUG, ": ", DUMP_PREFIX_NONE, 32, 1,
+                pkt_payload, 64, 0);
+        }
+
         asgard_update_skb_udp_port(spminfo->pm_targets[i].pkt_data.skb, sdev->tx_port);
         asgard_update_skb_payload(spminfo->pm_targets[i].pkt_data.skb, spminfo->pm_targets[i].pkt_data.payload);
 
@@ -805,11 +811,7 @@ static inline int emit_pkts_non_scheduled(struct asgard_device *sdev,
 
         pkt_payload = spminfo->pm_targets[i].pkt_data.payload;
 
-        if(sdev->verbose >= 1){   
-            asgard_dbg("Leader Election Payload Dump in %s: \n", __FUNCTION__);
-            print_hex_dump(KERN_DEBUG, ": ", DUMP_PREFIX_NONE, 32, 1,
-                pkt_payload, sizeof(struct asgard_payload), 0);
-        }
+      
 
         memset(pkt_payload, 0, sizeof(struct asgard_payload));
 

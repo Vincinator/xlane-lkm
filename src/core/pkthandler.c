@@ -114,7 +114,7 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
                 if(sdev->verbose >= 1){   
                     asgard_dbg("cur_payload_ptr Dump in %s: \n", __FUNCTION__);
                     print_hex_dump(KERN_DEBUG, ": ", DUMP_PREFIX_NONE, 32, 1,
-                        cur_payload_ptr, bcnt > MAX_ASGARD_PAYLOAD_BYTES ? MAX_ASGARD_PAYLOAD_BYTES : bcnt , 0);
+                        cur_payload_ptr, 64 , 0);
                 }
             }
 
