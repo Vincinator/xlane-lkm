@@ -243,7 +243,8 @@ reuse:
     pid =  GET_PROTO_TYPE_PTR(cur_proto);
     poff = GET_PROTO_OFFSET_PTR(cur_proto);
 
-    *pid = instance_id;
+    //*pid = instance_id;
+    *pid = 42;
     *poff = proto_size;
 
 
