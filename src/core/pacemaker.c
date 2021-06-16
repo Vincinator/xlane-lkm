@@ -718,7 +718,7 @@ static inline int emit_pkts_non_scheduled_multi(struct asgard_device *sdev,
     skb_set_queue_mapping(pkt_payload->skb, smp_processor_id());
 
     asgard_update_skb_udp_port(pkt_payload->skb, pkt_payload->naddr.port);
-    asgard_update_skb_payload(pkt_payload->skb, pkt_payload);
+    asgard_update_skb_payload(pkt_payload->skb, pkt_payload->payload);
     asgard_send_skb(sdev->ndev, spminfo, pkt_payload->skb);
     sdev->tx_counter++;
 
@@ -856,7 +856,8 @@ static inline int emit_pkts_scheduled(struct asgard_device *sdev,
 
         /* Protocols have been emitted, do not send them again ..
          * .. and free the reservations for new protocols */
-        invalidate_proto_data(pkt_payload);
+        // Not needed when we memset payload to 0 in update skb payload function
+        // invalidate_proto_data(pkt_payload);
     }
 
     return 0;
