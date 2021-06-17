@@ -292,16 +292,17 @@ int check_handle_nomination(struct consensus_priv *priv, uint32_t param1, uint32
     if (priv->term < param1) {
         if (priv->voted == param1) {
 #if VERBOSE_DEBUG
-            asgard_dbg("Voted already. Waiting for ftimeout or HB from voted leader.\n");
+            asgard_error("Voted already. Waiting for HB from voted leader.\n");
 #endif
             return 0;
         } else {
 
             if (priv->sdev->cur_leader_lid >= 0 && priv->sdev->cur_leader_lid < priv->sdev->pminfo.num_of_targets)
                 if (priv->sdev->pminfo.pm_targets[priv->sdev->cur_leader_lid].alive
-                    && priv->leader_id < rcluster_id)
-                    return 0; // current leader is alive and has better id
-
+                    && priv->leader_id < rcluster_id){
+                        asgard_error("current leader (%d) is alive and has better id than (%d) \n", priv->sdev->cur_leader_lid, rcluster_id );
+                        return 0;
+                    }
             // if local log is empty, just grant the vote!
             if (priv->sm_log.last_idx == -1)
                 return 1;
@@ -314,15 +315,20 @@ int check_handle_nomination(struct consensus_priv *priv, uint32_t param1, uint32
             }
             // Safety Check during development & Debugging..
             if (priv->sm_log.entries[buf_lastidx] == NULL) {
-                asgard_dbg("BUG! Log is faulty can not grant any votes. \n");
+                asgard_error("BUG! Log is faulty can not grant any votes. \n");
                 return 0;
             }
 
             // candidates log is at least as up to date as the local log!
             if (param3 >= priv->sm_log.last_idx) {
-                // Terms of previous log item must match with lastLogTerm of Candidate
-                if (priv->sm_log.entries[buf_lastidx]->term == param4)
+                // 
+                if (priv->sm_log.entries[buf_lastidx]->term == param4){
                     return 1;
+                } else {
+                    asgard_error("Terms of previous log item (%d) must match with lastLogTerm (%d) of Candidate \n", priv->sm_log.entries[buf_lastidx]->term, param4 );
+                }
+            } else {
+                asgard_error("candidates log is at not up to date as the local log! \n");
             }
 
         }
