@@ -155,8 +155,12 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode) {
     int32_t last_log_term;
 
 
-    if (priv->sm_log.stable_idx == -1)
+    if (priv->sm_log.stable_idx == -1){
+        asgard_dbg("Stable IDX is -1. Using actual term as prevLogTerm\n");
+        asgard_dbg("priv->sm_log.stable_idx=%d\n", priv->sm_log.stable_idx);
+        asgard_dbg("priv->sm_log.last_applied=%d\n", priv->sm_log.last_applied);
         last_log_term = priv->term;
+    }
     else {
         asgard_dbg("priv->sm_log.stable_idx=%d\n", priv->sm_log.stable_idx);
         buf_stable_idx = consensus_idx_to_buffer_idx(&priv->sm_log, priv->sm_log.last_applied);
