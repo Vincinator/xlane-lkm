@@ -13,7 +13,6 @@
 #include "libasraft.h"
 
 
-
 struct pkt_work_data{
 
 #ifdef ASGARD_KERNEL_MODULE
