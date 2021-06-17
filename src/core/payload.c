@@ -339,13 +339,14 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spa
     if(!retrans)
         asg_mutex_unlock(&cur_priv->sm_log.next_lock);
 
-    /* asgard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
+    if(cur_priv->sdev->verbose >= 2)
+        asgard_dbg("retrans=%d, target_id=%d, leader_last_idx=%d, next_idx=%d, prev_log_term=%d, num_entries=%d\n",
                  retrans,
                  target_id,
                  local_last_idx,
                  next_index,
                  prev_log_term,
-                 num_entries);*/
+                 num_entries);
 
     // reserve space in asgard heartbeat for consensus LEAD
     pkt_payload_sub =
