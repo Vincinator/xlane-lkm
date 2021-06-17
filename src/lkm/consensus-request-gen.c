@@ -25,6 +25,11 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
     u32 *dptr;
     err = 0;
 
+    if(!priv->sdev->is_leader){
+        asgard_dbg("Skipping Requests for this node in this test scenario, since it is not leader\n");
+        return;
+    }
+
     for (i = 0; i < MAX_CONSENSUS_LOG; i++) {
 
         rand_value = prandom_u32_max(MAX_VALUE_SM_VALUE_SPACE);
