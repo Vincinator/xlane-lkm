@@ -59,6 +59,11 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
         return -1;
     }*/
 
+    if(buf->write_idx >= ASG_RING_BUF_SIZE_LIMIT){
+        asgard_error("Write Index (%d) is invalid. ASG_RING_BUF_SIZE_LIMIT=%d \n", buf->write_idx, ASG_RING_BUF_SIZE_LIMIT);
+        return -1;
+    }
+
 
     if(!&buf->ring[buf->write_idx]) {
         asgard_error("Memory at advertised ringbuffer slot is invalid\n");
