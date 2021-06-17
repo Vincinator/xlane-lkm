@@ -223,9 +223,10 @@ unsigned char * asgard_reserve_proto(uint16_t instance_id, struct asgard_payload
     // Check if protocol instance already exists in payload
     for (i = 0; i < spay->protocols_included; i++) {
 
-        if (instance_id == GET_PROTO_TYPE_VAL(cur_proto))
-        	goto reuse; // reuse existing payload part for this instance id
-
+        if (instance_id == GET_PROTO_TYPE_VAL(cur_proto)){
+            asgard_dbg("Reuse existing payload part for instance id %d\n", instance_id);
+        	goto reuse;  
+        }
         cur_offset = GET_PROTO_OFFSET_VAL(cur_proto);
         cur_proto = cur_proto + cur_offset;
         proto_offset += cur_offset;
@@ -246,10 +247,8 @@ reuse:
     *pid = instance_id;
     *poff = proto_size;
 
-
     return cur_proto;
 }
-
 
 
 int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spay, int instance_id, int target_id, int32_t next_index, int retrans)
@@ -274,7 +273,6 @@ int setup_append_msg(struct consensus_priv *cur_priv, struct asgard_payload *spa
         }
 
     }
-
 
     if (next_index == -1) {
         asgard_dbg("Invalid target id resulted in invalid next_index!\n");
