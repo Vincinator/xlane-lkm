@@ -439,6 +439,8 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
     struct data_chunk *cur_ptr;
 
     new_last = start_log_idx + num_entries - 1;
+    
+    asgard_dbg("Append Commands unstable=%d, num_entries=%d\n", unstable, num_entries);
 
     // check if entries would exceed pkt
     if ((num_entries * AE_ENTRY_SIZE + ASGARD_PROTO_CON_AE_BASE_SZ) > pkt_size) {
