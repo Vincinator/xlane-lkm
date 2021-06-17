@@ -210,7 +210,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
             return -1;
         }
 
-        asgard_dbg("applying consensus entry: %d, and buf_idx: %d\ n", i, buf_idx);
+        asgard_dbg("applying consensus entry: %d, and buf_idx: %d \n", i, buf_idx);
 
         // TODO: is the datachunk ready to append!?
 
