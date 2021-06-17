@@ -158,6 +158,7 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode) {
     if (priv->sm_log.stable_idx == -1){
         asgard_dbg("Stable IDX is -1. Using actual term as prevLogTerm\n");
         asgard_dbg("priv->sm_log.stable_idx=%d\n", priv->sm_log.stable_idx);
+        asgard_dbg("priv->sm_log.last_idx=%d\n", priv->sm_log.last_idx);
         asgard_dbg("priv->sm_log.last_applied=%d\n", priv->sm_log.last_applied);
         last_log_term = priv->term;
     }
