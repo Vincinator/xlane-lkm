@@ -768,7 +768,7 @@ static inline void asgard_send_oos_pkts(struct asgard_device *sdev,
 
 #elif ASGARD_KERNEL_MODULE
 
-        if(sdev->verbose >= 1){   
+        if(sdev->verbose >= 20){   
             asgard_dbg("Leader Election Payload Dump in %s: \n", __FUNCTION__);
             print_hex_dump(KERN_DEBUG, ": ", DUMP_PREFIX_NONE, 32, 1,
                 spminfo->pm_targets[i].pkt_data.payload, 64, 0);
