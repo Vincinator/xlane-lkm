@@ -59,21 +59,16 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
         return -1;
     }*/
 
-    if(buf->write_idx >= ASG_RING_BUF_SIZE_LIMIT){
+    if(buf->write_idx < 0 || buf->write_idx >= ASG_RING_BUF_SIZE_LIMIT){
         asgard_error("Write Index (%d) is invalid. ASG_RING_BUF_SIZE_LIMIT=%d \n", buf->write_idx, ASG_RING_BUF_SIZE_LIMIT);
         return -1;
     }
 
-
-    if(!&buf->ring[buf->write_idx]) {
-        asgard_error("Memory at advertised ringbuffer slot is invalid\n");
-        return -1;
-    }
-
     memcpy(&buf->ring[buf->write_idx], data, sizeof(struct data_chunk));
-    // asgard_dbg("write_idx: %d, read_idx: %d, turn: %d \n", buf->write_idx, buf->read_idx, buf->turn);
-    //print_hex_dump(KERN_DEBUG, "rx consensus hexdump (at write idx): ", DUMP_PREFIX_NONE, 16,1,
-    //             &buf->ring[buf->write_idx], sizeof(struct data_chunk), 0);
+
+    asgard_dbg("write_idx: %d, read_idx: %d, turn: %d \n", buf->write_idx, buf->read_idx, buf->turn);
+    print_hex_dump(KERN_DEBUG, "rx consensus hexdump (at write idx): ", DUMP_PREFIX_NONE, 16,1,
+                 &buf->ring[buf->write_idx], sizeof(struct data_chunk), 0);
 
 
     buf->write_idx++;
