@@ -326,6 +326,8 @@ int check_handle_nomination(struct consensus_priv *priv, uint32_t param1, uint32
                     return 1;
                 } else {
                     asgard_error("Terms of previous log item (%d) must match with lastLogTerm (%d) of Candidate \n", priv->sm_log.entries[buf_lastidx]->term, param4 );
+                    asgard_error("priv->sm_log.last_idx= %d, buf_lastidx=%d\n",priv->sm_log.last_idx, buf_lastidx );
+
                 }
             } else {
                 asgard_error("candidates log is at not up to date as the local log! \n");
