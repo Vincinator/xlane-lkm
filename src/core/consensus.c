@@ -467,16 +467,17 @@ int append_commands(struct consensus_priv *priv, unsigned char *pkt, int num_ent
         update_stable_idx(priv);
     }
 
-    asgard_dbg("Handled APPEND RPC\n"
-                "\t stable_idx = %d\n"
-                "\t commit_idx = %d\n"
-                "\t received entries [ %d - %d ]\n"
-                "\t CPU = %d\n",
-                priv->sm_log.stable_idx,
-                priv->sm_log.commit_idx,
-                start_log_idx,
-                new_last,
-                smp_processor_id());
+    if(priv->sdev->verbose >= 3)
+        asgard_dbg("Handled APPEND RPC\n"
+                    "\t stable_idx = %d\n"
+                    "\t commit_idx = %d\n"
+                    "\t received entries [ %d - %d ]\n"
+                    "\t CPU = %d\n",
+                    priv->sm_log.stable_idx,
+                    priv->sm_log.commit_idx,
+                    start_log_idx,
+                    new_last,
+                    smp_processor_id());
 
     return 0;
 
