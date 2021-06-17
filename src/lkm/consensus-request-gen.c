@@ -24,8 +24,9 @@ void testcase_one_shot_big_log(struct consensus_priv *priv)
     u32 rand_value, rand_id;
     u32 *dptr;
     err = 0;
+    
 
-    if(!priv->sdev->is_leader){
+    if(priv->nstate != LEADER){
         asgard_dbg("Skipping Requests for this node in this test scenario, since it is not leader\n");
         return;
     }
