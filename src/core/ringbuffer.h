@@ -21,7 +21,7 @@
 
 #ifndef ASG_RING_BUF_SIZE_LIMIT
 /* Use 8 Bytes (64 Bits) as default chunk size for asgard */
-#define ASG_RING_BUF_SIZE_LIMIT 100000000
+#define ASG_RING_BUF_SIZE_LIMIT 1000000 // 1.000.000 * 8Byte Results in 8MB buffer size
 #endif
 
 struct data_chunk {
