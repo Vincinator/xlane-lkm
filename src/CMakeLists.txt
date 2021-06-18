@@ -5,6 +5,7 @@ project(asgard C)
 message("Checking build parameters: ")
 set(ASGARD_KERNEL_MODULE 1)
 
+
 if(DEFINED ENV{CALL_FROM_BUILD_SCRIPT})
     set(ASGARD_REAL_TEST $ENV{CALL_FROM_BUILD_SCRIPT})
     message("[CMAKE] Enabling ASGARD_REAL_TEST config")
@@ -157,6 +158,9 @@ add_library(asgard STATIC ${library_sources})
 
 if(${ASGARD_KERNEL_MODULE})
     message("config kernel module")
+
+    # Required for asgard_dbg short parths
+    target_compile_options(asgard PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
 
     execute_process(COMMAND git log -1 --format=%h
             WORKING_DIRECTORY ${kerneldir}
