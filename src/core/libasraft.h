@@ -325,9 +325,6 @@ struct consensus_priv {
     struct state_machine_cmd_log sm_log;
     struct asgard_logger throughput_logger;
 
-    // Used to correlate dmesg log output with evaluation results
-
-
     struct asg_ring_buf *txbuf;
     struct asg_ring_buf *rxbuf;
 

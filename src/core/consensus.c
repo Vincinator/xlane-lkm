@@ -842,7 +842,7 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid,
 
 int consensus_init(struct proto_instance *ins, int verbosity) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
-    int i;
+    int i, psize;
 	char name_buf[MAX_ASGARD_PROC_NAME];
 
     if(!priv){
@@ -905,9 +905,11 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
     priv->throughput_logger.last_ts = 0;
 
 
+/* Initialize Synbuf for Kernel Module only.
+ * No need for synbuf in user space only version -> use memory
+ */
 
-#ifdef ASGARD_KERNEL_MODULE
-
+#ifdef ASGARD_KERNEL_MODULE 
 
 	snprintf(name_buf, sizeof(name_buf), "rx_i%u", ins->instance_id);
 
@@ -932,10 +934,12 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
     setup_asg_ring_buf((struct asg_ring_buf *)priv->synbuf_tx->ubuf, 1000000);
     /* Initialize RingBuffer */
     setup_asg_ring_buf((struct asg_ring_buf *)priv->synbuf_rx->ubuf, 1000000);
-
+    psize = PAGE_SIZE; // If we are in kernel space, we can access the PAGE_SIZE symbol directly
 #else
-    int psize = getpagesize();
-    // No need for synbuf in user space only version -> use memory
+    psize = getpagesize(); // if we are in user space, we need to make a syscall which is handled by this function
+
+#endif  
+
     priv->rxbuf = AMALLOC(250 * 20 * psize, GFP_KERNEL);
     priv->txbuf = AMALLOC(250 * 20 * psize, GFP_KERNEL);
     /* Initialize RingBuffer */
@@ -943,7 +947,6 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
     /* Initialize RingBuffer */
     setup_asg_ring_buf((struct asg_ring_buf *)priv->txbuf, 1000000);
 
-#endif
 
     return 0;
 }
