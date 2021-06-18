@@ -208,7 +208,7 @@ if(${ASGARD_KERNEL_MODULE})
     endforeach()
 
     set(XLANE_EXTRA_FLAGS "-g")
-    set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir} KCFLAGS="-ffile-prefix-map=${CMAKE_SOURCE_DIR}=."  ccflags-y+="-DASGARD_KERNEL_MODULE=1" ccflags-y+="-DASGARD_REAL_TEST=${ASGARD_REAL_TEST}" ccflags-y+="${XLANE_EXTRA_FLAGS}" EXTRA_CFLAGS=${XLANE_EXTRA_FLAGS})
+    set(module_cmd $(MAKE) -C ${kerneldir} M=${bindir} KCFLAGS="-ffile-prefix-map=${CMAKE_SOURCE_DIR}/../bin/../src=."  ccflags-y+="-DASGARD_KERNEL_MODULE=1" ccflags-y+="-DASGARD_REAL_TEST=${ASGARD_REAL_TEST}" ccflags-y+="${XLANE_EXTRA_FLAGS}" EXTRA_CFLAGS=${XLANE_EXTRA_FLAGS})
     message("using module cmd: ${module_cmd}")
 
 
