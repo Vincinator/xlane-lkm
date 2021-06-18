@@ -861,6 +861,7 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
     priv->term = 0;
     priv->state = LE_READY;
     priv->verbosity = verbosity;
+
     priv->sm_log.last_idx = -1;
     priv->sm_log.commit_idx = -1;
     priv->sm_log.stable_idx = -1;
@@ -868,9 +869,6 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
     priv->sm_log.last_applied = -1;
     priv->sm_log.max_entries = MAX_CONSENSUS_LOG;
     priv->sm_log.lock = 0;
-    priv->sdev->consensus_priv = priv; /* reference for pacemaker */
-    priv->sdev->cur_leader_lid = -1;
-    priv->ins = ins;
 
     /* Pre Allocate Buffer Entries */
     for (i = 0; i < MAX_CONSENSUS_LOG; i++) {
@@ -879,6 +877,11 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
         priv->sm_log.entries[i]->dataChunk = AMALLOC(sizeof(struct data_chunk), GFP_KERNEL);
         priv->sm_log.entries[i]->valid = 0;
     }
+
+    priv->sdev->consensus_priv = priv; /* reference for pacemaker */
+    priv->sdev->cur_leader_lid = -1;
+    priv->ins = ins;
+
 
 #ifdef ASGARD_KERNEL_MODULE
     // requires "proto_instances/%d"

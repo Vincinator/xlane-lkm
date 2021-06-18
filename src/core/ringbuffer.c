@@ -69,10 +69,6 @@ int validate_header_key(char *noc) {
  */
 void setup_asg_ring_buf(struct asg_ring_buf *buf, int max_elements){
 
-    if(max_elements > ASG_RING_BUF_SIZE_LIMIT){
-        asgard_error("size (%d) exceeds the configured size limit for ring buffer of (%d)\n", max_elements, ASG_RING_BUF_SIZE_LIMIT);
-    }
-
     buf->size = max_elements;
 
     buf->read_idx = 0;
@@ -87,34 +83,30 @@ void setup_asg_ring_buf(struct asg_ring_buf *buf, int max_elements){
  */
 int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
 
-    asgard_dbg("enter %s, line %d \n", __FUNCTION__, __LINE__);
 
     if(!buf){
         asgard_error("asg ring buffer is NULL\n");
         return -1;
     }
-    asgard_dbg("enter %s, line %d \n", __FUNCTION__, __LINE__);
 
     // TODO: if Reader catches up with writer?
     /*if(buf->write_idx == buf->read_idx && buf->turn) {
         asgard_error("Stopping! Reader can't keep up with Writer");
         return -1;
     }*/
-    asgard_dbg("enter %s, line %d \n", __FUNCTION__, __LINE__);
 
     if(buf->write_idx < 0 || buf->write_idx >= ASG_RING_BUF_SIZE_LIMIT){
         asgard_error("Write Index (%d) is invalid. ASG_RING_BUF_SIZE_LIMIT=%d \n", buf->write_idx, ASG_RING_BUF_SIZE_LIMIT);
         return -1;
     }
-    asgard_dbg("enter %s, line %d \n", __FUNCTION__, __LINE__);
 
     memcpy(&buf->ring[buf->write_idx], data, sizeof(struct data_chunk));
 
-    asgard_dbg("write_idx: %d, read_idx: %d, turn: %d \n", buf->write_idx, buf->read_idx, buf->turn);
-    print_hex_dump(KERN_DEBUG, "rx consensus hexdump (at write idx): ", DUMP_PREFIX_NONE, 16,1,
+    if(sdev->verbose >= 5) {
+        asgard_dbg("write_idx: %d, read_idx: %d, turn: %d \n", buf->write_idx, buf->read_idx, buf->turn);
+        print_hex_dump(KERN_DEBUG, "rx consensus hexdump (at write idx): ", DUMP_PREFIX_NONE, 16,1,
                  &buf->ring[buf->write_idx], sizeof(struct data_chunk), 0);
-
-    asgard_dbg("enter %s, line %d \n", __FUNCTION__, __LINE__);
+    }
 
     buf->write_idx++;
 
@@ -124,7 +116,6 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data) {
         buf->write_idx = 0;
         buf->turn = 1;
     }
-    asgard_dbg("enter %s, line %d \n", __FUNCTION__, __LINE__);
 
     return 0;
 }
