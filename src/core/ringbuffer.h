@@ -1,5 +1,8 @@
 #pragma once
 
+#include "libasraft.h"
+
+
 #ifdef ASGARD_KERNEL_MODULE
 
 #else
@@ -63,3 +66,5 @@ int append_rb(struct asg_ring_buf *buf, struct data_chunk *data);
 void setup_asg_ring_buf(struct asg_ring_buf *buf, int max_elements);
 int validate_header_key(char *noc);
 char* get_start_of_obj_key(char *noc, int *size);
+struct asg_ring_buf * get_tx_buffer(struct consensus_priv *priv);
+struct asg_ring_buf * get_rx_buffer(struct consensus_priv *priv);

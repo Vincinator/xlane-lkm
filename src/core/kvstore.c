@@ -182,6 +182,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
     struct state_machine_cmd_log *log;
     int applying;
     int i, buf_idx;
+    struct asg_ring_buf *rx_buf;
 
     log = &priv->sm_log;
 
@@ -196,8 +197,9 @@ int apply_log_to_sm(struct consensus_priv *priv)
     priv->throughput_logger.last_ts = ASGARD_TIMESTAMP;
     priv->throughput_logger.applied += applying;
 
+    rx_buf = get_rx_buffer(priv);
 
-    if(!priv->rxbuf ) {
+    if(!rx_buf) {
         asgard_error("Buffer is not initialized!\n");
         return -1;
     }
@@ -214,7 +216,7 @@ int apply_log_to_sm(struct consensus_priv *priv)
 
         // TODO: is the datachunk ready to append!?
 
-        if(append_rb(priv->rxbuf, log->entries[buf_idx]->dataChunk)) {
+        if(append_rb(rx_buf, log->entries[buf_idx]->dataChunk)) {
             // asgard_error("Could not append to ring buffer tried to append index %i buf_idx:%d!\n", i,  buf_idx);
             return -1;
         }

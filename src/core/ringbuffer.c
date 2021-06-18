@@ -4,6 +4,45 @@
 const char validation_key[] = { 0x39, 0x3e, 0x52, 0x00, 0x00, 0x00, 0x00 };
 #define VALIDATION_KEY_SIZE ASG_CHUNK_SIZE - 1
 
+struct asg_ring_buf * get_tx_buffer(struct consensus_priv *priv){
+
+#if ASGARD_KERNEL_MODULE
+
+    if(!priv || !priv->synbuf_tx || !priv->synbuf_tx->ubuf){
+        asgard_error("Uninitialized private data when trying to access synbuf's ubuf\n");
+        return NULL;
+    }
+
+    return (struct asg_ring_buf *)priv->synbuf_tx->ubuf;
+#else
+    if(!priv || !priv->txbuf ){
+        asgard_error("Uninitialized private data when trying to access rx_buf\n");
+        return NULL;
+    }
+    return (struct asg_ring_buf *)priv->txbuf;
+#endif
+}
+struct asg_ring_buf * get_rx_buffer(struct consensus_priv *priv){
+
+#if ASGARD_KERNEL_MODULE
+
+    if(!priv || !priv->synbuf_rx || !priv->synbuf_rx->ubuf){
+        asgard_error("Uninitialized private data when trying to access synbuf's ubuf\n");
+        return NULL;
+    }
+
+
+    return (struct asg_ring_buf *)priv->synbuf_rx->ubuf;
+#else
+    if(!priv || !priv->rxbuf ){
+        asgard_error("Uninitialized private data when trying to access rx_buf\n");
+        return NULL;
+    }
+
+    return (struct asg_ring_buf *)priv->rxbuf;
+#endif
+}
+
 
 char* get_start_of_obj_key(char *noc, int *size) {
 
@@ -30,8 +69,8 @@ int validate_header_key(char *noc) {
  */
 void setup_asg_ring_buf(struct asg_ring_buf *buf, int max_elements){
 
-    if(max_elements >= ASG_RING_BUF_SIZE_LIMIT){
-        asgard_error("size (%d) exceeds the configured size limit for ring buffer of (%d)", max_elements, ASG_RING_BUF_SIZE_LIMIT);
+    if(max_elements > ASG_RING_BUF_SIZE_LIMIT){
+        asgard_error("size (%d) exceeds the configured size limit for ring buffer of (%d)\n", max_elements, ASG_RING_BUF_SIZE_LIMIT);
     }
 
     buf->size = max_elements;

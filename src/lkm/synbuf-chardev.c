@@ -41,7 +41,7 @@ struct synbuf_device *inode_synbuf(struct inode *inode)
     return container_of(cdev, struct synbuf_device, cdev);
 }
 
-struct synbuf_device* create_synbuf(const char *name, int num_pages)
+struct synbuf_device* create_synbuf(const char *name, size_t size)
 {
     int err = 0;
     struct synbuf_device *device
@@ -53,7 +53,7 @@ struct synbuf_device* create_synbuf(const char *name, int num_pages)
     }
 
     // allocate num_pages Page Buffer
-    err = synbuf_chardev_init(device, name, num_pages * PAGE_SIZE);
+    err = synbuf_chardev_init(device, name, size);
 
     if(err != 0) {
         printk(KERN_ERR"Failed initializing synbuf device\n");
