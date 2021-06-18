@@ -940,8 +940,8 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
 
 #endif  
 
-    priv->rxbuf = AMALLOC(250 * 20 * psize, GFP_KERNEL);
-    priv->txbuf = AMALLOC(250 * 20 * psize, GFP_KERNEL);
+    priv->rxbuf = AMALLOC(sizeof(struct asg_ring_buf), GFP_KERNEL);
+    priv->txbuf = AMALLOC(sizeof(struct asg_ring_buf), GFP_KERNEL);
     /* Initialize RingBuffer */
     setup_asg_ring_buf((struct asg_ring_buf *)priv->rxbuf, 1000000);
     /* Initialize RingBuffer */
