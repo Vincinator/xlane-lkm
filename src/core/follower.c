@@ -3,9 +3,10 @@
 #include "follower.h"
 
 
+#define STRINGIFY(x) #x
+#define AT __FILE__ ":" STRINGIFY(__LINE__) 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[ASGARD][LE][FOLLOWER]"
-
+#define LOG_PREFIX "[" AT  "]"
 
 int follower_process_pkt(struct proto_instance *ins, int remote_lid, int rcluster_id, unsigned char *pkt)
 {

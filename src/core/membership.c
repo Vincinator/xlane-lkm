@@ -10,7 +10,7 @@
 #endif
 
 #undef LOG_PREFIX
-#define LOG_PREFIX "[ASGARD][MEMBERSHIP]"
+#define LOG_PREFIX "[ASGARD][ ]"
 
 int peer_is_registered(struct pminfo *spminfo , int cid)
 {

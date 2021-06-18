@@ -2,6 +2,11 @@
 
 #include "payload.h"
 
+#define STRINGIFY(x) #x
+#define AT __FILE__ ":" STRINGIFY(__LINE__) 
+#undef LOG_PREFIX
+#define LOG_PREFIX "[" AT  "]"
+
 void set_ae_data(unsigned char *pkt,
                  int32_t in_term,
                  int32_t in_leader_id,

@@ -5,6 +5,9 @@
 
 #include "pingpong.h"
 
+#undef LOG_PREFIX
+#define LOG_PREFIX "[payload.c]"
+
 
 #ifdef ASGARD_DPDK
 #include <rte_byteorder.h>
