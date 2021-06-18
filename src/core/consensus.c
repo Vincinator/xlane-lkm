@@ -155,8 +155,8 @@ int setup_le_broadcast_msg(struct proto_instance *ins, enum le_opcode opcode) {
     int32_t last_log_term;
 
 
-    if (priv->sm_log.stable_idx == -1){
-        asgard_dbg("Stable IDX is -1. Using actual term as prevLogTerm\n");
+    if (priv->sm_log.last_applied == -1){
+        asgard_dbg("last applied IDX is -1. Using actual term as prevLogTerm\n");
         asgard_dbg("priv->sm_log.stable_idx=%d\n", priv->sm_log.stable_idx);
         asgard_dbg("priv->sm_log.last_idx=%d\n", priv->sm_log.last_idx);
         asgard_dbg("priv->sm_log.last_applied=%d\n", priv->sm_log.last_applied);
@@ -876,6 +876,7 @@ int consensus_init(struct proto_instance *ins, int verbosity) {
         priv->sm_log.entries[i] = AMALLOC(sizeof(struct sm_log_entry), GFP_KERNEL);
         priv->sm_log.entries[i]->dataChunk = AMALLOC(sizeof(struct data_chunk), GFP_KERNEL);
         priv->sm_log.entries[i]->valid = 0;
+
     }
 
     priv->sdev->consensus_priv = priv; /* reference for pacemaker */
