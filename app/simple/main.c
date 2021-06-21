@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#define DEVNAME "asgard_fd_tx_mem"
+#define DEVNAME "synbufrx"
 #define MAX_NAME_SIZE 64
 #define RX_OFFSET_BYTES 8
 
@@ -26,7 +26,7 @@ int asgard_ulib_setup(int ifindex) {
 
         printf(" System page size: %zu bytes\n", pagesize);
 
-        snprintf(name_buf,  sizeof(name_buf), "/dev/%s%d", DEVNAME, ifindex);
+        snprintf(name_buf,  sizeof(name_buf), "/dev/%s_i%d", DEVNAME, ifindex);
 
         fd = open(name_buf, O_RDWR);
         if (fd < 0) {
