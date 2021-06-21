@@ -41,7 +41,7 @@ int asgard_ulib_setup(int ifindex) {
         int status;
 
         snprintf(name_buf,  sizeof(name_buf), "/dev/%s", DEVNAME);
-        printf("[Setup] Trying to open %s", name_buf);
+        printf("[Setup] Trying to open %s\n", name_buf);
 
         fd = open(name_buf, O_RDWR);
         if (fd < 0) {
@@ -60,10 +60,10 @@ int asgard_ulib_setup(int ifindex) {
 
         shared_mem_page = (char*) mmap(0, pagesize, PROT_READ | PROT_WRITE , MAP_SHARED, fd, 0);
         if (shared_mem_page == MAP_FAILED) {
-                printf("[setup] mmap failed for %s", name_buf);
+                printf("[setup] mmap failed for %s\n", name_buf);
                 return -1;
         } else {
-                printf("[setup] mmap success for %s", name_buf);
+                printf("[setup] mmap success for %s\n", name_buf);
         }
 
         return 0;
@@ -93,19 +93,19 @@ int print_cluster_info(){
 
         printf("Cluster Self ID: %d\n", ci->cluster_self_id);
         printf("Node State: %s\n", nstate_string(ci->node_state));
-        printf("last update timestamp: %lu\n", ci->last_update_timestamp);
-        printf("overall cluster member: %d\n", ci->overall_cluster_member);
-        printf("active cluster member: %d\n", ci->active_cluster_member);
-        printf("dead cluster member: %d\n", ci->dead_cluster_member);
-        printf("cluster joins: %d\n", ci->cluster_joins);
-        printf("cluster dropouts: %d\n", ci->cluster_dropouts);
-
-        for(i=0; i < ci->overall_cluster_member; i++){
+        printf("Last update timestamp: %lu\n", ci->last_update_timestamp);
+        printf("Overall cluster member: %d\n", ci->overall_cluster_member);
+        printf("Active remote cluster member: %d\n", ci->active_cluster_member);
+        printf("Dead remote cluster member: %d\n", ci->dead_cluster_member);
+        printf("Cluster joins: %d\n", ci->cluster_joins);
+        printf("Cluster dropouts: %d\n", ci->cluster_dropouts);
+        printf("\nCluster member Info\n");
+        for(i=0; i < ci->overall_cluster_member - 1; i++){
                 printf("\t Cluster Node %d\n", ci->member_info[i].global_cluster_id);
                 printf("\t state = %d\n", ci->member_info[i].state);
         }
         // Move up X lines so we overwrite the printf output in the next loop 
-        return ci->overall_cluster_member * 2 + 8;
+        return (ci->overall_cluster_member - 1) * 2 + 10;
 }
 
 
@@ -137,6 +137,9 @@ int main(int argc, char **argv)
 
     // Get aliveness counter;
     asgard_ulib_setup(devid);
+
+    printf("\n");
+    printf("\n");
 
     while(running) {
 
