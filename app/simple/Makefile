@@ -1,5 +1,5 @@
 TARGET = simple_app
-LIBS = -lm
+LIBS = -lm 
 CC = gcc
 CFLAGS = -g -Wall
 

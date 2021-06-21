@@ -28,7 +28,7 @@ int asgard_ulib_setup(int ifindex) {
 
         printf(" System page size: %zu bytes\n", pagesize);
 
-        snprintf(name_buf,  sizeof(name_buf), "/dev/%s", DEVNAME, ifindex);
+        snprintf(name_buf,  sizeof(name_buf), "/dev/%s", DEVNAME);
 
         fd = open(name_buf, O_RDWR);
         if (fd < 0) {
@@ -83,8 +83,7 @@ void print_cluster_info(){
         printf("dead cluster member: %d\n", ci->dead_cluster_member);
         printf("cluster joins: %d\n", ci->cluster_joins);
         printf("cluster dropouts: %d\n", ci->cluster_dropouts);
-
-
+        printf("\033[8A\r"); // Move up X lines;
 }
 
 
@@ -127,7 +126,7 @@ int main(int argc, char **argv)
         //     break;
 
         print_cluster_info();
-
+        sleep(1);
 
         running++;
         counter++;
