@@ -65,7 +65,8 @@ pipeline {
 
            // sh 'cd asgardcli && . asgard-cli-venv/bin/activate && python3 setup.py clean --all && python3 -m build'
             sh './build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC'
-            sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko *.version'
+            sh 'cd app/simple && make && cp simple_app ../../bin && cd ../..'
+            sh 'cd bin && ls && tar -czvf asgard-lkm.tar.gz *.ko *.version simple_app'
             archiveArtifacts 'bin/asgard-lkm.tar.gz'
 
           }
