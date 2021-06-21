@@ -57,7 +57,7 @@ struct cluster_info {
      * 3 = LEADER
      * 4 = FAILURE
      */
-    int node_state;
+    node_state_t node_state;
 
     /* Gets updated every time cluster_info is updated */
     uint64_t last_update_timestamp;
