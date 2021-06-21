@@ -313,8 +313,7 @@ int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex){
 		(struct cluster_info *)sdev->synbuf_clustermem->ubuf;
 
 	sdev->ci->overall_cluster_member = 1; /* Node itself is a member */
-	sdev->ci->cluster_self_id =
-    sdev->pminfo.cluster_id;
+	sdev->ci->cluster_self_id = sdev->pminfo.cluster_id;
 #else
     sdev->ci = ACMALLOC(1, sizeof(struct cluster_info), GFP_KERNEL);
 
