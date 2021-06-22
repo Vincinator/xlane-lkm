@@ -102,10 +102,12 @@ int print_cluster_info(){
         printf("\nCluster member Info\n");
         for(i=0; i < ci->overall_cluster_member - 1; i++){
                 printf("\t Cluster Node %d\n", ci->member_info[i].global_cluster_id);
-                printf("\t state = %d\n", ci->member_info[i].state);
+                printf("\t state:  %d\n", ci->member_info[i].state);
+                printf("\t HB Counter: %ld\n", ci->member_info[i].hb_metrics.hb_counter);
+
         }
         // Move up X lines so we overwrite the printf output in the next loop 
-        return (ci->overall_cluster_member - 1) * 2 + 10;
+        return (ci->overall_cluster_member - 1) * 3 + 10;
 }
 
 
@@ -116,8 +118,6 @@ int running = 1;
 int main(int argc, char **argv)
 {
         int procid, devid, counter, lines;
-
-        printf("Started Demo! Application.\n");
 
         if (argc != 3) {
                 printf("sudo %s <procid> <devid>\n", argv[0]);

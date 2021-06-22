@@ -38,7 +38,8 @@ struct cluster_member_info {
 
     int global_cluster_id;
 
-    /* ... may contain additional fields in the future ... */
+    struct ingress_hb_metrics hb_metrics;
+
 
 };
 

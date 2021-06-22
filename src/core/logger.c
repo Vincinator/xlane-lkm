@@ -1,6 +1,7 @@
 #include "logger.h"
 #include "libasraft.h"
 #include "types.h"
+#include "membership.h"
 
 
 #ifndef ASGARD_KERNEL_MODULE
@@ -154,9 +155,14 @@ int write_log(struct asgard_logger *slog, enum le_event_type type, uint64_t tcs)
     return 0;
 }
 
-int write_ingress_log(struct asgard_ingress_logger *ailog, enum le_event_type type, uint64_t tcs, int node_id)
+/* if EVAL_ONLY_STORE_TIMESTAMPS is defined, then this function writes timestamps to a buffer
+ * otherwise, this function calculates the heartbeat metrics iteratively.
+ */
+int write_in_hb_to_log(struct asgard_ingress_logger *ailog, uint64_t tcs, int node_id)
 {
     struct asgard_logger *slog;
+    struct ingress_hb_metrics *hb_metrics;
+    struct asgard_device *sdev;
 
     if(!ailog) {
         asgard_error("Error in %s. ingress logger is null \n", __FUNCTION__);
@@ -178,6 +184,9 @@ int write_ingress_log(struct asgard_ingress_logger *ailog, enum le_event_type ty
     if (slog->state != LOGGER_RUNNING)
         return 0;
     
+
+#ifdef EVAL_ONLY_STORE_TIMESTAMPS
+
     if (slog->current_entries >= LOGGER_EVENT_LIMIT) {
         asgard_dbg("Logs are full! Stopped ingress logging. %s\n", __func__);
         // asgard_log_stop(slog);
@@ -188,6 +197,23 @@ int write_ingress_log(struct asgard_ingress_logger *ailog, enum le_event_type ty
     slog->events[slog->current_entries]->node_id = node_id;
 
     write_log(slog, type, tcs);
+
+#else
+
+    sdev = container_of(ailog, struct asgard_device, ingress_logger);
+    hb_metrics = &sdev->ci->member_info[node_id].hb_metrics;
+
+    if(!hb_metrics) {
+        asgard_error("Error in %s. hb metrics for node %d is null \n",  __FUNCTION__, node_id);
+        return -EINVAL;
+    }
+
+    hb_metrics->hb_counter++;
+
+
+
+#endif
+
 
     return 0;
 }
@@ -278,7 +304,7 @@ void clear_ingress_logger(struct asgard_ingress_logger *ailog){
 
         AFREE(ailog->per_node_logger);
     }
-
+   
 }
 
 
@@ -298,13 +324,14 @@ int init_ingress_logger(struct asgard_ingress_logger *ailog, int instance_id)
         return -ENOMEM;
     }
 
-    // Just init all loggers for all possible nodes.. TODO
     for(i = 0; i < CLUSTER_SIZE; i++){
         ailog->per_node_logger[i] = AMALLOC(sizeof(struct asgard_logger), GFP_KERNEL);
         if (!ailog->per_node_logger[i]) {
+            // TODO: Clean up old
             asgard_error("Could not allocate memory for logs\n");
             return -ENOMEM;
         }
+
         init_logger(ailog->per_node_logger[i], instance_id, -1, "nodelogger", -1);
         logger_state_transition_to(ailog->per_node_logger[i], LOGGER_RUNNING);
     }

@@ -83,7 +83,7 @@ struct proto_instance *get_proto_instance(struct asgard_device *sdev, uint16_t p
     return sdev->protos[idx];
 }
 
-void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster_id, char *payload, int instances, uint32_t bcnt, uint64_t ots)
+void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster_id, char *payload, int instances, uint32_t bcnt, uint64_t ots, uint64_t pts)
 {
     uint16_t cur_proto_id;
     uint16_t cur_offset;
@@ -98,7 +98,6 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
             asgard_error("BUG!? - Received packet that claimed to include %d instances\n", instances);
         return;
     }
-
 
     for(i = 0; i < instances; i++) {
 
@@ -123,7 +122,7 @@ void handle_sub_payloads(struct asgard_device *sdev, int remote_lid, int cluster
         } else {
             if(sdev->verbose >= 10)
                 asgard_dbg("(i: %d, offset: %d, proto_id: %d, cur_ins id: %d, node id:  %d, instances total %d, ots: %llu )\n", i, cur_offset, cur_proto_id, cur_ins->instance_id, remote_lid, instances, ots);
-            cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload, ots);
+            cur_ins->ctrl_ops.post_payload(cur_ins, remote_lid, cluster_id, payload, ots, pts);
         }
         cur_bcnt = cur_bcnt - cur_offset;
         cur_payload_ptr = cur_payload_ptr + cur_offset;
@@ -244,7 +243,7 @@ void pkt_process_handler(struct work_struct *w)
 
     handle_sub_payloads(aw->sdev, aw->remote_lid, aw->rcluster_id,
                         user_data->proto_data,
-                        aw->received_proto_instances, aw->bcnt, aw->ots);
+                        aw->received_proto_instances, aw->bcnt, aw->ots, aw->post_ts);
 
 exit:
     if (aw){
@@ -276,13 +275,17 @@ void *pkt_process_handler(void *data)
 
 #endif
 
-void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id, char *payload, struct asgard_payload *user_data, uint32_t cqe_bcnt, uint64_t ots) {
+void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id, char *payload, 
+                        struct asgard_payload *user_data, uint32_t cqe_bcnt, uint64_t ots) {
     struct pminfo *spminfo = &sdev->pminfo;
     int cluster_id_ad;
     uint32_t cluster_ip_ad;
     char *cluster_mac_ad;
     struct pkt_work_data *wd;
     uint16_t received_proto_instances;
+    uint64_t post_ts;
+
+    post_ts = ASGARD_TIMESTAMP;
 
     if(sdev->verbose >= 100)
         asgard_dbg("Packet from remote_lid: %d \n", remote_lid);
@@ -315,10 +318,9 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     }
     
     // Update aliveness state and timestamps
-    spminfo->pm_targets[remote_lid].chb_ts = ASGARD_TIMESTAMP;
+    spminfo->pm_targets[remote_lid].chb_ts = post_ts;
     spminfo->pm_targets[remote_lid].alive = 1;
     update_cluster_member(sdev->ci, remote_lid, 1);
-    write_ingress_log(&sdev->ingress_logger, INGRESS_PACKET, ASGARD_TIMESTAMP, remote_lid);
 
     if (check_warmup_state(sdev, spminfo)) {
         AFREE(payload);
@@ -336,6 +338,7 @@ void do_post_payload(struct asgard_device *sdev, int remote_lid, int rcluster_id
     wd->remote_lid = remote_lid;
     wd->bcnt = cqe_bcnt;
     wd->ots = ots;
+    wd->post_ts = post_ts;
 
 #ifdef ASGARD_KERNEL_MODULE
     if (sdev->asgard_wq_lock) {

@@ -148,6 +148,26 @@ struct asgard_logger {
 
 };
 
+struct ingress_hb_metrics {
+
+    /* Calculated if hb_counter > 2
+     * latency jitter measures the hb interval inconsitencies (or variance in latency)  
+     */
+    uint64_t latency_jitter;
+
+    /* Increases monotonically with each received heartbeat from a given remote cluster member */
+    uint64_t hb_counter;
+
+    uint64_t max_lateny;
+
+    uint64_t min_latency;
+
+    /* Is calculated iteratively */
+    uint64_t avg_latency;
+
+
+};
+
 struct asgard_ingress_logger {
     uint16_t instance_id;
     enum logger_state state;
@@ -166,7 +186,7 @@ void clear_logger(struct asgard_logger *slog);
 int write_log(struct asgard_logger *slog, enum le_event_type type, uint64_t tcs);
 void dump_log_to_file(struct asgard_logger *sdev, const char *filename, int node_id, int hbi);
 
-int write_ingress_log(struct asgard_ingress_logger *slog, enum le_event_type type, uint64_t tcs, int node_id);
+int write_in_hb_to_log(struct asgard_ingress_logger *slog, uint64_t tcs, int node_id);
 
 void logger_state_transition_to(struct asgard_logger *slog, enum logger_state state);
 

@@ -83,7 +83,7 @@ struct asgard_protocol_ctrl_ops {
     int (*clean)(struct proto_instance *ins);
 
     int (*post_payload)(struct proto_instance *ins, int remote_lid, int cluster_id,
-                        void *payload, uint64_t ots);
+                        void *payload, uint64_t ots, uint64_t pts);
 
     int (*post_ts)(struct proto_instance *ins, unsigned char *remote_mac,
                    uint64_t ts);

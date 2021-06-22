@@ -29,6 +29,7 @@ struct pkt_work_data{
     int received_proto_instances;
     uint32_t bcnt;
     uint64_t ots;
+    uint64_t post_ts;
 
 };
 
@@ -43,4 +44,4 @@ void DumpHex(const void* data, size_t size);
 
 
 void handle_sub_payloads(struct asgard_device *sdev, int remote_lid,
-        int cluster_id, char *payload, int instances, uint32_t bcnt, uint64_t ots);
+        int cluster_id, char *payload, int instances, uint32_t bcnt, uint64_t ots, uint64_t pts);

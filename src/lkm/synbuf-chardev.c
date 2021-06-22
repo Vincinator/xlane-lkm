@@ -52,7 +52,7 @@ struct synbuf_device* create_synbuf(const char *name, size_t size)
         goto error;
     }
 
-    // allocate num_pages Page Buffer
+    // allocated size will be page aligned by synbuf!
     err = synbuf_chardev_init(device, name, size);
 
     if(err != 0) {

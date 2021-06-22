@@ -261,7 +261,7 @@ void handle_pong(struct pingpong_priv *pPriv, int remote_lid, uint16_t round_id,
 
 }
 
-int pingpong_post_payload(struct proto_instance *ins, int remote_lid, int cluster_id, void *payload, uint64_t ots){
+int pingpong_post_payload(struct proto_instance *ins, int remote_lid, int cluster_id, void *payload, uint64_t ots, uint64_t pts){
     uint16_t opcode, pp_id, pp_t1;
     struct pingpong_priv *priv = (struct pingpong_priv *)ins->proto_data;
 

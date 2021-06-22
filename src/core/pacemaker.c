@@ -1013,7 +1013,7 @@ int do_pacemaker(void *data) {
         async_pkts = 0;
         out_of_sched_multi = 0;
 
-        /* Scheduled Multicast Heartbeats */
+        /* Scheduled (Multicast) Heartbeats */
         scheduled_hb = scheduled_tx(prev_time, cur_time, interval);
 
         if (spminfo->errors > 1000) {

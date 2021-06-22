@@ -807,8 +807,9 @@ int consensus_us_update(struct proto_instance *ins, void *payload) {
 }
 
 int consensus_post_payload(struct proto_instance *ins, int remote_lid,
-                           int rcluster_id, void *payload, uint64_t ots) {
+                           int rcluster_id, void *payload, uint64_t ots, uint64_t pts) {
     struct consensus_priv *priv = (struct consensus_priv *)ins->proto_data;
+    uint8_t opcode;
 
     if (!priv) {
         asgard_dbg("private consensus data is null!\n");
@@ -817,6 +818,12 @@ int consensus_post_payload(struct proto_instance *ins, int remote_lid,
 
     if (!consensus_is_alive(priv))
         return 0;
+
+
+    opcode = GET_CON_PROTO_OPCODE_VAL(payload);
+
+    if(opcode == ALIVE)
+        write_in_hb_to_log(&priv->sdev->ingress_logger, pts, remote_lid);
 
     switch (priv->nstate) {
         case FOLLOWER:

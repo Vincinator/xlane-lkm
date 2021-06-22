@@ -299,7 +299,7 @@ int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex){
 
 	/* Initialize synbuf for Cluster Membership - one page is enough */
 	sdev->synbuf_clustermem =
-		create_synbuf("clustermem", 1);
+		create_synbuf("clustermem", sizeof(struct cluster_info));
 
 	if (!sdev->synbuf_clustermem) {
 		asgard_error("Could not create synbuf for clustermem");

@@ -1,14 +1,27 @@
 # Asgard
 
 Asgard introduces a sliced network for distributed applications on kernel level.
-Failure detection, cluster management and log replication are implemented as a kernel level services
-with interfaces to user space.
+Failure detection, cluster management and log replication are implemented as kernel level services with interfaces to user space.
 
 This repository contains source code for three asgard flavours:
 - lkm (asgard implemented as loadable linux kernel module)
 - dpdk (asgard implemented using dpdk)
 - plain (a pure use space implementation of asgard)
 
+
+
+# Compile 
+
+
+## LKM
+
+```bash
+ASGARD_KERNEL_SRC=/path/to/asgard/kernel/src
+./build.sh --lkm --kerneldir $ASGARD_KERNEL_SRC
+```
+### Flags
+If ```EVAL_ONLY_STORE_TIMESTAMPS``` is set timestamps are only stored in timestamp buffer.
+Otherwise, timestamps are used to calculate metric in-kernel without the need of a large timestamp buffer.
 
 
 # Setup Overview
@@ -32,30 +45,10 @@ Create or adapt the inventory.ini to your needs, and dont forget to reference th
 Once you have deployed the latest asgard software pieces, it is time to install them.
 
 
-### Installation (LKM)
-Installation is done via the acli (asgard command line interface). To use acli, you need to install it.
 
-Once installed, you can continue with the configuration chapter.
 
-### Configuration (LKM)
 
-Configuration is done via an node.ini file.
-If you are using LKM version, you could use acli to help you generate a fresh node.ini.
-```acli``` will also be used to parse this node.ini and call the lkm interfaces (procfs) to configure the lkm version.
 
-```bash
-# also creates a venv
-./acli-installer.sh 
-
-# activate the venv 
-source ../eval-venv 
-
-# prepare asgard 
-acli generate-bench-config
-
-# unload asgard
-acli unload-kernel-module
-```
 
 
 # Example Use Cases
@@ -66,11 +59,6 @@ acli unload-kernel-module
 ```
 curl -X POST http://cerebro:ACCESS_TOKEN@JENKINS_IP:JENKINS_PORT/job/Vincent/job/Build%20and%20Publish%20-%20ASGARD/job/master/build
 ```
-
-
-
-
-
 
 # Licence
 
