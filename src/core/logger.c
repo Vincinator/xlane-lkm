@@ -159,7 +159,7 @@ int write_log(struct asgard_logger *slog, enum le_event_type type, uint64_t tcs)
 
 uint64_t calc_avg(uint64_t avg, uint64_t new_val, uint64_t n) {
     if(n <= 0){
-        asgard_dbg("Can not calc avg for n=%d\n", n);
+        asgard_dbg("Can not calc avg for n=%lld\n", n);
         return 0;
     }
 

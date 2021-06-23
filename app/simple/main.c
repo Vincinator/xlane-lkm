@@ -105,15 +105,15 @@ int print_cluster_info(){
         for(i=0; i < ci->overall_cluster_member - 1; i++){
                 printf("\t Cluster Node %d\n", ci->member_info[i].global_cluster_id);
                 printf("\t state:  %d\n", ci->member_info[i].state);
-                printf("\t HB Counter: %lu\n", ci->member_info[i].hb_metrics.hb_counter);
+                printf("\t HB Counter: %lld\n", ci->member_info[i].hb_metrics.hb_counter);
                 printf("\t Latency\n");
-                printf("\t\t Avg Latency: %lu\n", ci->member_info[i].hb_metrics.avg_latency);
-                printf("\t\t Max Latency: %lu\n", ci->member_info[i].hb_metrics.max_latency);
-                printf("\t\t Min Latency: %lu\n", ci->member_info[i].hb_metrics.min_latency);
+                printf("\t\t Avg Latency: %lld\n", ci->member_info[i].hb_metrics.avg_latency);
+                printf("\t\t Max Latency: %lld\n", ci->member_info[i].hb_metrics.max_latency);
+                printf("\t\t Min Latency: %lld\n", ci->member_info[i].hb_metrics.min_latency);
                 printf("\t Jitter\n");
-                printf("\t\t Avg Jitter: %lu\n", ci->member_info[i].hb_metrics.avg_jitter);
-                printf("\t\t Max Jitter: %lu\n", ci->member_info[i].hb_metrics.max_jitter);
-                printf("\t\t Min Jitter: %lu\n", ci->member_info[i].hb_metrics.min_jitter);
+                printf("\t\t Avg Jitter: %lld\n", ci->member_info[i].hb_metrics.avg_jitter);
+                printf("\t\t Max Jitter: %lld\n", ci->member_info[i].hb_metrics.max_jitter);
+                printf("\t\t Min Jitter: %lld\n", ci->member_info[i].hb_metrics.min_jitter);
 
         }
         // Move up X lines so we overwrite the printf output in the next loop 
