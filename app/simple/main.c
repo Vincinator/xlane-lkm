@@ -17,6 +17,13 @@
 #define MAX_NAME_SIZE 64
 #define RX_OFFSET_BYTES 8
 
+
+#define CYCLES_PER_1MS 2400000
+#define CYCLES_PER_1US 2400
+
+
+
+
 char *shared_mem_page;
 
 const char *nstate_string(enum node_state state)
@@ -90,6 +97,8 @@ int print_cluster_info(){
         int i;
 
         ci = (struct cluster_info *) shared_mem_page;
+        uint64_t us_convertion = CYCLES_PER_1US;
+        uint64_t ms_convertion = CYCLES_PER_1MS;
 
         printf("Cluster Self ID: %d\n", ci->cluster_self_id);
         printf("HBI: %lu\n", ci->hbi);
@@ -107,13 +116,13 @@ int print_cluster_info(){
                 printf("\t HB Counter: %lu\n", ci->member_info[i].hb_metrics.hb_counter);
                 printf("\t Delta to last HB: %ld\n", ci->member_info[i].hb_metrics.last_delta);
                 printf("\t Latency\n");
-                printf("\t\t Avg Latency: %ld\n", ci->member_info[i].hb_metrics.avg_latency);
-                printf("\t\t Max Latency: %ld\n", ci->member_info[i].hb_metrics.max_latency);
-                printf("\t\t Min Latency: %ld\n", ci->member_info[i].hb_metrics.min_latency);
+                printf("\t\t Avg Latency: %ld ms\n", ci->member_info[i].hb_metrics.avg_latency / ms_convertion);
+                printf("\t\t Max Latency: %ld ms\n", ci->member_info[i].hb_metrics.max_latency / ms_convertion);
+                printf("\t\t Min Latency: %ld ms\n", ci->member_info[i].hb_metrics.min_latency / ms_convertion);
                 printf("\t Jitter\n");
-                printf("\t\t Avg Jitter: %ld\n", ci->member_info[i].hb_metrics.avg_jitter);
-                printf("\t\t Max Jitter: %ld\n", ci->member_info[i].hb_metrics.max_jitter);
-                printf("\t\t Min Jitter: %ld\n", ci->member_info[i].hb_metrics.min_jitter);
+                printf("\t\t Avg Jitter: %ld us\n", ci->member_info[i].hb_metrics.avg_jitter / us_convertion);
+                printf("\t\t Max Jitter: %ld us\n", ci->member_info[i].hb_metrics.max_jitter / us_convertion);
+                printf("\t\t Min Jitter: %ld us\n", ci->member_info[i].hb_metrics.min_jitter / us_convertion);
 
         }
         // Move up X lines so we overwrite the printf output in the next loop 
