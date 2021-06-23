@@ -247,11 +247,6 @@ int write_in_hb_to_log(struct asgard_ingress_logger *ailog, uint64_t tcs, int no
 
     } 
 
-
-    
-
-
-
     // overwrite last ts after we have used it for calculations
     hb_metrics->last_ts = tcs;
 
