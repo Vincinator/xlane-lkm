@@ -155,6 +155,17 @@ int write_log(struct asgard_logger *slog, enum le_event_type type, uint64_t tcs)
     return 0;
 }
 
+
+
+uint64_t calc_avg(uint64_t avg, uint64_t new_val, uint64_t n) {
+    if(n <= 0){
+        asgard_dbg("Can not calc avg for n=%d\n", n);
+        return 0;
+    }
+
+    return avg + (new_val - avg)/n;
+}
+
 /* if EVAL_ONLY_STORE_TIMESTAMPS is defined, then this function writes timestamps to a buffer
  * otherwise, this function calculates the heartbeat metrics iteratively.
  */
@@ -216,9 +227,8 @@ int write_in_hb_to_log(struct asgard_ingress_logger *ailog, uint64_t tcs, int no
 
         delta = tcs - hb_metrics->last_ts;
 
-        hb_metrics->avg_latency 
-            = hb_metrics->avg_latency + 
-                ((delta - hb_metrics->avg_latency) / (hb_metrics->hb_counter - 1));
+        hb_metrics->avg_latency = calc_avg(hb_metrics->avg_latency, delta, hb_metrics->hb_counter - 1);
+           
 
         if(hb_metrics->max_latency < delta){
             hb_metrics->max_latency = delta;
@@ -232,10 +242,7 @@ int write_in_hb_to_log(struct asgard_ingress_logger *ailog, uint64_t tcs, int no
         // difference between expected latency (hbi) and actual latency (delta)
         jitter = sdev->pminfo.hbi - delta;
 
-        hb_metrics->avg_jitter 
-            = hb_metrics->avg_jitter + 
-                ((jitter - hb_metrics->avg_jitter) / (hb_metrics->hb_counter - 1));
-
+        hb_metrics->avg_jitter = calc_avg(hb_metrics->avg_jitter, jitter, hb_metrics->hb_counter - 1);
 
         if(hb_metrics->max_jitter < jitter){
             hb_metrics->max_jitter = jitter;
