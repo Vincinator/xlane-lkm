@@ -174,7 +174,7 @@ int write_in_hb_to_log(struct asgard_ingress_logger *ailog, uint64_t tcs, int no
     struct asgard_logger *slog;
     struct ingress_hb_metrics *hb_metrics;
     struct asgard_device *sdev;
-    uint64_t delta, jitter;
+    int64_t delta, jitter;
 
     if(!ailog) {
         asgard_error("Error in %s. ingress logger is null \n", __FUNCTION__);
