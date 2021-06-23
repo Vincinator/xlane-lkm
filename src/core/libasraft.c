@@ -333,6 +333,7 @@ int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex){
 		sdev->ci->member_info[i].hb_metrics.max_jitter = 0;
 
 	}
+	asgard_dbg(" ------ uint64_t size: %d\n", sizeof(uint64_t));
 
 
     return 0;

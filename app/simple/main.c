@@ -93,6 +93,7 @@ int print_cluster_info(){
 
         printf("Cluster Self ID: %d\n", ci->cluster_self_id);
         printf("HBI: %lu\n", ci->hbi);
+        printf("HBI (lld): %lld, uint64_t size: %ld\n", ci->hbi, sizeof(uint64_t));
 
         printf("Node State: %s\n", nstate_string(ci->node_state));
         printf("Last update timestamp: %lu\n", ci->last_update_timestamp);
@@ -105,19 +106,19 @@ int print_cluster_info(){
         for(i=0; i < ci->overall_cluster_member - 1; i++){
                 printf("\t Cluster Node %d\n", ci->member_info[i].global_cluster_id);
                 printf("\t state:  %d\n", ci->member_info[i].state);
-                printf("\t HB Counter: %lld\n", ci->member_info[i].hb_metrics.hb_counter);
+                printf("\t HB Counter: %ld\n", ci->member_info[i].hb_metrics.hb_counter);
                 printf("\t Latency\n");
-                printf("\t\t Avg Latency: %lld\n", ci->member_info[i].hb_metrics.avg_latency);
-                printf("\t\t Max Latency: %lld\n", ci->member_info[i].hb_metrics.max_latency);
-                printf("\t\t Min Latency: %lld\n", ci->member_info[i].hb_metrics.min_latency);
+                printf("\t\t Avg Latency: %ld\n", ci->member_info[i].hb_metrics.avg_latency);
+                printf("\t\t Max Latency: %ld\n", ci->member_info[i].hb_metrics.max_latency);
+                printf("\t\t Min Latency: %ld\n", ci->member_info[i].hb_metrics.min_latency);
                 printf("\t Jitter\n");
-                printf("\t\t Avg Jitter: %lld\n", ci->member_info[i].hb_metrics.avg_jitter);
-                printf("\t\t Max Jitter: %lld\n", ci->member_info[i].hb_metrics.max_jitter);
-                printf("\t\t Min Jitter: %lld\n", ci->member_info[i].hb_metrics.min_jitter);
+                printf("\t\t Avg Jitter: %ld\n", ci->member_info[i].hb_metrics.avg_jitter);
+                printf("\t\t Max Jitter: %ld\n", ci->member_info[i].hb_metrics.max_jitter);
+                printf("\t\t Min Jitter: %ld\n", ci->member_info[i].hb_metrics.min_jitter);
 
         }
         // Move up X lines so we overwrite the printf output in the next loop 
-        return (ci->overall_cluster_member - 1) * 11 + 10;
+        return (ci->overall_cluster_member - 1) * 11 + 11;
 }
 
 
