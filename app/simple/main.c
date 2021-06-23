@@ -103,7 +103,7 @@ int print_cluster_info(){
         for(i=0; i < ci->overall_cluster_member - 1; i++){
                 printf("\t Cluster Node %d\n", ci->member_info[i].global_cluster_id);
                 printf("\t state:  %d\n", ci->member_info[i].state);
-                printf("\t HB Counter: %ld\n", ci->member_info[i].hb_metrics.hb_counter);
+                printf("\t HB Counter: %lg\n", ci->member_info[i].hb_metrics.hb_counter);
 
         }
         // Move up X lines so we overwrite the printf output in the next loop 

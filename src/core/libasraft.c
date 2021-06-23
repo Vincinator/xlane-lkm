@@ -182,8 +182,9 @@ int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex){
 	sdev->multicast.delay = 0;
 	sdev->multicast.enable = 0;
 	sdev->multicast.nextIdx = 0;
-
 	init_asgard_async_queue(sdev->multicast.aapriv);
+
+
 
 	if (sdev->ndev) {
 		if (!sdev->ndev->ip_ptr ||
@@ -318,6 +319,20 @@ int init_asgard_device(struct asgard_device *sdev, int asgard_id, int ifindex){
     sdev->ci = ACMALLOC(1, sizeof(struct cluster_info), GFP_KERNEL);
 
 #endif
+	for(i = 0; i < MAX_CLUSTER_MEMBER; i++){ 
+
+		sdev->ci->member_info[i].hb_metrics.hb_counter = 0;
+		sdev->ci->member_info[i].hb_metrics.last_ts = 0;
+		sdev->ci->member_info[i].hb_metrics.avg_latency = 0;
+		sdev->ci->member_info[i].hb_metrics.max_latency = 0;
+		sdev->ci->member_info[i].hb_metrics.min_latency = ULONG_MAX;
+
+		sdev->ci->member_info[i].hb_metrics.avg_jitter = 0;
+		sdev->ci->member_info[i].hb_metrics.min_jitter = ULONG_MAX;
+		sdev->ci->member_info[i].hb_metrics.max_jitter = 0;
+
+	}
+
 
     return 0;
 }

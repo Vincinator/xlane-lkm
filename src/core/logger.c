@@ -163,6 +163,7 @@ int write_in_hb_to_log(struct asgard_ingress_logger *ailog, uint64_t tcs, int no
     struct asgard_logger *slog;
     struct ingress_hb_metrics *hb_metrics;
     struct asgard_device *sdev;
+    uint64_t delta, jitter;
 
     if(!ailog) {
         asgard_error("Error in %s. ingress logger is null \n", __FUNCTION__);
@@ -210,7 +211,49 @@ int write_in_hb_to_log(struct asgard_ingress_logger *ailog, uint64_t tcs, int no
 
     hb_metrics->hb_counter++;
 
+    // Calculate latency metrics
+    if(hb_metrics->last_ts != 0) {
 
+        delta = tcs - hb_metrics->last_ts;
+
+        hb_metrics->avg_latency 
+            = hb_metrics->avg_latency + 
+                ((delta - hb_metrics->avg_latency) / (hb_metrics->hb_counter - 1));
+
+        if(hb_metrics->max_latency < delta){
+            hb_metrics->max_latency = delta;
+        }
+
+        if(hb_metrics->min_latency > delta){
+            hb_metrics->min_latency = delta;
+        }
+
+        // Calculate jitter metrics
+        // difference between expected latency (hbi) and actual latency (delta)
+        jitter = sdev->pminfo.hbi - delta;
+
+        hb_metrics->avg_jitter 
+            = hb_metrics->avg_jitter + 
+                ((jitter - hb_metrics->avg_jitter) / (hb_metrics->hb_counter - 1));
+
+
+        if(hb_metrics->max_jitter < jitter){
+            hb_metrics->max_jitter = jitter;
+        }
+
+        if(hb_metrics->min_jitter > jitter){
+            hb_metrics->min_jitter = jitter;
+        }
+
+    } 
+
+
+    
+
+
+
+    // overwrite last ts after we have used it for calculations
+    hb_metrics->last_ts = tcs;
 
 #endif
 

@@ -153,18 +153,21 @@ struct ingress_hb_metrics {
     /* Calculated if hb_counter > 2
      * latency jitter measures the hb interval inconsitencies (or variance in latency)  
      */
-    uint64_t latency_jitter;
+    uint64_t avg_jitter;
+    uint64_t max_jitter;
+    uint64_t min_jitter;
 
     /* Increases monotonically with each received heartbeat from a given remote cluster member */
     uint64_t hb_counter;
 
-    uint64_t max_lateny;
+    uint64_t max_latency;
 
     uint64_t min_latency;
 
     /* Is calculated iteratively */
     uint64_t avg_latency;
 
+    uint64_t last_ts;
 
 };
 
