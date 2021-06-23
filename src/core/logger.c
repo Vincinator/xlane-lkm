@@ -157,7 +157,7 @@ int write_log(struct asgard_logger *slog, enum le_event_type type, uint64_t tcs)
 
 
 
-uint64_t calc_avg(uint64_t avg, uint64_t new_val, uint64_t n) {
+int64_t calc_avg(int64_t avg, int64_t new_val, int64_t n) {
     if(n <= 0){
         asgard_dbg("Can not calc avg for n=%lld\n", n);
         return 0;
@@ -226,7 +226,7 @@ int write_in_hb_to_log(struct asgard_ingress_logger *ailog, uint64_t tcs, int no
     if(likely(hb_metrics->last_ts != 0)) {
 
         delta = tcs - hb_metrics->last_ts;
-
+        hb_metrics->last_delta = delta;
         hb_metrics->avg_latency = calc_avg(hb_metrics->avg_latency, delta, hb_metrics->hb_counter - 1);
 
         if(hb_metrics->max_latency < delta){
