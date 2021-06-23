@@ -104,10 +104,18 @@ int print_cluster_info(){
                 printf("\t Cluster Node %d\n", ci->member_info[i].global_cluster_id);
                 printf("\t state:  %d\n", ci->member_info[i].state);
                 printf("\t HB Counter: %lg\n", ci->member_info[i].hb_metrics.hb_counter);
+                printf("\t Latency\n");
+                printf("\t\t Avg Latency: %lg\n", ci->member_info[i].hb_metrics.avg_latency);
+                printf("\t\t Max Latency: %lg\n", ci->member_info[i].hb_metrics.max_latency);
+                printf("\t\t Min Latency: %lg\n", ci->member_info[i].hb_metrics.min_latency);
+                printf("\t Jitter\n");
+                printf("\t\t Avg Jitter: %lg\n", ci->member_info[i].hb_metrics.avg_jitter);
+                printf("\t\t Max Jitter: %lg\n", ci->member_info[i].hb_metrics.max_jitter);
+                printf("\t\t Min Jitter: %lg\n", ci->member_info[i].hb_metrics.min_jitter);
 
         }
         // Move up X lines so we overwrite the printf output in the next loop 
-        return (ci->overall_cluster_member - 1) * 3 + 10;
+        return (ci->overall_cluster_member - 1) * 11 + 10;
 }
 
 
