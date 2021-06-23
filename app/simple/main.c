@@ -97,8 +97,8 @@ int print_cluster_info(){
         int i;
 
         ci = (struct cluster_info *) shared_mem_page;
-        uint64_t us_convertion = CYCLES_PER_1US;
-        uint64_t ms_convertion = CYCLES_PER_1MS;
+        int64_t us_convertion = CYCLES_PER_1US;
+        int64_t ms_convertion = CYCLES_PER_1MS;
 
         printf("Cluster Self ID: %d\n", ci->cluster_self_id);
         printf("HBI: %lu\n", ci->hbi);
