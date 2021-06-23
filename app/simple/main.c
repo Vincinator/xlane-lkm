@@ -94,7 +94,6 @@ int print_cluster_info(){
         printf("Cluster Self ID: %d\n", ci->cluster_self_id);
         printf("HBI: %lu\n", ci->hbi);
         printf("HBI (lld): %lld, uint64_t size: %ld\n", ci->hbi, sizeof(uint64_t));
-
         printf("Node State: %s\n", nstate_string(ci->node_state));
         printf("Last update timestamp: %lu\n", ci->last_update_timestamp);
         printf("Overall cluster member: %d\n", ci->overall_cluster_member);
@@ -102,7 +101,7 @@ int print_cluster_info(){
         printf("Dead remote cluster member: %d\n", ci->dead_cluster_member);
         printf("Cluster joins: %d\n", ci->cluster_joins);
         printf("Cluster dropouts: %d\n", ci->cluster_dropouts);
-        printf("\nCluster member Info\n");
+        printf("\nCluster member Info\n"); //note the double new line!
         for(i=0; i < ci->overall_cluster_member - 1; i++){
                 printf("\t Cluster Node %d\n", ci->member_info[i].global_cluster_id);
                 printf("\t state:  %d\n", ci->member_info[i].state);
@@ -118,7 +117,7 @@ int print_cluster_info(){
 
         }
         // Move up X lines so we overwrite the printf output in the next loop 
-        return (ci->overall_cluster_member - 1) * 11 + 11;
+        return (ci->overall_cluster_member - 1) * 11 + 12;
 }
 
 
