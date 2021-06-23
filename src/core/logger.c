@@ -223,12 +223,11 @@ int write_in_hb_to_log(struct asgard_ingress_logger *ailog, uint64_t tcs, int no
     hb_metrics->hb_counter++;
 
     // Calculate latency metrics
-    if(hb_metrics->last_ts != 0) {
+    if(likely(hb_metrics->last_ts != 0)) {
 
         delta = tcs - hb_metrics->last_ts;
 
         hb_metrics->avg_latency = calc_avg(hb_metrics->avg_latency, delta, hb_metrics->hb_counter - 1);
-           
 
         if(hb_metrics->max_latency < delta){
             hb_metrics->max_latency = delta;

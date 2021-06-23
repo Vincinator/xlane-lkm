@@ -92,6 +92,8 @@ int print_cluster_info(){
         ci = (struct cluster_info *) shared_mem_page;
 
         printf("Cluster Self ID: %d\n", ci->cluster_self_id);
+        printf("HBI: %lu\n", ci->hbi);
+
         printf("Node State: %s\n", nstate_string(ci->node_state));
         printf("Last update timestamp: %lu\n", ci->last_update_timestamp);
         printf("Overall cluster member: %d\n", ci->overall_cluster_member);

@@ -51,6 +51,8 @@ struct cluster_info {
     /* Unique cluster id of node that captures this info */
     int cluster_self_id;
 
+    uint64_t hbi;
+
     /*
      * 0 = not initialized
      * 1 = FOLLOWER
