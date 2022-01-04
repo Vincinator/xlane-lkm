@@ -62,7 +62,7 @@ curl -X POST http://cerebro:ACCESS_TOKEN@JENKINS_IP:JENKINS_PORT/job/Vincent/job
 
 # Licence
 
-All Asgard code contributions, including kernel module, custom kernel and asgardcli is published under the GNU GPLv2.
+All Asgard code contributions, including kernel module, custom kernel and asgardcli is published under the GNU GPLv3.
 
 ## Contributors
 Riesop, Vincent <Vincent.Riesop@gmail.com>
