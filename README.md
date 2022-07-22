@@ -1,3 +1,5 @@
+:warning: This project is not maintained. 
+
 # Asgard
 
 Asgard introduces a sliced network for distributed applications on kernel level.
